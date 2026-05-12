@@ -35,6 +35,7 @@ description: いつ使う skill かが分かる短い説明
 - ディレクトリ名と整合する名前にする
 - kebab-case を使う
 - 役割が伝わる短い名前にする
+- repo 固有や agent 固有の skill は、`codex-*` のような短い prefix で区別してよい
 
 ### `description` の書き方
 
