@@ -1,5 +1,8 @@
 # Migration from codex-config
 
+> Status: `mtk177a/codex-config` の `skills/personal` からの初回移行は完了済みです。
+> この文書は、移行時に採用した方針と判断基準を記録するために残しています。
+
 ## 方針
 
 - 移行元: `mtk177a/codex-config` の `skills/personal` 配下
