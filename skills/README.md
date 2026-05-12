@@ -5,12 +5,13 @@
 ```text
 skills/<skill-name>/
 ├── SKILL.md
+├── evals/
 ├── references/
 ├── scripts/
 └── assets/
 ```
 
-`SKILL.md` は必須です。`references/`, `scripts/`, `assets/` は必要な場合だけ追加します。
+`SKILL.md` は必須です。`evals/`, `references/`, `scripts/`, `assets/` は必要な場合だけ追加します。
 
 ## 基本ルール
 
@@ -56,6 +57,13 @@ description: いつ使う skill かが分かる短い説明
 - 外部サイトの内容を無批判にコピーしない
 - 一時メモ置き場にしない
 - 顧客情報、社内 URL、秘密情報を含めない
+
+## evals/ を置く場合の注意
+
+- skill 単体の empirical review や scenario メモを置く
+- scenario、checklist、ledger seed のような「再実行可能な評価資産」を優先する
+- 複数 skill をまたぐ評価は、個別 skill に重複配置せず `docs/empirical-prompt-tuning/` 配下にまとめる
+- 実行ログの生データを無制限に溜めず、要点だけを残す
 
 ## assets/ を置く場合の注意
 
