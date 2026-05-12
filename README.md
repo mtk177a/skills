@@ -82,12 +82,29 @@ gh skill view ./skills/my-skill/SKILL.md
 
 `microsoft apm` から参照する場合も、agent 固有の分類ディレクトリを増やさず、単純な `skills/<skill-name>/` 構成を保つことで扱いやすくします。
 
+repo ルートには `apm.yml` を置き、この repo 全体を「個別 skill を束ねる APM package」としても扱えるようにします。各 skill ディレクトリは `SKILL.md` を持つため、`skills/<skill-name>` を個別 package として参照する運用も継続できます。
+
 ```bash
-# apm でローカル skill ディレクトリを参照するイメージ
-apm skill inspect ./skills/my-skill
+# repo 全体を 1 つの package として入れる
+apm install mtk177a/agent-skills
+
+# 特定 skill だけを個別に入れる
+apm install mtk177a/agent-skills/skills/code-review
+apm install mtk177a/agent-skills/skills/draft-commit
 ```
 
-上記コマンドはあくまで利用イメージです。実際の導入や配布の管理は dotfiles 側で行い、この repo 自体は skill ソースの保管場所として使います。
+インストール先の project repo に harness marker や `targets:` がない場合は、`apm install --target claude` のように target を明示します。依存を宣言で管理したい場合は、利用側の `apm.yml` に次のように書けます。
+
+```yaml
+dependencies:
+  apm:
+    - mtk177a/agent-skills
+    - mtk177a/agent-skills/skills/code-review
+```
+
+実際の導入や配布の管理は dotfiles 側または利用側 project の `apm.yml` / `apm.lock.yaml` で行い、この repo 自体は skill ソースの保管場所兼 APM package として扱います。
+
+この repo を private のまま `apm` で利用することもできます。ただし、利用側には対象 repo への read 権限と、GitHub private repo を取得できる認証設定が必要です。認証情報はこの repo や `apm.yml` に含めず、利用側の環境変数や git / APM の認証設定で扱います。
 
 ## 将来の位置づけ
 

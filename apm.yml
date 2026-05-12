@@ -1,0 +1,26 @@
+name: agent-skills
+version: 0.1.0
+description: Personal Agent Skills package that aggregates maintained custom skills for APM consumers.
+
+dependencies:
+  apm:
+    - mtk177a/agent-skills/skills/build
+    - mtk177a/agent-skills/skills/clarify-request
+    - mtk177a/agent-skills/skills/code-review
+    - mtk177a/agent-skills/skills/codex-audit-config
+    - mtk177a/agent-skills/skills/codex-create-agents-md
+    - mtk177a/agent-skills/skills/codex-create-skill
+    - mtk177a/agent-skills/skills/create-issue
+    - mtk177a/agent-skills/skills/design
+    - mtk177a/agent-skills/skills/draft-commit
+    - mtk177a/agent-skills/skills/format-markdown
+    - mtk177a/agent-skills/skills/implement-chain
+    - mtk177a/agent-skills/skills/intake
+    - mtk177a/agent-skills/skills/investigate-incident
+    - mtk177a/agent-skills/skills/plan-safe-change
+    - mtk177a/agent-skills/skills/record-session-handoff
+    - mtk177a/agent-skills/skills/release
+    - mtk177a/agent-skills/skills/research-web-safely
+    - mtk177a/agent-skills/skills/review-fix-chain
+    - mtk177a/agent-skills/skills/triage-review
+    - mtk177a/agent-skills/skills/validate-fix

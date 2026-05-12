@@ -17,3 +17,7 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
+
+# APM local install artifacts
+apm.lock.yaml
+apm_modules/
