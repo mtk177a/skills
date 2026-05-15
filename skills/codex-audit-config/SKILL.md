@@ -25,6 +25,7 @@ description: Codex config リポジトリの AGENTS.md / skills / docs を監査
 1. 対象 (AGENTS.md / skills/*/SKILL.md / docs) を確認する。
 2. 次の観点で問題と改善余地を洗い出す (最大5件)。
    - Safety: secrets, destructive actions, approvals, sandbox assumptions
+   - Cost / Context: 常時読み込みの長文化、skill へ分離できる内容、重い model / reasoning / MCP / subagent の既定、失敗ループ停止ルールの有無
    - Consistency: 同じルールの重複・矛盾・散在
    - Clarity: 曖昧さ (例：いつ承認が必要か不明、境界が曖昧)
    - Maintainability: 長文化、責務過多、更新しづらさ
@@ -59,10 +60,11 @@ description: Codex config リポジトリの AGENTS.md / skills / docs を監査
 ## 優先順位
 
 1. Safety (最優先)
-2. Consistency
-3. Clarity
-4. Maintainability
-5. Expressiveness (nice-to-have)
+2. Cost / Context
+3. Consistency
+4. Clarity
+5. Maintainability
+6. Expressiveness (nice-to-have)
 
 ## 禁止事項
 
@@ -89,5 +91,8 @@ description: Codex config リポジトリの AGENTS.md / skills / docs を監査
 ## よくある改善パターン (参考)
 
 - AGENTS.md が長い → 詳細はSkillへ移す (AGENTSは入口と契約のみ)
+- 常時読み込みファイルが長い → 契約だけ残し、判断手順やチェックリストは skill へ分離する
 - Skills が増えすぎ → 役割重複を統合、description を整理してトリガー精度を上げる
+- 重い model / reasoning / MCP / subagent が既定 → 軽い既定へ寄せ、重い選択は条件付きにする
+- 失敗ループ対策がない → 停止条件、仮説更新、次の一手の固定を追加する
 - docs が散らかる → `docs/` に索引 (index) を作る
