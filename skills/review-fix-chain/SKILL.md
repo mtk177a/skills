@@ -1,6 +1,6 @@
 ---
 name: review-fix-chain
-description: 既存のレビュー指摘を custom agent で順番に処理し、採否判断から修正、確認まで main agent の orchestration で進めたいときに使う。
+description: 既存のレビュー指摘について、採否判断から修正、確認までを段階的に進めたいときに使う。
 ---
 
 # Review Fix Chain (レビュー修正チェーン)

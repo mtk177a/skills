@@ -1,6 +1,6 @@
 ---
 name: implement-chain
-description: custom agent の実装チェーンを順番に起動し、main agent は orchestration のみ担当して依頼整理から実装、レビュー、確認まで進めたいときに使う。
+description: 依頼整理から設計、実装、レビュー、確認までを段階的に進めたいときに使う。
 ---
 
 # Implement Chain (実装チェーン)
