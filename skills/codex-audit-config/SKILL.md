@@ -91,7 +91,7 @@ description: Codex config リポジトリの AGENTS.md / skills / docs を監査
 ## よくある改善パターン (参考)
 
 - AGENTS.md が長い → 詳細はSkillへ移す (AGENTSは入口と契約のみ)
-- 常時読み込みファイルが長い → 契約だけ残し、判断手順やチェックリストは skill へ分離する
+- 常時読み込みファイルが長い → 契約だけ残し、判断手順やチェックリストは Skill へ分離する
 - Skills が増えすぎ → 役割重複を統合、description を整理してトリガー精度を上げる
 - 重い model / reasoning / MCP / subagent が既定 → 軽い既定へ寄せ、重い選択は条件付きにする
 - 失敗ループ対策がない → 停止条件、仮説更新、次の一手の固定を追加する

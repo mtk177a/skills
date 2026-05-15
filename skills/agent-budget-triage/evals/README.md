@@ -5,19 +5,19 @@
 ## Iter 0
 
 - `description` と本文が「ツール/モデル選定の事前トリアージ」に揃っているか
-- repo を読む必要の有無が分かれているか
+- リポジトリを読む必要の有無が分かれているか
 - 重い選択肢を選ぶ理由が残るか
 - 単体で次の依頼先判断に使えるか
 
 ## Scenarios
 
-### Scenario A: repo を読まない文章整理
+### Scenario A: リポジトリを読まない文章整理
 
 メールや設計メモの整理で、coding agent は不要。通常チャットを勧める。
 
 Requirements checklist:
 
-1. [critical] repo を読む必要がない作業に重い coding agent を既定提案しない
+1. [critical] リポジトリを読む必要がない作業に重い coding agent を既定提案しない
 2. 推奨ツールと理由が対応している
 3. 渡すべき最小コンテキストが絞られている
 

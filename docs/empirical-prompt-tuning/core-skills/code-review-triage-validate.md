@@ -1,10 +1,10 @@
 # Integration Regression Eval: Code Review -> Triage Review -> Validate Fix
 
-この文書は、mizchi 側の外部 skill `empirical-prompt-tuning` の手順を、この repo の `code-review`, `triage-review`, `validate-fix` に適用するための統合回帰 eval メモです。
+この文書は、mizchi 側の外部 Skill `empirical-prompt-tuning` の手順を、このリポジトリの `code-review`, `triage-review`, `validate-fix` に適用するための統合回帰 eval メモです。
 
-日常の改善は各 skill の `evals/` で行い、この文書は複数 skill をつないだときの判断写像や確認漏れの退行を確認する用途に使います。
+日常の改善は各 Skill の `evals/` で行い、この文書は複数 Skill をつないだときの判断写像や確認漏れの退行を確認する用途に使います。
 
-対象 skill:
+対象 Skill:
 
 - `skills/code-review/SKILL.md`
 - `skills/triage-review/SKILL.md`
@@ -51,7 +51,7 @@ Requirements checklist:
 
 ### Changes (diff from previous)
 
-- 初回実行。skill 本文は Iter 0 のまま。
+- 初回実行。Skill 本文は Iter 0 のまま。
 - Pattern applied: `(baseline)`
 
 ### Execution results (per scenario)
@@ -67,7 +67,7 @@ Requirements checklist:
 
 - Scenario A: [critical] drop なし
   - Issue: `validate-fix` は本来「修正後確認」だが、scenario では実修正差分ではなく「既存差分 + 実施済み確認事実」だけが与えられた
-  - Cause: skill 側の致命的な ambiguity というより、flow 評価の都合で `validate-fix` を前倒しで読ませている
+  - Cause: Skill 側の致命的な ambiguity というより、flow 評価の都合で `validate-fix` を前倒しで読ませている
   - General Fix Rule: 修正実体がない状態で `validate-fix` を使う場合は、確認対象を「提示済み差分と実施済み確認事実」に限定し、採用指摘の解消は未確認として明示する
 - Scenario B: [critical] drop なし
   - Issue: 仕様変更の可能性がある指摘と、安全性リスクの指摘が同時に存在した
@@ -82,11 +82,11 @@ Requirements checklist:
 ### Ledger updates
 
 - Re-seen: `severity classification does not map to triage decisions` - 今回は再発せず、Must/Should/Nice-to-have から採用/保留への変換は通った
-- Re-seen: `validation detached from review intent` - 顕在化はしたが、skill 補完ではなく scenario 側の制約として処理できた
+- Re-seen: `validation detached from review intent` - 顕在化はしたが、Skill 補完ではなく scenario 側の制約として処理できた
 
 ### Next fix proposal
 
-- すぐに skill 本文は変えず、hold-out scenario で `validate-fix` が元指摘との対応付けを保てるかを追加確認する
+- すぐに Skill 本文は変えず、hold-out scenario で `validate-fix` が元指摘との対応付けを保てるかを追加確認する
 
 (Convergence check: 1 consecutive clears / 1 round remaining to stop condition)
 
@@ -94,7 +94,7 @@ Requirements checklist:
 
 ### Changes (diff from previous)
 
-- skill 本文の追加修正なし
+- Skill 本文の追加修正なし
 - hold-out scenario を追加して、Must-fix が 0 件のときも triage と validate の対応関係が崩れないか確認
 - Pattern applied: `(hold-out check)`
 
@@ -110,7 +110,7 @@ Requirements checklist:
 
 - Hold-out: [critical] drop なし
   - Issue: `label` が両名未設定時に空文字になるが、それが仕様か不明なまま差分だけでは確定できない
-  - Cause: 関連仕様が scenario に与えられておらず、skill も未確認事項を未確認のまま残すことを要求しているため
+  - Cause: 関連仕様が scenario に与えられておらず、Skill も未確認事項を未確認のまま残すことを要求しているため
   - General Fix Rule: 仕様依存のレビュー論点は、重大度を下げてもよいが、既知の未確認事項として明示し、採否判断と検証項目に接続する
 
 ### Discretionary fill-ins (newly surfaced this time)
@@ -124,7 +124,7 @@ Requirements checklist:
 
 ### Next fix proposal
 
-- 現時点では skill 本文の追加修正は不要。次に着手するなら、実修正後の validate を含む別種 scenario を増やす
+- 現時点では Skill 本文の追加修正は不要。次に着手するなら、実修正後の validate を含む別種 scenario を増やす
 
 (Convergence check: 2 consecutive clears / stop condition reached for current scenario set)
 

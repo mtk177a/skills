@@ -27,7 +27,7 @@ GitHub Issues よりも軽く、AI エージェントがすぐ参照して進め
 - `chain-stage-naming.md`
 - `apm-exports-gap.md`
 
-## この repo での使いどころ
+## このリポジトリでの使いどころ
 
 - 直近のレビュー指摘を分解しておく
 - 小さな改善や保留事項を一時保管する

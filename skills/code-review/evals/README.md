@@ -1,6 +1,6 @@
 # code-review evals
 
-`code-review` の単体運用を評価するためのメモです。`triage-review` 前提ではなく、この skill 単独で採否判断の材料になるレビュー結果を返せるかを見ます。
+`code-review` の単体運用を評価するためのメモです。`triage-review` 前提ではなく、この Skill 単独で採否判断の材料になるレビュー結果を返せるかを見ます。
 
 ## Iter 0
 

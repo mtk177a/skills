@@ -1,10 +1,10 @@
 # Integration Regression Eval: Intake -> Design -> Build
 
-この文書は、mizchi 側の外部 skill `empirical-prompt-tuning` の手順を、この repo の `intake`, `design`, `build` に適用するための統合回帰 eval メモです。
+この文書は、mizchi 側の外部 Skill `empirical-prompt-tuning` の手順を、このリポジトリの `intake`, `design`, `build` に適用するための統合回帰 eval メモです。
 
-日常の改善は各 skill の `evals/` で行い、この文書は複数 skill をつないだときの受け渡し崩れや統合時の退行を確認する用途に使います。
+日常の改善は各 Skill の `evals/` で行い、この文書は複数 Skill をつないだときの受け渡し崩れや統合時の退行を確認する用途に使います。
 
-対象 skill:
+対象 Skill:
 
 - `skills/intake/SKILL.md`
 - `skills/design/SKILL.md`
@@ -20,7 +20,7 @@
 
 ### Scenario A: Median
 
-既存 CLI ツールに小さな振る舞い追加をしたい。依頼文は 2-3 文だけで、目的はあるが完了条件と制約は十分に書かれていない。repo には既存テストがあり、テストコマンドも 1 つ分かっている。executor には、依頼整理、設計方針、最初の TDD 実装方針までを出させる。
+既存 CLI ツールに小さな振る舞い追加をしたい。依頼文は 2-3 文だけで、目的はあるが完了条件と制約は十分に書かれていない。リポジトリには既存テストがあり、テストコマンドも 1 つ分かっている。executor には、依頼整理、設計方針、最初の TDD 実装方針までを出させる。
 
 Requirements checklist:
 
@@ -51,7 +51,7 @@ Requirements checklist:
 
 ### Changes (diff from previous)
 
-- 初回実行。skill 本文は Iter 0 のまま。
+- 初回実行。Skill 本文は Iter 0 のまま。
 - Pattern applied: `(baseline)`
 
 ### Execution results (per scenario)
@@ -71,7 +71,7 @@ Requirements checklist:
   - General Fix Rule: 実装系スキルには、着手条件未充足時に `Blocked` として止まる分岐と、そのときの出力項目を明示する
 - Scenario A: [critical] drop なし
   - Issue: JSON 追加のような曖昧な依頼では、対象範囲や最小仕様が入力不足のまま `build` に渡る
-  - Cause: 上流で未確定要件は拾えているが、`build` に入れる条件と入れない条件が skill 間で固定されていなかった
+  - Cause: 上流で未確定要件は拾えているが、`build` に入れる条件と入れない条件が Skill 間で固定されていなかった
   - General Fix Rule: `design` から `build` へ、着手条件、対象範囲、停止条件を固定項目として受け渡す
 
 ### Discretionary fill-ins (newly surfaced this time)
@@ -111,11 +111,11 @@ Requirements checklist:
 
 - Scenario A: [critical] drop なし
   - Issue: 依頼文だけでは対象コマンド範囲と JSON 仕様が確定できない
-  - Cause: skill 側の ambiguity ではなく、scenario 側が intentionally incomplete なため
+  - Cause: Skill 側の ambiguity ではなく、scenario 側が intentionally incomplete なため
   - General Fix Rule: 曖昧な機能追加依頼では、実装前に「対象範囲」「成功系の最小仕様」「非互換にしない条件」を確認し、未確定なら `build` を `Blocked` で止める
 - Scenario B: [critical] drop なし
   - Issue: テストコマンド不明でも確認方針を出す必要がある
-  - Cause: skill 側は十分で、残りは scenario 上の情報不足
+  - Cause: Skill 側は十分で、残りは scenario 上の情報不足
   - General Fix Rule: 実行不能なテストは推測で埋めず、確認タスクへ落とし直す
 
 ### Discretionary fill-ins (newly surfaced this time)
@@ -138,7 +138,7 @@ Requirements checklist:
 
 ### Changes (diff from previous)
 
-- skill 本文の追加修正なし
+- Skill 本文の追加修正なし
 - hold-out scenario を追加して、既存 scenario への過剰適応がないか確認
 - Pattern applied: `(hold-out check)`
 
@@ -154,7 +154,7 @@ Requirements checklist:
 
 - Hold-out: [critical] drop なし
   - Issue: 実コードや既存 CLI 構造を見ずに、`build` の具体的な変更ファイル名までは確定できなかった
-  - Cause: scenario が deliverable のみを求めており、対象 skill も実装前整理を主眼としていたため
+  - Cause: scenario が deliverable のみを求めており、対象 Skill も実装前整理を主眼としていたため
   - General Fix Rule: 実装非着手の評価では、コード構造未確認の事項は推測で埋めず、未確定として明示しつつ着手条件へ戻す
 
 ### Discretionary fill-ins (newly surfaced this time)
@@ -168,7 +168,7 @@ Requirements checklist:
 
 ### Next fix proposal
 
-- 現時点では skill 本文の追加修正は不要。次に着手するなら `intake` の例示追加ではなく、別 flow の hold-out を増やす
+- 現時点では Skill 本文の追加修正は不要。次に着手するなら `intake` の例示追加ではなく、別 flow の hold-out を増やす
 
 (Convergence check: 2 consecutive clears / stop condition reached for current scenario set)
 
@@ -176,7 +176,7 @@ Requirements checklist:
 
 - **Pattern name**: missing handoff contract between adjacent skills
   - Example: `design` の出力は出たが、`build` が何を固定情報として受け取る前提か分からない
-  - General Fix Rule: 隣接 skill に渡す必須項目を、手順と出力フォーマットの両方に明記する
+  - General Fix Rule: 隣接 Skill に渡す必須項目を、手順と出力フォーマットの両方に明記する
   - Seen in: iter 0
 - **Pattern name**: TDD rhythm stated without observable checkpoints
   - Example: Red を守る方針はあるが、何をもって Red を確認したとみなすかが曖昧
