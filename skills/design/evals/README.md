@@ -1,0 +1,39 @@
+# design evals
+
+`design` の単体運用を評価するためのメモです。`intake` の有無に関係なく、実装可否と変更方針を単独で判断材料にできるかを見ます。
+
+## Iter 0
+
+- `description` と本文が「実装前の設計判断」に揃っているか
+- 変更対象と変更対象外が分かれているか
+- リスク、回避策、テスト戦略が単体で理解できるか
+- 実装へ進む条件と停止条件が明示されているか
+
+## Scenarios
+
+### Scenario A: 小さな機能追加
+
+既存コードの一部へ小さな振る舞い追加を行う。`intake` 結果がなくても、変更対象、対象外、テスト戦略を整理する。
+
+Requirements checklist:
+
+1. [critical] 実装へ進む条件と停止条件を分ける
+2. 変更対象と変更対象外を分ける
+3. リスクと回避策を対で書く
+4. 変更単位が小さく分けられている
+
+### Scenario B: 依存追加の可能性がある変更
+
+実装案はあるが、依存追加や仕様確認が必要かもしれない。承認前提の論点を止める。
+
+Requirements checklist:
+
+1. [critical] Ask first 条件を停止条件として出す
+2. テスト戦略が推測ではなく確認方針として書かれる
+3. 単体でレビュー可能な方針になっている
+
+## Failure Ledger Seed
+
+- `target and non-target blurred`
+- `risk listed without mitigation`
+- `design only usable as build handoff`

@@ -1,6 +1,8 @@
-# Flow Eval: Intake -> Design -> Build
+# Integration Regression Eval: Intake -> Design -> Build
 
-この文書は、mizchi 側の外部 skill `empirical-prompt-tuning` の手順を、この repo の `intake`, `design`, `build` に適用するための flow eval メモです。
+この文書は、mizchi 側の外部 skill `empirical-prompt-tuning` の手順を、この repo の `intake`, `design`, `build` に適用するための統合回帰 eval メモです。
+
+日常の改善は各 skill の `evals/` で行い、この文書は複数 skill をつないだときの受け渡し崩れや統合時の退行を確認する用途に使います。
 
 対象 skill:
 

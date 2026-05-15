@@ -1,6 +1,8 @@
-# Flow Eval: Code Review -> Triage Review -> Validate Fix
+# Integration Regression Eval: Code Review -> Triage Review -> Validate Fix
 
-この文書は、mizchi 側の外部 skill `empirical-prompt-tuning` の手順を、この repo の `code-review`, `triage-review`, `validate-fix` に適用するための flow eval メモです。
+この文書は、mizchi 側の外部 skill `empirical-prompt-tuning` の手順を、この repo の `code-review`, `triage-review`, `validate-fix` に適用するための統合回帰 eval メモです。
+
+日常の改善は各 skill の `evals/` で行い、この文書は複数 skill をつないだときの判断写像や確認漏れの退行を確認する用途に使います。
 
 対象 skill:
 
