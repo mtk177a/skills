@@ -1,6 +1,6 @@
 # agent-skills
 
-`mtk177a/agent-skills` は、自作した Agent Skill と、自分で継続的に手を入れて保守する Agent Skill を管理するための個人用リポジトリです。
+自作した Agent Skill と、自分で継続的に手を入れて保守する Agent Skill を管理するための個人用リポジトリです。
 
 Codex、Claude Code、GitHub Copilot など複数の coding agent から参照しやすい、単純で移植しやすい構成を維持します。MacBook Pro M1 と Windows WSL の両方で扱う前提のため、OS 固有の前提を持ち込まない方針です。
 

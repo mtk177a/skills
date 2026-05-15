@@ -4,6 +4,7 @@ description: Personal Agent Skills package that aggregates maintained custom ski
 
 dependencies:
   apm:
+    - mtk177a/agent-skills/skills/agent-budget-triage
     - mtk177a/agent-skills/skills/build
     - mtk177a/agent-skills/skills/clarify-request
     - mtk177a/agent-skills/skills/code-review
@@ -13,6 +14,7 @@ dependencies:
     - mtk177a/agent-skills/skills/create-issue
     - mtk177a/agent-skills/skills/design
     - mtk177a/agent-skills/skills/draft-commit
+    - mtk177a/agent-skills/skills/failure-loop-breaker
     - mtk177a/agent-skills/skills/format-markdown
     - mtk177a/agent-skills/skills/implement-chain
     - mtk177a/agent-skills/skills/intake
@@ -22,5 +24,6 @@ dependencies:
     - mtk177a/agent-skills/skills/release
     - mtk177a/agent-skills/skills/research-web-safely
     - mtk177a/agent-skills/skills/review-fix-chain
+    - mtk177a/agent-skills/skills/scoped-implementation-plan
     - mtk177a/agent-skills/skills/triage-review
     - mtk177a/agent-skills/skills/validate-fix
