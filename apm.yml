@@ -8,9 +8,9 @@ dependencies:
     - mtk177a/agent-skills/skills/build
     - mtk177a/agent-skills/skills/clarify-request
     - mtk177a/agent-skills/skills/code-review
-    - mtk177a/agent-skills/skills/codex-audit-config
-    - mtk177a/agent-skills/skills/codex-create-agents-md
-    - mtk177a/agent-skills/skills/codex-create-skill
+    - mtk177a/agent-skills/skills/audit-agent-rules
+    - mtk177a/agent-skills/skills/author-agent-instructions
+    - mtk177a/agent-skills/skills/author-skill
     - mtk177a/agent-skills/skills/create-issue
     - mtk177a/agent-skills/skills/design
     - mtk177a/agent-skills/skills/draft-commit
