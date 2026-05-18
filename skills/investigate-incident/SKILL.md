@@ -34,7 +34,7 @@ description: 本番エラー調査や incident investigation を行い、stack t
 4. 再現できたこと、再現できていないこと、仮説の優先順位を分ける。
 5. 各仮説に対してコード上の根拠、関連ファイル、確認すべき条件を結び付ける。
 6. 原因が断定できない場合でも、有力仮説、追加で必要な情報、次に確認すべきことを整理する。
-7. 修正実装には進まず、必要なら `design` や `implement-chain` へ渡すための引き継ぎをまとめる。
+7. 修正実装には進まず、必要なら `design-changes` や `implement-changes` へ渡すための引き継ぎをまとめる。
 
 ## 出力フォーマット
 
@@ -54,7 +54,7 @@ description: 本番エラー調査や incident investigation を行い、stack t
 
 ## Companion skills (推奨)
 
-- `design`
+- `design-changes`
 - `record-session-handoff`
 
 ## 境界

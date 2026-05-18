@@ -1,6 +1,6 @@
-# intake evals
+# scope-request evals
 
-`intake` の単体運用を評価するためのメモです。`design` や `build` への受け渡しではなく、この Skill 単独で依頼整理と次判断の材料を返せるかを見ます。
+`scope-request` の単体運用を評価するためのメモです。`design-changes` や `implement-changes` への受け渡しではなく、この Skill 単独で依頼整理と次判断の材料を返せるかを見ます。
 
 ## Iter 0
 

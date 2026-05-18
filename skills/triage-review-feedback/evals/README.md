@@ -1,6 +1,6 @@
-# triage-review evals
+# triage-review-feedback evals
 
-`triage-review` の単体運用を評価するためのメモです。外部レビューや `code-review` 結果を受け取り、この Skill 単独で採否と対応方針を決められるかを見ます。
+`triage-review-feedback` の単体運用を評価するためのメモです。外部レビューや `review-changes` 結果を受け取り、この Skill 単独で採否と対応方針を決められるかを見ます。
 
 ## Iter 0
 

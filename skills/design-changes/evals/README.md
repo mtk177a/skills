@@ -1,6 +1,6 @@
-# design evals
+# design-changes evals
 
-`design` の単体運用を評価するためのメモです。`intake` の有無に関係なく、実装可否と変更方針を単独で判断材料にできるかを見ます。
+`design-changes` の単体運用を評価するためのメモです。`scope-request` の有無に関係なく、実装可否と変更方針を単独で判断材料にできるかを見ます。
 
 ## Iter 0
 
@@ -13,7 +13,7 @@
 
 ### Scenario A: 小さな機能追加
 
-既存コードの一部へ小さな振る舞い追加を行う。`intake` 結果がなくても、変更対象、対象外、テスト戦略を整理する。
+既存コードの一部へ小さな振る舞い追加を行う。`scope-request` 結果がなくても、変更対象、対象外、テスト戦略を整理する。
 
 Requirements checklist:
 
@@ -36,4 +36,4 @@ Requirements checklist:
 
 - `target and non-target blurred`
 - `risk listed without mitigation`
-- `design only usable as build handoff`
+- `design-changes only usable as implement-changes handoff`

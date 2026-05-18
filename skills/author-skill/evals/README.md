@@ -69,7 +69,7 @@ Requirements checklist:
 ### Discretionary fill-ins (newly surfaced this time)
 
 - Scenario A: 目的文が未確定なら仮称で止める、という運用を補って実行された。
-- Scenario B: `design` と `scoped-implementation-plan` のどちらへ寄せるかは、出力契約ベースで補って判断された。
+- Scenario B: `design-changes` と `scoped-implementation-plan` のどちらへ寄せるかは、出力契約ベースで補って判断された。
 
 ### Ledger updates
 

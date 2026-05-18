@@ -89,7 +89,7 @@ gh skill view ./skills/my-skill/SKILL.md
 apm install mtk177a/agent-skills
 
 # 特定 skill だけを個別に入れる
-apm install mtk177a/agent-skills/skills/code-review
+apm install mtk177a/agent-skills/skills/review-changes
 apm install mtk177a/agent-skills/skills/draft-commit
 ```
 
@@ -100,7 +100,7 @@ apm install mtk177a/agent-skills/skills/draft-commit
 dependencies:
   apm:
     - mtk177a/agent-skills
-    - mtk177a/agent-skills/skills/code-review
+    - mtk177a/agent-skills/skills/review-changes
 ```
 
 実際の導入や配布の管理は dotfiles 側または利用側プロジェクトの `apm.yml` / `apm.lock.yaml` で行い、このリポジトリ自体は Skill ソースの保管場所兼 APM パッケージとして扱います。

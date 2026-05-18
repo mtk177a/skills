@@ -1,13 +1,15 @@
 # Core Skills Empirical Review
 
-このディレクトリは、外部 Skill `empirical-prompt-tuning` を使って `intake`, `design`, `build`, `code-review`, `triage-review`, `validate-fix` を empirical に見直すための補助資料です。
+このディレクトリは、外部 Skill `empirical-prompt-tuning` を使って `scope-request`, `design-changes`, `implement-changes`, `review-changes`, `triage-review-feedback`, `validate-fix` を empirical に見直すための補助資料です。
 
 ここでいう `empirical-prompt-tuning` は、このリポジトリの local Skill ではなく、[mizchi/skills](https://github.com/mizchi/skills) にある外部 Skill `empirical-prompt-tuning` を指します。つまり、ここにあるファイルはこのリポジトリの Skill 本体ではなく、`mizchi/skills` 側の `empirical-prompt-tuning` を使って自作 Skill 群を評価するためのローカル運用メモです。
 
 このディレクトリには、Skill 単体ではなく複数 Skill をまたぐ統合評価の資産を置きます。
 
-- `intake-design-build.md`: 依頼整理から設計、実装方針までの統合回帰評価計画
-- `code-review-triage-validate.md`: レビュー、採否判断、修正確認までの統合回帰評価計画
+通常の中核 Skill の並べ方は [docs/core-skill-flows.md](/home/motoki/projects/personal/agent-skills/docs/core-skill-flows.md) を参照します。
+
+- `scope-design-implement.md`: 依頼整理から設計、実装方針までの統合回帰評価計画
+- `review-triage-validate.md`: レビュー、採否判断、修正確認までの統合回帰評価計画
 - `subagent-prompt-template.md`: blank-slate executor に渡す共通プロンプト雛形
 
 ## 使い方

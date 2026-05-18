@@ -1,9 +1,9 @@
 ---
-name: release
+name: summarize-changes
 description: 差分をもとに、PR要約・リリース説明・引き継ぎメモを共有しやすい形にまとめたいときに使う。
 ---
 
-# Release (共有文章作成)
+# Summarize Changes (変更要約)
 
 ## 目的
 

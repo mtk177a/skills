@@ -1,17 +1,17 @@
 ---
 name: create-issue
-description: intake で明確化した課題を Issue として起票する手順とドラフトを提供する (issue, ticket, backlog, jira, redmine)
+description: scope-request で明確化した課題を Issue として起票する手順とドラフトを提供する (issue, ticket, backlog, jira, redmine)
 ---
 
 # Create Issue (課題起票)
 
 ## 目的
 
-- intake で明確化した課題を、追跡可能な Issue (GitHub/Jira/Redmine/Backlog 等) として起票するための手順とドラフトを提供する。
+- scope-request で明確化した課題を、追跡可能な Issue (GitHub/Jira/Redmine/Backlog 等) として起票するための手順とドラフトを提供する。
 
 ## 使う場面
 
-- intake 結果を Issue に落とし込みたいとき
+- scope-request 結果を Issue に落とし込みたいとき
 - バグ報告や機能要望のテンプレを整えたいとき
 
 ## 入力 (任意)

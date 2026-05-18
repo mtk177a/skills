@@ -1,9 +1,9 @@
 ---
-name: intake
-description: 依頼や問題を受け取り、目的・完了条件・制約・前提を整理したいときに使う。
+name: scope-request
+description: 依頼や問題の範囲を整理し、目的・完了条件・制約・前提を明確にしたいときに使う。
 ---
 
-# Intake (依頼整理)
+# Scope Request (依頼整理)
 
 ## 目的
 

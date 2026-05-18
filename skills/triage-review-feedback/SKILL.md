@@ -1,9 +1,9 @@
 ---
-name: triage-review
+name: triage-review-feedback
 description: 人間や他の AI から来たレビュー指摘を整理し、採否と対応方針を決めたいときに使う。
 ---
 
-# Triage Review (レビュー整理)
+# Triage Review Feedback (レビュー指摘整理)
 
 ## 目的
 
@@ -20,7 +20,7 @@ description: 人間や他の AI から来たレビュー指摘を整理し、採
 - レビュー本文
 - 対象差分
 - 関連仕様や背景
-- `code-review` の結果
+- `review-changes` の結果
 
 ## 手順
 

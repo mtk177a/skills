@@ -1,6 +1,6 @@
-# build evals
+# implement-changes evals
 
-`build` の単体運用を評価するためのメモです。`design` の出力がなくても、着手可否、現在地、次の一手を安全に返せるかを見ます。
+`implement-changes` の単体運用を評価するためのメモです。`design-changes` の出力がなくても、着手可否、現在地、次の一手を安全に返せるかを見ます。
 
 ## Iter 0
 
@@ -11,13 +11,13 @@
 
 ## Scenarios
 
-### Scenario A: design なしの小修正
+### Scenario A: design-changes なしの小修正
 
 変更要求、対象ファイル、テストコマンドだけが与えられる。着手条件を自分で整理し、最初の 1 テストを決める。
 
 Requirements checklist:
 
-1. [critical] `design` がなくても着手条件を確認する
+1. [critical] `design-changes` がなくても着手条件を確認する
 2. 最初の 1 テストが明示される
 3. 現在のフェーズが `Blocked` / `Red` / `Green` / `Refactor` のいずれかで示される
 
@@ -33,6 +33,6 @@ Requirements checklist:
 
 ## Failure Ledger Seed
 
-- `requires design output to function`
+- `requires design-changes output to function`
 - `blocked and red conflated`
 - `next step skips missing prerequisite`
