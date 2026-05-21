@@ -1,6 +1,6 @@
-# scoped-implementation-plan evals
+# scope-implementation evals
 
-`scoped-implementation-plan` の単体運用を評価するためのメモです。広い依頼を、Goal、編集範囲、検証方法、停止条件が明確な小さな実装単位へ落とせるかを見ます。
+`scope-implementation` の単体運用を評価するためのメモです。広い依頼を、Goal、編集範囲、検証方法、停止条件が明確な小さな実装単位へ落とせるかを見ます。
 
 ## Iter 0
 

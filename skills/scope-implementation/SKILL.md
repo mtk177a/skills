@@ -1,9 +1,9 @@
 ---
-name: scoped-implementation-plan
-description: 実装前に、目的・対象ファイル・触らない範囲・完了条件・検証コマンドを絞り、エージェントの探索範囲を小さくしたいときに使う。
+name: scope-implementation
+description: 実装前に、対象ファイル・触らない範囲・完了条件・検証コマンドを絞りたいときに使う。
 ---
 
-# Scoped Implementation Plan
+# Scope Implementation
 
 ## 目的
 

@@ -1,9 +1,9 @@
 ---
-name: failure-loop-breaker
+name: break-failure-loop
 description: エージェントが同じエラーや方針で2回以上失敗したときに、続行せず、仮説・確認済み事項・未確認事項・次の分岐を整理したいときに使う。
 ---
 
-# Failure Loop Breaker
+# Break Failure Loop
 
 ## 目的
 

@@ -1,9 +1,9 @@
 ---
-name: author-agent-instructions
-description: AGENTS.md / CLAUDE.md / .github/copilot-instructions.md / GEMINI.md の指示文書セットを設計・作成したいときに使う。
+name: design-agent-instructions
+description: AGENTS.md / CLAUDE.md / .github/copilot-instructions.md / GEMINI.md の指示文書セットを設計したいときに使う。
 ---
 
-# Author Agent Instructions
+# Design Agent Instructions
 
 ## 目的
 

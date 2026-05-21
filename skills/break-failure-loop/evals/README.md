@@ -1,6 +1,6 @@
-# failure-loop-breaker evals
+# break-failure-loop evals
 
-`failure-loop-breaker` の単体運用を評価するためのメモです。同じ失敗の反復を止め、試行履歴、仮説、次の一手を圧縮して返せるかを見ます。
+`break-failure-loop` の単体運用を評価するためのメモです。同じ失敗の反復を止め、試行履歴、仮説、次の一手を圧縮して返せるかを見ます。
 
 ## Iter 0
 

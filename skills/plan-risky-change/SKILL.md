@@ -1,9 +1,9 @@
 ---
-name: plan-safe-change
-description: 危険/破壊的な変更の前に使う (destructive, migration, dependency, security)。計画・リスク・ロールバックを出して承認を取る。
+name: plan-risky-change
+description: 危険度の高い変更の前に、計画・リスク・ロールバックを整理して承認を取りたいときに使う。 (destructive, migration, dependency, security)
 ---
 
-# Plan Safe Change (安全な変更手順)
+# Plan Risky Change (高リスク変更の計画)
 
 ## 目的
 

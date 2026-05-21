@@ -1,9 +1,9 @@
 ---
-name: create-issue
-description: scope-request で明確化した課題を Issue として起票する手順とドラフトを提供する (issue, ticket, backlog, jira, redmine)
+name: draft-issue
+description: scope-request で明確化した課題を、Issue の起票案と起票手順に落とし込みたいときに使う。 (issue, ticket, backlog, jira, redmine)
 ---
 
-# Create Issue (課題起票)
+# Draft Issue (課題起票)
 
 ## 目的
 

@@ -1,6 +1,6 @@
-# agent-budget-triage evals
+# triage-agent-usage evals
 
-`agent-budget-triage` の単体運用を評価するためのメモです。作業前に、最も軽い選択肢で足りるかを見極め、重い agent や高性能モデルの必要性を説明できるかを見ます。
+`triage-agent-usage` の単体運用を評価するためのメモです。作業前に、最も軽い選択肢で足りるかを見極め、重い agent や高性能モデルの必要性を説明できるかを見ます。
 
 ## Iter 0
 

@@ -1,6 +1,6 @@
-# author-agent-instructions evals
+# design-agent-instructions evals
 
-`author-agent-instructions` の単体運用を評価するためのメモです。`AGENTS.md` を含む指示文書セットを、不要な文書を増やさずに設計・作成提案できるかを見ます。
+`design-agent-instructions` の単体運用を評価するためのメモです。`AGENTS.md` を含む指示文書セットを、不要な文書を増やさずに設計・作成提案できるかを見ます。
 
 ## Iter 0
 

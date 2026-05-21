@@ -1,9 +1,9 @@
 ---
-name: agent-budget-triage
-description: 作業前に、Codex / Claude Code / GitHub Copilot / 通常チャットのどれを使うべきか、利用量を抑える観点で判断したいときに使う。
+name: triage-agent-usage
+description: 作業前に、使うエージェント・ツール・モデルの重さを切り分けたいときに使う。
 ---
 
-# Agent Budget Triage
+# Triage Agent Usage
 
 ## 目的
 

@@ -1,6 +1,6 @@
-# author-skill evals
+# design-skill evals
 
-`author-skill` の単体運用を評価するためのメモです。新しい Skill の設計・起草や既存 Skill の大きな再設計を、既存ルールとの整合を保って提案できるかを見ます。
+`design-skill` の単体運用を評価するためのメモです。新しい Skill の設計・起草や既存 Skill の大きな再設計を、既存ルールとの整合を保って提案できるかを見ます。
 
 ## Iter 0
 
@@ -69,7 +69,7 @@ Requirements checklist:
 ### Discretionary fill-ins (newly surfaced this time)
 
 - Scenario A: 目的文が未確定なら仮称で止める、という運用を補って実行された。
-- Scenario B: `design-changes` と `scoped-implementation-plan` のどちらへ寄せるかは、出力契約ベースで補って判断された。
+- Scenario B: `design-changes` と `scope-implementation` のどちらへ寄せるかは、出力契約ベースで補って判断された。
 
 ### Ledger updates
 

@@ -1,9 +1,9 @@
 ---
-name: author-skill
-description: 新しい Skill を設計・起草したいときや、既存 Skill を大きく作り直したいときに使う。
+name: design-skill
+description: 新しい Skill を設計したいときや、既存 Skill の責務・境界を大きく見直したいときに使う。
 ---
 
-# Author Skill
+# Design Skill
 
 ## 目的
 

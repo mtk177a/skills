@@ -1,6 +1,6 @@
-# plan-safe-change evals
+# plan-risky-change evals
 
-`plan-safe-change` の単体運用を評価するためのメモです。危険な変更を前に、実行ではなく計画、リスク、ロールバック、承認待ちを返せるかを見ます。
+`plan-risky-change` の単体運用を評価するためのメモです。危険な変更を前に、実行ではなく計画、リスク、ロールバック、承認待ちを返せるかを見ます。
 
 ## Iter 0
 

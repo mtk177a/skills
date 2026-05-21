@@ -113,7 +113,7 @@ Requirements checklist:
 ### Discretionary fill-ins (newly surfaced this time)
 
 - Scenario A: `使う場面` に「改善提案を返す」ことをより明示すると誤読が減りそうだと判断された。
-- Scenario B: `author-agent-instructions` 側の Ask first に `docs/*` を含む指示文書群の編集を寄せると揃いやすいと補われた。
+- Scenario B: `design-agent-instructions` 側の Ask first に `docs/*` を含む指示文書群の編集を寄せると揃いやすいと補われた。
 
 ### Ledger updates
 
@@ -122,6 +122,6 @@ Requirements checklist:
 
 ### Next fix proposal
 
-- `author-agent-instructions` の Ask first に `docs/*` を含む指示文書群の編集を明示し、`audit-agent-rules` の `使う場面` に「改善提案を返す」ことを前倒しする
+- `design-agent-instructions` の Ask first に `docs/*` を含む指示文書群の編集を明示し、`audit-agent-rules` の `使う場面` に「改善提案を返す」ことを前倒しする
 
 (Convergence check: 0 consecutive clears / 2 rounds remaining to stop condition)
