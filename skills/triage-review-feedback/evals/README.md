@@ -31,6 +31,16 @@ Requirements checklist:
 2. 保留理由と確認事項がある
 3. 単体で次の判断者へ渡せる
 
+### Scenario C: AI 指摘の外部仕様依存を裏取りする
+
+AI レビューが GitHub Actions などのプラットフォーム構文や外部仕様の誤りを断定しているが、入力には公式根拠がない。未検証のまま採用せず、確認か却下に落とせるかを見る。
+
+Requirements checklist:
+
+1. [critical] 公式ドキュメントや一次情報なしに自動採用しない
+2. 採否判断と、必要な確認アクションが分かれている
+3. 根拠が得られない段階では保留、公式根拠で誤りと分かれば却下にできる
+
 ## Failure Ledger Seed
 
 - `decision without rationale`
