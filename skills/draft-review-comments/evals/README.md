@@ -14,6 +14,7 @@
 - まとめるべき関連指摘を過不足なく集約できるか
 - `Approve with comments` の文面が hidden blocker になっていないか
 - `Nice-to-have` 相当が blocker 扱いになっていないか
+- トーン未指定時でも既定で圧迫的でない文面になるか
 
 ## Scenarios
 
@@ -62,6 +63,39 @@ Requirements checklist:
 2. まとめても次のアクションが曖昧にならない
 3. コメント位置が結果の行ではなく直接原因の行に寄る
 
+### Scenario E: 具体条件の明示
+
+条件分岐や null 判定が原因の指摘をコメント化する。`この条件` のような抽象語ではなく、対象の識別子や条件式を文面に含められるかを見る。
+
+Requirements checklist:
+
+1. [critical] コメントが期待結果、現状挙動、具体条件の順で読める
+2. 識別子や条件式が必要な範囲で明示されている
+3. 具体化しても文面が冗長になりすぎない
+
+### Scenario F: 指定 diff に固定したコメント位置
+
+stacked PR や実質 diff 指定があり、current working tree や後続 PR では行番号や原因箇所がずれている。コメント位置、型名、原因説明を指定された commit range に固定して返せるかを見る。
+
+Requirements checklist:
+
+1. [critical] `path:line` が指定 diff 上の位置に一致する
+2. current working tree や後続 PR の状態を根拠に混ぜない
+3. 直接原因の行を優先する
+4. コメント本文中の型名や差分説明も指定 range と整合している
+
+### Scenario G: 既定トーンが柔らかめ
+
+トーン指定なしで、`must` / `should` / `nit` が混在する指摘をコメント化する。正しさと期待アクションを保ちつつ、既定で柔らかめの文面になっているかを見る。
+
+Requirements checklist:
+
+1. [critical] トーン未指定でも詰問調や圧迫的な語尾にならない
+2. `must` でも期待アクションが曖昧にならない
+3. 作者ではなくコードに向いた文面になっている
+4. 非 blocker の論点が hidden blocker に見えない
+5. 必要なら短い理由や影響が添えられている
+
 ## Failure Ledger Seed
 
 - `comment mixes multiple issues`
@@ -74,3 +108,8 @@ Requirements checklist:
 - `summary wrongly forced into path:line`
 - `nice-to-have escalated into blocker wording`
 - `stacked-pr deferral phrasing unclear`
+- `comment anchored to current tree instead of requested diff`
+- `default tone sounds harsher than requested`
+- `soft-tone request still sounds interrogative`
+- `comment targets author not code`
+- `non-blocker phrasing reads as hidden blocker`
