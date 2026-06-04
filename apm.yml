@@ -13,6 +13,7 @@ dependencies:
     - mtk177a/agent-skills/skills/design-agent-instructions
     - mtk177a/agent-skills/skills/design-skill
     - mtk177a/agent-skills/skills/draft-issue
+    - mtk177a/agent-skills/skills/draft-review-comments
     - mtk177a/agent-skills/skills/design-changes
     - mtk177a/agent-skills/skills/draft-commit
     - mtk177a/agent-skills/skills/break-failure-loop
