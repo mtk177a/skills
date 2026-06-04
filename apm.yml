@@ -5,6 +5,7 @@ description: Personal Agent Skills package that aggregates maintained custom ski
 dependencies:
   apm:
     - mtk177a/agent-skills/skills/triage-agent-usage
+    - mtk177a/agent-skills/skills/calibrate-ai-learning
     - mtk177a/agent-skills/skills/implement-changes
     - mtk177a/agent-skills/skills/clarify-request
     - mtk177a/agent-skills/skills/review-changes
