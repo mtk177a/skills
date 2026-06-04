@@ -7,6 +7,7 @@
 - `description` と本文が「新規レビュー」に揃っているか
 - Must-fix / Should-fix / Nice-to-have の分離が明確か
 - 各指摘に根拠があるか
+- 各指摘に、なぜ問題か、どう見抜くかがあるか
 - 単体で次の判断に進める情報量があるか
 
 ## Scenarios
@@ -61,8 +62,21 @@ Requirements checklist:
 2. 先例が弱い場合は、断定しすぎず強さを落とせる
 3. 単なる好みではなく、一貫性の差分として説明できる
 
+### Scenario F: 学習に使えるレビュー指摘
+
+差分レビューで問題を見つけたが、指摘だけでは次に同じ問題を見抜けない。なぜ問題か、どう見抜くかを丁寧に添える。
+
+Requirements checklist:
+
+1. [critical] 各指摘の中に、根拠、なぜ問題か、どう見抜くか、確認観点が対応して残る
+2. なぜ問題かが、仕様、事故リスク、保守性、テスト不足などの観点と接続されている
+3. どう見抜くかが、今回の差分以外にも使える確認観点になっている
+4. 指摘の採否は最終決定せず、判断材料として残す
+
 ## Failure Ledger Seed
 
 - `findings lack evidence`
 - `severity mixed with decision`
 - `review only meaningful inside triage flow`
+- `review not reusable for learning`
+- `learning note detached from finding`

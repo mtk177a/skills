@@ -7,6 +7,7 @@
 - `description` と本文が「ツール/モデル選定の事前トリアージ」に揃っているか
 - リポジトリを読む必要の有無が分かれているか
 - 重い選択肢を選ぶ理由が残るか
+- 学習目的か納期優先か、本人がレビュー可能かを判定できるか
 - 単体で次の依頼先判断に使えるか
 
 ## Scenarios
@@ -34,9 +35,20 @@ Requirements checklist:
 5. `推奨モデル / profile` に具体的な model または profile がある
 6. ツール選定と model / profile 選定の理由が対応している
 
+### Scenario C: 学習目的の実装相談
+
+未知領域の実装相談で、納期より理解を優先したい。AI に任せる調査と本人がレビュー・判断する範囲を分ける。
+
+Requirements checklist:
+
+1. [critical] 学習目的か納期優先かを判定軸に含める
+2. 本人がレビュー可能な範囲と AI へ委任する範囲が分かれている
+3. 理解・レビューに必要な前提が出力に残る
+
 ## Failure Ledger Seed
 
 - `heavy agent recommended by default`
 - `model choice lacks rationale`
 - `context not minimized`
 - `tool or profile selection remains generic`
+- `learning goal ignored`

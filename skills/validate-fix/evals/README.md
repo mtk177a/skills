@@ -7,6 +7,7 @@
 - `description` と本文が「修正後確認」に揃っているか
 - 確認済み、未確認、未実施が分離されているか
 - 元の指摘や対応方針がある場合の対応付けがあるか
+- 変更理由、確認結果、未確認事項を説明できる状態かが残るか
 - 単体で進行可否の判断材料になるか
 
 ## Scenarios
@@ -31,8 +32,19 @@ Requirements checklist:
 2. 現時点の見解が根拠付きで書かれる
 3. 次の追加確認が読み取れる
 
+### Scenario C: 説明可能性のセルフレビュー
+
+修正後確認でテストは通っているが、変更理由や未確認事項を説明できるか点検する必要がある。
+
+Requirements checklist:
+
+1. [critical] 説明できる状態かが出力に残る
+2. 説明できない点がある場合、未確認事項や残るリスクに接続される
+3. テスト結果だけで安全と断定しない
+
 ## Failure Ledger Seed
 
 - `validated and untested conflated`
 - `validation detached from original concern`
 - `residual risk omitted`
+- `explainability not checked`

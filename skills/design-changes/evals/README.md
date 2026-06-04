@@ -8,6 +8,7 @@
 - 変更対象と変更対象外が分かれているか
 - リスク、回避策、テスト戦略が単体で理解できるか
 - 実装へ進む条件と停止条件が明示されているか
+- 変更前に理解すべき概念と、ユーザーが説明すべき判断が残るか
 
 ## Scenarios
 
@@ -32,8 +33,19 @@ Requirements checklist:
 2. テスト戦略が推測ではなく確認方針として書かれる
 3. 単体でレビュー可能な方針になっている
 
+### Scenario C: 未知技術を含む設計
+
+既存パターンにない技術やライブラリを使う可能性がある。実装方針だけでなく、理解すべき概念とトレードオフを整理する。
+
+Requirements checklist:
+
+1. [critical] 変更前に理解すべき概念が具体的に挙がる
+2. 主なトレードオフが実装判断と対応している
+3. ユーザーが説明すべき判断が残る
+
 ## Failure Ledger Seed
 
 - `target and non-target blurred`
 - `risk listed without mitigation`
 - `design-changes only usable as implement-changes handoff`
+- `tradeoff not explainable`

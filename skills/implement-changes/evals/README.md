@@ -8,6 +8,7 @@
 - `Blocked` と Red/Green/Refactor が分かれているか
 - 着手条件未充足時の止まり方が明確か
 - 検証への引き継ぎ内容が残るか
+- 変更理由、検証根拠、ユーザー向け説明ポイントが残るか
 
 ## Scenarios
 
@@ -31,8 +32,19 @@ Requirements checklist:
 2. 次の一手が確認行為になっている
 3. 停止理由と対象範囲が両方残る
 
+### Scenario C: 実装後の説明準備
+
+テストは通ったが、変更理由や確認根拠を次の確認者へ渡す必要がある。検証への引き継ぎに説明ポイントを残す。
+
+Requirements checklist:
+
+1. [critical] 変更理由と検証根拠が出力に残る
+2. ユーザー向け説明ポイントが、変更内容と対応している
+3. テスト結果だけで完了説明にしない
+
 ## Failure Ledger Seed
 
 - `requires design-changes output to function`
 - `blocked and red conflated`
 - `next step skips missing prerequisite`
+- `implementation rationale lost`
