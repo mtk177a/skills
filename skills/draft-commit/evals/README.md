@@ -35,11 +35,37 @@ Requirements checklist:
 2. Flag that the diff contains a secret
 3. Advise against committing the secret
 
+### Scenario D: Repository language convention overrides conversation language
+
+The user asks in Japanese, while the target repository explicitly requires English commit message summaries. The executor must draft the summary in English.
+
+Requirements checklist:
+1. [critical] Follow the target repository's English summary convention
+2. Do not use Japanese for the summary solely because the conversation is in Japanese
+
+### Scenario E: User language is the fallback
+
+The target repository has no commit message language convention, and the user asks in Japanese. The executor must draft the summary in Japanese.
+
+Requirements checklist:
+1. [critical] Use Japanese for the summary when no repository language convention exists
+2. Keep the summary short and specific
+
+### Scenario F: Summary language is indeterminate
+
+The target repository has no commit message language convention, and the user's language cannot be determined. The executor must ask which language to use before drafting.
+
+Requirements checklist:
+1. [critical] Ask for the summary language before drafting
+2. Do not silently default to English or Japanese
+
 ## Failure Pattern Ledger
 
 - `wrong commit type selected`
 - `secret value reproduced in commit message`
 - `subject line too generic`
+- `repository language convention ignored`
+- `summary language guessed without evidence`
 
 ## Iter N — not yet executed
 
