@@ -1,0 +1,211 @@
+lockfile_version: '1'
+generated_at: '2026-06-10T06:41:04.226588+00:00'
+apm_version: 0.13.0
+dependencies:
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/audit-agent-rules
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/audit-agent-rules
+  content_hash: sha256:7b0ca894cfda0550839d3ce592ab76e0fb1d15030d52bb65850ea9d9d87c775e
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/break-failure-loop
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/break-failure-loop
+  content_hash: sha256:feb0a47bb1265a791776ece8577d3ad0d7715f9bdc7ee590af969e4852ad539a
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/calibrate-ai-learning
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/calibrate-ai-learning
+  content_hash: sha256:0bc360b605b67fcfa93f07e6109b268a3fd570f3b90d47d1a6541916ff7b82ee
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/clarify-request
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/clarify-request
+  content_hash: sha256:8bfc1a2382dd65f29c8a56e9f22513be1ec7befcc944511ffad8749566e3b31c
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/design-agent-instructions
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/design-agent-instructions
+  content_hash: sha256:6f0acbbe3597c4af4410d0b248114027fb9f11e8db36543d9885914600fd9e5b
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/design-changes
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/design-changes
+  content_hash: sha256:ea45427d964eec53281fe2ef47111f3312df57e232f5b75b6755866c5b9626ac
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/design-skill
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/design-skill
+  content_hash: sha256:e6c600d10d855aa26b9dba7679af2540cbea28cd7764f4d93cb0b0eca834ba94
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/draft-commit
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/draft-commit
+  content_hash: sha256:6815e7cff59326d97ad8cc6f0eaf09cb4f6576d56043db9d197ae88bab72cbb9
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/draft-issue
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/draft-issue
+  content_hash: sha256:213978a3380a334b21c3e5a6363ea3097c86ad452d8f171367a54864ed461859
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/draft-review-comments
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/draft-review-comments
+  content_hash: sha256:99789fa63785ed2f34471da558eb5c3cf6631a66dbaca75b1189ecff42344af6
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/format-markdown
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/format-markdown
+  content_hash: sha256:1896f765e2be23a53d2235ababd99c20a92d204c4c0f781dc2682c7ad23d4abc
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/implement-changes
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/implement-changes
+  content_hash: sha256:b0b976988232591988c81dae62c9dae753c860a10cfbeea1c4ec98d29fb5c870
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/investigate-incident
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/investigate-incident
+  content_hash: sha256:bae1617cac7ff6caca523a3b7680969c3d58194dc394c30f7f7a4b91e3170283
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/plan-risky-change
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/plan-risky-change
+  content_hash: sha256:6c6be2c3c4793b81055ec6d4871f6bd889772cec2491fb30c2d09a6d906abf77
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/record-session-handoff
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/record-session-handoff
+  content_hash: sha256:58430dc151e23f8d51a1c4f1c0607ac9e7b955a250d43874755fffa5c1ae8a0d
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/research-web-safely
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/research-web-safely
+  content_hash: sha256:9fadbe2dd87b7404b8007e3f73f6a224e90487c7872c69cc02811516d4878aa7
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/review-changes
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/review-changes
+  content_hash: sha256:0d3e78a05323f165168e618eea578301eb5b1b4f72b9ec5f92c51be33e097eb8
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/scope-implementation
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/scope-implementation
+  content_hash: sha256:ac86301c26f6eb9780796d83908885bc28e20c7f3b8bc54c527c202af7d536ab
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/scope-request
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/scope-request
+  content_hash: sha256:02f2772c18817741d6998fce79488047a078caa5c8cfde88523983ff45de42c3
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/summarize-changes
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/summarize-changes
+  content_hash: sha256:889acb975c45e54079c1b255b2f3acde5dbf9586647c65fcf9e43797abaeae73
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/triage-agent-usage
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/triage-agent-usage
+  content_hash: sha256:d9717e2edfd324745c381c4545f6f5a68878c8ac536b0f1217f46a07c367751e
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/triage-review-feedback
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/triage-review-feedback
+  content_hash: sha256:1e6b2123e858bae6c8550f4ea579904fbfcf3eca8f6870e89dd734e189cf0ddf
+- repo_url: mtk177a/skills
+  host: github.com
+  resolved_commit: 7b5b9162b9d8de7151470bc1be0b4c8f743ee187
+  virtual_path: skills/validate-fix
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/validate-fix
+  content_hash: sha256:e02f219bf539c8319bcc78744a064be4f5d95208257137a69ce36b0704fcfefd

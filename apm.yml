@@ -1,6 +1,8 @@
 name: skills
 version: 0.1.0
 description: Personal Agent Skills package that aggregates maintained custom skills for APM consumers.
+targets:
+  - agent-skills
 
 dependencies:
   apm:
