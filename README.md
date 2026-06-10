@@ -2,7 +2,7 @@
 
 A personal repository of agent Skills — authored and maintained by [mtk177a](https://github.com/mtk177a).
 
-These Skills follow the [Agent Skills specification](https://agentskills.io/specification) and work with Codex, Claude Code, GitHub Copilot, Gemini CLI, and other compatible clients.
+These Skills follow the [Agent Skills specification](https://agentskills.io/specification) and are designed for Codex, Claude Code, GitHub Copilot, Gemini CLI, and other compatible clients. See [docs/compatibility.md](docs/compatibility.md) for verification status.
 
 > **No warranty.** This is a personal repository, maintained by one person on a best-effort basis. Skills may change or be removed without notice. Use at your own risk.
 

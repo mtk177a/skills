@@ -1,5 +1,10 @@
 # TDD（t-wada）チートシート（要約）
 
+> **Attribution:** This file is an original summary authored for this repository.
+> The TDD methodology described here is based on Kent Beck's *Test-Driven Development: By Example* and
+> the workshop materials of Takuto Wada ([@t-wada](https://github.com/twada)).
+> No text has been copied verbatim; this is a personal digest for reference.
+
 この文書は、TDD 実践用の参照として要点だけを短く整理したもの。
 
 ## 基本サイクル: Red → Green → Refactor

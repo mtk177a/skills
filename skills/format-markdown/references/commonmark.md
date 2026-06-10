@@ -1,5 +1,8 @@
 # CommonMark ベストプラクティス整理 (簡易)
 
+> **Attribution:** This file is an original summary authored for this repository.
+> Rules are derived from the [CommonMark Specification](https://spec.commonmark.org) (CC BY-SA 4.0).
+
 このファイルは CommonMark を基準に「一般的に妥当な整備ルール」を分類する。
 ルールは必ず **推奨 / 状況依存 / 非推奨** に分けて判断する。
 

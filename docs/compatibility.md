@@ -6,6 +6,8 @@ This document describes how Skills in this repository have been verified across 
 
 Skills follow the [Agent Skills specification](https://agentskills.io/specification), which is a lightweight format adopted by Codex, Claude Code, GitHub Copilot, and Gemini CLI. Any client that discovers and loads `skills/<name>/SKILL.md` files should work with this repository.
 
+Claude Code is the primary development and testing target. Other clients are expected to work if they support the standard `skills/<name>/SKILL.md` discovery format, but have not been formally verified.
+
 The table below lists clients that have been explicitly tested. Clients not listed may work if they support the standard format, but are not claimed as supported.
 
 | Client | Verified | Verified date | Scope |

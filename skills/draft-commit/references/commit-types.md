@@ -1,5 +1,8 @@
 # Commit Types Reference
 
+> **Attribution:** This file is an original summary authored for this repository.
+> The type definitions are based on the [Conventional Commits specification](https://www.conventionalcommits.org) (CC BY 3.0).
+
 このファイルは、`draft-commit` のタイプ選定を補助するための参考資料。
 リポジトリやチームの明示的な規約がある場合はそちらを優先する。
 現在作業中の対象リポジトリに明示された規約がある場合は、その規約を優先する。
