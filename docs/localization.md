@@ -12,7 +12,7 @@ Required frontmatter:
 ---
 name: skill-name
 description: What the Skill does and when it should be used.
-license: Apache-2.0
+license: MIT
 ---
 ```
 
