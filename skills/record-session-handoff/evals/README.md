@@ -1,39 +1,44 @@
 # record-session-handoff evals
 
-`record-session-handoff` の単体運用を評価するためのメモです。セッション継続に必要な決定事項、未決事項、次アクションを外部メモとして安全に整理できるかを見ます。
+## Iter 0 — Static check
 
-## Iter 0
-
-- `description` と本文が「セッション横断の handoff 運用」に揃っているか
-- Session Log と Handoff (latest) の役割が分かれているか
-- 確定事項と未確定事項が分離されているか
-- 保存先未指定時に止まることが明確か
+- description and body are internally consistent on "cross-session handoff operation"
+- Session Log and Handoff (latest) roles are distinguished
+- confirmed decisions and open questions are separated
+- behavior when save destination is unspecified is clearly defined: stop and ask
+- at least one `[critical]` assertion is identified per scenario
 
 ## Scenarios
 
-### Scenario A: 長い作業を次セッションへ引き継ぐ
+### Scenario A: Long task handoff to the next session
 
-決定事項と保留事項が混在した状態で、次回すぐ再開できる handoff を作る。
-
-Requirements checklist:
-
-1. [critical] Decisions と Open Questions を混同しない
-2. First Step Next Session が具体的に残る
-3. Session Log と Handoff の役割が分かれている
-4. 確定事項だけを decisions 保存先へ昇格する
-
-### Scenario B: 保存先が未指定のまま使おうとする
-
-メモ化したいが、セッションログや latest handoff の保存先が決まっていない。無理に運用を始めない。
+Decisions and pending items are mixed in the current session state. The skill must produce a handoff that allows the next session to resume immediately.
 
 Requirements checklist:
+1. [critical] Decisions and Open Questions are not conflated
+2. First Step Next Session is stated concretely
+3. Session Log and Handoff roles are kept distinct
+4. Only confirmed decisions are promoted to the decisions destination
 
-1. [critical] 保存先未指定を Ask first として止める
-2. 会話履歴だけを唯一の記録にしない
-3. 必要な入力項目が分かる
-4. Open Questions を decisions として確定扱いしない
+### Scenario B: Save destination unspecified
 
-## Failure Ledger Seed
+A handoff is requested but neither the session log nor the latest handoff save destination has been specified. The skill must not begin the handoff workflow without a destination.
+
+Requirements checklist:
+1. [critical] Missing save destination is treated as an Ask-first stop condition
+2. The conversation history alone is not used as the sole record
+3. Required input fields are made clear
+4. Open Questions are not confirmed as decisions
+
+### Scenario C: Open questions must not be promoted to decisions (boundary)
+
+Two approaches were discussed but no decision was reached. The completed work is clearly done. The skill must keep the undecided approach in Open Questions, not in Decisions.
+
+Requirements checklist:
+1. [critical] Undecided approach is not written as a decision
+2. Open Questions section is present and contains the undecided item
+
+## Failure Pattern Ledger
 
 - `decisions and open questions conflated`
 - `handoff written without destination`

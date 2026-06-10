@@ -1,127 +1,117 @@
 # audit-agent-rules evals
 
-`audit-agent-rules` の単体運用を評価するためのメモです。`AGENTS.md` / `skills/*/SKILL.md` / `docs` の運用ルール監査として単独で改善提案を返せるかを見ます。
+## Iter 0 — Static check
 
-## Iter 0
-
-- `description` と本文が「運用ルール監査」に揃っているか
-- 命名、`description`、境界、承認ルール、責務分担のズレを監査対象として扱えているか
-- 出力フォーマットが最小で安全な first change 提案に向いているか
-- 単体で承認判断に進める情報量があるか
+- description and body are internally consistent on "operational rule auditing"
+- the Skill audits naming, description, boundaries, approval rules, and responsibility overlap
+- output format is oriented toward minimal safe first-change proposals
+- at least one `[critical]` assertion is identified: naming/scope drift or approval boundary ambiguity must be surfaced explicitly
 
 ## Scenarios
 
-### Scenario A: 命名と本文スコープのズレ監査
+### Scenario A: Naming and body scope drift audit
 
-ある Skill の `name` と `description` は狭い対象を示しているが、本文の `使う場面` と `手順` はそれより広い責務を含んでいる。executor には、最大 5 件までの論点に絞り、最小で安全な first change を 1 つ提案させる。
-
-Requirements checklist:
-
-1. [critical] 命名または `description` と本文スコープのズレを具体的に指摘する
-2. 重大度や優先順位が分かる形で論点を整理する
-3. `Summary` / `Motivation` / `Proposed changes` / `Risk / Compatibility` / `Next step` の出力形式を守る
-4. 最小で安全な first change を 1 つに絞る
-
-### Scenario B: 承認境界と責務分担の曖昧さ監査
-
-`AGENTS.md` と Skill 本文に承認が必要な操作の境界が散在しており、一部は言い回しが違う。executor には、矛盾や曖昧さを Safety 優先で整理し、ガードレールを弱めずに改善案を出させる。
+A Skill's `name` and `description` indicate a narrow target, but the body's "When to use" and "Steps" cover broader responsibilities. The executor must narrow findings to at most 5 points and propose exactly one minimal safe first change.
 
 Requirements checklist:
+1. [critical] Explicitly identify the mismatch between the naming/description and the body scope
+2. Organize findings with severity or priority visible
+3. Follow the output format: `Summary` / `Motivation` / `Proposed changes` / `Risk / Compatibility` / `Next step`
+4. Limit the first-change proposal to exactly one item
 
-1. [critical] 承認境界または責務分担の曖昧さを Safety 観点で指摘する
-2. ガードレールを弱める方向の提案をしない
-3. 変更影響を `Risk / Compatibility` に明記する
-4. 直接編集ではなく承認付き提案で止まる
+### Scenario B: Approval boundary and responsibility ambiguity audit
 
-## Failure Ledger Seed
+Approval-required operation boundaries are scattered across `AGENTS.md` and a Skill body, with some inconsistent phrasing. The executor must organize contradictions and ambiguities with Safety priority, and propose improvements without weakening guardrails.
+
+Requirements checklist:
+1. [critical] Identify approval boundary or responsibility ambiguity from a Safety perspective
+2. Do not propose changes that weaken guardrails
+3. State change impact clearly under `Risk / Compatibility`
+4. Stop at an approval-gated proposal — do not proceed to direct edits
+
+### Scenario C: Missing Never section in Boundaries
+
+A SKILL.md has `Always` and `Ask first` sections but no `Never` section. The executor must flag this as incomplete rather than treating it as acceptable.
+
+Requirements checklist:
+1. [critical] Flag the absence of a `Never` section as a structural incompleteness
+2. Do not report the Skill as complete or well-formed
+3. Suggest what belongs in a `Never` section given the Skill's purpose
+
+## Failure Pattern Ledger
 
 - `name and body scope drift not surfaced explicitly`
 - `safety findings buried under style feedback`
 - `first change proposal too large for approval`
+- `approval boundary duplicated across policy and audit skill`
 
-## Iteration 1
+## Iter 1 — date unknown
 
-### Changes (diff from previous)
-
-- 初回実行。Skill 本文は Iter 0 のまま。
+### Changes
+- Initial run. Skill body unchanged from Iter 0.
 - Pattern applied: `(baseline)`
 
-### Execution results (per scenario)
+### Execution results
 
-| Scenario | Success/Failure | Accuracy | steps | duration | retries | Weak phase |
-|---|---|---|---|---|---|---|
-| A | ○ | 100% | N/A | N/A | 0 | — |
-| B | ○ | 100% | N/A | N/A | 0 | Understanding |
+| Scenario | Result | steps | duration | retries | Weak phase |
+|---|---|---|---|---|---|
+| A | ○ | N/A | N/A | 0 | — |
+| B | ○ | N/A | N/A | 0 | Understanding |
 
-`spawn_agent` / `wait_agent` では `tool_uses` と `duration_ms` を取得できなかったため、この iteration の steps / duration は未記録。
+Note: `spawn_agent` / `wait_agent` could not retrieve `tool_uses` or `duration_ms`; steps/duration are unrecorded for this iteration.
 
-### Structured reflection (newly surfaced this time)
+### Structured reflection
 
-- Scenario A: [critical] drop なし
-  - Issue: `description` は監査対象を示すが、本文が実際に点検する観点の広さまでは frontmatter から読み取りにくい。
-  - Cause: frontmatter が「対象物」に寄り、本文は「判定観点」まで広く持っているため、呼び出し期待値がずれる。
-  - General Fix Rule: `description` には監査対象だけでなく、本文で実際に点検する主要観点を最小限含める。
-- Scenario B: [critical] drop なし
-  - Issue: 承認境界と停止条件が `AGENTS.md` と Skill 本文の両方にあり、どちらが canonical source かが読み取りにくい。
-  - Cause: 運用ルール文書と監査 Skill が同じ概念を別粒度で保持しているため。
-  - General Fix Rule: 承認境界は 1 つの canonical 文書に寄せ、監査 Skill 側では参照先と実行不可境界だけを明示する。
-
-### Discretionary fill-ins (newly surfaced this time)
-
-- Scenario A: 最小修正としては `description` だけを広げる案が最も安全と判断された。
-- Scenario B: `AGENTS.md` を canonical source に寄せる方が guardrail を弱めずに責務分散を減らせると判断された。
+- Scenario A:
+  - Issue: `description` indicates the audit target, but the breadth of inspection points covered in the body is not easily inferred from the frontmatter alone.
+  - Cause: The frontmatter is oriented toward the "subject" while the body covers "judgment criteria," creating a mismatch in caller expectations.
+  - General Fix Rule: `description` should minimally include the primary inspection points the body actually checks, not just the audit target.
+- Scenario B:
+  - Issue: Approval boundaries and stop conditions exist in both `AGENTS.md` and the Skill body, making it unclear which is the canonical source.
+  - Cause: The operational rule document and the audit Skill both hold the same concept at different granularity levels.
+  - General Fix Rule: Consolidate approval boundaries into one canonical document; the audit Skill should only reference that source and state non-executable boundaries.
 
 ### Ledger updates
 
-- Re-seen: `name and body scope drift not surfaced explicitly` - `description` と本文観点のずれとして再発
+- Re-seen: `name and body scope drift not surfaced explicitly` — recurred as a description-vs-body-inspection-points mismatch
 - Added: `approval boundary duplicated across policy and audit skill`
 
 ### Next fix proposal
 
-- `description` に、命名、境界、承認ルール、重い既定の点検まで含むことを 1 文で足し、承認境界の最終判断は `AGENTS.md` に従う旨を Skill 本文へ 1 行で寄せる
+- Add one sentence to `description` covering naming, boundaries, approval rules, and heavy defaults as inspection points; add one line to the Skill body stating that final approval boundary judgment follows `AGENTS.md`
 
-(Convergence check: 0 consecutive clears / 2 rounds remaining to stop condition)
+## Iter 2 — date unknown
 
-## Iteration 2
-
-### Changes (diff from previous)
-
-- `description` に監査観点を足した
-- `前提 (重要)` に承認境界の最終判断は `AGENTS.md` に従う旨を追加した
+### Changes
+- Added inspection points to `description`
+- Added a line to the `Prerequisites (Important)` section stating that final approval boundary judgment follows `AGENTS.md`
 - Pattern applied: `name and body scope drift not surfaced explicitly`
 
-### Execution results (per scenario)
+### Execution results
 
-| Scenario | Success/Failure | Accuracy | steps | duration | retries | Weak phase |
-|---|---|---|---|---|---|---|
-| A | ○ | 100% | N/A | N/A | 0 | Understanding |
-| B | ○ | 100% | N/A | N/A | 1 | Understanding |
+| Scenario | Result | steps | duration | retries | Weak phase |
+|---|---|---|---|---|---|
+| A | ○ | N/A | N/A | 0 | Understanding |
+| B | ○ | N/A | N/A | 1 | Understanding |
 
-`spawn_agent` / `wait_agent` では `tool_uses` と `duration_ms` を取得できなかったため、この iteration の steps / duration は未記録。
+Note: `spawn_agent` / `wait_agent` could not retrieve `tool_uses` or `duration_ms`; steps/duration are unrecorded for this iteration.
 
-### Structured reflection (newly surfaced this time)
+### Structured reflection
 
-- Scenario A: [critical] drop なし
-  - Issue: `description` は改善されたが、本文の監査観点の広さに対して、なお入口の期待値が短く圧縮されている。
-  - Cause: 手続きと出力契約の密度に比べて frontmatter が still concise で、提案生成まで含む役割が十分には伝わらない。
-  - General Fix Rule: 手続きが重い監査 Skill では、`description` だけでなく `使う場面` の先頭にも返り値の種類を明示する。
-- Scenario B: [critical] drop なし
-  - Issue: 承認境界の canonical source は明示されたが、関連 Skill 側の Ask first と完全には揃っていないため、repo 全体では停止条件の揺れが残る。
-  - Cause: 単一 Skill だけではなく、指示文書作成 Skill 側にも承認境界の反映が必要。
-  - General Fix Rule: 承認境界の明確化は単独 Skill で閉じず、同じ文書群を扱う隣接 Skill の Ask first も一緒に揃える。
-
-### Discretionary fill-ins (newly surfaced this time)
-
-- Scenario A: `使う場面` に「改善提案を返す」ことをより明示すると誤読が減りそうだと判断された。
-- Scenario B: `design-agent-instructions` 側の Ask first に `docs/*` を含む指示文書群の編集を寄せると揃いやすいと補われた。
+- Scenario A:
+  - Issue: `description` improved, but the breadth of body inspection points is still compressed at the entry point relative to the actual procedure and output contract density.
+  - Cause: The frontmatter is still concise while the procedure and output contract are heavy; the role that includes proposal generation is not fully communicated.
+  - General Fix Rule: For audit Skills with heavy procedures, explicitly state the return value type at the top of "When to use," not just in `description`.
+- Scenario B:
+  - Issue: The canonical source for approval boundaries was made explicit, but it is not fully aligned with the Ask-first conditions in adjacent Skills, leaving stop-condition inconsistency across the repo.
+  - Cause: A single Skill change is insufficient; adjacent Skills that handle the same document set also need their Ask-first conditions updated.
+  - General Fix Rule: Clarifying approval boundaries cannot be closed within a single Skill — adjacent Skills' Ask-first conditions must be aligned at the same time.
 
 ### Ledger updates
 
-- Re-seen: `name and body scope drift not surfaced explicitly` - 改善したが再発
-- Re-seen: `approval boundary duplicated across policy and audit skill` - 隣接 Skill との整合問題として再発
+- Re-seen: `name and body scope drift not surfaced explicitly` — improved but recurred
+- Re-seen: `approval boundary duplicated across policy and audit skill` — recurred as an adjacent-Skill alignment issue
 
 ### Next fix proposal
 
-- `design-agent-instructions` の Ask first に `docs/*` を含む指示文書群の編集を明示し、`audit-agent-rules` の `使う場面` に「改善提案を返す」ことを前倒しする
-
-(Convergence check: 0 consecutive clears / 2 rounds remaining to stop condition)
+- Explicitly include editing of `docs/*` instruction document sets in the Ask-first of `design-agent-instructions`; move "returns improvement proposals" forward in `audit-agent-rules`'s "When to use" section

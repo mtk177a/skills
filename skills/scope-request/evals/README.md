@@ -1,37 +1,41 @@
 # scope-request evals
 
-`scope-request` の単体運用を評価するためのメモです。`design-changes` や `implement-changes` への受け渡しではなく、この Skill 単独で依頼整理と次判断の材料を返せるかを見ます。
+## Iter 0 — Static check
 
-## Iter 0
-
-- `description` と本文が「依頼整理」に揃っているか
-- 目的、完了条件、制約、前提、未解決事項が分離されているか
-- 単体で次の判断や確認依頼に進める出力になっているか
+- description and body are internally consistent around "request decomposition"
+- objective, done condition, constraints, assumptions, and open items are separated
+- output is sufficient to proceed to the next decision or clarification request on its own
 
 ## Scenarios
 
-### Scenario A: あいまいな改善依頼
+### Scenario A: Vague improvement request
 
-依頼文は短く、背景はあるが完了条件が曖昧。実装には入らず、依頼整理だけを求める。
-
-Requirements checklist:
-
-1. [critical] 目的と完了条件を分けて書く
-2. 制約と前提を分けて書く
-3. 未解決事項と確認したい点を分ける
-4. 次のステップが単体で読んでも分かる
-
-### Scenario B: 制約付きの不具合相談
-
-症状と制約はあるが、再現条件や対象範囲が不足している。確認事項を明示し、無理に設計へ進まない。
+The request is short; there is background context but the done condition is ambiguous. Only request decomposition is performed — no implementation is started.
 
 Requirements checklist:
+1. [critical] Objective and done condition are written as separate items
+2. Constraints and assumptions are written as separate items
+3. Open items and questions to confirm are separated
+4. The next step is understandable without external context
 
-1. [critical] 情報不足を未解決事項として残す
-2. 制約を前提や背景と混同しない
-3. 確認したい点が具体的である
+### Scenario B: Bug report with constraints
 
-## Failure Ledger Seed
+Symptoms and constraints are present but reproduction steps and scope are missing. Open items are stated explicitly; do not push toward a design solution prematurely.
+
+Requirements checklist:
+1. [critical] Missing information is retained as open items
+2. Constraints are not conflated with assumptions or background
+3. Questions to confirm are specific
+
+### Scenario C: Boundary — well-specified request is not over-decomposed
+
+A clearly scoped, single-line change should be handled directly without unnecessary breakdown into objectives and open questions.
+
+Requirements checklist:
+1. [critical] Well-specified requests are not broken down into redundant clarification steps
+2. Does not ask "what is the expected behavior?" for changes that already state expected behavior
+
+## Failure Pattern Ledger
 
 - `goal and done conflated`
 - `constraints mixed with assumptions`

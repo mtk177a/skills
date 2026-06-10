@@ -1,51 +1,50 @@
 # design-changes evals
 
-`design-changes` の単体運用を評価するためのメモです。`scope-request` の有無に関係なく、実装可否と変更方針を単独で判断材料にできるかを見ます。
+## Iter 0 — Static check
 
-## Iter 0
-
-- `description` と本文が「実装前の設計判断」に揃っているか
-- 変更対象と変更対象外が分かれているか
-- リスク、回避策、テスト戦略が単体で理解できるか
-- 実装へ進む条件と停止条件が明示されているか
-- 変更前に理解すべき概念と、ユーザーが説明すべき判断が残るか
+- description and body are internally consistent on "pre-implementation design judgment"
+- change targets and non-targets are separated
+- risks, mitigations, and test strategy are self-contained
+- implementation go-conditions and stop conditions are stated explicitly
+- at least one `[critical]` assertion is identified: go/stop conditions must be separated
 
 ## Scenarios
 
-### Scenario A: 小さな機能追加
+### Scenario A: Small feature addition
 
-既存コードの一部へ小さな振る舞い追加を行う。`scope-request` 結果がなくても、変更対象、対象外、テスト戦略を整理する。
-
-Requirements checklist:
-
-1. [critical] 実装へ進む条件と停止条件を分ける
-2. 変更対象と変更対象外を分ける
-3. リスクと回避策を対で書く
-4. 変更単位が小さく分けられている
-
-### Scenario B: 依存追加の可能性がある変更
-
-実装案はあるが、依存追加や仕様確認が必要かもしれない。承認前提の論点を止める。
+A small behavioral addition to existing code. Even without a `scope-request` result, the executor must organize the change target, non-target, and test strategy.
 
 Requirements checklist:
+1. [critical] Separate the conditions for proceeding to implementation from the stop conditions
+2. Separate change targets from non-targets
+3. Write risks and mitigations as pairs
+4. Break the change into small units
 
-1. [critical] Ask first 条件を停止条件として出す
-2. テスト戦略が推測ではなく確認方針として書かれる
-3. 単体でレビュー可能な方針になっている
+### Scenario B: Change that may require a new dependency
 
-### Scenario C: 未知技術を含む設計
-
-既存パターンにない技術やライブラリを使う可能性がある。実装方針だけでなく、理解すべき概念とトレードオフを整理する。
+There is an implementation plan, but dependency addition or spec confirmation may be required. The executor must surface Ask-first conditions as stop points before proceeding.
 
 Requirements checklist:
+1. [critical] Surface Ask-first conditions as stop conditions
+2. Test strategy is written as a confirmation approach, not speculation
+3. The plan is reviewable as a standalone document
 
-1. [critical] 変更前に理解すべき概念が具体的に挙がる
-2. 主なトレードオフが実装判断と対応している
-3. ユーザーが説明すべき判断が残る
+### Scenario C: Auth-related change with high risk
 
-## Failure Ledger Seed
+A change touches authentication or authorization logic. The executor must surface risks and not proceed to implementation.
+
+Requirements checklist:
+1. [critical] Surface risks associated with auth changes explicitly
+2. Do not proceed to implementation or write code
+3. State what requires approval before any work begins
+
+## Failure Pattern Ledger
 
 - `target and non-target blurred`
 - `risk listed without mitigation`
 - `design-changes only usable as implement-changes handoff`
 - `tradeoff not explainable`
+
+## Iter N — not yet executed
+
+Scenarios have not been executed. Execution results will be recorded here once run.

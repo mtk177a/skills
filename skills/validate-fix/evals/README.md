@@ -1,48 +1,52 @@
 # validate-fix evals
 
-`validate-fix` の単体運用を評価するためのメモです。修正差分と確認事実があれば、この Skill 単独で確認済み、未確認、残留リスクを分けられるかを見ます。
+## Iter 0 — Static check
 
-## Iter 0
-
-- `description` と本文が「修正後確認」に揃っているか
-- 確認済み、未確認、未実施が分離されているか
-- 元の指摘や対応方針がある場合の対応付けがあるか
-- 変更理由、確認結果、未確認事項を説明できる状態かが残るか
-- 単体で進行可否の判断材料になるか
+- description and body are internally consistent around "post-fix verification"
+- confirmed, unconfirmed, and not-yet-performed are separated
+- correspondence to original findings or action plan is present when they are provided
+- explainability of the change — reason, result, and open items — is retained in the output
+- output is sufficient to make a go/no-go decision on its own
+- at least one `[critical]` assertion is identified
 
 ## Scenarios
 
-### Scenario A: 修正後の基本確認
+### Scenario A: Basic post-fix verification
 
-修正差分、実施テスト、レビュー指摘一覧が与えられる。解消できた指摘と未確認事項を分ける。
-
-Requirements checklist:
-
-1. [critical] 確認済みと未確認を混同しない
-2. 元の指摘との対応関係が見える
-3. 残るリスクが具体的である
-
-### Scenario B: 未実施範囲が残る確認
-
-一部のテストが未実施で、確認事実も限定的。Done 扱いせずに残す。
+A fix diff, tests run, and the original finding list are provided. Separate resolved findings from unconfirmed items.
 
 Requirements checklist:
+1. [critical] Confirmed and unconfirmed items are not conflated
+2. Correspondence to original findings is visible
+3. Remaining risks are specific
 
-1. [critical] 未実施範囲を問題なし扱いにしない
-2. 現時点の見解が根拠付きで書かれる
-3. 次の追加確認が読み取れる
+### Scenario B: Verification with incomplete test coverage
 
-### Scenario C: 説明可能性のセルフレビュー
-
-修正後確認でテストは通っているが、変更理由や未確認事項を説明できるか点検する必要がある。
+Some tests were not run and confirmed facts are limited. Do not treat untested scope as done.
 
 Requirements checklist:
+1. [critical] Untested scope is not treated as "no issues found"
+2. Current assessment is written with supporting rationale
+3. Next additional verification steps are readable from the output
 
-1. [critical] 説明できる状態かが出力に残る
-2. 説明できない点がある場合、未確認事項や残るリスクに接続される
-3. テスト結果だけで安全と断定しない
+### Scenario C: Explainability self-review
 
-## Failure Ledger Seed
+Tests pass after a fix, but the output must check whether the change reason and open items can be explained.
+
+Requirements checklist:
+1. [critical] Whether the change can be explained is retained in the output
+2. Unexplainable points connect to unconfirmed items or remaining risks
+3. Safety is not asserted based on test results alone
+
+### Scenario D: Boundary — auth-related change with passing tests
+
+Tests pass after an auth-related change such as a password hashing update. Must not assert safety without additional evidence.
+
+Requirements checklist:
+1. [critical] Does not assert "this is safe" or "no issues found" without evidence beyond passing tests
+2. Unconfirmed items remain in the output
+
+## Failure Pattern Ledger
 
 - `validated and untested conflated`
 - `validation detached from original concern`

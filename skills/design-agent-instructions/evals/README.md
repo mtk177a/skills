@@ -1,84 +1,81 @@
 # design-agent-instructions evals
 
-`design-agent-instructions` の単体運用を評価するためのメモです。`AGENTS.md` を含む指示文書セットを、不要な文書を増やさずに設計・作成提案できるかを見ます。
+## Iter 0 — Static check
 
-## Iter 0
-
-- `description` と本文が「指示文書セットの設計・作成」に揃っているか
-- `AGENTS.md` / `CLAUDE.md` / `.github/copilot-instructions.md` / `GEMINI.md` の役割分担が分かるか
-- 必要な文書だけを提案し、不要な文書を前提に増やさないか
-- 単体で承認判断に進める情報量があるか
+- description and body are internally consistent on "designing and creating an instruction document set"
+- roles of `AGENTS.md` / `CLAUDE.md` / `.github/copilot-instructions.md` / `GEMINI.md` are distinguishable
+- only necessary documents are proposed — unnecessary documents are not assumed
+- at least one `[critical]` assertion is identified: no unnecessary documents proposed by default
 
 ## Scenarios
 
-### Scenario A: 最小構成の指示文書セット設計
+### Scenario A: Minimal instruction document set design
 
-新しいリポジトリで `AGENTS.md` と `.github/copilot-instructions.md` は必要そうだが、`CLAUDE.md` と `GEMINI.md` はまだ必要か不明。executor には、一次情報、読み込み順、文書ごとの役割分担を整理し、必要な文書だけを提案させる。
-
-Requirements checklist:
-
-1. [critical] 必要な文書だけを提案し、不要な文書を当然の前提として増やさない
-2. 読み込み順を明記する
-3. 文書ごとの役割分担を分けて書く
-4. 承認前に作成・編集へ進まない
-
-### Scenario B: 既存文書の責務衝突を含む再設計
-
-既存の `AGENTS.md` と `CLAUDE.md` に同じルールが重複し、`.github/copilot-instructions.md` は要約不足、`GEMINI.md` は不要そうに見える。executor には、責務衝突を整理し、どこに何を書くかと何を書かないかを文書セット案として返させる。
+A new repository needs `AGENTS.md` and `.github/copilot-instructions.md`, but it is unclear whether `CLAUDE.md` and `GEMINI.md` are needed. The executor must organize the primary source, loading order, and per-document roles, and propose only the documents that are actually needed.
 
 Requirements checklist:
+1. [critical] Propose only needed documents — do not assume all four are required
+2. State the loading order explicitly
+3. Separate per-document roles
+4. Do not proceed to create or edit before approval
 
-1. [critical] 文書間の責務衝突や重複を整理する
-2. `GEMINI.md` を任意メンバーとして扱い、不要なら無理に採用しない
-3. 共通事実と文書固有事項を切り分ける
-4. 影響やリスクを承認判断用に残す
+### Scenario B: Redesign with responsibility conflicts in existing documents
 
-## Failure Ledger Seed
+Existing `AGENTS.md` and `CLAUDE.md` duplicate the same rules; `.github/copilot-instructions.md` is under-specified; `GEMINI.md` appears unnecessary. The executor must organize responsibility conflicts and return a document-set proposal stating what goes where and what is omitted.
+
+Requirements checklist:
+1. [critical] Identify document-level responsibility conflicts and overlaps
+2. Treat `GEMINI.md` as optional — do not include it unnecessarily
+3. Separate shared facts from document-specific content
+4. Retain impact and risks for an approval decision
+
+### Scenario C: Optional document not forced when agent not in use
+
+The team uses only Claude Code and GitHub Copilot. Someone suggests adding `GEMINI.md`. The executor must treat it as optional and not recommend it when Gemini is not being used.
+
+Requirements checklist:
+1. [critical] Do not recommend adding `GEMINI.md` when Gemini is not part of the workflow
+2. Explicitly state the document is optional
+
+## Failure Pattern Ledger
 
 - `all documents proposed by default`
 - `document roles overlap without exclusion rules`
 - `agent-specific optional document treated as mandatory`
+- `optional document criteria inferred, not surfaced early`
 
-## Iteration 1
+## Iter 1 — date unknown
 
-### Changes (diff from previous)
-
-- 初回実行。Skill 本文は Iter 0 のまま。
+### Changes
+- Initial run. Skill body unchanged from Iter 0.
 - Pattern applied: `(baseline)`
 
-### Execution results (per scenario)
+### Execution results
 
-| Scenario | Success/Failure | Accuracy | steps | duration | retries | Weak phase |
-|---|---|---|---|---|---|---|
-| A | ○ | 100% | N/A | N/A | 0 | — |
-| B | ○ | 100% | N/A | N/A | 0 | — |
+| Scenario | Result | steps | duration | retries | Weak phase |
+|---|---|---|---|---|---|
+| A | ○ | N/A | N/A | 0 | — |
+| B | ○ | N/A | N/A | 0 | — |
 
-`spawn_agent` / `wait_agent` では `tool_uses` と `duration_ms` を取得できなかったため、この iteration の steps / duration は未記録。
+Note: `spawn_agent` / `wait_agent` could not retrieve `tool_uses` or `duration_ms`; steps/duration are unrecorded for this iteration.
 
-### Structured reflection (newly surfaced this time)
+### Structured reflection
 
-- Scenario A: [critical] drop なし
-  - Issue: 補助文書の要否判断は、実際にどのエージェントを使うかという運用前提に依存する。
-  - Cause: 本文は「必要な文書だけを提案する」と書けているが、補助文書を増やす条件はより upfront に書けてもよい。
-  - General Fix Rule: optional な補助文書を持つ Skill は、採用条件を `使う場面` か `手順` の早い段で明示する。
-- Scenario B: [critical] drop なし
-  - Issue: 文書間重複の整理はできるが、共通事実をどこへ寄せるかの canonical な寄せ先が読み手判断に少し依存する。
-  - Cause: `AGENTS.md` を正式契約と書いてある一方で、README / docs 側へ残す事実の境界は実例が少ない。
-  - General Fix Rule: 文書セット設計 Skill では、契約、補助指示、一般ドキュメントへの振り分け基準を 1 行ずつでも例示する。
-
-### Discretionary fill-ins (newly surfaced this time)
-
-- Scenario A: `CLAUDE.md` と `GEMINI.md` は「そのエージェントを実運用する場合のみ」と補って判断された。
-- Scenario B: `AGENTS.md` を唯一の正式契約に寄せ、重複文書は参照先の明記に倒す方が安全と判断された。
+- Scenario A:
+  - Issue: The judgment on whether supplementary documents are needed depends on which agents are actually in use — a runtime assumption.
+  - Cause: The body says "propose only needed documents" but the criteria for including supplementary documents could be stated more upfront.
+  - General Fix Rule: Skills with optional supplementary documents should state adoption criteria early in "When to use" or "Steps."
+- Scenario B:
+  - Issue: Responsibility conflict reorganization works, but the canonical destination for shared facts partially depends on reader judgment due to limited examples.
+  - Cause: While `AGENTS.md` is stated as the formal contract, the boundary for what stays in README/docs lacks concrete examples.
+  - General Fix Rule: Document-set design Skills should provide at least one-line examples for the contract / supplementary-instruction / general-documentation split.
 
 ### Ledger updates
 
-- Re-seen: `all documents proposed by default` - 今回は再発せず、必要文書だけの提案を維持できた
-- Re-seen: `agent-specific optional document treated as mandatory` - 再発せず、`GEMINI.md` は optional に保てた
+- Re-seen: `all documents proposed by default` — did not recur; only necessary documents were proposed
+- Re-seen: `agent-specific optional document treated as mandatory` — did not recur; `GEMINI.md` was kept optional
 - Added: `optional document criteria inferred, not surfaced early`
 
 ### Next fix proposal
 
-- `使う場面` か `手順` に、補助文書は対象エージェントを実運用するときだけ候補に含める旨を 1 行で前倒しする
-
-(Convergence check: 0 consecutive clears / 2 rounds remaining to stop condition)
+- Add one line to "When to use" or "Steps" stating that supplementary documents are only candidates when the target agent is actively used

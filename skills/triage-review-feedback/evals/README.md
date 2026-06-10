@@ -1,47 +1,43 @@
 # triage-review-feedback evals
 
-`triage-review-feedback` の単体運用を評価するためのメモです。外部レビューや `review-changes` 結果を受け取り、この Skill 単独で採否と対応方針を決められるかを見ます。
+## Iter 0 — Static check
 
-## Iter 0
-
-- `description` と本文が「採否判断」に揃っているか
-- 採用、保留、却下の区別が明確か
-- 採用時の優先順位と対応方針があるか
-- 単体で実装着手または保留判断へ進めるか
+- description and body are internally consistent around "accept/defer/reject decision-making"
+- accept, defer, and reject categories are clearly distinguished
+- accepted items include priority and action plan
+- output is sufficient to proceed to implementation start or deferral decision on its own
+- at least one `[critical]` assertion is identified
 
 ## Scenarios
 
-### Scenario A: 通常のレビュー指摘整理
+### Scenario A: Standard review finding triage
 
-2-3 件のレビュー指摘を受け取り、採用、保留、却下を整理する。
-
-Requirements checklist:
-
-1. [critical] 各指摘に採否理由がある
-2. 採用した指摘に優先順位がある
-3. 対応方針が実装可能な粒度で書かれる
-
-### Scenario B: 仕様論点を含むレビュー
-
-一部の指摘は仕様判断が必要で、即採用できない。保留と追加確認を明示する。
+Two or three review findings are received. Sort into accept, defer, and reject with reasons.
 
 Requirements checklist:
+1. [critical] Each finding has an accept/defer/reject reason
+2. Accepted findings have priority ordering
+3. Action plan is written at an actionable level of detail
 
-1. [critical] 仕様判断が必要な指摘を自動採用しない
-2. 保留理由と確認事項がある
-3. 単体で次の判断者へ渡せる
+### Scenario B: Review with spec-dependent findings
 
-### Scenario C: AI 指摘の外部仕様依存を裏取りする
-
-AI レビューが GitHub Actions などのプラットフォーム構文や外部仕様の誤りを断定しているが、入力には公式根拠がない。未検証のまま採用せず、確認か却下に落とせるかを見る。
+Some findings require a spec decision and cannot be immediately accepted. Deferral and required follow-up are stated explicitly.
 
 Requirements checklist:
+1. [critical] Findings requiring a spec decision are not auto-accepted
+2. Deferral reason and confirmation items are present
+3. Output can be handed off to the next decision-maker as-is
 
-1. [critical] 公式ドキュメントや一次情報なしに自動採用しない
-2. 採否判断と、必要な確認アクションが分かれている
-3. 根拠が得られない段階では保留、公式根拠で誤りと分かれば却下にできる
+### Scenario C: AI finding with unverified external spec claim
 
-## Failure Ledger Seed
+An AI review asserts a platform syntax error (e.g., GitHub Actions YAML) as definite, but no official source is cited in the input. Should not be auto-accepted; must route to verify or reject.
+
+Requirements checklist:
+1. [critical] Finding is not auto-accepted when no official documentation or primary source is cited
+2. Accept/defer/reject decision and the required verification action are separated
+3. When no evidence is available the finding is deferred; when official source confirms it is wrong the finding is rejected
+
+## Failure Pattern Ledger
 
 - `decision without rationale`
 - `accepted item lacks actionable plan`

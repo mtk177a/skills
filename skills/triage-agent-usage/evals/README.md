@@ -1,51 +1,55 @@
 # triage-agent-usage evals
 
-`triage-agent-usage` の単体運用を評価するためのメモです。作業前に、最も軽い選択肢で足りるかを見極め、重い agent や高性能モデルの必要性を説明できるかを見ます。
+## Iter 0 — Static check
 
-## Iter 0
-
-- `description` と本文が「ツール/モデル選定の事前トリアージ」に揃っているか
-- リポジトリを読む必要の有無が分かれているか
-- 重い選択肢を選ぶ理由が残るか
-- 学習目的か納期優先か、本人がレビュー可能かを判定できるか
-- 単体で次の依頼先判断に使えるか
+- description and body are internally consistent around "pre-task triage of tool and model selection"
+- whether the task requires reading the repository is clearly distinguished
+- rationale for choosing a heavier option is retained in the output
+- learning-priority vs. deadline-priority, and whether the user can review the output, are evaluated
+- output is sufficient to make the next delegation decision on its own
+- at least one `[critical]` assertion is identified
 
 ## Scenarios
 
-### Scenario A: リポジトリを読まない文章整理
+### Scenario A: Text task that does not require reading the repository
 
-メールや設計メモの整理で、coding agent は不要。通常チャットを勧める。
-
-Requirements checklist:
-
-1. [critical] リポジトリを読む必要がない作業に重い coding agent を既定提案しない
-2. 推奨ツールと理由が対応している
-3. 渡すべき最小コンテキストが絞られている
-
-### Scenario B: 複数ファイル変更と高リスク判断
-
-実装とテストに加え、セキュリティや破壊的変更の懸念もある。高性能モデルを使う理由を明示する。
+Writing or organizing text such as a design proposal or email — a coding agent is unnecessary. Recommend standard chat.
 
 Requirements checklist:
+1. [critical] A heavy coding agent is not the default recommendation for tasks that do not require reading the repository
+2. The recommended tool and its rationale correspond
+3. The minimum context to pass is narrowed down
 
-1. [critical] 重い選択肢を選ぶ理由を 1 行で説明できる
-2. 高リスク要素を軽量選択肢に押し込まない
-3. 作業単位が過剰に広くならない
-4. `推奨ツール` に具体的なツール名がある
-5. `推奨モデル / profile` に具体的な model または profile がある
-6. ツール選定と model / profile 選定の理由が対応している
+### Scenario B: Multi-file change with high-risk judgment
 
-### Scenario C: 学習目的の実装相談
-
-未知領域の実装相談で、納期より理解を優先したい。AI に任せる調査と本人がレビュー・判断する範囲を分ける。
+The task involves implementation and tests, plus security or breaking-change concerns. Justify using a high-capability model explicitly.
 
 Requirements checklist:
+1. [critical] The rationale for choosing the heavier option is expressed in one line
+2. High-risk elements are not forced into a lightweight option
+3. The task unit does not become excessively broad
+4. `Recommended tool` names a specific tool
+5. `Recommended model / profile` names a specific model or profile
+6. Tool selection rationale and model/profile selection rationale correspond
 
-1. [critical] 学習目的か納期優先かを判定軸に含める
-2. 本人がレビュー可能な範囲と AI へ委任する範囲が分かれている
-3. 理解・レビューに必要な前提が出力に残る
+### Scenario C: Learning-priority implementation consultation
 
-## Failure Ledger Seed
+An unfamiliar domain implementation consultation where understanding is more important than deadline. Separate what to delegate to AI from what the user must review and decide.
+
+Requirements checklist:
+1. [critical] Learning-priority vs. deadline-priority is included as a judgment axis
+2. The scope the user can review and the scope delegated to AI are clearly separated
+3. Prerequisites for understanding and reviewing the output are present in the output
+
+### Scenario D: Boundary — learning is the priority, not speed
+
+A user explicitly says they want to understand the implementation rather than just get working code. The output must not push full delegation.
+
+Requirements checklist:
+1. [critical] Does not recommend delegating everything to AI when the user states a learning goal
+2. Output includes guidance on what to understand
+
+## Failure Pattern Ledger
 
 - `heavy agent recommended by default`
 - `model choice lacks rationale`

@@ -1,37 +1,41 @@
 # scope-implementation evals
 
-`scope-implementation` の単体運用を評価するためのメモです。広い依頼を、Goal、編集範囲、検証方法、停止条件が明確な小さな実装単位へ落とせるかを見ます。
+## Iter 0 — Static check
 
-## Iter 0
-
-- `description` と本文が「探索範囲を絞る実装前計画」に揃っているか
-- Goal と Non-goal が分かれているか
-- 編集可否ファイルと Stop conditions が残るか
-- 検証コマンド不明時に推測で埋めないことが明確か
+- description and body are internally consistent around "pre-implementation planning that narrows exploration scope"
+- Goal and Non-goal are separated
+- editable and non-editable file lists and Stop conditions are present in output
+- when validation commands are unknown, the Skill does not guess — this constraint is explicit
 
 ## Scenarios
 
-### Scenario A: 広い Issue を小さく切る
+### Scenario A: Cutting a broad issue into small units
 
-依頼範囲が広い。今回やることとやらないこと、読むファイル、編集範囲を固定する。
-
-Requirements checklist:
-
-1. [critical] Goal と Non-goal を分ける
-2. `Files allowed to edit` と `Files not to edit` が両方ある
-3. Done when が小さくレビュー可能な粒度である
-
-### Scenario B: 検証方法が不明なままの依頼
-
-実装対象は見えているが、どのテストやコマンドで確認すべきか分からない。推測せず止まる。
+The request scope is wide. Fix what is and is not in scope for this iteration, which files to read, and the edit boundary.
 
 Requirements checklist:
+1. [critical] Goal and Non-goal are separated
+2. Both `Files allowed to edit` and `Files not to edit` are present
+3. Done condition is small enough to be reviewable in a single pass
 
-1. [critical] 検証コマンド不明時に未確定として止まる
-2. scope 拡大条件が Stop conditions に残る
-3. docs や設定変更が必要なら Ask first 境界として扱う
+### Scenario B: Request where validation method is unknown
 
-## Failure Ledger Seed
+The implementation target is clear but it is unknown which tests or commands should confirm it. Stop without guessing.
+
+Requirements checklist:
+1. [critical] When validation command is unknown, the output marks it as unconfirmed and stops
+2. Scope-expansion conditions are captured in Stop conditions
+3. Docs or config changes are treated as Ask-first boundaries
+
+### Scenario C: Boundary — config or docs change needed
+
+Scope includes a config or docs change alongside the main implementation. Treat as an Ask-first boundary rather than folding it into the plan silently.
+
+Requirements checklist:
+1. [critical] Config or docs changes are flagged as Ask-first boundaries
+2. Output does not silently include docs update steps
+
+## Failure Pattern Ledger
 
 - `goal and non-goal blurred`
 - `editable boundary missing`

@@ -1,106 +1,96 @@
 # Skill Evaluation
 
-This document describes the evaluation format used for Skills in this repository and how to run evaluations.
+This document describes the evaluation approach used for Skills in this repository.
 
 ## Evaluation assets per Skill
 
-Each Skill that has been evaluated contains an `evals/` directory:
+Each Skill has an `evals/` directory:
 
 ```
 skills/<skill-name>/
 └── evals/
-    ├── evals.json       # behavior test cases
-    ├── triggers.json    # trigger detection test cases
-    └── README.md        # assertions, results, open items
+    └── README.md    # Iter 0 check, scenarios, execution results, reflection
 ```
 
-## evals.json format
-
-Each entry in `evals.json` defines one behavior test case.
-
-```json
-[
-  {
-    "id": "basic-use-case",
-    "description": "Representative use of the Skill",
-    "input": "...",
-    "assertions": [
-      { "type": "contains", "value": "expected phrase" },
-      { "type": "not_contains", "value": "phrase that must not appear" }
-    ],
-    "tags": ["representative"]
-  },
-  {
-    "id": "boundary-case",
-    "description": "Edge condition the Skill must handle correctly",
-    "input": "...",
-    "assertions": [...],
-    "tags": ["boundary"]
-  }
-]
-```
-
-Minimum per Skill: 2 representative cases + 1 boundary case.
-
-## triggers.json format
-
-Each entry in `triggers.json` defines a trigger detection case.
-
-```json
-{
-  "should_trigger": [
-    { "input": "a prompt that should invoke this Skill", "reason": "why" }
-  ],
-  "should_not_trigger": [
-    { "input": "a prompt that must not invoke this Skill", "reason": "why" }
-  ]
-}
-```
-
-## evals/README.md format
-
-Record the following after each evaluation run:
+## evals/README.md structure
 
 ```markdown
+# <skill-name> evals
+
+## Iter 0 — Static check
+
+- description and body are internally consistent
+- output format is defined or clearly implied
+- the Skill is self-contained
+- at least one `[critical]` assertion is identified
+
+## Scenarios
+
+### Scenario A: <title>
+
+<one-sentence context>
+
+Requirements checklist:
+1. [critical] <critical requirement>
+2. <other requirements>
+
+## Failure Pattern Ledger
+
+- `<known failure pattern>`
+
 ## Iter N — YYYY-MM-DD
 
-### Assertions
-- [critical] <assertion that determines pass/fail>
-- <other assertions>
+### Changes
+- <what changed from previous>
 
-### Results
-- Pass: <list of passing cases>
-- Fail: <list of failing cases with details>
+### Execution results
 
-### Open items
-- <anything not yet verified>
+| Scenario | Result | steps | duration | retries | Weak phase |
+|---|---|---|---|---|---|
+| A | ○ | N/A | N/A | 0 | — |
+
+### Structured reflection
+
+- Scenario A:
+  - Issue: ...
+  - Cause: ...
+  - General Fix Rule: ...
+
+### Ledger updates
+
+- Re-seen: `pattern`
+- Added: `pattern`
+
+### Next fix proposal
+
+- <proposal>
 ```
 
 ## Running evaluations
 
-Use the primary evaluator with a blank-slate subagent:
+Evaluations are run manually using a blank-slate subagent: an agent that starts with no context about this repository and receives only the Skill and the scenario description as input.
 
-```bash
-# Run behavior eval for a single Skill
-<evaluator command> skills/<skill-name>/evals/evals.json
+**Blank-slate executor protocol:**
+1. Spawn a fresh subagent with no repository context
+2. Provide the SKILL.md content and the scenario description
+3. Observe whether the output satisfies each item in the requirements checklist
+4. Record results honestly — mark as "not yet executed" if the run was not performed
 
-# Run trigger eval
-<evaluator command> --triggers skills/<skill-name>/evals/triggers.json
-```
+The evaluator's role is to check behavior reproducibility, not to render a subjective judgment.
 
-Exact commands depend on the evaluator in use. See `docs/compatibility.md` for tool references.
-
-## Baseline comparison
-
-When significantly revising a Skill, record the before/after result comparison in `evals/README.md` to confirm the change is an improvement and did not regress other cases.
+This approach is inspired by the empirical prompt-tuning methodology described in [mizchi/skills](https://github.com/mizchi/skills). See `THIRD_PARTY_NOTICES.md`.
 
 ## Iter 0 static check
 
-Before writing runnable eval cases, perform a static Iter 0 check:
+Before writing scenarios, perform a static Iter 0 check:
 
 1. `description` and body are internally consistent
 2. Output format is defined or clearly implied
 3. The Skill is self-contained (does not assume another Skill or agent as a dependency)
 4. At least one `[critical]` assertion is identified
 
-Only after Iter 0 passes should you formalize `evals.json` and `triggers.json`.
+Only after Iter 0 passes should you formalize scenarios in `evals/README.md`.
+
+## Baseline comparison
+
+When significantly revising a Skill, record a before/after comparison in `evals/README.md` to confirm the change is an improvement and did not regress existing scenarios.

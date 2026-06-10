@@ -1,38 +1,47 @@
 # break-failure-loop evals
 
-`break-failure-loop` の単体運用を評価するためのメモです。同じ失敗の反復を止め、試行履歴、仮説、次の一手を圧縮して返せるかを見ます。
+## Iter 0 — Static check
 
-## Iter 0
-
-- `description` と本文が「失敗ループの停止」に揃っているか
-- 事実と推測が分かれているか
-- 仮説数と次の一手の上限が守られているか
-- 実装継続より停止を提案できるか
+- description and body are internally consistent on "stopping a failure loop"
+- facts and hypotheses are separated in the output
+- the limit on hypothesis count and next-step count is enforced
+- at least one `[critical]` assertion is identified: recommending stop over continued iteration when appropriate
 
 ## Scenarios
 
-### Scenario A: 同じテストが 2 回以上失敗
+### Scenario A: Same test failing more than twice
 
-同系統の修正を重ねても解決していない。履歴を整理し、次の確認を 1 つに絞る。
-
-Requirements checklist:
-
-1. [critical] 次の一手を 1 つだけ提案する
-2. 成功した確認と失敗した確認を分ける
-3. 仮説を最大 3 つに絞る
-
-### Scenario B: 追加変更より停止が妥当
-
-変更量だけが増えており、同じ仮説のまま続けるのが危険。停止判断を返す。
+Similar fixes have been applied repeatedly without resolving the issue. The executor must organize the history and narrow the next step to exactly one.
 
 Requirements checklist:
+1. [critical] Propose exactly one next step
+2. Separate confirmed successes from confirmed failures
+3. Limit hypotheses to at most three
 
-1. [critical] 続行ではなく停止を提案できる
-2. 停止理由が事実ベースである
-3. 追加で読むべきファイルが絞られている
+### Scenario B: Stopping is more appropriate than adding more changes
 
-## Failure Ledger Seed
+The change set has grown without progress and continuing under the same hypothesis is dangerous. The executor must return a stop recommendation.
+
+Requirements checklist:
+1. [critical] Recommend stopping rather than continuing
+2. Stop reason is grounded in facts, not speculation
+3. Files to read next are narrowed down
+
+### Scenario C: First failure — not a loop
+
+The user encountered a test failure for the first time after a change. This is not a loop. The executor must not suggest stopping or abandoning.
+
+Requirements checklist:
+1. [critical] Do not recommend stopping or abandoning on a first failure
+2. Offer a hypothesis about the cause of the failure
+3. Propose a diagnostic next step
+
+## Failure Pattern Ledger
 
 - `facts and hypotheses conflated`
 - `next step not narrowed`
 - `keeps editing despite repeated same-path failures`
+
+## Iter N — not yet executed
+
+Scenarios have not been executed. Execution results will be recorded here once run.
