@@ -26,7 +26,7 @@ license: MIT
 
 ## Steps
 
-1. Read `skills/README.md` and `docs/authoring.md` as primary sources.
+1. Read `docs/authoring.md` as primary sources.
 2. Define purpose, scope, and target user in 1–2 lines. If the request is abstract, fix the usage context in one sentence first.
 3. Check for overlap, conflicts, and merge candidates with existing Skills.
 4. Decide `name` and `description`. Prioritize making the usage context readable; if the responsibility boundary is not confirmed, use a working name and get approval.
@@ -60,7 +60,7 @@ license: MIT
 ### Always:
 
 - State purpose, scope, and boundaries explicitly
-- Treat `skills/README.md` and `docs/authoring.md` as primary sources
+- Treat `docs/authoring.md` as primary sources
 - Check for overlap with existing Skills
 - Make the usage context readable from `description`
 - When input is abstract, fix the usage context first before rushing to confirm a `name`

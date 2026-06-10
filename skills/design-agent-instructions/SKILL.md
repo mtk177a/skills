@@ -31,7 +31,7 @@ license: MIT
 3. Document the loading order:
    - `~/.codex/AGENTS.md` → repository root `AGENTS.md` → per-subdirectory `AGENTS.md`
 4. Fix the primary source documents to rely on:
-   - e.g., `README.md`, `skills/README.md`, `docs/authoring.md`
+   - e.g., `README.md`, `docs/authoring.md`
 5. Define the role of each document:
    - `AGENTS.md`: formal contract
    - `CLAUDE.md`: supplementary instructions for Claude Code

@@ -3,7 +3,7 @@
 ## Iter 0 — Static check
 
 - description and body are internally consistent on "Skill design and drafting"
-- `skills/README.md` and `docs/skill-authoring.md` are treated as primary sources
+- `docs/authoring.md` are treated as primary sources
 - overlap check, boundary definition, and auxiliary directory judgment can all be completed standalone
 - the Skill functions as a proposal-assembly tool, not a general authoring guide recap
 

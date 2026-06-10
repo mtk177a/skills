@@ -33,7 +33,7 @@ license: MIT
 3. 読み込み順を明記する。
    - `~/.codex/AGENTS.md` → リポジトリルートの `AGENTS.md` → サブディレクトリごとの `AGENTS.md`
 4. 一次情報として依拠する文書を固定する。
-   - 例: `README.md`, `skills/README.md`, `docs/authoring.md`
+   - 例: `README.md`, `docs/authoring.md`
 5. 文書ごとの役割分担を整理する。
    - `AGENTS.md`: 正式な契約
    - `CLAUDE.md`: Claude Code 向け補助指示

@@ -14,7 +14,6 @@
 ## 最初に読むもの
 
 - `README.md`
-- `skills/README.md`
 - `docs/authoring.md`
 
 Skill を作成・編集する際は、既存の `skills/*/SKILL.md` も確認して文体を合わせます。

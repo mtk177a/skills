@@ -28,7 +28,7 @@ license: MIT
 
 ## 手順
 
-1. 一次情報として `skills/README.md` と `docs/authoring.md` を確認する。
+1. 一次情報として `docs/authoring.md` を確認する。
 2. 目的、範囲、対象ユーザーを 1〜2 行で定義する。抽象的な依頼しかない場合は、先に利用場面を 1 文で固定する。
 3. 既存 Skills との重複、競合、統合候補を確認する。
 4. `name` と `description` を決める。利用場面が読み取れることを優先し、責務境界が未確定なら仮称のまま承認を取る。
@@ -62,7 +62,7 @@ license: MIT
 ### Always:
 
 - 目的・範囲・境界を明記する
-- `skills/README.md` と `docs/authoring.md` を一次情報として扱う
+- `docs/authoring.md` を一次情報として扱う
 - 既存 Skills との重複を確認する
 - `description` から利用場面が分かるようにする
 - 入力が抽象的なときは、`name` を急いで確定せず利用場面を先に固定する
