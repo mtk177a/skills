@@ -12,7 +12,6 @@ If a deeper `AGENTS.md` exists in a subdirectory, that file takes precedence.
 ## Read first
 
 - `README.md`
-- `skills/README.md`
 - `docs/authoring.md`
 
 When creating or editing a Skill, also review existing `skills/*/SKILL.md` files to match their style.

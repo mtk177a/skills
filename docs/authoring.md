@@ -119,6 +119,36 @@ When iterating on a Skill, manage evaluation assets alongside the content.
 The purpose of evaluation is not the author's subjective judgment but verifying that another agent can reproduce the intended behavior without confusion.
 Prioritize reusable scenarios, decision criteria, and failure patterns over informal notes.
 
+## Notes on references/
+
+`references/` directories hold materials the Skill needs at judgment time — formats, specs, decision criteria.
+
+- Include only what a blank-slate agent would need to apply the Skill
+- Do not copy external documents verbatim; link to the canonical source instead
+- Do not store temporary notes or customer-specific information
+- Check the license of any material you include; do not bundle content under incompatible licenses
+
+## Notes on assets/
+
+`assets/` directories hold distributable supplementary materials — images, reusable templates, or small structured data.
+
+- Include only materials with clear provenance and compatible licensing
+- Do not mix generated artifacts, caches, or temporary files into `assets/`
+- Large binary files should stay out of the repository unless truly necessary
+
+## New Skill checklist
+
+Before opening a pull request for a new Skill:
+
+- [ ] Directory name is kebab-case and matches the frontmatter `name`
+- [ ] `SKILL.md` exists with `name`, `description`, and `license` frontmatter
+- [ ] `description` makes the usage context clear without reading the body
+- [ ] Body is written in English
+- [ ] `SKILL-ja.md` Japanese reference translation exists
+- [ ] No secrets, personal information, or internal URLs
+- [ ] `scripts/`, `references/`, `assets/` contain only what the Skill needs (empty directories removed)
+- [ ] `evals/README.md` Iter 0 static check is complete
+
 ## Making a Codex-only Skill work across agents
 
 When adapting a Codex-specific Skill for Claude Code or GitHub Copilot, review whether Codex-specific language should stay.

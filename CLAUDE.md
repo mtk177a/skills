@@ -6,14 +6,13 @@
 
 - `AGENTS.md`
 - `README.md`
-- `skills/README.md`
 - `docs/authoring.md`
 
 ## このリポジトリで期待する振る舞い
 
 - `skills/<skill-name>/SKILL.md` を基本単位として扱う
 - 新規 Skill や編集対象 Skill では、frontmatter の `name` と `description` を前提に整合を取る
-- 既存の Skill や docs の文体に合わせ、日本語主体で簡潔に書く
+- Skill 本文は英語正本とし、`SKILL-ja.md` を日本語参考訳として管理する
 - エージェント固有差分は Skill 名や説明で表し、エージェント別ディレクトリを増やさない
 
 ## 進め方

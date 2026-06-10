@@ -18,6 +18,8 @@ Thumbs.db
 tmp/
 temp/
 
+# Work queue (local-only, not tracked)
+tasks/
+
 # APM local install artifacts
-apm.lock.yaml
 apm_modules/
