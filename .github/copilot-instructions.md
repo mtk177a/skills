@@ -2,7 +2,7 @@
 
 This repository manages personally authored and maintained agent Skills.
 
-- Read `README.md`, `skills/README.md`, and `docs/authoring.md` first
+- Read `README.md` and `docs/authoring.md` first
 - The basic unit is `skills/<skill-name>/SKILL.md`
 - Directory names and `name` values use kebab-case
 - `SKILL.md` frontmatter must include at minimum `name`, `description`, and `license`

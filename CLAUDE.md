@@ -1,34 +1,34 @@
 # CLAUDE.md
 
-このファイルは Claude Code 向けの補助文書です。リポジトリの正式な契約は `AGENTS.md` を優先します。
+This file provides supplementary instructions for Claude Code. `AGENTS.md` is the authoritative contract for this repository.
 
-## 最初に確認すること
+## Read first
 
 - `AGENTS.md`
 - `README.md`
 - `docs/authoring.md`
 
-## このリポジトリで期待する振る舞い
+## Expected behavior in this repository
 
-- `skills/<skill-name>/SKILL.md` を基本単位として扱う
-- 新規 Skill や編集対象 Skill では、frontmatter の `name` と `description` を前提に整合を取る
-- Skill 本文は英語正本とし、`SKILL-ja.md` を日本語参考訳として管理する
-- エージェント固有差分は Skill 名や説明で表し、エージェント別ディレクトリを増やさない
+- Treat `skills/<skill-name>/SKILL.md` as the basic unit
+- Keep frontmatter `name` and `description` consistent when creating or editing a Skill
+- Treat the English Skill body as canonical and maintain `SKILL-ja.md` as a Japanese reference translation
+- Express agent-specific differences in Skill names or descriptions; do not add per-agent directories
 
-## 進め方
+## How to work
 
-- 実装前に既存の Skill と関連 docs を読み、重複や矛盾を避ける
-- Skill 本文では、利用場面、前提条件、禁止事項、出力期待を優先する
-- 外部 Skill の導入はコピーではなく、必要なら参照元と保守方針を明示して相談する
+- Read existing Skills and related docs before implementing changes to avoid duplication and contradictions
+- In Skill bodies, prioritize use cases, prerequisites, prohibitions, and expected output
+- Do not copy external Skills directly; when considering one, identify its source and maintenance policy and discuss the approach first
 
-## 承認境界
+## Approval boundaries
 
-- `AGENTS.md`、`CLAUDE.md`、`.github/copilot-instructions.md` の編集は承認後に行う
-- `skills/*/SKILL.md` や `docs/*` の編集も承認後に行う
-- 依存追加やリポジトリ方針変更は、理由と影響を示してから進める
+- Edit `AGENTS.md`, `CLAUDE.md`, or `.github/copilot-instructions.md` only after approval
+- Edit `skills/*/SKILL.md` or `docs/*` only after approval
+- Before adding dependencies or changing repository policy, explain the reason and impact
 
-## 禁止事項
+## Avoid
 
-- 秘密情報、個人情報、社内情報を追加しない
-- 一時メモや未整理な試作を、そのままリポジトリに残さない
-- OS 固有コマンドやローカル環境前提を、説明なしに埋め込まない
+- Do not add secrets, personal information, or internal information
+- Do not leave temporary notes or unorganized prototypes in the repository
+- Do not introduce OS-specific commands or local environment assumptions without explanation

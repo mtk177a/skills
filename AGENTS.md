@@ -49,7 +49,7 @@ When creating or editing a Skill, also review existing `skills/*/SKILL.md` files
 
 ## Commit message convention
 
-- Use Conventional Commits; write the summary in Japanese, short and specific
+- Use Conventional Commits; write the summary in English, short and specific
 - One commit per logical change; do not mix unrelated changes
 - `skills/*/SKILL.md` is treated as the product of this repository; do not categorize all changes as `docs`
 - Adding a new Skill or new behavior to an existing Skill: use `feat`

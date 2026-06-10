@@ -72,6 +72,7 @@ Any client that discovers `skills/<name>/SKILL.md` files should work. See [docs/
 ├── AGENTS.md
 ├── AGENTS-ja.md
 ├── CLAUDE.md
+├── CLAUDE-ja.md
 ├── .github/
 │   └── copilot-instructions.md
 ├── apm.yml

@@ -42,6 +42,7 @@ skills/<skill-name>/
 | `SKILL.md` | 英語 | `SKILL-ja.md` |
 | `README.md` | 英語 | `README.ja.md` |
 | `AGENTS.md` | 英語 | `AGENTS-ja.md` |
+| `CLAUDE.md` | 英語 | `CLAUDE-ja.md` |
 | `docs/*.md` | 英語 | `docs/ja/*.md` |
 
 ## 訳の同期維持
@@ -58,7 +59,6 @@ skills/<skill-name>/
 
 ## コミットメッセージの言語
 
-コミットメッセージのサマリーは日本語で書きます (このリポジトリにおける著者の作業言語)。
-サマリー内の技術用語と固有名詞は英語のままにします。
+コミットメッセージのサマリーは英語で短く具体的に書きます。
 
 完全なコミットメッセージ規約については `AGENTS.md` を参照してください。

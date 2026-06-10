@@ -40,6 +40,7 @@ The same policy applies to other translated files:
 | `SKILL.md` | English | `SKILL-ja.md` |
 | `README.md` | English | `README.ja.md` |
 | `AGENTS.md` | English | `AGENTS-ja.md` |
+| `CLAUDE.md` | English | `CLAUDE-ja.md` |
 | `docs/*.md` | English | `docs/ja/*.md` |
 
 ## Keeping translations in sync
@@ -56,7 +57,6 @@ If a quick update is made and the Japanese translation is not ready, note the ga
 
 ## Language in commit messages
 
-Commit message summaries are written in Japanese (this repository's working language for the author).
-Technical terms and proper nouns remain in English within the summary.
+Commit message summaries are written in English and kept short and specific.
 
 See `AGENTS.md` for the full commit message convention.

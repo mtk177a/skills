@@ -74,6 +74,7 @@ apm install mtk177a/skills/skills/review-changes
 ├── AGENTS.md
 ├── AGENTS-ja.md
 ├── CLAUDE.md
+├── CLAUDE-ja.md
 ├── .github/
 │   └── copilot-instructions.md
 ├── apm.yml
