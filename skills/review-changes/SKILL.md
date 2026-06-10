@@ -1,130 +1,125 @@
 ---
 name: review-changes
-description: 変更差分をレビューし、指摘を整理したいときに使う。
+description: Review a diff for correctness, tests, safety, maintainability, and performance — organize findings with canonical labels.
+license: Apache-2.0
 ---
 
-# Review Changes (差分レビュー)
+# Review Changes
 
-## 目的
+## Purpose
 
-- 差分をレビューし、正しさ・テスト・安全性・保守性・性能の観点で指摘を整理する。
-- 指摘ごとに `must` / `should` / `suggestion` / `question` / `nit` / `note` の正規ラベルを付け、次の対応判断につなげる。
-- 対応判断に使えるレビュー結果を整理する。
-- `draft-review-comments` に渡しやすい形で、発見、根拠、ラベル基準をそろえる。
+- Review a diff and organize findings across correctness, tests, safety, maintainability, and performance.
+- Attach a canonical label (`must` / `should` / `suggestion` / `question` / `nit` / `note`) to each finding to connect to the next decision.
+- Keep findings, evidence, and label criteria organized in a form ready to pass to `draft-review-comments`.
 
-## 使う場面
+## When to use
 
-- コードレビュー依頼を受けたとき
-- 変更をコミットや PR の前に点検したいとき
-- 指摘を整理して次の対応へ渡したいとき
-- 既存レビュー指摘の処理ではなく、差分そのものの新規レビューをしたいとき
+- When receiving a code review request
+- When you want to inspect changes before committing or opening a PR
+- When you want to organize findings to hand off to the next step
+- When you want a fresh review of the diff itself — not processing existing review comments
 
-## 入力 (任意)
+## Input (optional)
 
-- 対象差分 (`git diff`、PR diff、コミット差分)
-- 関連仕様や背景
-- レビューの重点観点
+- Target diff (`git diff`, PR diff, commit diff)
+- Related specifications or background
+- Priority review angles
 
-## 手順
+## Steps
 
-1. 変更内容 (diff) を把握する。
-2. 正しさ、テスト、安全性、保守性、性能の観点で問題点と改善点を抽出する。
-3. 本番事故、セキュリティ、仕様不一致につながる問題を優先して分類する。
-4. 指摘ごとに根拠を添え、必要なら再現観点や確認観点を付ける。
-5. 指摘ごとに、根拠、なぜ問題か、どう見抜くか、確認観点を添える。
-6. 指摘ごとに正規ラベルを 1 つ選ぶ。
-7. 修正後の再レビューでは、前回指摘を基準に `Resolved` / `Remaining` / `New` を整理してから今回の所見をまとめる。
-8. 出力フォーマットに従って、正規ラベル付きの指摘一覧として提示する。
-9. `Must-fix` / `Should-fix` / `Nice-to-have` が入力や既存メモにある場合は、互換入力として受け取り正規ラベルへ寄せる。
-10. 高リスク変更やレビュー品質への不確実性が残る場合だけ、追加確認の必要性を示す。
-11. 指摘の採否や対応方針が必要な場合は、そのまま判断材料として使える形で未解決事項や確認観点を残す。
+1. Understand the change content (diff).
+2. Extract problems and improvements across correctness, tests, safety, maintainability, and performance.
+3. Prioritize and categorize issues that could lead to production incidents, security problems, or spec mismatches.
+4. Attach evidence to each finding; add reproduction or verification angles when needed.
+5. For each finding, include: evidence, why it is a problem, how to detect it, and verification angle.
+6. Choose exactly one canonical label for each finding.
+7. For a re-review after fixes, first organize `Resolved` / `Remaining` / `New` against the previous findings before summarizing current observations.
+8. Present as a labeled finding list following the output format.
+9. When `Must-fix` / `Should-fix` / `Nice-to-have` appear in input or existing notes, accept them as compatible input and map to canonical labels.
+10. Only state the need for additional confirmation when high-risk changes or review quality uncertainty remain.
+11. When accept/reject decisions or response approaches are needed, leave unresolved items and verification angles in a form ready to use as decision material.
 
-## チェック観点
+## Review dimensions
 
-### 1. 正しさ (Correctness)
+### 1. Correctness
 
-- 仕様を満たしているか、例外系やエッジケースの扱いは妥当か
-- null/空/境界値、順序依存、丸め、タイムゾーン、並行性などの落とし穴がないか
-- API やスキーマなどの外部契約と DB nullable などの内部制約を混同せず、契約違反か実装都合かを切り分けて見る
-- relation table や配列 endpoint が既にある領域で単数フィールド化や 1 件取得が入った場合は、既存 cardinality、後方互換、sibling endpoint との整合を確認する
+- Does it satisfy the spec? Is error and edge case handling appropriate?
+- No pitfalls with null / empty / boundary values, ordering dependencies, rounding, timezones, concurrency?
+- Separate external contracts (API, schema) from internal constraints; identify whether issues are contract violations or implementation choices
 
-### 2. テスト (Tests)
+### 2. Tests
 
-- 変更点をカバーするテストがあるか
-- テストが実装依存になりすぎていないか、モック過多で壊れやすくなっていないか
+- Are there tests that cover the changes?
+- Are tests overly coupled to implementation or fragile due to over-mocking?
 
-### 3. セキュリティ (Security)
+### 3. Security
 
-- 秘密情報の漏洩、インジェクション、権限チェック、入力バリデーションの不備がないか
-- ログやエラーメッセージに PII / 機密が出ていないか
+- No secret leakage, injection, authorization check failures, or input validation gaps?
+- No PII / confidential data in logs or error messages?
 
-### 4. 保守性 (Maintainability)
+### 4. Maintainability
 
-- 責務分離、命名、重複、複雑さ、例外処理の一貫性に問題がないか
-- 既存の設計やスタイルを不必要に崩していないか
-- 一貫性コメントは、同じ責務の sibling endpoint / shared wrapper / shared type を横断し、repo 内の先例を根拠に強さを決める
+- No issues with responsibility separation, naming, duplication, complexity, or consistency of error handling?
+- No unnecessary disruption of existing design or style?
+- For consistency comments, evaluate across sibling endpoints / shared wrappers / shared types in the repo and base label strength on repo precedent
 
-### 5. パフォーマンス (Performance)
+### 5. Performance
 
-- 明白なボトルネックや無駄な処理がないか
-- 過度な最適化要求は避ける
+- No obvious bottlenecks or wasteful processing?
+- Avoid demanding excessive optimization
 
-## ラベル語彙の扱い
+## Label vocabulary
 
-- 通常出力では `must` / `should` / `suggestion` / `question` / `nit` / `note` を正規ラベルとして扱う
-- `must`: マージ前に修正必須。仕様違反、実害のあるバグ、セキュリティ、データ不整合、重大なテスト欠落など、これが残るなら Approve しない指摘
-- `should`: 原則修正推奨。保守性、一貫性、将来の事故リスク、テスト不足などの懸念があるが、制約や別案を相談できる指摘
-- `suggestion`: 改善提案。可読性、構造、テスト補強など、より良くなるがマージを止めない指摘
-- `question`: 仕様、意図、前提が未確定で、断定せず確認すべき指摘
-- `nit`: 命名、表記、軽微な整形など、基本は任意対応の細かい指摘
-- `note`: 参考情報、背景共有、将来注意。対応不要の補足
-- `Must-fix` / `Should-fix` / `Nice-to-have` は互換入力としてだけ扱い、通常出力の主分類にはしない
-- `Must-fix` は `must`、`Should-fix` は `should` に寄せる
-- `Nice-to-have` は内容に応じて `suggestion` または `nit` に寄せ、マージを止めない分類にする
-- 重大度と断定度は別軸として扱い、仕様や意図が未確定なら `must` にせず `question` として残す
-- 好みだけの指摘や細部の磨き込みは `must` / `should` にしない
+- `must`: fix required before merge; do not approve if this remains
+- `should`: fix recommended in principle; discussion allowed with reason
+- `suggestion`: improvement proposal; better but does not block merge
+- `question`: spec, intent, or assumptions are unconfirmed; should not be asserted
+- `nit`: minor comment; optional by default
+- `note`: reference information; no response needed
+- `Must-fix` → `must`, `Should-fix` → `should`, `Nice-to-have` → `suggestion` or `nit`
+- Severity and certainty are different axes; if spec or intent is unconfirmed, do not use `must` — use `question` instead
+- Do not use `must` / `should` for preference-only findings
 
-## 出力フォーマット
+## Output format
 
-- サマリ: ...
-- 指摘一覧:
-  - ラベル: `must`
-    - 指摘: ...
-    - 根拠: ...
-    - なぜ問題か: ...
-    - どう見抜くか: ...
-    - 確認観点: ...
-- テスト手順:
+- Summary: ...
+- Findings:
+  - Label: `must`
+    - Finding: ...
+    - Evidence: ...
+    - Why it is a problem: ...
+    - How to detect: ...
+    - Verification angle: ...
+- Test steps:
   - ...
-- 追加で確認したい点:
+- Additional items to check:
   - ...
 
-## Companion skills (推奨)
+## Companion skills
 
 - `triage-review-feedback`
 - `validate-fix`
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- 変更内容に基づいてレビューする
-- 指摘には具体的な根拠を添える
-- 指摘には、採否判断と学習に使えるだけの「なぜ問題か」「どう見抜くか」を添える
-- 指摘ごとに正規ラベルを付ける
-- ラベル基準に沿って、修正必須、推奨、任意提案、確認、参考情報を分ける
-- 単体で採否判断に進めるだけの情報を残す
-- `draft-review-comments` へ渡せるよう、ラベルと根拠を分離して残す
-- 別エージェント / サブエージェントは既定で使わず、まずこの Skill 単体でレビュー結果を返す
+- Base the review on the change content
+- Attach specific evidence to each finding
+- Include enough "why it is a problem" and "how to detect it" for accept/reject decisions and learning
+- Attach a canonical label to each finding
+- Keep labels and evidence separated so they can be passed to `draft-review-comments`
+- Leave enough information that accept/reject decisions can proceed without additional context
+- Do not use another agent / subagent by default; return review results from this Skill alone first
 
 ### Ask first:
 
-- 対象の変更範囲が不明な場合
-- 仕様変更を伴う是非判断まで求められる場合
+- When the target change scope is unclear
+- When a judgment on spec changes is required
 
 ### Never:
 
-- 指摘の採否を最終決定する
-- 実装修正に踏み込む
-- 変更内容を見ずに推測で指摘する
-- 未確定の前提を `must` として断定する
+- Make the final accept/reject decision on findings
+- Proceed to implementation fixes
+- Make findings based on guesses without reading the change
+- Assert an unconfirmed assumption as `must`

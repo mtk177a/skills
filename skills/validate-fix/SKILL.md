@@ -1,82 +1,81 @@
 ---
 name: validate-fix
-description: 修正後の確認を行い、確認できたこと・未確認のこと・残るリスクを整理したいときに使う。
+description: Verify a fix — organize what was confirmed, what was not, and what risks remain.
+license: Apache-2.0
 ---
 
-# Validate Fix (修正確認)
+# Validate Fix
 
-## 目的
+## Purpose
 
-- 修正後に、何が確認済みで何が未確認かを分け、残留リスクを整理する。
-- 修正差分、実施テスト、レビュー観点を整理し、現時点で進めてよいかの判断材料を作る。
-- 修正結果の確認状況と残留リスクを整理する。
+- After a fix, separate what is confirmed from what is not, and organize residual risks.
+- Organize the fix diff, tests performed, and review angles to produce decision material for whether it is safe to proceed.
 
-## 使う場面
+## When to use
 
-- レビュー指摘対応後に確認を入れたいとき
-- 修正後の状態を他者へ説明したいとき
-- 現時点で進めてよいかの判断材料を整理したいとき
+- When you want to verify after addressing review comments
+- When you want to explain the post-fix state to others
+- When you want to organize decision material for whether to proceed at this point
 
-## 入力 (任意)
+## Input (optional)
 
-- 修正差分
-- 実施した確認内容
-- テスト結果
-- 元のレビュー指摘や対応方針
+- Fix diff
+- Verification steps performed
+- Test results
+- Original review comments or response approach
 
-## 手順
+## Steps
 
-1. テスト対象範囲と修正差分を整理する。
-2. 実施したテストや確認内容を明示し、確認できたことを整理する。
-3. 元の指摘や対応方針がある場合は、どこまで解消できたかを整理する。
-4. 未実施範囲と未確認のことを分けて明示する。
-5. 正しさ、安全性、保守性の観点で不確実性が残る場合は、追加確認の必要性を示す。
-6. 残るリスクを整理する。
-7. 変更理由、確認結果、未確認事項を自分で説明できる状態かを点検する。
-8. 現時点の見解と、進めるために必要な追加確認をまとめる。
-9. 高リスク変更や確認結果の品質に不安が残る場合だけ、別エージェント / サブエージェントの利用を提案する。
+1. Organize the test scope and fix diff.
+2. State the tests and verification steps performed; organize what was confirmed.
+3. If original comments or a response approach exist, organize how much was resolved.
+4. Separately state unperformed scope and unconfirmed items.
+5. If uncertainty remains from the perspectives of correctness, safety, or maintainability, state the need for additional confirmation.
+6. Organize remaining risks.
+7. Check whether the reason for the change, verification results, and unconfirmed items can be explained.
+8. Summarize the current assessment and any additional confirmations needed to proceed.
+9. Only when high-risk changes or quality concerns remain, suggest using another agent / subagent.
 
-## 出力フォーマット
+## Output format
 
-- テスト対象範囲:
+- Test scope:
   - ...
-- 実施したテスト:
+- Tests performed:
   - ...
-- 解消を確認できた指摘 / 対応:
+- Confirmed resolved findings / responses:
   - ...
-- 確認できたこと:
+- What was confirmed:
   - ...
-- 未実施範囲:
+- Unperformed scope:
   - ...
-- 未確認のこと:
+- Unconfirmed items:
   - ...
-- 残るリスク:
+- Remaining risks:
   - ...
-- 説明できる状態か:
+- Whether it can be explained:
   - ...
-- 現時点の見解: ...
+- Current assessment: ...
 
-## Companion skills (推奨)
+## Companion skills
 
 - `review-changes`
 - `triage-review-feedback`
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- 確認済みと未確認を分ける
-- 出力は日本語で書く
-- テスト対象範囲と未実施範囲を分けて記録する
-- 元の指摘や対応方針がある場合は、確認結果との対応関係を残す
-- 変更理由、確認結果、未確認事項を説明できる状態か確認する
-- 別エージェント / サブエージェントは既定で使わず、まずこの Skill 単体で確認結果を返す
+- Separate confirmed from unconfirmed
+- Record test scope and unperformed scope separately
+- When original comments or a response approach exist, preserve the correspondence with verification results
+- Check whether the reason for the change, verification results, and unconfirmed items can be explained
+- Do not use another agent / subagent by default; return verification results from this Skill alone first
 
 ### Ask first:
 
-- 高リスク変更で追加確認が必要そうな場合
+- When additional confirmation appears needed for a high-risk change
 
 ### Never:
 
-- 根拠なく安全と断定する
-- 検証なしで問題なしと断定する
+- Assert safety without evidence
+- Assert no issues without verification

@@ -1,88 +1,89 @@
 ---
 name: draft-issue
-description: scope-request で明確化した課題を、Issue の起票案と起票手順に落とし込みたいときに使う。 (issue, ticket, backlog, jira, redmine)
+description: Turn a clarified request (from scope-request) into an Issue draft and filing steps. (issue, ticket, backlog, jira, redmine)
+license: Apache-2.0
 ---
 
-# Draft Issue (課題起票)
+# Draft Issue
 
-## 目的
+## Purpose
 
-- scope-request で明確化した課題を、追跡可能な Issue (GitHub/Jira/Redmine/Backlog 等) として起票するための手順とドラフトを提供する。
+- Provide steps and a draft for filing a clarified request (from `scope-request`) as a trackable Issue (GitHub / Jira / Redmine / Backlog / etc.).
 
-## 使う場面
+## When to use
 
-- scope-request 結果を Issue に落とし込みたいとき
-- バグ報告や機能要望のテンプレを整えたいとき
+- When you want to turn the output of `scope-request` into an Issue
+- When you want to prepare a bug report or feature request template
 
-## 入力 (任意)
+## Input (optional)
 
-- 対象プロジェクト/トラッカー
-- Issue 種別（バグ / 改善 / 機能要望）
-- 既存テンプレの有無
-- ラベル / アサイン先
+- Target project / tracker
+- Issue type (bug / improvement / feature request)
+- Whether an existing template exists
+- Labels / assignee
 
-## 手順
+## Steps
 
-1. 対象プロジェクト/トラッカーと Issue 種別を確認する
-2. Issue の本質が曖昧なら `clarify-request` を実施し、問題/期待する成果/ユースケースを明確にする
-3. 既存 Issue の重複を簡易チェックする（タイトル/キーワード）
-4. Issue テンプレの有無を確認し、あれば準拠する
-5. タイトルと本文のドラフトを作成する
-6. ラベルとアサインを決める
-7. 関連する Issue / PR があればリンクを整理する
-8. 最終レビューして、作成するかドラフトに留めるか確認する
+1. Confirm the target project / tracker and issue type.
+2. If the core of the Issue is unclear, apply `clarify-request` to make the problem, expected outcome, and use case explicit.
+3. Do a quick duplicate check against existing Issues (by title / keywords).
+4. Check whether an Issue template exists; comply with it if one does.
+5. Draft the title and body.
+6. Decide on labels and assignee.
+7. Organize links to related Issues / PRs if any.
+8. Do a final review and confirm whether to create or keep as a draft.
 
-## 出力フォーマット
+## Output format
 
 ```markdown
-# <Issueタイトル>
+# <Issue title>
 
-## 本文
+## Body
 
-### バグ報告テンプレート
-- 再現手順:
-- 期待される結果:
-- 実際の結果:
-- 環境:
-- 追加情報:
+### Bug report template
+- Steps to reproduce:
+- Expected result:
+- Actual result:
+- Environment:
+- Additional information:
 
-### 機能要望テンプレート
-- 問題/背景:
-- 期待する成果:
-- ユースケース:
-- 代替案（任意）:
+### Feature request template
+- Problem / background:
+- Expected outcome:
+- Use case:
+- Alternatives (optional):
 
-## ラベル
-- <ラベル>
+## Labels
+- <label>
 
-## アサイン
-- <担当者>
+## Assignee
+- <person>
 
-## 関連リンク
-- <Issue / PR / ドキュメント>
+## Related links
+- <Issue / PR / documentation>
 ```
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- 対象プロジェクト/トラッカーと Issue 種別の確認
-- 既存 Issue の重複チェック
-- テンプレがある場合は準拠
-- 秘密情報の混入を避ける
+- Confirm the target project / tracker and issue type
+- Check for duplicate Issues
+- Comply with existing templates when available
+- Avoid including secrets
 
 ### Ask first:
 
-- Issue を直接作成する操作（ドラフトのみか実作成か）
-- 新しいラベルの追加が必要な場合
-- アサイン対象が不明な場合
+- Whether to actually create the Issue (draft only vs. actual creation)
+- When adding a new label is needed
+- When the assignee is unknown
 
 ### Never:
 
-- 秘密情報の記載
-- 権限が必要な操作の強行
-- 無断での大量作成や自動化
+- Include secrets
+- Force operations that require permissions
+- Create issues in bulk or automate without approval
 
-## 注意点 (任意)
+## Notes (optional)
 
-- 依頼が曖昧な場合は、最小限の確認質問で意図を固める。
+- When the request is vague, use minimal clarifying questions to fix the intent.

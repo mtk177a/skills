@@ -1,74 +1,75 @@
 ---
 name: scope-implementation
-description: 実装前に、対象ファイル・触らない範囲・完了条件・検証コマンドを絞りたいときに使う。
+description: Before implementing, narrow the target files, off-limits scope, completion criteria, and verification commands.
+license: Apache-2.0
 ---
 
 # Scope Implementation
 
-## 目的
+## Purpose
 
-- 実装前に対象範囲を固定し、探索コストと手戻りを減らす。
-- 広い依頼を、レビュー可能な小さな作業単位へ落とす。
+- Fix the implementation scope before starting to reduce exploration cost and rework.
+- Break a broad request into small, reviewable units.
 
-## 使う場面
+## When to use
 
-- 「この Issue を全部やって」のように依頼が広いとき
-- 実装前に、読むファイルと触らないファイルを分けたいとき
-- エージェントの探索範囲を最小化したいとき
+- When a request is broad, like "do this whole Issue"
+- When you want to separate files to read from files not to touch before implementing
+- When you want to minimize the agent's exploration scope
 
-## 入力 (任意)
+## Input (optional)
 
-- 依頼文
+- Request text
 - Issue / PR / review comment
-- 関連しそうなファイルやディレクトリ
-- 候補の検証コマンド
+- Potentially related files and directories
+- Candidate verification commands
 
-## 手順
+## Steps
 
-1. 依頼を 1 つの Goal に圧縮する。
-2. 今回やらないことを Non-goal として明示する。
-3. 先に読むべきファイルを絞る。
-4. 編集してよいファイルを明示する。
-5. 編集してはいけないファイルを明示する。特に docs、設定、依存、生成物は必要になるまで除外する。
-6. 制約、完了条件、検証コマンドを整理する。
-7. 検証コマンドが不明なら推測せず、未確定として止まる。
-8. 当初の想定より対象が広がる条件を Stop conditions に書く。
+1. Compress the request into one Goal.
+2. Explicitly state Non-goals for this session.
+3. Narrow the files to read first.
+4. Explicitly state the files that may be edited.
+5. Explicitly state the files that must not be edited. In particular, exclude docs, configuration, dependencies, and generated files until they are actually needed.
+6. Organize constraints, completion criteria, and verification commands.
+7. If the verification command is unknown, stop and record it as unconfirmed rather than guessing.
+8. Write in Stop conditions the conditions under which the scope would expand beyond the initial assumption.
 
-## 出力フォーマット
+## Output format
 
-- 目標: ...
-- 対象外: ...
-- 読むファイル:
+- Goal: ...
+- Non-goals: ...
+- Files to read:
   - ...
-- 編集してよいファイル:
+- Files that may be edited:
   - ...
-- 編集しないファイル:
+- Files that must not be edited:
   - ...
-- 制約:
+- Constraints:
   - ...
-- 完了条件:
+- Completion criteria:
   - ...
-- 検証コマンド:
+- Verification commands:
   - ...
-- 停止条件:
+- Stop conditions:
   - ...
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- `編集しないファイル` を明示する
-- `停止条件` を明示する
-- 目標と対象外を分ける
-- 検証コマンドが分からない場合は推測で埋めない
+- State "files that must not be edited" explicitly
+- State "stop conditions" explicitly
+- Separate goal from non-goals
+- Do not fill in unknown verification commands with guesses
 
 ### Ask first:
 
-- 編集対象が当初想定より広がる場合
-- 依存追加、設定変更、docs 更新が必要になった場合
-- 完了条件を満たすために別 Issue 相当の作業が混ざる場合
+- When the edit scope expands beyond the initial assumption
+- When dependency additions, configuration changes, or docs updates are needed
+- When work equivalent to a separate Issue is mixed into the completion criteria
 
 ### Never:
 
-- 「必要なら広げる」前提で曖昧に実装を始めない
-- 編集不可ファイルを未定義のまま広い探索を始めない
+- Start implementation ambiguously under the assumption of expanding "if needed"
+- Start broad exploration with off-limits files undefined

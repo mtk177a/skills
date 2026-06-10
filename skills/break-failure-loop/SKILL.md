@@ -1,70 +1,71 @@
 ---
 name: break-failure-loop
-description: エージェントが同じエラーや方針で2回以上失敗したときに、続行せず、仮説・確認済み事項・未確認事項・次の分岐を整理したいときに使う。
+description: Stop and reframe when an agent has failed twice with the same error or approach — organize hypotheses, confirmed facts, unknowns, and next branches.
+license: Apache-2.0
 ---
 
 # Break Failure Loop
 
-## 目的
+## Purpose
 
-- 同じ失敗の反復を止め、変更量だけが増える状態を防ぐ。
-- 仮説更新のない試行錯誤を止め、次の一手を 1 つに絞る。
+- Stop repeating the same failure and prevent a state where only the change count grows.
+- Stop trial-and-error without hypothesis updates and narrow the next action to one.
 
-## 使う条件
+## Conditions
 
-- 同じテストが 2 回以上失敗している
-- 同じ修正方針で解決していない
-- エラーの原因仮説が更新されていない
-- 変更量だけが増えている
+- The same test has failed two or more times
+- The same fix strategy has not resolved the issue
+- The root-cause hypothesis has not been updated
+- Only the number of changes is increasing
 
-## やること
+## What to do
 
-- これまでの試行を時系列で整理する
-- 成功した確認と失敗した確認を分ける
-- 現在の仮説を最大 3 つに絞る
-- 追加で読むべきファイルを最大 5 つに絞る
-- 次の一手を 1 つだけ提案する
-- 実装継続が危険な場合は停止を提案する
+- Organize the history of attempts in chronological order
+- Separate confirmed findings from failed attempts
+- Narrow current hypotheses to at most 3
+- Narrow files still to read to at most 5
+- Propose exactly one next action
+- Propose stopping if continuing implementation would be dangerous
 
-## 手順
+## Steps
 
-1. 直近の試行を古い順に並べる。
-2. 何を変えたか、何を確認したか、結果がどうだったかを分ける。
-3. 確認できた事実と、まだ推測のままのことを分ける。
-4. 現在の仮説を最大 3 つに絞り、各仮説に根拠を付ける。
-5. 追加で読むべきファイルを最大 5 つに絞る。
-6. 次に確認することを 1 つだけ決める。
-7. 同じ仮説のまま続けるだけなら、続行ではなく停止を提案する。
+1. List recent attempts in chronological order.
+2. For each attempt, separate: what was changed, what was checked, and what the result was.
+3. Separate confirmed facts from things still based on guesses.
+4. Narrow current hypotheses to at most 3; attach evidence to each hypothesis.
+5. Narrow files still to read to at most 5.
+6. Choose exactly one thing to check next.
+7. If the only option is to continue with the same hypothesis, propose stopping instead of continuing.
 
-## 出力フォーマット
+## Output format
 
-- 現在の状況: ...
-- 試したこと:
+- Current situation: ...
+- What was tried:
   - ...
-- 分かったこと:
+- What was confirmed:
   - ...
-- まだ分かっていないこと:
+- What is still unknown:
   - ...
-- 有力仮説:
+- Leading hypotheses:
   - ...
-- 次に確認すること: ...
-- 続行 / 停止の判断: ...
+- Next thing to check: ...
+- Continue / Stop judgment: ...
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- 試行履歴を時系列で整理する
-- 成功した確認と失敗した確認を分ける
-- 仮説は最大 3 つに絞る
-- 次の一手は 1 つだけ提案する
+- Organize attempt history in chronological order
+- Separate confirmed findings from failed attempts
+- Narrow hypotheses to at most 3
+- Propose exactly one next action
 
 ### Ask first:
 
-- 実装継続より停止が妥当な場合
-- 追加変更が大きく、さらに失敗コストが増える場合
+- When stopping is more appropriate than continuing implementation
+- When additional changes are large and failure cost is growing further
 
 ### Never:
 
-- 同じ仮説のまま 3 回目の同系統修正に進まない
-- 状況整理なしで変更だけを積み増さない
+- Do not proceed to a third attempt of the same approach with the same hypothesis
+- Do not accumulate more changes without first organizing the situation

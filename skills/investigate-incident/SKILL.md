@@ -1,84 +1,85 @@
 ---
 name: investigate-incident
-description: 本番エラー調査や incident investigation を行い、stack trace やログ起点で原因候補と確認手順を整理したいときに使う。
+description: Investigate a production error or incident — organize failure paths, root-cause candidates, and next steps from a stack trace or log.
+license: Apache-2.0
 ---
 
-# Investigate Incident (本番エラー調査)
+# Investigate Incident
 
-## 目的
+## Purpose
 
-- 本番運用中に発生したエラーについて、コードベース内の失敗経路を調査し、原因候補と根拠を整理する。
-- 試行錯誤の多い探索を main context から切り離し、原因特定に必要な要点だけを返す。
+- For errors occurring in production, investigate failure paths in the codebase and organize root-cause candidates with evidence.
+- Offload trial-and-error exploration from the main context; return only what is needed to identify the cause.
 
-## 使う場面
+## When to use
 
-- 本番でエラーや障害が起き、コードベースの調査を先に進めたいとき
-- stack trace、ログ断片、失敗した機能から原因候補を絞りたいとき
-- 修正実装に入る前に、再現条件、失敗経路、根拠、追加確認事項を整理したいとき
+- When an error or incident occurs in production and you want to advance the codebase investigation first
+- When you want to narrow root-cause candidates from a stack trace, log fragment, or failing feature
+- When you want to organize reproduction conditions, failure paths, evidence, and open items before starting a fix implementation
 
-## 入力 (任意)
+## Input (optional)
 
-- エラーメッセージ
-- stack trace
-- 発生機能や影響範囲
-- 再現手順の有無
-- 直近 deploy / PR / feature flag の情報
-- 疑わしいファイルやモジュール
-- 利用可能な確認コマンド
+- Error message
+- Stack trace
+- Affected feature and impact scope
+- Whether reproduction steps are known
+- Recent deploy / PR / feature flag information
+- Suspicious files or modules
+- Available verification commands
 
-## 手順
+## Steps
 
-1. 事象の要点、影響範囲、既知情報、不足情報を短く整理する。
-2. コードベース内で確認すべき入口、失敗箇所候補、関連設定を洗い出す。
-3. ノイズの多い探索や複数候補の切り分けが必要な場合は、確認観点と仮説を整理しながら調査を進める。
-4. 再現できたこと、再現できていないこと、仮説の優先順位を分ける。
-5. 各仮説に対してコード上の根拠、関連ファイル、確認すべき条件を結び付ける。
-6. 仮説、確認済み、未確認、次の分岐を明示し、根拠のない断定を避ける。
-7. 原因が断定できない場合でも、有力仮説、追加で必要な情報、次に確認すべきことを整理する。
-8. 修正実装には進まず、必要なら `design-changes` や `implement-changes` へ渡すための引き継ぎをまとめる。
+1. Briefly organize the key facts, impact scope, known information, and missing information.
+2. Identify entry points, failure location candidates, and related configuration in the codebase.
+3. For noisy exploration or cutting between multiple candidates, organize verification angles and hypotheses as the investigation proceeds.
+4. Separate what can be reproduced, what cannot, and the priority of hypotheses.
+5. For each hypothesis, link code-level evidence, related files, and conditions to verify.
+6. Explicitly state hypotheses, confirmed items, unknowns, and next branches; avoid baseless assertions.
+7. Even if the cause cannot be confirmed, organize the leading hypotheses, additional information needed, and what to check next.
+8. Do not proceed to fix implementation; compile a handoff for `design-changes` or `implement-changes` if needed.
 
-## 出力フォーマット
+## Output format
 
-- 事象の要約: ...
-- 影響範囲: ...
-- 再現状況: ...
-- 失敗経路の説明: ...
-- 有力仮説:
-  - 高: ...
-  - 中: ...
-  - 低: ...
-- 根拠ファイル / 設定 / 関数: ...
-- 確認済み: ...
-- 未確認: ...
-- 次の分岐: ...
-- 不足情報: ...
-- 次に確認すべきこと: ...
-- 暫定封じ込め案: ...
-- 修正へ渡す引き継ぎ: ...
+- Incident summary: ...
+- Impact scope: ...
+- Reproduction status: ...
+- Failure path description: ...
+- Leading hypotheses:
+  - High: ...
+  - Medium: ...
+  - Low: ...
+- Evidence files / config / functions: ...
+- Confirmed: ...
+- Unconfirmed: ...
+- Next branches: ...
+- Missing information: ...
+- Next thing to check: ...
+- Provisional containment options: ...
+- Handoff for fix: ...
 
-## Companion skills (推奨)
+## Companion skills
 
 - `design-changes`
 - `record-session-handoff`
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- 根拠をファイル、設定、関数、コマンドに結び付ける
-- 断定できたことと未確認事項を分ける
-- 原因候補は優先順位付きで示す
-- 仮説、確認済み、未確認、次の分岐を分ける
-- 調査メモと引き継ぎ事項を分けて整理する
+- Link evidence to files, configuration, functions, and commands
+- Separate confirmed facts from unconfirmed items
+- Show root-cause candidates with priority ordering
+- Separate hypotheses, confirmed, unconfirmed, and next branches
+- Organize investigation notes and handoff items separately
 
 ### Ask first:
 
-- 外部ログ基盤、監視ツール、issue tracker など外部システムへアクセスする場合
-- 本番データや本番権限を直接使う必要がある場合
-- 高リスク変更や封じ込め操作まで進める場合
+- When access to external logging, monitoring tools, or issue trackers is needed
+- When production data or production permissions would be used directly
+- When proceeding to high-risk changes or containment operations
 
 ### Never:
 
-- 黙って本番変更やデータ変更を行う
-- 原因調査の流れで修正実装や deploy まで進める
-- 根拠のない断定で調査を締める
+- Silently make production changes or data changes
+- Proceed to fix implementation or deploy as part of the investigation
+- Close the investigation with baseless assertions

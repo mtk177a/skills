@@ -1,70 +1,70 @@
 ---
 name: scope-request
-description: 依頼や問題の範囲を整理し、目的・完了条件・制約・前提を明確にしたいときに使う。
+description: Clarify the scope of a request or problem — make purpose, completion criteria, constraints, and assumptions explicit.
+license: Apache-2.0
 ---
 
-# Scope Request (依頼整理)
+# Scope Request
 
-## 目的
+## Purpose
 
-- 曖昧な依頼や問題を、単体で意思決定や次アクションに使える形へ整える。
-- 着手前に課題の目的、背景、完了条件、制約を明確化し、後工程での手戻りを減らす。
+- Shape a vague request or problem into a form usable for decision-making and next actions on its own.
+- Before starting, clarify the purpose, background, completion criteria, and constraints to reduce rework downstream.
 
-## 使う場面
+## When to use
 
-- 依頼の背景や目的が曖昧なとき
-- 完了条件や制約を先にそろえたいとき
-- 不具合や改善要望を、実行可能な作業単位へ整理したいとき
+- When the background or purpose of a request is unclear
+- When you want to establish completion criteria and constraints up front
+- When you want to organize a bug or improvement request into an actionable unit
 
-## 入力 (任意)
+## Input (optional)
 
-- 依頼文
-- 関連する課題やエラーメッセージ
-- 既知の制約
+- Request text
+- Related issues or error messages
+- Known constraints
 
-## 手順
+## Steps
 
-1. 依頼の要点、目的、背景を短く要約する。
-2. 完了条件 (Done の判定) を定義する。
-3. 制約 (期限、技術、運用、組織) と前提を整理する。
-4. スコープ外と未解決事項を分けて明示する。
-5. 曖昧さが残る場合は確認事項を列挙し、必要なら `clarify-request` を適用する。
-6. この整理結果だけで次の判断や依頼者確認に進めるよう、次のステップを整理する。
-7. 高リスクな前提差や大きな曖昧さが残る場合だけ、追加確認の必要性を明示する。
+1. Briefly summarize the key points, purpose, and background of the request.
+2. Define the completion criteria (how "done" is determined).
+3. Organize constraints (deadline, technology, operational, organizational) and assumptions.
+4. Separately state what is out of scope and what is unresolved.
+5. If ambiguity remains, list items to clarify; apply `clarify-request` if needed.
+6. Organize the next steps so that this output alone is sufficient to proceed to the next judgment or requester confirmation.
+7. Only when high-risk assumption gaps or significant ambiguity remain, explicitly state the need for additional confirmation.
 
-## 出力フォーマット
+## Output format
 
-- 依頼の要約: ...
-- 目的: ...
-- 背景: ...
-- 完了条件: ...
-- 制約: ...
-- 前提: ...
-- スコープ外: ...
-- 未解決事項: ...
-- 次のステップ: ...
-- 確認したい点: ...
+- Request summary: ...
+- Purpose: ...
+- Background: ...
+- Completion criteria: ...
+- Constraints: ...
+- Assumptions: ...
+- Out of scope: ...
+- Unresolved items: ...
+- Next steps: ...
+- Items to confirm: ...
 
-## Companion skills (推奨)
+## Companion skills
 
 - `clarify-request`
 - `draft-issue`
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- 日本語で整理する
-- 目的と完了条件を分けて書く
-- 背景と未解決事項を分けて記録する
-- 単体で読んでも次の判断に使える粒度まで整理する
-- 別エージェント / サブエージェントは既定で使わず、まずこの Skill 単体で整理結果を返す
+- Separate purpose from completion criteria
+- Record background and unresolved items separately
+- Organize to a granularity where the output alone is sufficient for the next decision
+- Do not use another agent / subagent by default; return organized results from this Skill alone first
 
 ### Ask first:
 
-- 要件や制約に大きな解釈差がありそうな場合
+- When there appear to be significant interpretation differences in requirements or constraints
 
 ### Never:
 
-- 未整理のまま大きな実装方針を断定する
-- 目的未確定のまま設計や実装へ進む
+- Assert a major implementation approach while still disorganized
+- Proceed to design or implementation without a confirmed purpose

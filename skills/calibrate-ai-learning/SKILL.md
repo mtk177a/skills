@@ -1,81 +1,82 @@
 ---
 name: calibrate-ai-learning
-description: AI エージェントへの委任が深くなりすぎている時や、未知領域で理解を保ちながら作業したい時に使う。
+description: Use when delegation to AI agents is getting too deep, or when you want to maintain understanding while working in an unfamiliar domain.
+license: Apache-2.0
 ---
 
 # Calibrate AI Learning
 
-## 目的
+## Purpose
 
-- AI への委任範囲を調整し、ユーザーが判断・検証・説明責任を手放さない状態にする。
-- 未知領域や浅い理解のまま作業が進みそうなとき、理解確認と次に任せる作業を分ける。
+- Calibrate the scope of AI delegation so the user retains judgment, verification, and accountability.
+- When work is about to proceed with insufficient understanding, separate concepts to learn from tasks to delegate.
 
-## 使う場面
+## When to use
 
-- AI に任せすぎて、変更理由や採否を自分で説明できないと感じるとき
-- 未知の技術、ライブラリ、設計領域で、まず何を理解すべきか整理したいとき
-- 実装やレビューに入る前に、AI へ何を依頼し、何を自分で判断するか決めたいとき
-- 納期優先か学習優先かで、支援の深さを調整したいとき
+- When you feel you cannot explain the reason for a change or accept/reject a decision because too much has been delegated to AI
+- When working in an unfamiliar technology, library, or design domain, and you want to organize what to understand first
+- When you want to decide what to ask AI and what to judge yourself before starting implementation or review
+- When you want to adjust the depth of support based on whether the priority is learning or meeting a deadline
 
-## 入力 (任意)
+## Input (optional)
 
-- やりたい作業、作りたいもの、直したい問題
-- 現在分かっていること、分かっていないこと
-- 学習目的か、納期優先か
-- 既に AI から受け取った提案、コード、レビュー指摘
-- 使える一次情報、既存実装、テストコマンド
+- The task, thing to build, or problem to fix
+- What you currently understand and what you do not
+- Whether the priority is learning or meeting a deadline
+- Proposals, code, or review comments already received from AI
+- Available primary sources, existing implementations, test commands
 
-## 手順
+## Steps
 
-1. 依頼内容を短く要約し、現在の理解と不明点を分ける。
-2. 作業に必要な概念、前提知識、判断軸を 3〜5 個に絞る。
-3. 学習優先か納期優先かを確認し、AI の支援深度を決める。
-4. AI に委任してよい作業と、ユーザーが自分で判断すべき作業を分ける。
-5. AI へ渡す依頼文を、目的、制約、確認してほしい点が分かる形に整える。
-6. 理解確認のための短い確認問題を作る。
-7. 次回、AI なしまたは少ない支援で試す自力課題を 1〜2 個に絞る。
-8. 高リスク領域では、公式情報、既存実装、テスト結果のどれで検証するかを明示する。
+1. Summarize the request briefly; separate current understanding from unknowns.
+2. Narrow the concepts, prerequisites, and decision criteria needed for the task to 3–5.
+3. Confirm whether the priority is learning or meeting a deadline; decide the depth of AI support.
+4. Separate tasks that can be delegated to AI from decisions the user must make themselves.
+5. Organize the request to AI so that purpose, constraints, and points to verify are clear.
+6. Create short comprehension-check questions.
+7. Narrow self-study tasks to try with little or no AI support to 1–2.
+8. For high-risk areas, explicitly state which of official documentation, existing implementations, or test results will be used for verification.
 
-## 出力フォーマット
+## Output format
 
-- 現在の理解: ...
-- 理解すべき概念:
+- Current understanding: ...
+- Concepts to understand:
   - ...
-- 委任してよい作業:
+- Tasks that can be delegated:
   - ...
-- 自分で判断すべき作業:
+- Decisions to make myself:
   - ...
-- AI への依頼文: ...
-- 確認問題:
+- Request to AI: ...
+- Comprehension check questions:
   - ...
-- 次回の自力課題:
+- Self-study tasks for next time:
   - ...
-- 検証に使う根拠: ...
+- Evidence to use for verification: ...
 
-## Companion skills (推奨)
+## Companion skills
 
 - `triage-agent-usage`
 - `design-changes`
 - `review-changes`
 - `validate-fix`
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- 現在の理解と未理解を分ける
-- 委任してよい作業と自分で判断すべき作業を分ける
-- 理解すべき概念を一般論で膨らませず、今回の作業に必要なものへ絞る
-- 高リスク領域では、公式情報、既存実装、テスト結果のうち利用できる根拠を明示し、未確認事項を残す
-- AI 生成物を未検証入力として扱い、根拠と未確認事項を残す
+- Separate current understanding from unknowns
+- Separate delegatable tasks from decisions to make yourself
+- Keep concepts to understand focused on what is needed for the current task, not general theory
+- For high-risk areas, explicitly state which available evidence will be used for verification; leave unverified items as open
+- Treat AI-generated content as unverified input; leave evidence and open items
 
 ### Ask first:
 
-- 学習優先か納期優先かで支援深度が大きく変わる場合
-- ユーザーが説明責任を負う高リスク判断を AI に丸投げしようとしている場合
+- When the depth of support would change significantly depending on whether the priority is learning or a deadline
+- When the user is about to fully delegate a high-accountability, high-risk decision to AI
 
 ### Never:
 
-- 答えの丸出しを既定にする
-- 重要な判断を、根拠や確認問題なしに AI の結論だけで進める
-- 未知領域で理解すべき概念を整理せず、すぐ実装へ進める
+- Default to revealing answers without engagement
+- Proceed on an important decision using only AI conclusions, without evidence or comprehension checks
+- Move directly to implementation without organizing what concepts need to be understood in an unfamiliar domain

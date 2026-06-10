@@ -1,40 +1,41 @@
 ---
 name: record-session-handoff
-description: AIエージェントとの会話で決定事項を外部メモ化し、別セッションへ安全に引き継ぐ。session memory, handoff, notes, context continuity
+description: Record decisions as external notes during an AI agent conversation and hand off safely to the next session. (session memory, handoff, notes, context continuity)
+license: Apache-2.0
 ---
 
-# Record Session Handoff (セッション横断メモ運用)
+# Record Session Handoff
 
-## 目的
+## Purpose
 
-- セッションごとの決定事項・未決事項・次アクションを外部メモとして残し、別セッションでも同じ文脈で再開できる状態を作る。
+- Record decisions, open questions, and next actions as external notes so that a new session can resume in the same context.
 
-## 使う場面
+## When to use
 
-- 会話コンテキストが長くなり、別セッションに切り替えたいとき
-- 複数フェーズの作業を分けて進めたいとき
-- 一度決めた方針を次回以降も再利用したいとき
+- When the conversation context is getting long and you want to switch to a new session
+- When you want to work across multiple phases in separate sessions
+- When you want to reuse a decision that was made once in future sessions
 
-## 入力 (任意)
+## Input (optional)
 
-- 対象プロジェクト名
-- 現在のタスク名
-- セッションログの保存先
-- 最新 handoff の保存先
-- 永続化する decisions の保存先
-- 今回の決定事項/未決事項
-- 次セッションで最初にやること
+- Target project name
+- Current task name
+- Storage location for the session log
+- Storage location for the latest handoff
+- Storage location for persisted decisions
+- Decisions / open questions for this session
+- First thing to do in the next session
 
-## 手順
+## Steps
 
-1. メモ対象のプロジェクトを特定する。
-2. セッション開始時に、入力された最新 handoff の保存先を確認し、前回からの継続事項を明確化する。
-3. 作業中に重要な決定事項だけを抽出し、確定/保留を分ける。
-4. セッション終了時に、入力されたセッションログの保存先へ記録を作成または更新する。
-5. 入力された最新 handoff の保存先に、次セッション用の要約を更新する。
-6. 確定した方針だけを、入力された decisions の保存先へ昇格する。
+1. Identify the project to record notes for.
+2. At the start of a session, check the latest handoff at the provided location and clarify continuations from the previous session.
+3. During work, extract only the important decisions and separate confirmed from pending.
+4. At the end of a session, create or update the session log at the provided location.
+5. Update the latest handoff at the provided location with a summary for the next session.
+6. Promote only confirmed decisions to the decisions storage location.
 
-## 出力フォーマット
+## Output format
 
 ```md
 Session Log:
@@ -55,27 +56,27 @@ Handoff (latest):
   - ...
 ```
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- セッション開始時に最新 handoff を確認する
-- セッション終了時に Decisions / Open Questions / Next Actions を残す
-- 確定事項と未確定事項を分離して記録する
+- Check the latest handoff at the start of each session
+- Leave Decisions / Open Questions / Next Actions at the end of each session
+- Record confirmed and unconfirmed items separately
 
 ### Ask first:
 
-- 既存の運用ルール文書 (AGENTS.md / docs) への反映
-- 保存先が未指定のまま運用を始めること
+- When incorporating into existing operational rule documents (AGENTS.md / docs)
+- When starting operations without a specified storage location
 
 ### Never:
 
-- 会話履歴だけを唯一の記録として扱う
-- 未確定事項を確定事項として `decisions` に記録する
-- 秘密情報をメモに書く
+- Treat the conversation history as the only record
+- Record unconfirmed items as confirmed in `decisions`
+- Write secrets in notes
 
-## 注意点 (任意)
+## Notes (optional)
 
-- 1セッション1ログを基本にし、肥大化したログは次回開始前に要約する。
-- 形式は固定しすぎず、必須項目 (Decisions / Open Questions / Next Actions) を優先する。
-- 出力テンプレートは英語で記述している。セッション間の引き継ぎは agent や人間を問わず参照されるため、英語で統一している。
+- Keep one log per session; summarize logs that grow too large before the next session starts.
+- Do not over-fix the format; prioritize the required fields (Decisions / Open Questions / Next Actions).
+- The output template is in English because session handoffs are referenced by both agents and humans across sessions.

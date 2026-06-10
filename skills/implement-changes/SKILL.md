@@ -1,84 +1,84 @@
 ---
 name: implement-changes
-description: 変更を小さく実装し、テスト駆動で安全に進めたいときに使う。
+description: Implement changes incrementally with test-driven development to progress safely.
+license: Apache-2.0
 ---
 
-# Implement Changes (実装)
+# Implement Changes
 
-## 目的
+## Purpose
 
-- テスト駆動開発を標準動作として、小さく安全に実装を進める。
-- 実装判断からテスト、検証への引き継ぎまでを、まずこの Skill 単体で進める。
+- Use test-driven development as the default behavior to implement incrementally and safely.
+- Drive from implementation decisions through testing to verification handoff, using this Skill alone first.
 
-## 使う場面
+## When to use
 
-- 新機能や修正を TDD で進めたいとき
-- 小さな作業単位で安全に実装を進めたいとき
-- 検証へ渡せる状態まで整理しながら進めたいとき
+- When you want to proceed with a new feature or fix using TDD
+- When you want to implement safely in small units
+- When you want to progress while organizing to a state ready to hand off to verification
 
-## 入力 (任意)
+## Input (optional)
 
-- `design-changes` の出力
-- 対象機能の概要
-- テスト実行コマンド
-- 実装対象ファイル、制約
-- 着手条件、対象範囲、停止条件
+- Output from `design-changes`
+- Overview of the target feature
+- Test execution command
+- Implementation target files, constraints
+- Entry conditions, scope, stop conditions
 
-## 手順
+## Steps
 
-1. 与えられた着手条件、対象範囲、停止条件を確認する。明示されていない場合は、入力と既存実装から必要条件を補い、不足は不足として記録する。
-2. 着手条件が欠けている、または停止条件に当たる場合は実装へ進まず、止まる理由と次の確認事項を出力する。
-3. 実装へ進める場合のみ、実装タスクを小さな作業単位に分割し、対象と期待動作を明確化する。
-4. テストリストを作る。
-5. テストリストから 1 件だけ選ぶ。
-6. 具体的なテストに翻訳し、失敗を確認する。
-7. 最小実装でテストを通す。
-8. テストが通った状態でのみリファクタリングする。
-9. 気づきをテストリストへ追加し、繰り返す。
-10. テスト実行計画と検証への引き継ぎ内容を更新する。
-11. 変更理由、検証根拠、ユーザー向け説明ポイントを引き継ぎに残す。
-12. 高リスク変更や品質面の不確実性が残る場合だけ、追加確認の必要性を明示する。
-13. TDD の具体的なリズムが必要なら `references/tdd_twada.md` を参照する。
+1. Confirm the given entry conditions, scope, and stop conditions. If not stated explicitly, infer requirements from input and existing implementation; record anything missing as missing.
+2. If entry conditions are not met, or a stop condition applies, do not proceed to implementation; output the reason for stopping and the next items to confirm.
+3. Only when ready to proceed: break implementation tasks into small units; make the target and expected behavior explicit.
+4. Create a test list.
+5. Select exactly one item from the test list.
+6. Translate it into a concrete test; confirm it fails (Red).
+7. Write the minimal implementation to make the test pass (Green).
+8. Refactor only when the test is passing.
+9. Add new insights to the test list and repeat.
+10. Update the test execution plan and verification handoff content.
+11. Leave the reason for the change, verification basis, and explanation points for the user in the handoff.
+12. Only when high-risk changes or quality uncertainty remain, explicitly state the need for additional confirmation.
+13. For the concrete TDD rhythm, refer to `references/tdd_twada.md`.
 
-## 出力フォーマット
+## Output format
 
-- 対象: ...
-- 作業単位: ...
-- 変更ファイル: ...
-- 期待動作: ...
-- 着手条件の確認結果: ...
-- 対象範囲: ...
-- 停止条件 (`Ask first`): ...
-- テストリスト:
+- Target: ...
+- Work units: ...
+- Files to change: ...
+- Expected behavior: ...
+- Entry condition check result: ...
+- Scope: ...
+- Stop conditions (Ask first): ...
+- Test list:
   - ...
-- 現在のテスト: ...
-- 現在のフェーズ: Blocked | Red | Green | Refactor | Done
-- 検証への引き継ぎ: ...
-- 変更理由: ...
-- 検証根拠: ...
-- ユーザー向け説明ポイント: ...
-- 次の一手: ...
+- Current test: ...
+- Current phase: Blocked | Red | Green | Refactor | Done
+- Verification handoff: ...
+- Reason for change: ...
+- Verification basis: ...
+- User explanation points: ...
+- Next action: ...
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- Red → Green → Refactor の順を守る
-- テストは 1 件ずつ進める
-- 出力は日本語で書く
-- 着手条件を満たさない場合は `Blocked` として止まる
-- 期待動作と検証への引き継ぎを明示する
-- 変更理由、検証根拠、説明ポイントを残す
-- `design-changes` がなくても入力情報だけで着手可否を判断する
-- 別エージェント / サブエージェントは既定で使わず、まずこの Skill 単体で進める
+- Follow the Red → Green → Refactor order
+- Advance tests one at a time
+- Stop as `Blocked` when entry conditions are not met
+- State expected behavior and verification handoff explicitly
+- Leave reason for change, verification basis, and explanation points
+- Assess whether to proceed using only the input when `design-changes` output is not available
+- Do not use another agent / subagent by default; proceed with this Skill alone first
 
 ### Ask first:
 
-- テスト方針や依存関係を大きく変える場合
-- 破壊的変更や大量変更が必要な場合
-- 着手条件が満たせず、前提確認が必要な場合
+- When test strategy or dependencies would change significantly
+- When destructive or large-scale changes are needed
+- When entry conditions cannot be met and prerequisite confirmation is needed
 
 ### Never:
 
-- Red の確認なしで実装を始める
-- テストを削って無理に通す
+- Start implementation without confirming Red
+- Remove tests to force a pass

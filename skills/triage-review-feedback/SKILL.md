@@ -1,71 +1,71 @@
 ---
 name: triage-review-feedback
-description: 人間や他の AI から来たレビュー指摘を整理し、採否と対応方針を決めたいときに使う。
+description: Sort review comments from humans or other AI into accepted, deferred, and rejected — decide on a response approach.
+license: Apache-2.0
 ---
 
-# Triage Review Feedback (レビュー指摘整理)
+# Triage Review Feedback
 
-## 目的
+## Purpose
 
-- 外部から来たレビュー指摘を整理し、採否と対応方針を判断できる状態にする。
+- Organize external review comments into a state where accept/reject decisions and a response approach can be determined.
 
-## 使う場面
+## When to use
 
-- GitHub Copilot や他エージェントのレビューを受けたとき
-- 人間レビューの指摘を実装に落としたいとき
-- 指摘の妥当性や優先順位を整理したいとき
+- When you receive a review from GitHub Copilot or another agent
+- When you want to translate human review comments into implementation
+- When you want to organize the validity and priority of findings
 
-## 入力 (任意)
+## Input (optional)
 
-- レビュー本文
-- 対象差分
-- 関連仕様や背景
-- `review-changes` の結果
+- Review body
+- Target diff
+- Related specifications or background
+- Output from `review-changes`
 
-## 手順
+## Steps
 
-1. レビュー指摘を要約する。
-2. 指摘ごとに、ローカル実装だけで判断できる論点か、外部仕様やプラットフォーム挙動の確認が必要な論点かを切り分ける。
-3. 指摘ごとに採用、保留、却下を判断する。
-4. 判断理由を書く。
-5. 採用する場合は優先順位と対応方針を決める。
-6. 追加確認が必要な指摘は、確認事項として切り出す。
-7. 外部仕様やプラットフォーム挙動に依存する指摘は未検証入力として扱い、公式ドキュメントや一次情報で裏取りできるまで自動採用しない。
-8. 判断材料が不足する場合は、追加確認事項を明示し、別エージェント / サブエージェントの利用は必要時だけ提案する。
+1. Summarize the review findings.
+2. For each finding, separate whether it can be judged from local implementation alone, or whether it requires confirming external specifications or platform behavior.
+3. For each finding, decide: accept, defer, or reject.
+4. Write the reason for the decision.
+5. For accepted findings, decide priority and response approach.
+6. Extract findings that require additional confirmation as open items.
+7. Treat findings that depend on external specifications or platform behavior as unverified input; do not automatically accept until verified against official documentation or primary sources.
+8. When decision material is insufficient, explicitly state additional confirmation items; suggest using another agent / subagent only when needed.
 
-## 出力フォーマット
+## Output format
 
-- レビュー要約: ...
-- 指摘一覧:
+- Review summary: ...
+- Findings:
   - ...
-- 判断:
+- Decisions:
   - ...
-- 判断理由:
+- Reasons for decisions:
   - ...
-- 対応方針:
+- Response approach:
   - ...
-- 追加で確認したい点:
+- Additional items to confirm:
   - ...
 
-## Companion skills (推奨)
+## Companion skills
 
 - `research-web-safely`
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- 指摘の内容説明と採否理由を分けて書く
-- 出力は日本語で書く
-- 採用する指摘には優先順位を付ける
-- 単体で実装着手や保留判断に進める粒度まで対応方針を書く
-- 外部仕様やプラットフォーム挙動に依存する指摘は、公式ドキュメントや一次情報で裏取りするまで自動採用しない
-- 別エージェント / サブエージェントは既定で使わず、まずこの Skill 単体で採否判断を返す
+- Separate the description of a finding from the reason for the accept/reject decision
+- Attach priority to accepted findings
+- Write the response approach to a granularity sufficient to proceed to implementation or defer
+- Do not automatically accept findings that depend on external specifications or platform behavior without verification against official documentation or primary sources
+- Do not use another agent / subagent by default; return accept/reject decisions from this Skill alone first
 
 ### Ask first:
 
-- 仕様そのものを変更する判断が必要な場合
+- When a judgment that changes the spec itself is needed
 
 ### Never:
 
-- 理由なしで採否を決める
+- Decide accept/reject without a reason

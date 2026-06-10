@@ -1,92 +1,93 @@
 ---
 name: design-changes
-description: 実装前に、変更方針・影響範囲・リスク・確認方針を設計したいときに使う。
+description: Use before implementing to design the change approach, impact scope, risks, and verification strategy.
+license: Apache-2.0
 ---
 
-# Design Changes (変更設計)
+# Design Changes
 
-## 目的
+## Purpose
 
-- 実装前に変更方針を固め、影響範囲と確認方針を明確にする。
-- 要件に対して実装可能な設計を作り、単体でレビューや着手判断に使える変更方針と検証戦略を決める。
+- Solidify the change approach before implementation; clarify impact scope and verification strategy.
+- Produce an implementable design for the requirements, and determine a change approach and test strategy usable on their own for review and go/no-go decisions.
 
-## 使う場面
+## When to use
 
-- 変更対象や非対象を切り分けたいとき
-- 実装前に依存やリスクを整理したいとき
-- テストや確認の考え方を先に決めたいとき
+- When you want to separate what to change from what not to change
+- When you want to organize dependencies and risks before implementing
+- When you want to define the testing and verification approach up front
 
-## 入力 (任意)
+## Input (optional)
 
-- `scope-request` の整理結果
-- 関連ファイルや既存仕様
-- 既存コードや構成の理解メモ
+- Output from `scope-request`
+- Related files or existing specifications
+- Notes on understanding existing code or configuration
 
-## 手順
+## Steps
 
-1. 既存構造とエントリポイントを確認する。
-2. 可読性改善が主目的なら、入口、主要な分岐、大きな処理の流れ、補助関数群を先に特定する。
-3. 長いファイルでは、処理段階ごとのまとまりを先に把握してから変更計画を書く。
-4. 変更対象と変更対象外を分ける。
-5. 依存関係、モジュール境界、影響範囲を整理する。
-6. インデント、コメント、空行、コメントアウトコード整理のような変更では、局所差分ではなく読み手が追う単位で変更単位を切る。
-7. リスクと回避策を列挙する。
-8. テスト戦略と確認方針を決める。
-9. 実装へ進める条件、対象範囲、停止条件を明示する。
-10. 変更単位を最小差分に分割し、承認前提で進めるべき点があれば明示する。
-11. 変更前に理解すべき概念、主要なトレードオフ、ユーザーが説明すべき判断を明示する。
-12. 高リスクまたは不確実な設計判断が残る場合は、追加確認の必要性を明示する。
+1. Review the existing structure and entry points.
+2. If the primary purpose is readability improvement, first identify the entry point, major branches, overall flow, and helper groups.
+3. For long files, understand the grouping by processing stage before writing the change plan.
+4. Separate what to change from what not to change.
+5. Organize dependencies, module boundaries, and impact scope.
+6. For changes like indentation, comment, blank line, or commented-out code cleanup, define change units at the granularity the reader follows, not at local diffs.
+7. List risks and mitigations.
+8. Decide the test strategy and verification approach.
+9. Explicitly state the conditions for proceeding to implementation, the scope, and stop conditions.
+10. Split change units into minimal diffs; explicitly flag anything that should proceed only with approval.
+11. Explicitly state concepts to understand before changing, key tradeoffs, and decisions the user must be able to explain.
+12. If high-risk or uncertain design decisions remain, explicitly state the need for additional confirmation.
 
-## 出力フォーマット
+## Output format
 
-- 設計の要約: ...
-- 変更対象: ...
-- 変更対象外: ...
-- 依存と影響: ...
-- モジュール境界: ...
-- 変更前に理解すべき概念: ...
-- 主なトレードオフ: ...
-- ユーザーが説明すべき判断: ...
-- 主なリスク: ...
-- 回避策: ...
-- テスト戦略: ...
-- 確認方針: ...
-- 実装へ進む条件: ...
-- 実装の対象範囲: ...
-- 停止条件 (`Ask first`): ...
-- 変更単位: ...
-- セルフレビュー観点: ...
+- Design summary: ...
+- What to change: ...
+- What not to change: ...
+- Dependencies and impact: ...
+- Module boundaries: ...
+- Concepts to understand before changing: ...
+- Key tradeoffs: ...
+- Decisions the user must explain: ...
+- Key risks: ...
+- Mitigations: ...
+- Test strategy: ...
+- Verification approach: ...
+- Conditions to proceed to implementation: ...
+- Implementation scope: ...
+- Stop conditions (Ask first): ...
+- Change units: ...
+- Self-review checklist: ...
 
-## Companion skills (推奨)
+## Companion skills
 
 - `plan-risky-change`
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- 変更対象と変更対象外を分ける
-- リスクと確認方針をセットで出す
-- テスト戦略を明示する
-- 実装へ進む条件と停止条件を明示する
-- 可読性改善では、読み手の理解単位で変更単位を切る
-- 変更前に理解すべき概念と、説明すべき判断を残す
-- 既存スタイルや設計に合わせる
-- 別エージェント / サブエージェントは既定で使わず、まずこの Skill 単体で設計判断を返す
+- Separate what to change from what not to change
+- Pair risks with verification approach
+- State the test strategy explicitly
+- State conditions to proceed and stop conditions explicitly
+- For readability improvements, define change units at the granularity the reader follows
+- Leave concepts to understand and decisions to explain
+- Match existing style and design
+- Do not use another agent / subagent by default; return design decisions from this Skill first
 
-## 確認方針 / セルフレビュー観点
+## Self-review checklist
 
-- 入口と大枝が一目で分かる計画になっているか
-- コメントの粒度と役割がそろう変更単位になっているか
-- 変更単位が読み手の理解単位と一致しているか
-- 主要なトレードオフを、ユーザーが自分の言葉で説明できるか
+- Does the plan make the entry points and major branches immediately clear?
+- Are change units aligned with comment granularity and roles?
+- Do change units match the reader's unit of understanding?
+- Can the user explain the key tradeoffs in their own words?
 
 ### Ask first:
 
-- 依存追加や大きな設計変更が必要な場合
-- 大規模整理や破壊的変更が必要な場合
+- When dependency additions or large design changes are needed
+- When large-scale reorganization or destructive changes are needed
 
 ### Never:
 
-- 設計なしで大きな変更へ入る
-- 無断で大規模な構造刷新を進める
+- Start large changes without a design
+- Proceed with large structural rewrites without approval

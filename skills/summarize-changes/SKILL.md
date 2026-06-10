@@ -1,103 +1,103 @@
 ---
 name: summarize-changes
-description: 差分をもとに、PR要約・リリース説明・引き継ぎメモを共有しやすい形にまとめたいときに使う。
+description: Summarize a diff into a PR description, release handoff, or shareable summary.
+license: Apache-2.0
 ---
 
-# Summarize Changes (変更要約)
+# Summarize Changes
 
-## 目的
+## Purpose
 
-- 差分をもとに、PR 要約と引き継ぎメモを共有しやすい日本語へ整理する。
-- 何が変わったか、なぜ変えたか、影響範囲、確認状況、残課題を明示し、レビューやリリース判断に使える材料を作る。
+- Organize a diff into a PR summary and handoff notes in a shareable form.
+- State what changed, why it changed, impact scope, verification status, and remaining issues — producing material ready for review or release decisions.
 
-## 使う場面
+## When to use
 
-- PR の説明文を作りたいとき
-- リリース時の説明や引き継ぎメモをまとめたいとき
-- 差分の背景や影響を簡潔に共有したいとき
+- When you want to write a PR description
+- When you want to write a release description or handoff notes
+- When you want to briefly share the background and impact of a diff
 
-## 入力 (任意)
+## Input (optional)
 
 - `git diff`
 - `git diff --staged`
-- 既存の diff テキスト
-- 対象ブランチとマージ先ブランチ
-- 想定する読み手
+- An existing diff text
+- Target branch and merge destination branch
+- Intended audience
 
-## 手順
+## Steps
 
-1. `git diff`、`git diff --staged`、既存の diff テキストのいずれかで対象差分を確認する。
-2. 変更の主題と想定する読み手を整理する。
-3. PR 要約を作成する。
-4. 引き継ぎメモを作成する。
-5. 影響、テスト状況、動作確認状況、未確認事項、既知リスクを明示する。
-6. 必要なら粒度と表現を整え、共有しやすい文章に仕上げる。
+1. Confirm the target diff from `git diff`, `git diff --staged`, or an existing diff text.
+2. Organize the subject of the change and the intended audience.
+3. Write the PR summary.
+4. Write the handoff notes.
+5. Explicitly state impact, test status, verification status, unconfirmed items, and known risks.
+6. If needed, adjust granularity and wording to make it shareable.
 
-## 出力フォーマット
+## Output format
 
-PR テンプレート:
+PR template:
 
 ```markdown
-# <PRタイトル>
+# <PR title>
 
-## 概要
-- <1〜3行で要約>
+## Summary
+- <1–3 line summary>
 
-## 主要変更
-- <変更点1>
-- <変更点2>
+## Key changes
+- <change 1>
+- <change 2>
 
-## 影響
-- <機能/互換性/運用への影響>
+## Impact
+- <impact on features / compatibility / operations>
 
-## テスト
-- <実施したテスト / 未実施なら理由>
+## Tests
+- <tests performed / reason if not performed>
 
-## 動作確認
-- <確認内容 / 未実施なら理由>
+## Verification
+- <what was verified / reason if not verified>
 ```
 
-Release Handoff テンプレート:
+Release Handoff template:
 
 ```markdown
 # Release Handoff
 
-## 概要
-- <対象ブランチ / リリース単位 / 含まれる変更>
+## Summary
+- <target branch / release unit / included changes>
 
-## 注意点
-- <運用上の注意点>
+## Notes
+- <operational notes>
 
-## 残課題
-- <未実施項目 / 既知リスク / 次の対応。なければなし>
+## Remaining issues
+- <unfinished items / known risks / next steps; "none" if nothing>
 ```
 
-## Companion skills (推奨)
+## Companion skills
 
 - `draft-commit`
 - `record-session-handoff`
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- 差分に基づいて要約する
-- 影響とテスト状況を明記する
-- 未確認事項は未確認として書く
-- 出力は日本語で書く
+- Base the summary on the diff
+- State impact and test status explicitly
+- Write unconfirmed items as unconfirmed
 
 ### Ask first:
 
-- 差分が取得できない場合
-- 対象ブランチや読み手が不明で粒度を決められない場合
+- When the diff cannot be obtained
+- When the target branch or audience is unknown and granularity cannot be decided
 
 ### Never:
 
-- 差分を見ずに推測で要約する
-- 秘密情報を成果物に含める
-- 実装変更や設計判断に踏み込む
+- Summarize based on guesses without reading the diff
+- Include secrets in the output
+- Proceed to implementation changes or design decisions
 
-## 注意点 (任意)
+## Notes (optional)
 
-- `draft-commit` はコミット案の作成が主目的であり、共有文章の作成は主責務ではない。
-- `record-session-handoff` はセッション継続用のメモが主目的であり、PR やリリース説明の作成とは分けて扱う。
+- `draft-commit` has commit message drafting as its primary purpose; writing shareable content is not its main responsibility.
+- `record-session-handoff` has session continuation notes as its primary purpose; writing PR or release descriptions is separate.

@@ -1,74 +1,75 @@
 ---
 name: triage-agent-usage
-description: 作業前に、使うエージェント・ツール・モデルの重さを切り分けたいときに使う。
+description: Before starting work, separate the right agent, tool, and model weight for the task.
+license: Apache-2.0
 ---
 
 # Triage Agent Usage
 
-## 目的
+## Purpose
 
-- 作業前に、どのツールとどの重さのモデルを使うべきかを切り分ける。
-- いきなり重い agent session を始めるのを防ぎ、利用量を抑えながら必要十分な性能を確保する。
+- Before starting, determine which tool and what model weight should be used.
+- Prevent jumping into a heavy agent session immediately; secure sufficient capability while keeping usage costs low.
 
-## 使う場面
+## When to use
 
-- これから AI に作業を依頼するが、Codex / Claude Code / Copilot / 通常チャットのどれから始めるべきか迷うとき
-- リポジトリを読む実装作業か、文章整理か、原因調査かを先に切り分けたいとき
-- 高性能モデルを使う理由が本当にあるかを判断したいとき
+- When you are about to ask AI to do work but are unsure which tool to start with
+- When you want to separate up front whether the task is implementation with repo reading, text organization, or incident investigation
+- When you want to judge whether there is a genuine reason to use a high-capability model
 
-## 判定軸
+## Decision axes
 
-- リポジトリを読む必要があるか
-- 複数ファイル変更が必要か
-- 実装とテスト実行まで任せる必要があるか
-- 高性能モデルが必要な不確実性があるか
-- 失敗時の手戻りが大きいか
-- 学習目的か、納期優先か
-- 本人がレビューし、判断理由を説明できる作業か
+- Does the task require reading the repository?
+- Does it require changes across multiple files?
+- Does it require delegating implementation and test execution?
+- Is there uncertainty that requires a high-capability model?
+- Is the cost of failure and rework high?
+- Is the priority learning or meeting a deadline?
+- Is this work where the person can review the output and explain the reasoning?
 
-## 推奨の目安
+## Recommended heuristics
 
-- 文章整理、Redmine、メール、設計メモ: 通常 ChatGPT / Claude.ai
-- IDE 補完、単純な関数修正: GitHub Copilot included model
-- 小さな既存パターン実装: Codex economy profile
-- 複数ファイル変更、テスト実行込み: Codex deep profile または Claude Code
-- 原因不明の障害、セキュリティ、課金、権限: 高性能モデルを明示して使う
+- Text organization, emails, design notes: standard chat (ChatGPT / Claude.ai)
+- IDE completion, simple single-function fixes: completion model
+- Small existing-pattern implementations: lightweight coding agent
+- Multi-file changes with test execution: Codex or Claude Code
+- Unknown-cause incidents, security, billing, authorization: use a high-capability model explicitly
 
-## 手順
+## Steps
 
-1. 依頼を 1〜2 行で要約し、実装、調査、文章整理のどれかに分類する。
-2. リポジトリを読む必要がないなら、まず通常チャットを候補にする。
-3. リポジトリを読むが、変更が局所的で既存パターンに沿うなら、Copilot 補完または軽い coding agent を候補にする。
-4. 複数ファイル変更、テスト実行、既存構成の理解が必要なら、Codex または Claude Code を候補にする。
-5. 原因不明の障害、セキュリティ、課金、権限、破壊的変更が絡むなら、高性能モデルを明示した上で使う。
-6. 学習目的が強い場合は、AI に任せる作業と本人が理解・判断する作業を分ける。
-7. 重い選択肢を選ぶ場合は、その理由を 1 行で説明できる状態にする。
-8. ツール選定後、作業単位をできるだけ小さく切り、渡すコンテキストを最小化する。
+1. Summarize the request in 1–2 lines and classify it as: implementation, investigation, or text organization.
+2. If the repo does not need to be read, first consider standard chat.
+3. If the repo needs to be read but changes are local and follow existing patterns, consider completion or a lightweight coding agent.
+4. If multi-file changes and test execution are needed, consider Codex or Claude Code.
+5. If unknown-cause incidents, security, billing, authorization, or destructive changes are involved, use a high-capability model explicitly.
+6. If learning is a strong priority, separate tasks to delegate to AI from decisions the person must make themselves.
+7. When choosing a heavier option, have the reason ready to state in one line.
+8. After selecting a tool, cut work units as small as possible and minimize the context to pass.
 
-## 出力フォーマット
+## Output format
 
-- 推奨ツール: ...
-- 推奨モデル / profile: ...
-- 作業単位: ...
-- 渡すべき最小コンテキスト: ...
-- 先に人間が決めるべきこと: ...
-- 理解・レビューに必要な前提: ...
+- Recommended tool: ...
+- Recommended model / profile: ...
+- Work units: ...
+- Minimum context to pass: ...
+- Things the person should decide first: ...
+- Prerequisites for understanding and review: ...
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- まず最も軽い選択肢で足りるかを検討する
-- 重い agent session を使う理由を明示する
-- 渡すコンテキストは最小限に絞る
-- 学習目的がある場合は、本人が説明できる範囲と AI に委任する範囲を分ける
+- Consider whether the lightest option is sufficient first
+- State the reason for using a heavy agent session
+- Keep passed context to the minimum
+- When learning is a priority, separate what the person can explain from what to delegate to AI
 
 ### Ask first:
 
-- 高リスクな作業を軽量モデルや補完だけで進めようとしている場合
-- 高性能モデルを使うが、何を任せるかが曖昧な場合
+- When high-risk work is about to proceed with only a lightweight model or completion
+- When a high-capability model will be used but what to delegate is unclear
 
 ### Never:
 
-- リポジトリを読む必要がない作業に、重い coding agent を既定提案しない
-- 手戻りが大きい作業で、モデル選定の理由を曖昧にしたまま進めない
+- Default to proposing a heavy coding agent for work that does not require reading the repository
+- Leave the reason for model selection unclear when proceeding with high-rework-cost work

@@ -1,46 +1,47 @@
 ---
 name: clarify-request
-description: 依頼が曖昧なときに使う (clarify, questions, requirements)。1〜4個の確認質問、または前提を明示して進める。
+description: Use when a request is ambiguous (clarify, questions, requirements) — ask 1–4 clarifying questions, or state assumptions and proceed.
+license: Apache-2.0
 ---
 
-# Clarify Request (曖昧さ解消)
+# Clarify Request
 
-## 目的
+## Purpose
 
-依頼の曖昧さを解消し、誤実装や手戻りを防ぐ。
+Resolve ambiguity in a request to prevent incorrect implementation and rework.
 
-## 使う場面
+## When to use
 
-- 目的・範囲・制約・環境が不明確で、誤った実装や手戻りのリスクがあるとき
-- 依頼が複数解釈できるとき (例：どの環境？どの優先度？どこまで自動化？)
+- When purpose, scope, constraints, or environment are unclear, and there is a risk of incorrect implementation or rework
+- When a request has multiple valid interpretations (e.g., which environment? what priority? how much to automate?)
 
-## 手順
+## Steps
 
-1. **確認質問を1〜4個**、番号付きで提示する。
-2. 可能な限り **選択肢 (A/B/C) + おすすめ (デフォルト)** をつける。
-3. ユーザーが「前提で進めてOK」と言ったら、**前提 (Assumptions) を箇条書き**してから進める。
+1. Present **1–4 numbered clarifying questions**.
+2. Where possible, provide **options (A/B/C) plus a recommendation (default)**.
+3. If the user says "proceed on assumptions," list the **assumptions as bullet points** before proceeding.
 
-## 出力フォーマット
+## Output format
 
 ```text
-質問:
+Questions:
 1) ...
 2) ...
-おすすめ: ...
-(前提で進める場合)Assumptions:
+Recommendation: ...
+(If proceeding on assumptions) Assumptions:
 - ...
 ```
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- ユーザーの回答または前提の明示がない限り、勝手に大きな方針決定やファイル編集を開始しない
+- Do not start a major direction decision or file edit without the user's answer or explicit assumptions
 
 ### Ask first:
 
-- なし
+- (none)
 
 ### Never:
 
-- 確認なしで実装や大きな方針決定を進める
+- Proceed with implementation or major direction decisions without clarification

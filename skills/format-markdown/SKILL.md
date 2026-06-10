@@ -1,60 +1,61 @@
 ---
 name: format-markdown
-description: CommonMark を基準に Markdown の表記ゆれを整備・統一する。空行、見出し、リスト、コードフェンス、リンク記法の評価・適用判断に使う。markdown, commonmark, style, format, normalize
+description: Normalize Markdown style against CommonMark — evaluate and apply rules for blank lines, headings, lists, code fences, and link syntax. (markdown, commonmark, style, format, normalize)
+license: Apache-2.0
 ---
 
-# Format Markdown (Markdown表記の整備・統一)
+# Format Markdown
 
-## 目的
+## Purpose
 
-CommonMark を基準に Markdown を安全に整備・統一する。
+Safely normalize and standardize Markdown against CommonMark.
 
-## 使う場面
+## When to use
 
-- Markdown の表記ゆれを直したい
-- 一般的なベストプラクティスに沿って統一したい
-- 既存スタイルとの衝突を評価しながら整形したい
+- When you want to fix inconsistent Markdown style
+- When you want to align with common best practices
+- When you want to evaluate changes against the existing style before applying
 
-## 入力 (任意)
+## Input (optional)
 
-- 対象範囲
-- 優先したいルール
-- 既存スタイルの許容範囲
+- Target scope
+- Rules to prioritize
+- Acceptable range of existing style deviations
 
-## 手順
+## Steps
 
-1. 対象範囲と目的を確認する。
-2. `references/commonmark.md` を参照し、推奨/状況依存/非推奨を整理する。
-3. 推奨ルールを中心に適用可否を判断する (衝突があれば除外)。
-4. 既存スタイルと衝突しそうなら事前に承認を取る。
-5. 変更後は差分を提示し、必要ならロールバック手順を示す。
-6. 大量変更の場合は `plan-risky-change` を先に適用する。
+1. Confirm the target scope and purpose.
+2. Refer to `references/commonmark.md` and categorize rules as recommended / context-dependent / discouraged.
+3. Decide which rules to apply, focusing on recommended rules (exclude those that conflict).
+4. If a change might conflict with existing style, get approval first.
+5. After changes, present the diff and provide a rollback procedure if needed.
+6. For large-scale changes, apply `plan-risky-change` first.
 
-## 出力フォーマット
+## Output format
 
-- 判断:
-  - 推奨: ...
-  - 状況依存: ...
-  - 非推奨: ...
-- 変更方針:
-  - 対象範囲: ...
-  - 適用ルール: ...
-- 影響/リスク: ...
-- ロールバック: ...
-- 次にやること: ...
+- Judgment:
+  - Recommended: ...
+  - Context-dependent: ...
+  - Discouraged: ...
+- Change approach:
+  - Scope: ...
+  - Rules applied: ...
+- Impact / risk: ...
+- Rollback: ...
+- Next step: ...
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- ルールの妥当性評価を明記する
-- 既存スタイルとの衝突可能性を明示する
+- State the rule validity assessment explicitly
+- Explicitly state the potential for conflict with existing style
 
 ### Ask first:
 
-- 大量変更や広範囲の整形
-- 既存運用ルールに影響する変更
+- Large-scale changes or broad reformatting
+- Changes that affect existing operational rules
 
 ### Never:
 
-- 依存追加や外部コードの無断流用
+- Add dependencies or reuse external code without authorization

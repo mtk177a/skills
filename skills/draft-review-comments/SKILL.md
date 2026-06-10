@@ -1,183 +1,159 @@
 ---
 name: draft-review-comments
-description: 発見済み・整理済みの指摘を、GitHub PR に貼れる行コメントやレビュー要約に落としたいときに使う。
+description: Turn organized findings into GitHub PR inline comments and a review summary.
+license: Apache-2.0
 ---
 
-# Draft Review Comments (レビューコメント案作成)
+# Draft Review Comments
 
-## 目的
+## Purpose
 
-- 発見済み・整理済みの指摘を、GitHub PR にそのまま貼れるレビューコメント案へ変換する。
-- コメント対象のコード位置、コメントの分け方、レビュー要約の構成を整理する。
-- 行コメント本文には `must` / `should` / `suggestion` / `question` / `nit` / `note` のラベルを付け、レビュー要約は根拠のある良い点と残る主要アクションを含む簡潔な全体判断にする。
-- 指摘の正しさと次のアクションを保ちながら、レビュイーが判断しやすく、協働しやすい文面にする。
+- Convert already discovered and organized findings into review comment drafts that can be pasted into a GitHub PR.
+- Organize the code location for each comment, how to split comments, and the structure of the review summary.
+- Attach `must` / `should` / `suggestion` / `question` / `nit` / `note` labels to inline comment bodies; make the review summary a concise overall judgment that includes well-grounded positives and the remaining key actions.
+- Keep the accuracy of findings and next actions while making it easy for the reviewee to decide and collaborate.
 
-## 使う場面
+## When to use
 
-- `review-changes` や `triage-review-feedback` の結果を GitHub コメントへ落としたいとき
-- 自分のレビュー所見を、行コメントとレビュー要約に分けて整えたいとき
-- 再レビューで `Resolved` / `Remaining` / `New` を整理して返したいとき
-- 前後関係のある PR で、修正タイミング込みの言い回しを整えたいとき
-- Approve しつつ、マージを止めないコメントや補足を返したいとき
+- When you want to turn results from `review-changes` or `triage-review-feedback` into GitHub comments
+- When you want to organize your own review findings into inline comments and a review summary
+- When doing a re-review and need to return `Resolved` / `Remaining` / `New` organized
+- When wording needs to include fix timing for a PR with predecessor/successor context
+- When approving while leaving non-blocking comments or notes
 
-## 入力 (任意)
+## Input (optional)
 
-- 指摘内容
-- 対象コード位置
-- ラベル (`must` / `should` / `suggestion` / `question` / `nit` / `note`)
-- 上流 Skill から受けたラベル (`Must-fix` / `Should-fix` / `Nice-to-have`) があれば受け取ってよい
-- 文脈
-  - 初回レビュー / 再レビュー
-  - 前後関係のある PR / 通常 PR
-  - 後続 PR で修正可か
-  - 希望トーン (`柔らかめ` / `標準` / `やや厳しめ`)。未指定時は `柔らかめ` を既定とする
-  - 指定コミット範囲 / 実質 diff
-- 必要なら前回指摘一覧や今回 diff の要約
-- 必要ならレビュー要約に含める良い点
+- Finding content
+- Target code location
+- Label (`must` / `should` / `suggestion` / `question` / `nit` / `note`)
+- Labels received from an upstream Skill (`Must-fix` / `Should-fix` / `Nice-to-have`) — these can be accepted
+- Context:
+  - Initial review / re-review
+  - PR with predecessor/successor context / normal PR
+  - Whether a fix can go in a follow-up PR
+  - Desired tone (`gentle` / `standard` / `firm`); default is `gentle` when unspecified
+  - Specified commit range / effective diff
+- Previous findings list or summary of the current diff if needed
+- Positives to include in the review summary if needed
 
-## 手順
+## Steps
 
-1. 指摘を 1 コメント 1 論点に分解する。
-2. 同じ根本原因から出る複数の症状は、レビュイーの次のアクションが明確になるなら 1 つの論点としてまとめる。
-3. 各指摘について、結果の行より直接原因の行を優先して、最小で自然なコメント位置を選ぶ。
-4. 単一行で十分なら `path:line`、複数行の式、条件分岐、関数呼び出し、追加 / 削除ブロック全体が論点なら `path:start-end` を使う。
-5. 行コメント案の出力直前に、各コメント位置を再確認する。本文が複数行の式、条件分岐、関数呼び出し、追加 / 削除ブロック全体に言及している場合は `path:start-end` に直し、単一行で十分な場合だけ `path:line` のままにする。
-6. 前後関係のある PR / 実質 diff 指定 / コミット範囲指定がある場合は、コメント位置、型名、生成コードへの言及を必ずその範囲上で取り直し、現在の作業ツリーや先行 PR / 後続 PR の状態を混ぜない。
-7. 行コメント、レビュー要約、全体コメント相当のどれで返すべきかを選ぶ。
-8. レビュー要約では、根拠のある良い点を先に短く置き、その後に残る主要アクションを書く。根拠がない場合は、無理に良い点を作らない。
-9. 行コメント本文の先頭に正規ラベルを付ける。
-10. コメントを `事実 → 影響 → 期待` の順で組み立てる。
-11. 必須対応か任意対応か、確認だけでよいかを曖昧にしない。
-12. 必要以上に解法を決め打ちせず、レビュイーがよりよい解法を選べる余地を残す。
-13. 人ではなくコード、挙動、差分を主語にする。
-14. `この条件` のような抽象語を避け、必要な識別子、条件式、値遷移を明示する。
-15. トーン未指定時は `柔らかめ` を既定とし、まず観測した事実や懸念、次に短い理由や影響、最後に期待する修正や確認を書く。
-16. `柔らかめ` では詰問調を避け、意図が推測できる場合は短く受け止めたうえで、懸念と具体案や確認へつなぐ。
-17. ラベルの強さを、語尾や依頼表現でも調整する。
-18. 根拠の強さに応じて、断定、懸念表現、確認質問を使い分ける。
-19. 好みレベルの話は差し止め理由扱いせず、提案として書く。
-20. 再レビュー時は `Resolved` / `Remaining` / `New` を先に整理する。
-21. 前後関係のある PR では、この PR で直すか先行 PR / 後続 PR で扱うかを文面に含める。
-22. `must` の指摘は、何が直れば Close できるかが分かる粒度で書く。
-23. レビュー要約や Approve 時の補足コメントは、詳細なラベル別一覧ではなく、短い全体判断として返す。
+1. Break findings into one comment per concern.
+2. If multiple symptoms come from the same root cause, combine them into one concern if that makes the reviewee's next action clearer.
+3. For each finding, choose the minimal natural comment location, preferring the direct cause line over the result line.
+4. Use `path:line` for a single line; use `path:start-end` when the concern spans a multi-line expression, conditional branch, function call, or an entire add/delete block.
+5. Re-confirm each comment location just before producing the inline comment drafts.
+6. When a PR has predecessor/successor context, a commit range, or an effective diff is specified, anchor positions and evidence to that range only.
+7. Choose whether to return each finding as an inline comment, review summary, or general comment.
+8. In the review summary, briefly state well-grounded positives first, then remaining key actions.
+9. Attach a canonical label at the start of each inline comment body.
+10. Structure comments as `fact → impact → expectation`.
+11. Be unambiguous about whether a response is required, recommended, or optional.
+12. Avoid over-specifying solutions; leave room for the reviewee to choose a better implementation.
+13. Use code, behavior, and diff as the subject — not the person.
+14. Avoid abstract phrases; explicitly state the needed identifiers, conditions, and value transitions.
+15. When tone is unspecified, default to `gentle`: write observed fact → brief reason or impact → expected fix or confirmation.
+16. In `gentle` tone, avoid interrogative pressure; when intent can be inferred, briefly acknowledge it before connecting to the concern and suggestion.
+17. Adjust label strength through wording and request expressions.
+18. Use assertion, concern language, or a confirmation question according to the strength of evidence.
+19. Treat preference-level comments as suggestions, not blockers.
+20. In re-reviews, first organize `Resolved` / `Remaining` / `New`.
+21. For PRs with predecessor/successor context, include whether the fix goes in this PR or a preceding/following PR.
+22. Write `must` findings at a granularity where it is clear what needs to be fixed to close the finding.
+23. Review summaries and approval supplement comments should be returned as a short overall judgment, not a detailed label-by-label breakdown.
 
-## コメント種別の使い分け
+## Comment type guide
 
-- 行コメント:
-  - 局所実装の問題、直接原因が特定できる論点に使う
-  - コメント本文の先頭に正規ラベルを付ける
-- レビュー要約:
-  - 全体判断、マージ可否、残る主要アクションを簡潔に伝える
-  - 根拠のある良い点を 1 つ含め、残る主要アクションの前に短く置く
-  - 原則 1-3 文、または最大 3 bullet に収める
-  - 正規ラベルごとの詳細な分類一覧にしない
-  - 良い点の羅列や社交辞令にしない
-- 全体コメント相当:
-  - 後続 PR に送る判断、進め方の補足、Approve しつつ残すマージを止めないコメントに使う
+- Inline comment: local implementation problems, concerns where the direct cause can be identified
+- Review summary: overall judgment, merge readiness, remaining key actions (1–3 sentences or at most 3 bullets)
+- General comment equivalent: decisions to send to a follow-up PR, non-blocking comments left while approving
 
-## 断定度の目安
+## Certainty guidelines
 
-- 再現済み、仕様根拠が明確、影響が確定している:
-  - 断定してよい
-- 静的読解ベースで、影響は強く推測できるが未再現:
-  - `〜に見えます` / `〜になりそうです` のような懸念表現を使う
-- 仕様前提や意図が未確定:
-  - 確認質問に寄せる
-- 事実、好み、ベストプラクティス由来の提案を混ぜず、必要ならコメント内で分けて書く
-- 重大度と断定度は別軸として扱い、`must` でも前提不確実なら断定しすぎない
+- Reproduced, clear spec basis, confirmed impact: assertion is appropriate
+- Static reading, impact strongly inferred but not reproduced: use language like "appears to" / "seems like it would"
+- Spec assumptions or intent unconfirmed: lean toward a confirmation question
+- Do not mix facts, preferences, and best-practice suggestions; separate them in the comment when needed
+- Severity and certainty are different axes; even a `must` should not be stated with false certainty if the premise is uncertain
 
-## ラベル語彙の扱い
+## Label vocabulary
 
-- 文面生成では `must` / `should` / `suggestion` / `question` / `nit` / `note` を正規ラベルとして扱う
-- `must`: マージ前に修正必須。これが残るなら Approve しない
-- `should`: 原則修正推奨。理由があれば相談可
-- `suggestion`: 改善提案。より良くなるが必須ではない
-- `question`: 理解不足、意図確認、潜在懸念の確認
-- `nit`: 細かい指摘。基本は任意対応
-- `note`: 参考情報。対応不要
-- 上流から `Must-fix` / `Should-fix` / `Nice-to-have` を受けた場合は、入力ラベルとして受け取って正規ラベルへ寄せる
-- `Must-fix` は `must`、`Should-fix` は `should` として扱う
-- `Nice-to-have` は内容に応じて `suggestion` または `nit` として扱い、マージを止めない文面にする
-- 行コメント本文では、先頭に正規ラベルを必ず付ける
-- レビュー要約では、正規ラベルごとの詳細な整理を避け、根拠のある良い点、全体判断、主要アクションだけを短く書く
+- `must`: fix required before merge; do not approve if this remains
+- `should`: fix recommended in principle; discussion allowed with reason
+- `suggestion`: improvement proposal; better but not required
+- `question`: insufficient understanding, intent confirmation, or potential concern check
+- `nit`: minor comment; optional by default
+- `note`: reference information; no response needed
+- Upstream labels: `Must-fix` → `must`, `Should-fix` → `should`, `Nice-to-have` → `suggestion` or `nit`
+- Always use canonical labels in inline comment bodies
+- In review summaries, avoid detailed per-label breakdowns; write only well-grounded positives, overall judgment, and key actions
 
-## 文面の方針
+## Comment wording policy
 
-- コメントは、レビュイーの能力や姿勢ではなく、コードの挙動、保守性、仕様とのずれに向ける
-- 指摘が正しいほど強く書くのではなく、必要な修正と理由が短時間で分かるように書く
-- `must` は修正必須であることを曖昧にしないが、責める言い方や詰問調にしない
-- `should` は推奨理由を添えつつ、別案や制約があるなら相談できる余地を残す
-- `suggestion` / `nit` / `note` は、マージを止めないことが分かる言い回しにする
-- `question` は確認として書き、隠れた修正要求にしない
-- 解法を指定する場合でも、レビュイーがよりよい実装を選べるなら「例えば」として出す
-- 教育目的や背景共有は、必要最小限にして、今回の次アクションを埋もれさせない
-- 良い点は、コード、設計、テスト、差分整理など観測できる事実に向け、レビュイー本人への評価や根拠のない褒め言葉にしない
-- レビューコメント本文では、コード識別子、設定キー、API 名、ライブラリ名、エラー名、プロトコル名など、英語で書く必然性がある語はそのまま残してよい
-- それ以外の説明語や一般動詞は、理由なく英語のまま残さず、自然な日本語へ置き換える
-- 特に `context`、`mask`、`redact`、`blocker` などは、コメント本文では必要に応じて「ログに付ける追加情報」「伏せる」「除外する」「差し止め理由」などへ言い換える
-- 既存の `must` / `should` / `suggestion` / `question` / `nit` / `note` ラベルや、`path:line` / `path:start-end` などのフォーマット指定は英語のまま維持する
+- Direct comments at code behavior, maintainability, and spec misalignment — not the reviewer's capabilities or attitude
+- Write so that the required fix and reason are clear quickly — not so that strong accuracy means harsh wording
+- `must` must not be ambiguous about the required fix, but do not use blaming or interrogative language
+- `should` should include the reason while leaving room to discuss alternatives or constraints
+- `suggestion` / `nit` / `note` should use wording that makes clear they do not block merge
+- `question` should be written as a question, not a hidden requirement
+- When specifying a solution, use "for example" if the reviewee might choose a better implementation
+- Keep educational or background-sharing content minimal so the current next action is not buried
+- Positives should point at observable facts in code, design, tests, or diff organization — not the reviewer's personal evaluation
 
-## 出力フォーマット
+## Output format
 
-- 行コメント案:
-  - コメント位置: `path:line` または `path:start-end`
-  - コメント本文: `must: ...`
-- レビュー要約案:
-  - 良い点: ...
-  - 残る主要アクション: ...
-- 全体コメント相当:
+- Inline comment drafts:
+  - Comment location: `path:line` or `path:start-end`
+  - Comment body: `must: ...`
+- Review summary draft:
+  - Positives: ...
+  - Remaining key actions: ...
+- General comment equivalent:
   - ...
-- 必要ならトーン違い:
-  - 柔らかめ: ...
-  - 標準: ...
-  - やや厳しめ: ...
-- 必要なら Approve 時の補足コメント案:
+- Tone variations if needed:
+  - Gentle: ...
+  - Standard: ...
+  - Firm: ...
+- Approval supplement comment draft if needed:
   - ...
-- コメント構成メモ:
-  - 分けるべき論点 / まとめてよい論点 / 後続 PR へ送れる論点
+- Comment structure notes:
+  - Concerns to split / concerns to combine / concerns to send to a follow-up PR
 
-## Companion skills (推奨)
+## Companion skills
 
 - `review-changes`
 - `triage-review-feedback`
-- `github:gh-address-comments`
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- 1 コメント 1 論点を守る
-- 同じ根本原因の論点は、ノイズを増やさない範囲でまとめる
-- 指定コミット範囲や実質 diff がある場合は、その範囲に固定して位置と根拠を返す
-- 範囲指定が自然な論点を、無理に単一行へ潰さない
-- `事実 → 影響 → 期待` の順で書く
-- 行コメント本文の先頭に正規ラベルを付ける
-- 人ではなくコード、挙動、差分を主語にする
-- 抽象語でぼかさず、必要な識別子や条件式を明示する
-- レビュー要約では、根拠のある良い点を短く含め、主要アクションを埋もれさせない
-- コメント本文では、英語で書く必然性がない説明語や一般動詞を自然な日本語へ置き換える
-- 既定トーンは `柔らかめ` とし、圧迫的な語尾や詰問調を避ける
-- マージを止めない論点を、実質的な差し止め理由の言い方にしない
-- 作者の意図や制約があり得る前提で書き、必要なら短く受け止めや理由を添える
-- 好みレベルを差し止め理由扱いしない
-- 断定の強さは根拠の強さに揃える
-- 次のアクションが分かる粒度で書く
-- 行コメントとして返す場合は、GitHub で行選択して貼れるよう、対象箇所とコメント本文をセットで返す
-- レビュー要約 / 全体コメント相当では、位置やラベル別詳細よりも全体判断や進め方が分かる文面を優先する
+- One comment per concern
+- Combine same-root-cause concerns only when it does not increase noise
+- When a commit range or effective diff is specified, anchor positions and evidence to that range
+- Do not force a natural multi-line concern into a single line
+- Structure comments as `fact → impact → expectation`
+- Attach a canonical label at the start of each inline comment body
+- Use code, behavior, and diff as the subject — not the person
+- Do not obscure with abstract language; explicitly state needed identifiers and conditions
+- In the review summary, briefly include well-grounded positives; do not bury key actions
+- Default tone is `gentle`; avoid pressure-creating wording or interrogative language
+- Do not treat non-blocking concerns as blockers
+- Write with the assumption that the author may have intent or constraints; briefly acknowledge when helpful
+- Do not treat preferences as blockers
+- Match certainty of assertion to strength of evidence
+- Write at a granularity where the next action is clear
+- For inline comments, return target location and comment body as a set ready to paste into GitHub
 
 ### Ask first:
 
-- 指摘自体の妥当性が未確定な場合
-- 指定された比較対象が曖昧で、コメント位置や原因行が変わり得る場合
-- コメント対象位置の候補が複数あり、どこに残すかで意味が変わる場合
-- 範囲の start/end 候補が複数あり、選ぶ範囲によって指摘の意味が変わる場合
-- レビュー要約だけでよいか、行コメントも必要か不明な場合
+- When the validity of the finding itself is unconfirmed
+- When comment location candidates are ambiguous and the choice changes the meaning
 
 ### Never:
 
-- 新しい不具合を発見する
-- 指摘の採否を決める
-- 実装修正を行う
-- GitHub API 連携やコメント投稿を行う
-- 作者の能力や姿勢を責める書き方をする
-- トーン未指定や `柔らかめ` 指定で、詰問調や圧迫的な言い回しを使う
+- Discover new bugs
+- Decide the accept/reject of a finding
+- Perform implementation fixes
+- Use wording that blames the author's capabilities or attitude
+- Use interrogative or pressure-creating language when tone is unspecified or set to `gentle`

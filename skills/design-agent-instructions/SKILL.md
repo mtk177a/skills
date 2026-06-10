@@ -1,108 +1,109 @@
 ---
 name: design-agent-instructions
-description: AGENTS.md / CLAUDE.md / .github/copilot-instructions.md / GEMINI.md の指示文書セットを設計したいときに使う。
+description: Use when you want to design the instruction document set for AGENTS.md / CLAUDE.md / .github/copilot-instructions.md / GEMINI.md.
+license: Apache-2.0
 ---
 
 # Design Agent Instructions
 
-## 目的
+## Purpose
 
-- エージェント向け指示文書セットを安全に設計・作成するための手順を提供する。
-- 複数文書がある場合に、役割分担と整合を崩さず構成を決める。
+- Provide a safe process for designing and creating agent instruction document sets.
+- When multiple documents exist, determine the structure without breaking role separation and consistency.
 
-## 使う場面
+## When to use
 
-- 新規に `AGENTS.md` を作成したい
-- `AGENTS.md` / `CLAUDE.md` / `.github/copilot-instructions.md` / `GEMINI.md` を含めて指示文書全体を整理したい
-- どの文書を置くべきか、何をどこに書くべきかを決めたい
-- 補助文書を増やすべきか、`AGENTS.md` だけで十分かを判断したい
+- When you want to create a new `AGENTS.md`
+- When you want to reorganize the full instruction set including `AGENTS.md` / `CLAUDE.md` / `.github/copilot-instructions.md` / `GEMINI.md`
+- When you need to decide which documents to create and what goes where
+- When you want to judge whether adding companion documents is necessary or whether `AGENTS.md` alone is sufficient
 
-## 入力 (任意)
+## Input (optional)
 
-- 目的 / 範囲 / 制約 (例: 全体 / リポジトリ / サブディレクトリ)
-- 追加したいルールの要点
-- 既存の関連文書 (`AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `GEMINI.md`, README, docs) の有無
+- Purpose / scope / constraints (e.g., global / repository / subdirectory)
+- Key rules to add
+- Existing related documents (`AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `GEMINI.md`, README, docs)
 
-## 手順
+## Steps
 
-1. 目的と適用範囲 (全体 / リポジトリ / サブディレクトリ) を確認する。
-2. 既存の指示文書セットと一次情報を確認する。
-3. 読み込み順を明記する。
-   - `~/.codex/AGENTS.md` → リポジトリルートの `AGENTS.md` → サブディレクトリごとの `AGENTS.md`
-4. 一次情報として依拠する文書を固定する。
-   - 例: `README.md`, `skills/README.md`, `docs/skill-authoring.md`
-5. 文書ごとの役割分担を整理する。
-   - `AGENTS.md`: 正式な契約
-   - `CLAUDE.md`: Claude Code 向け補助指示
-   - `.github/copilot-instructions.md`: GitHub Copilot 向け短縮・補助指示
-   - `GEMINI.md`: Gemini 向け補助指示
-6. どの文書が必要かを決める。不要な文書は無理に増やさない。補助文書は、そのエージェントを実運用し、`AGENTS.md` だけでは不足する repo 固有補助指示がある場合にだけ候補へ含める。
-7. 共通事実と、各文書に書く内容 / 書かない内容を切り分ける。
-8. 最小構成のテンプレートまたは文書セット案を提示する。
-9. リポジトリ固有ルールの追加候補と、重複させない書き分け方を整理する。
-10. 影響 (運用 / レビュー / 共有) を記載する。
-11. 承認を得てから作成 / 編集を行う。
+1. Confirm the purpose and scope (global / repository / subdirectory).
+2. Review the existing instruction document set and primary sources.
+3. Document the loading order:
+   - `~/.codex/AGENTS.md` → repository root `AGENTS.md` → per-subdirectory `AGENTS.md`
+4. Fix the primary source documents to rely on:
+   - e.g., `README.md`, `skills/README.md`, `docs/authoring.md`
+5. Define the role of each document:
+   - `AGENTS.md`: formal contract
+   - `CLAUDE.md`: supplementary instructions for Claude Code
+   - `.github/copilot-instructions.md`: condensed / supplementary instructions for GitHub Copilot
+   - `GEMINI.md`: supplementary instructions for Gemini
+6. Decide which documents are needed. Do not add unnecessary documents. Include a companion document as a candidate only when that agent is actively used and `AGENTS.md` alone is insufficient for repo-specific guidance.
+7. Separate shared facts from what each document should and should not contain.
+8. Present a minimal template or document set proposal.
+9. List candidates for repo-specific rules and how to divide them without duplication.
+10. Note impact (on operations / reviews / sharing).
+11. Obtain approval before creating or editing.
 
-## 出力フォーマット
+## Output format
 
-- 変更点の要約: ...
-- 目的・範囲: ...
-- 対象文書: ...
-- 読み込み順: ...
-- 一次情報: ...
-- 文書ごとの役割分担: ...
-- テンプレート案または文書セット案:
+- Summary of changes: ...
+- Purpose / scope: ...
+- Target documents: ...
+- Loading order: ...
+- Primary sources: ...
+- Role of each document: ...
+- Template or document set proposal:
 
   ```markdown
   # AGENTS.md
 
-  ## 目的
+  ## Purpose
   - ...
 
-  ## 基本方針
+  ## Guidelines
   - ...
 
-  ## 禁止事項
+  ## Avoid
   - ...
 
-  ## 進め方
+  ## How to work
   - ...
   ```
 
-- 関連文書がある場合の分担メモ:
+- Role notes when related documents exist:
   - `AGENTS.md`: ...
   - `CLAUDE.md`: ...
   - `.github/copilot-instructions.md`: ...
   - `GEMINI.md`: ...
-- 影響/リスク: ...
-- 承認: この方針で進めてよいですか？
+- Impact / risk: ...
+- Approval: Is it OK to proceed with this approach?
 
-## 境界
+## Boundaries
 
 ### Always:
 
-- 読み込み順を明記する
-- 関連指示文書がある場合は、単体最適化せず文書セットとして整合を見る
-- 一次情報を先に固定してから文案を作る
-- 必要な文書だけを提案し、不要な文書を前提に増やさない
-- 最小差分・レビュー可能な単位で提案する
+- Document the loading order
+- When related instruction documents exist, evaluate consistency as a document set rather than optimizing a single document in isolation
+- Fix primary sources before drafting content
+- Propose only the documents needed; do not add unnecessary ones
+- Propose in minimal, reviewable units
 
 ### Ask first:
 
-- 既存の AGENTS.md を編集する場合
-- `CLAUDE.md`、`.github/copilot-instructions.md`、`GEMINI.md` を同時に新規作成・改稿する場合
-- `docs/*` を含む指示文書群の編集や追加を行う場合
-- 文書間の責務分担を変更する場合
-- テンプレートに組織ポリシー/セキュリティ項目を追加する場合
+- When editing an existing `AGENTS.md`
+- When simultaneously creating or revising `CLAUDE.md`, `.github/copilot-instructions.md`, or `GEMINI.md`
+- When editing or adding to instruction document groups that include `docs/*`
+- When changing responsibility boundaries between documents
+- When adding organization policy or security items to a template
 
 ### Never:
 
-- 指示文書や Skill を無断で編集・作成する
-- 秘密情報や社外秘情報をテンプレートに含める
+- Edit or create instruction documents or Skills without approval
+- Include secrets or confidential information in templates
 
-## 注意点 (任意)
+## Notes (optional)
 
-- `AGENTS.md` の仕様が変更される可能性があるため、曖昧な場合は確認する
-- 同じ事実を複数文書に重複記載しすぎず、役割ごとに内容を分担する
-- 文書本文の日本語/英語ルールは、`docs/skill-authoring.md` や既存文書と矛盾させない
-- `GEMINI.md` は任意メンバーとして扱い、対象リポジトリに必要な場合のみ提案対象に含める
+- The `AGENTS.md` specification may change; confirm when uncertain
+- Avoid repeating the same fact in multiple documents; divide content by role
+- Do not contradict the language (Japanese/English) rules in `docs/authoring.md` or existing documents
+- Treat `GEMINI.md` as optional; include it as a candidate only when the target repository requires it
