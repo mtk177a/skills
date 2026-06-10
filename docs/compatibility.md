@@ -19,7 +19,7 @@ The table below lists clients that have been explicitly tested. Clients not list
 | APM (`apm install`) | ✓ | 2026-06-10 | install (apm 0.13.0), frozen dry-run, pack dry-run (plugin format) |
 | `npx skills add` | — | — | install |
 
-Verified entries will be filled in as testing is completed. Until then, all entries are pending.
+Entries marked with `—` are pending verification.
 
 ## Installation paths
 
