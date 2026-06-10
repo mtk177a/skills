@@ -1,7 +1,7 @@
 ---
 name: draft-review-comments
 description: 発見済み・整理済みの指摘を、GitHub PR に貼れる行コメントやレビュー要約に落としたいときに使う。
-license: Apache-2.0
+license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。

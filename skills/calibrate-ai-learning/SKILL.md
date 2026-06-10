@@ -1,7 +1,7 @@
 ---
 name: calibrate-ai-learning
 description: Use when delegation to AI agents is getting too deep, or when you want to maintain understanding while working in an unfamiliar domain.
-license: Apache-2.0
+license: MIT
 ---
 
 # Calibrate AI Learning

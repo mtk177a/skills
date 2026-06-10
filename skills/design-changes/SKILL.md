@@ -1,7 +1,7 @@
 ---
 name: design-changes
 description: Use before implementing to design the change approach, impact scope, risks, and verification strategy.
-license: Apache-2.0
+license: MIT
 ---
 
 # Design Changes

@@ -1,7 +1,7 @@
 ---
 name: investigate-incident
 description: Investigate a production error or incident — organize failure paths, root-cause candidates, and next steps from a stack trace or log.
-license: Apache-2.0
+license: MIT
 ---
 
 # Investigate Incident

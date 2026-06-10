@@ -1,7 +1,7 @@
 ---
 name: format-markdown
 description: Normalize Markdown style against CommonMark — evaluate and apply rules for blank lines, headings, lists, code fences, and link syntax. (markdown, commonmark, style, format, normalize)
-license: Apache-2.0
+license: MIT
 ---
 
 # Format Markdown
@@ -25,7 +25,7 @@ Safely normalize and standardize Markdown against CommonMark.
 ## Steps
 
 1. Confirm the target scope and purpose.
-2. Refer to `references/commonmark.md` and categorize rules as recommended / context-dependent / discouraged.
+2. Refer to the [CommonMark specification](https://spec.commonmark.org) and categorize rules as recommended / context-dependent / discouraged.
 3. Decide which rules to apply, focusing on recommended rules (exclude those that conflict).
 4. If a change might conflict with existing style, get approval first.
 5. After changes, present the diff and provide a rollback procedure if needed.

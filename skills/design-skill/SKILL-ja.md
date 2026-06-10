@@ -1,7 +1,7 @@
 ---
 name: design-skill
 description: 新しい Skill を設計したいときや、既存 Skill の責務・境界を大きく見直したいときに使う。
-license: Apache-2.0
+license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。

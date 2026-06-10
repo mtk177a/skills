@@ -1,7 +1,7 @@
 ---
 name: scope-implementation
 description: Before implementing, narrow the target files, off-limits scope, completion criteria, and verification commands.
-license: Apache-2.0
+license: MIT
 ---
 
 # Scope Implementation

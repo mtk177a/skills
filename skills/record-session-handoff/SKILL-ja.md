@@ -1,7 +1,7 @@
 ---
 name: record-session-handoff
 description: AIエージェントとの会話で決定事項を外部メモ化し、別セッションへ安全に引き継ぐ。session memory, handoff, notes, context continuity
-license: Apache-2.0
+license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。

@@ -1,7 +1,7 @@
 ---
 name: audit-agent-rules
 description: AGENTS.md / skills / docs の運用ルールを監査し、命名、境界、承認ルール、重い既定を含めて小さく安全な改善提案を出したいときに使う。
-license: Apache-2.0
+license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。

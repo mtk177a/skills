@@ -1,7 +1,7 @@
 ---
 name: plan-risky-change
 description: 危険度の高い変更の前に、計画・リスク・ロールバックを整理して承認を取りたいときに使う。 (destructive, migration, dependency, security)
-license: Apache-2.0
+license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。

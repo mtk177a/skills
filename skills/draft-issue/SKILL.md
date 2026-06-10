@@ -1,7 +1,7 @@
 ---
 name: draft-issue
 description: Turn a clarified request (from scope-request) into an Issue draft and filing steps. (issue, ticket, backlog, jira, redmine)
-license: Apache-2.0
+license: MIT
 ---
 
 # Draft Issue

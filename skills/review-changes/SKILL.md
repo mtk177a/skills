@@ -1,7 +1,7 @@
 ---
 name: review-changes
 description: Review a diff for correctness, tests, safety, maintainability, and performance — organize findings with canonical labels.
-license: Apache-2.0
+license: MIT
 ---
 
 # Review Changes

@@ -1,7 +1,7 @@
 ---
 name: design-agent-instructions
 description: Use when you want to design the instruction document set for AGENTS.md / CLAUDE.md / .github/copilot-instructions.md / GEMINI.md.
-license: Apache-2.0
+license: MIT
 ---
 
 # Design Agent Instructions

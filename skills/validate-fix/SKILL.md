@@ -1,7 +1,7 @@
 ---
 name: validate-fix
 description: Verify a fix — organize what was confirmed, what was not, and what risks remain.
-license: Apache-2.0
+license: MIT
 ---
 
 # Validate Fix

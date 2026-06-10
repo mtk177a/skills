@@ -1,7 +1,7 @@
 ---
 name: clarify-request
 description: Use when a request is ambiguous (clarify, questions, requirements) — ask 1–4 clarifying questions, or state assumptions and proceed.
-license: Apache-2.0
+license: MIT
 ---
 
 # Clarify Request

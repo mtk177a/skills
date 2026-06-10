@@ -1,7 +1,7 @@
 ---
 name: implement-changes
 description: Implement changes incrementally with test-driven development to progress safely.
-license: Apache-2.0
+license: MIT
 ---
 
 # Implement Changes

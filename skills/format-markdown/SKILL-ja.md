@@ -1,7 +1,7 @@
 ---
 name: format-markdown
 description: CommonMark を基準に Markdown の表記ゆれを整備・統一する。空行、見出し、リスト、コードフェンス、リンク記法の評価・適用判断に使う。markdown, commonmark, style, format, normalize
-license: Apache-2.0
+license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。
@@ -27,7 +27,7 @@ CommonMark を基準に Markdown を安全に整備・統一する。
 ## 手順
 
 1. 対象範囲と目的を確認する。
-2. `references/commonmark.md` を参照し、推奨/状況依存/非推奨を整理する。
+2. [CommonMark 仕様](https://spec.commonmark.org) を参照し、推奨/状況依存/非推奨を整理する。
 3. 推奨ルールを中心に適用可否を判断する (衝突があれば除外)。
 4. 既存スタイルと衝突しそうなら事前に承認を取る。
 5. 変更後は差分を提示し、必要ならロールバック手順を示す。

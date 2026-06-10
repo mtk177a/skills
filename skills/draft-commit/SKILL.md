@@ -1,7 +1,7 @@
 ---
 name: draft-commit
 description: Generate commit message drafts or commit split proposals from a diff.
-license: Apache-2.0
+license: MIT
 ---
 
 # Draft Commit

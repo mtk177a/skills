@@ -1,7 +1,7 @@
 ---
 name: record-session-handoff
 description: Record decisions as external notes during an AI agent conversation and hand off safely to the next session. (session memory, handoff, notes, context continuity)
-license: Apache-2.0
+license: MIT
 ---
 
 # Record Session Handoff

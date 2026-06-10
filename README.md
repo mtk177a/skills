@@ -89,7 +89,6 @@ Any client that discovers `skills/<name>/SKILL.md` files should work. See [docs/
 │       ├── references/
 │       ├── scripts/
 │       └── assets/
-└── tasks/
 ```
 
 `evals/`, `references/`, `scripts/`, and `assets/` are optional — only Skills that need them include them.
@@ -98,10 +97,10 @@ Any client that discovers `skills/<name>/SKILL.md` files should work. See [docs/
 
 This is a personal repository. External contributions are not expected.
 
-If you find a Skill useful and want to adapt it, the Apache-2.0 license allows that. See [docs/authoring.md](docs/authoring.md) for how Skills are structured.
+If you find a Skill useful and want to adapt it, the MIT license allows that. See [docs/authoring.md](docs/authoring.md) for how Skills are structured.
 
 ## License
 
-[Apache License 2.0](LICENSE)
+[MIT License](LICENSE)
 
-Copyright 2026 mtk177a
+Copyright (c) 2026 mtk177a

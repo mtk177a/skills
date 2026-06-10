@@ -1,7 +1,7 @@
 ---
 name: design-skill
 description: Use when designing a new Skill, or when significantly revising an existing Skill's responsibilities and boundaries.
-license: Apache-2.0
+license: MIT
 ---
 
 # Design Skill

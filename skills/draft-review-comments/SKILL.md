@@ -1,7 +1,7 @@
 ---
 name: draft-review-comments
 description: Turn organized findings into GitHub PR inline comments and a review summary.
-license: Apache-2.0
+license: MIT
 ---
 
 # Draft Review Comments

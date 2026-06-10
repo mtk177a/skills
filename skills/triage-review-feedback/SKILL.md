@@ -1,7 +1,7 @@
 ---
 name: triage-review-feedback
 description: Sort review comments from humans or other AI into accepted, deferred, and rejected — decide on a response approach.
-license: Apache-2.0
+license: MIT
 ---
 
 # Triage Review Feedback

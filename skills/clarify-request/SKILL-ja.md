@@ -1,7 +1,7 @@
 ---
 name: clarify-request
 description: 依頼が曖昧なときに使う (clarify, questions, requirements)。1〜4個の確認質問、または前提を明示して進める。
-license: Apache-2.0
+license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。

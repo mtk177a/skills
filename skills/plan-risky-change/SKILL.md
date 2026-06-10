@@ -1,7 +1,7 @@
 ---
 name: plan-risky-change
 description: Before a high-risk change, organize the plan, risks, and rollback to obtain approval. (destructive, migration, dependency, security)
-license: Apache-2.0
+license: MIT
 ---
 
 # Plan Risky Change

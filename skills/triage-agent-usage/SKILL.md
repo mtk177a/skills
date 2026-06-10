@@ -1,7 +1,7 @@
 ---
 name: triage-agent-usage
 description: Before starting work, separate the right agent, tool, and model weight for the task.
-license: Apache-2.0
+license: MIT
 ---
 
 # Triage Agent Usage

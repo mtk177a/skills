@@ -91,7 +91,6 @@ apm install mtk177a/skills/skills/review-changes
 │       ├── references/
 │       ├── scripts/
 │       └── assets/
-└── tasks/
 ```
 
 `evals/`、`references/`、`scripts/`、`assets/` は任意であり、必要な Skill だけが持ちます。
@@ -100,10 +99,10 @@ apm install mtk177a/skills/skills/review-changes
 
 個人用リポジトリのため、外部からの貢献は想定していません。
 
-Skill を活用したい場合は、Apache-2.0 ライセンスの範囲で自由に利用・改変できます。Skill の構成については [docs/authoring.md](docs/authoring.md) を参照してください。
+Skill を活用したい場合は、MIT ライセンスの範囲で自由に利用・改変できます。Skill の構成については [docs/authoring.md](docs/authoring.md) を参照してください。
 
 ## ライセンス
 
-[Apache License 2.0](LICENSE)
+[MIT License](LICENSE)
 
-Copyright 2026 mtk177a
+Copyright (c) 2026 mtk177a

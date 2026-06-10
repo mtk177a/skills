@@ -1,7 +1,7 @@
 ---
 name: break-failure-loop
 description: Stop and reframe when an agent has failed twice with the same error or approach — organize hypotheses, confirmed facts, unknowns, and next branches.
-license: Apache-2.0
+license: MIT
 ---
 
 # Break Failure Loop

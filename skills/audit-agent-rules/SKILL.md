@@ -1,7 +1,7 @@
 ---
 name: audit-agent-rules
 description: Audit AGENTS.md / skills / docs for naming, boundaries, approval rules, and heavy defaults — propose small, safe improvements.
-license: Apache-2.0
+license: MIT
 ---
 
 # Audit Agent Rules

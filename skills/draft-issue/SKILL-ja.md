@@ -1,7 +1,7 @@
 ---
 name: draft-issue
 description: scope-request で明確化した課題を、Issue の起票案と起票手順に落とし込みたいときに使う。 (issue, ticket, backlog, jira, redmine)
-license: Apache-2.0
+license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。

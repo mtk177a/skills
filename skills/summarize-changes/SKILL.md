@@ -1,7 +1,7 @@
 ---
 name: summarize-changes
 description: Summarize a diff into a PR description, release handoff, or shareable summary.
-license: Apache-2.0
+license: MIT
 ---
 
 # Summarize Changes

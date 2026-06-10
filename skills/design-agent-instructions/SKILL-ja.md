@@ -1,7 +1,7 @@
 ---
 name: design-agent-instructions
 description: AGENTS.md / CLAUDE.md / .github/copilot-instructions.md / GEMINI.md の指示文書セットを設計したいときに使う。
-license: Apache-2.0
+license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。

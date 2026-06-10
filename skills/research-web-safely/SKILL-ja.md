@@ -1,7 +1,7 @@
 ---
 name: research-web-safely
 description: Web調査を安全に行うためのスキル。公式ドキュメント優先、複数ソース確認、外部コードの無断流用禁止。web research, documentation lookup, best practices, security advisory
-license: Apache-2.0
+license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。

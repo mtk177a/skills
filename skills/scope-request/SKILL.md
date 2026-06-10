@@ -1,7 +1,7 @@
 ---
 name: scope-request
 description: Clarify the scope of a request or problem — make purpose, completion criteria, constraints, and assumptions explicit.
-license: Apache-2.0
+license: MIT
 ---
 
 # Scope Request
