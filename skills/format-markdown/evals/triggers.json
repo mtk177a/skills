@@ -1,0 +1,30 @@
+{
+  "should_trigger": [
+    {
+      "input": "Format this markdown document for consistency",
+      "reason": "Direct formatting request — primary use case"
+    },
+    {
+      "input": "Fix the heading hierarchy in this README",
+      "reason": "Structural formatting correction"
+    },
+    {
+      "input": "Normalize the list styles in this document",
+      "reason": "List formatting normalization"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "input": "Rewrite this section to be clearer",
+      "reason": "Content rewriting changes meaning, not formatting — out of scope"
+    },
+    {
+      "input": "Review this document for accuracy",
+      "reason": "Content accuracy review is a different task"
+    },
+    {
+      "input": "Translate this document to English",
+      "reason": "Translation changes content, not formatting"
+    }
+  ]
+}

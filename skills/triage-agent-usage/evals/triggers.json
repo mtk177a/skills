@@ -1,0 +1,30 @@
+{
+  "should_trigger": [
+    {
+      "input": "What tool should I use for this task?",
+      "reason": "Direct tool selection question — primary use case"
+    },
+    {
+      "input": "Should I use Claude Code or just chat for this change?",
+      "reason": "Explicit agent/tool comparison for a task"
+    },
+    {
+      "input": "Is this complex enough to need a coding agent, or can I use regular chat?",
+      "reason": "Asks for triage of task complexity vs tool weight"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "input": "Just do this task for me",
+      "reason": "Does not ask for triage — directly requests action"
+    },
+    {
+      "input": "Review my code",
+      "reason": "Code review is review-changes, no tool triage needed"
+    },
+    {
+      "input": "Write a commit message",
+      "reason": "Commit drafting is draft-commit, clear task assignment"
+    }
+  ]
+}

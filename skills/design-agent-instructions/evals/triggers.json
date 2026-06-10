@@ -1,0 +1,30 @@
+{
+  "should_trigger": [
+    {
+      "input": "What instruction files should I set up for my new repository?",
+      "reason": "Directly asks for instruction document design — primary use case"
+    },
+    {
+      "input": "Our AGENTS.md and CLAUDE.md have conflicting rules, how do I fix that?",
+      "reason": "Requests document consolidation — core responsibility of this Skill"
+    },
+    {
+      "input": "Which of AGENTS.md, CLAUDE.md, and copilot-instructions.md should I create?",
+      "reason": "Asks which documents to create and their roles"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "input": "Write a SKILL.md for a changelog workflow",
+      "reason": "Designing a new Skill is design-skill, not instruction document design"
+    },
+    {
+      "input": "Review the approval boundaries in my AGENTS.md",
+      "reason": "Auditing existing rules is audit-agent-rules"
+    },
+    {
+      "input": "Implement the feature described in our AGENTS.md",
+      "reason": "Code implementation is implement-changes"
+    }
+  ]
+}

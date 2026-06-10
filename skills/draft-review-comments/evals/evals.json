@@ -1,0 +1,33 @@
+[
+  {
+    "id": "first-review-comment-labels",
+    "description": "Turn organized findings into GitHub comment drafts with correct labels and positions",
+    "input": "Draft GitHub PR comments for these findings:\n1. [must] src/auth/handler.go:42 — Nil dereference: user.Email is accessed without a nil check. If user is nil, this panics.\n2. [should] src/auth/handler.go:58 — Error is silently discarded. The returned error from tokenService.Refresh() is not handled.\n3. [suggestion] src/auth/handler.go:71 — Rename `tok` to `refreshedToken` for clarity.",
+    "assertions": [
+      { "type": "contains", "value": "must" },
+      { "type": "contains", "value": "src/auth/handler.go" },
+      { "type": "not_contains", "value": "I also found another issue" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "review-summary-concise",
+    "description": "Review summary should be brief overall judgment, not a label-by-label list",
+    "input": "Write a review summary for a PR that has: 1 must-fix (nil dereference), 2 should-fix (error handling), and 3 suggestions (naming). The nil dereference is the blocker.",
+    "assertions": [
+      { "type": "not_contains", "value": "must: 1, should: 2, suggestion: 3" },
+      { "type": "contains", "value": "nil" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "no-new-findings-added",
+    "description": "Should not introduce new findings not present in the input",
+    "input": "Format these two review comments as GitHub PR comment drafts:\n1. [nit] utils/strings.go:10 — Rename s to input\n2. [note] utils/strings.go:20 — This function is used in 3 other places",
+    "assertions": [
+      { "type": "not_contains", "value": "I also noticed" },
+      { "type": "not_contains", "value": "Additionally" }
+    ],
+    "tags": ["boundary"]
+  }
+]

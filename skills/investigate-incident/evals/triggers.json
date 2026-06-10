@@ -1,0 +1,30 @@
+{
+  "should_trigger": [
+    {
+      "input": "We have an outage and don't know what caused it",
+      "reason": "Unknown-cause incident — investigation structure is needed"
+    },
+    {
+      "input": "Error rate spiked at 3pm, help me figure out why",
+      "reason": "Requests investigation of a time-correlated anomaly"
+    },
+    {
+      "input": "Something is wrong in production but I can't pinpoint the cause",
+      "reason": "Classic unknown-cause scenario for investigation"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "input": "Fix this known bug in the payment handler",
+      "reason": "Known issue with a clear fix — implement-changes is appropriate"
+    },
+    {
+      "input": "Plan this risky production deployment",
+      "reason": "Pre-change safety planning is plan-risky-change"
+    },
+    {
+      "input": "Review my code for potential performance issues",
+      "reason": "Code review is review-changes, not incident investigation"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "new-skill-proposal",
+    "description": "User wants to add a new Skill — produce name, description, boundaries, and auxiliary directory judgment",
+    "input": "I want to create a Skill for generating changelog entries from git commits. It doesn't seem to exist yet. Can you design it?",
+    "assertions": [
+      { "type": "contains", "value": "description" },
+      { "type": "contains", "value": "Never" },
+      { "type": "not_contains", "value": "Here is the complete SKILL.md" },
+      { "type": "not_contains", "value": "I'll create the file" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "overlap-check",
+    "description": "Proposed Skill overlaps with existing Skills — surface the overlap and recommend consolidation",
+    "input": "I want to create a 'write-pr-body' Skill. It would take a diff and write a PR description. Does this conflict with anything that already exists?",
+    "assertions": [
+      { "type": "contains", "value": "summarize-changes" },
+      { "type": "not_contains", "value": "create a separate skill" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "abstract-request-stops-at-purpose",
+    "description": "Abstract description — should fix the purpose statement before proceeding to naming",
+    "input": "I want a Skill that helps with 'stuff around deployments'.",
+    "assertions": [
+      { "type": "contains", "value": "purpose" },
+      { "type": "not_contains", "value": "name: deploy-stuff" }
+    ],
+    "tags": ["boundary"]
+  }
+]

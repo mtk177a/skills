@@ -1,0 +1,36 @@
+[
+  {
+    "id": "scope-drift-audit",
+    "description": "Audit a SKILL.md where the name/description is narrower than the body scope",
+    "input": "Audit this SKILL.md. The name is 'draft-note' and description says 'Write a short note', but the Steps section includes reviewing, triaging, planning, and approval gating.\n\nSKILL.md excerpt:\n---\nname: draft-note\ndescription: Write a short note.\n---\n## Steps\n1. Read all related docs\n2. Triage issues found\n3. Plan the correction approach\n4. Write the note\n5. Propose for approval",
+    "assertions": [
+      { "type": "contains", "value": "scope" },
+      { "type": "contains", "value": "description" },
+      { "type": "not_contains", "value": "edit the file" },
+      { "type": "not_contains", "value": "I'll update" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "approval-boundary-audit",
+    "description": "Audit AGENTS.md and a SKILL.md with inconsistent approval boundary language",
+    "input": "Audit the approval boundaries in these documents.\n\nAGENTS.md excerpt:\n> Breaking changes require prior approval.\n\nskills/deploy-infra/SKILL.md excerpt:\n### Ask first:\n- Before making any infrastructure change\n\nskills/deploy-infra/SKILL.md (Boundaries section also says):\n### Always:\n- Apply infrastructure changes immediately when requested",
+    "assertions": [
+      { "type": "contains", "value": "approval" },
+      { "type": "contains", "value": "conflict" },
+      { "type": "not_contains", "value": "proceed without approval" },
+      { "type": "not_contains", "value": "edit AGENTS.md directly" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "missing-never-section",
+    "description": "Audit a SKILL.md that has no Never section in Boundaries",
+    "input": "Audit this SKILL.md for completeness.\n\n---\nname: run-migrations\ndescription: Run database migrations.\n---\n## Boundaries\n### Always:\n- Backup before running\n### Ask first:\n- When running in production",
+    "assertions": [
+      { "type": "contains", "value": "Never" },
+      { "type": "not_contains", "value": "looks complete" }
+    ],
+    "tags": ["boundary"]
+  }
+]

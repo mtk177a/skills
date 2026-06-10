@@ -1,0 +1,30 @@
+{
+  "should_trigger": [
+    {
+      "input": "Check if this SKILL.md's name, description, and body are internally consistent",
+      "reason": "Directly requests operational rule audit — the primary use case"
+    },
+    {
+      "input": "Audit the approval boundaries across our AGENTS.md and skill files",
+      "reason": "Requests boundary/approval consistency audit — core responsibility"
+    },
+    {
+      "input": "Our SKILL.md says Never in the boundary but the steps do it anyway, can you flag that?",
+      "reason": "Requests naming/boundary drift detection"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "input": "Write a new SKILL.md for a changelog workflow",
+      "reason": "Designing a new Skill is design-skill, not audit-agent-rules"
+    },
+    {
+      "input": "Fix the bug in my auth middleware",
+      "reason": "Code implementation is implement-changes, not an audit task"
+    },
+    {
+      "input": "Review this PR for correctness",
+      "reason": "Code review is review-changes, not operational rule audit"
+    }
+  ]
+}

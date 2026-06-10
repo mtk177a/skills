@@ -1,0 +1,30 @@
+{
+  "should_trigger": [
+    {
+      "input": "Research the latest API for this library and tell me what it says",
+      "reason": "Web research request that needs source verification"
+    },
+    {
+      "input": "What do best practices say about handling this in production?",
+      "reason": "Best practice research requiring source trust evaluation"
+    },
+    {
+      "input": "Look up whether this approach is still recommended",
+      "reason": "Verification of a practice against current information"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "input": "Implement this using what you already know about the library",
+      "reason": "Implementation without web research is implement-changes"
+    },
+    {
+      "input": "Review my code for correctness",
+      "reason": "Code review is review-changes"
+    },
+    {
+      "input": "Design how to use this pattern in my codebase",
+      "reason": "Design decisions are design-changes"
+    }
+  ]
+}

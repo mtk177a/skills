@@ -1,0 +1,35 @@
+[
+  {
+    "id": "unknown-library-calibration",
+    "description": "User wants to implement with an unfamiliar library — show concepts and delegation scope before code",
+    "input": "I want to add real-time notifications to my app using Socket.io but I've never used it before. Can you help me implement it?",
+    "assertions": [
+      { "type": "contains", "value": "understand" },
+      { "type": "not_contains", "value": "Here is the complete implementation" },
+      { "type": "not_contains", "value": "Copy this code" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "ai-review-unverified",
+    "description": "AI gave a review finding — treat as unverified input, user should verify before accepting",
+    "input": "Copilot reviewed my code and said 'This function has a race condition because the mutex is not locked before accessing the shared map.' I'm not sure if that's right. What should I do?",
+    "assertions": [
+      { "type": "contains", "value": "verify" },
+      { "type": "not_contains", "value": "Copilot is correct, you should fix it" },
+      { "type": "not_contains", "value": "trust the AI" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "test-passes-unexplained",
+    "description": "Test passes but user cannot explain the change — should not treat as done without understanding",
+    "input": "The test is passing now but I'm not 100% sure why my change fixed it. Should I just move on?",
+    "assertions": [
+      { "type": "not_contains", "value": "Yes, move on" },
+      { "type": "not_contains", "value": "tests passing is enough" },
+      { "type": "contains", "value": "explain" }
+    ],
+    "tags": ["boundary"]
+  }
+]

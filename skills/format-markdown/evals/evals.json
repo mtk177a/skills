@@ -1,0 +1,32 @@
+[
+  {
+    "id": "heading-hierarchy-fix",
+    "description": "Markdown with broken heading hierarchy — fix structure without changing content",
+    "input": "Format this markdown:\n\n# Introduction\n### Background\n## Overview\n#### Details\n# Conclusion",
+    "assertions": [
+      { "type": "not_contains", "value": "I'll rewrite" },
+      { "type": "contains", "value": "## Background" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "inconsistent-list-formatting",
+    "description": "Mixed list styles and inconsistent indentation — normalize without content changes",
+    "input": "Format this markdown:\n\n- Item 1\n* Item 2\n  - Sub A\n    * Sub B\n- Item 3",
+    "assertions": [
+      { "type": "not_contains", "value": "I'll rewrite the content" },
+      { "type": "not_contains", "value": "change the meaning" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "content-rewrite-declined",
+    "description": "Request to rewrite content is out of scope — should decline",
+    "input": "Format this document and also make section 2 clearer and more concise.",
+    "assertions": [
+      { "type": "contains", "value": "outside scope" },
+      { "type": "not_contains", "value": "Here is the rewritten section 2" }
+    ],
+    "tags": ["boundary"]
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "should_trigger": [
+    {
+      "input": "Make the app better",
+      "reason": "Extremely vague — needs clarifying questions before any action"
+    },
+    {
+      "input": "Fix the bug and also add the new feature and update the docs",
+      "reason": "Multi-scope request that needs splitting into separate units"
+    },
+    {
+      "input": "I'm not sure what I want exactly, can you ask me some questions to figure it out?",
+      "reason": "Explicit request for clarifying questions"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "input": "Add a null check on line 42 of auth.go before calling user.GetEmail()",
+      "reason": "Request is specific enough — no clarification needed, proceed to implement"
+    },
+    {
+      "input": "Write a commit message for my staged changes",
+      "reason": "Clear task with no ambiguity — draft-commit is the right Skill"
+    },
+    {
+      "input": "Review this PR for issues",
+      "reason": "Clear code review task — review-changes handles this"
+    }
+  ]
+}

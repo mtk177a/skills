@@ -1,0 +1,33 @@
+[
+  {
+    "id": "review-comment-triage",
+    "description": "Sort 3 findings into accept/defer/reject with reasons and priority",
+    "input": "Triage these review findings:\n1. [must] Nil dereference at line 42 — crashes in production\n2. [should] Error from tokenService.Refresh() is discarded\n3. [suggestion] Rename 'tok' to 'refreshedToken' for clarity",
+    "assertions": [
+      { "type": "contains", "value": "reason" },
+      { "type": "contains", "value": "priority" },
+      { "type": "not_contains", "value": "auto-accept all" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "spec-dependent-finding-deferred",
+    "description": "Finding that requires spec clarification — defer, do not auto-accept",
+    "input": "Triage this finding:\n[question] Should this return nil or empty string when the user is not found? The API contract is unclear.",
+    "assertions": [
+      { "type": "contains", "value": "defer" },
+      { "type": "not_contains", "value": "accepted" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "unverified-platform-claim-not-auto-accepted",
+    "description": "AI claims YAML syntax is wrong, but no official source is cited — should verify before accepting",
+    "input": "AI review says: 'This GitHub Actions YAML is invalid — the on: trigger syntax changed in 2024 and this syntax no longer works.' Triage this finding.",
+    "assertions": [
+      { "type": "not_contains", "value": "accept this finding" },
+      { "type": "contains", "value": "verify" }
+    ],
+    "tags": ["boundary"]
+  }
+]

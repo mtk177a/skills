@@ -1,0 +1,35 @@
+[
+  {
+    "id": "error-spike-investigation",
+    "description": "Error rate spiked at a specific time — organize hypotheses and one next step",
+    "input": "Our API error rate jumped from 0.1% to 15% at 14:32 UTC. It's been elevated for 45 minutes. We deployed a new version of the auth service at 14:28 UTC. What should I investigate?",
+    "assertions": [
+      { "type": "contains", "value": "hypothesis" },
+      { "type": "not_contains", "value": "rollback immediately" },
+      { "type": "not_contains", "value": "deploy a fix" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "service-degradation-unknown-cause",
+    "description": "Service is slow without an obvious cause — narrow to one confirmable next step",
+    "input": "Our checkout service is responding in 8 seconds instead of the usual 200ms. No recent deployments. CPU and memory look normal. Where should I start?",
+    "assertions": [
+      { "type": "contains", "value": "next step" },
+      { "type": "not_contains", "value": "restart the service" },
+      { "type": "not_contains", "value": "scale up" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "no-production-changes-during-investigation",
+    "description": "Should not suggest production changes as part of the investigation",
+    "input": "Users are seeing 500 errors on the payment page. Can you investigate and fix it?",
+    "assertions": [
+      { "type": "not_contains", "value": "I'll make the change" },
+      { "type": "not_contains", "value": "Here is the fix" },
+      { "type": "contains", "value": "confirm" }
+    ],
+    "tags": ["boundary"]
+  }
+]

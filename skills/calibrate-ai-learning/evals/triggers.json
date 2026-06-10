@@ -1,0 +1,30 @@
+{
+  "should_trigger": [
+    {
+      "input": "I want to understand how this API works, not just get code that uses it",
+      "reason": "Explicit learning intent — calibrate how much to delegate vs explain"
+    },
+    {
+      "input": "AI said to refactor this function — is that advice correct?",
+      "reason": "Requests evaluation of AI output, should treat as unverified input"
+    },
+    {
+      "input": "I want to be able to explain this change in a review, help me understand it",
+      "reason": "Learning priority before code completion — calibration is needed"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "input": "Fix this typo in the variable name",
+      "reason": "Trivial change with no learning concern — no calibration needed"
+    },
+    {
+      "input": "Implement this function according to the design doc",
+      "reason": "Clear implementation task is implement-changes, no learning calibration needed"
+    },
+    {
+      "input": "Review this PR for issues",
+      "reason": "Code review is review-changes, not calibration"
+    }
+  ]
+}

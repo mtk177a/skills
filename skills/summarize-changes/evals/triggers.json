@@ -1,0 +1,30 @@
+{
+  "should_trigger": [
+    {
+      "input": "Write a PR description for this diff",
+      "reason": "Direct PR summary request from a diff — primary use case"
+    },
+    {
+      "input": "Write release notes for these changes",
+      "reason": "Release handoff summary from changes"
+    },
+    {
+      "input": "Summarize what this branch changed so I can share it",
+      "reason": "Shareable diff summary request"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "input": "Write a commit message for my staged changes",
+      "reason": "Commit messages are draft-commit"
+    },
+    {
+      "input": "Write a handoff note for my session",
+      "reason": "Session continuation notes are record-session-handoff"
+    },
+    {
+      "input": "Review this diff for correctness",
+      "reason": "Code review is review-changes"
+    }
+  ]
+}

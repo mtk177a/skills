@@ -1,0 +1,30 @@
+{
+  "should_trigger": [
+    {
+      "input": "Write a handoff note so I can continue this tomorrow",
+      "reason": "Direct request for session continuation notes"
+    },
+    {
+      "input": "Document where we are so another agent can take over",
+      "reason": "Agent handoff preparation — core use case"
+    },
+    {
+      "input": "Summarize the decisions and open questions from this session",
+      "reason": "Session state capture for continuation"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "input": "Write a PR description for these changes",
+      "reason": "PR descriptions are summarize-changes"
+    },
+    {
+      "input": "Commit my work and write a message",
+      "reason": "Commit drafting is draft-commit"
+    },
+    {
+      "input": "What happened in our last conversation?",
+      "reason": "Recalling past context — no handoff creation needed"
+    }
+  ]
+}

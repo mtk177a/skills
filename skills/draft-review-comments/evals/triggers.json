@@ -1,0 +1,30 @@
+{
+  "should_trigger": [
+    {
+      "input": "Turn these review findings into GitHub PR comment drafts",
+      "reason": "Direct request to convert organized findings into comment text"
+    },
+    {
+      "input": "Write the comment wording for these code review notes, including line positions",
+      "reason": "Requests comment text with position from already-identified findings"
+    },
+    {
+      "input": "I have these 3 issues to flag in the PR — can you format them as review comments?",
+      "reason": "Already-identified findings need to be formatted as comments"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "input": "Review this code and find issues",
+      "reason": "Finding issues is review-changes; this Skill only formats already-identified findings"
+    },
+    {
+      "input": "Decide which of these review findings I should accept or reject",
+      "reason": "Accept/reject decisions are triage-review-feedback"
+    },
+    {
+      "input": "Write a summary of what this PR does",
+      "reason": "PR summary is summarize-changes"
+    }
+  ]
+}

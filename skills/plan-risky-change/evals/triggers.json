@@ -1,0 +1,30 @@
+{
+  "should_trigger": [
+    {
+      "input": "Help me plan this database schema migration before I run it",
+      "reason": "Pre-change safety planning for a destructive operation"
+    },
+    {
+      "input": "I need to rename a critical API endpoint — what's the safest approach?",
+      "reason": "Potentially breaking change needing a safety plan"
+    },
+    {
+      "input": "Plan the rollback strategy for this infrastructure change",
+      "reason": "Explicit risk/rollback planning request"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "input": "Just do the rename for me",
+      "reason": "Direct execution without planning — requires implement-changes after approval"
+    },
+    {
+      "input": "Review the risk of this PR",
+      "reason": "Code review including risk assessment is review-changes"
+    },
+    {
+      "input": "Design how to implement this feature",
+      "reason": "Feature design is design-changes; this Skill focuses on pre-execution safety planning"
+    }
+  ]
+}

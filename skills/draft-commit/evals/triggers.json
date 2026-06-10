@@ -1,0 +1,30 @@
+{
+  "should_trigger": [
+    {
+      "input": "Write a commit message for my staged changes",
+      "reason": "Direct request to draft a commit — primary use case"
+    },
+    {
+      "input": "Draft a git commit message for this diff",
+      "reason": "Explicit commit message drafting request"
+    },
+    {
+      "input": "What should I write for this commit?",
+      "reason": "Asking for help writing a commit message"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "input": "Write a PR description for these changes",
+      "reason": "PR description is summarize-changes, not a commit message"
+    },
+    {
+      "input": "Create a GitHub issue for this bug",
+      "reason": "Issue creation is draft-issue, not commit drafting"
+    },
+    {
+      "input": "Write session handoff notes",
+      "reason": "Session handoff is record-session-handoff"
+    }
+  ]
+}

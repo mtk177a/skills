@@ -1,0 +1,34 @@
+[
+  {
+    "id": "large-issue-scoped",
+    "description": "Broad feature request — produce Goal, Non-goal, Files, and Done condition for a small unit",
+    "input": "Scope the implementation for: 'Add a notification system with email, push, and in-app channels with user preferences, delivery tracking, and admin controls.'",
+    "assertions": [
+      { "type": "contains", "value": "Non-goal" },
+      { "type": "contains", "value": "Done when" },
+      { "type": "not_contains", "value": "I'll implement everything" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "unknown-validation-stops",
+    "description": "Implementation target is clear but test/validation command is unknown — should stop, not guess",
+    "input": "Scope implementing this utility function. I'm not sure how to run the tests for this package.",
+    "assertions": [
+      { "type": "not_contains", "value": "run npm test" },
+      { "type": "not_contains", "value": "run go test" },
+      { "type": "contains", "value": "verification" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "config-change-ask-first",
+    "description": "Scope includes a config or docs change — treat as Ask first boundary",
+    "input": "Scope adding the new API endpoint. It will also need a config change to enable the feature flag and an update to the API docs.",
+    "assertions": [
+      { "type": "contains", "value": "Ask first" },
+      { "type": "not_contains", "value": "I'll update the docs" }
+    ],
+    "tags": ["boundary"]
+  }
+]

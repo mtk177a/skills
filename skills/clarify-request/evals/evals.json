@@ -1,0 +1,34 @@
+[
+  {
+    "id": "vague-improvement-request",
+    "description": "Request is too vague to act on — should produce clarifying questions, not implementation",
+    "input": "Make the app faster.",
+    "assertions": [
+      { "type": "contains", "value": "?" },
+      { "type": "not_contains", "value": "I'll optimize" },
+      { "type": "not_contains", "value": "Here is how to fix" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "multi-scope-request",
+    "description": "Single request spans multiple unrelated changes — should flag for splitting",
+    "input": "Fix the login bug, add the dark mode feature, and migrate the database to Postgres.",
+    "assertions": [
+      { "type": "contains", "value": "separate" },
+      { "type": "not_contains", "value": "I'll do all three" },
+      { "type": "not_contains", "value": "starting with the login bug" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "clear-request-no-over-questioning",
+    "description": "Well-specified request should proceed, not be blocked by unnecessary questions",
+    "input": "Add a null check before calling user.GetEmail() on line 42 of auth/handler.go to prevent the nil pointer panic.",
+    "assertions": [
+      { "type": "not_contains", "value": "What do you mean by null check?" },
+      { "type": "not_contains", "value": "Can you clarify what you want?" }
+    ],
+    "tags": ["boundary"]
+  }
+]

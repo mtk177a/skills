@@ -1,0 +1,30 @@
+{
+  "should_trigger": [
+    {
+      "input": "I want to create a new Skill for generating changelogs",
+      "reason": "Directly requests Skill design — primary use case"
+    },
+    {
+      "input": "Should I create a separate Skill or extend an existing one for this workflow?",
+      "reason": "Asks about overlap and consolidation — core judgment this Skill provides"
+    },
+    {
+      "input": "Design a SKILL.md for triaging deployment alerts",
+      "reason": "Explicit Skill design request"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "input": "Implement the code for my new Skill",
+      "reason": "Code implementation is implement-changes"
+    },
+    {
+      "input": "Audit whether our existing SKILL.md files are consistent",
+      "reason": "Auditing existing rules is audit-agent-rules"
+    },
+    {
+      "input": "Write the instruction file for my repo",
+      "reason": "Repo instruction documents are design-agent-instructions, not Skill design"
+    }
+  ]
+}

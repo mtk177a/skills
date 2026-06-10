@@ -1,0 +1,35 @@
+[
+  {
+    "id": "post-fix-verification",
+    "description": "Fix diff + tests + original comments — separate confirmed from unconfirmed",
+    "input": "Verify this fix. Original finding: nil dereference at handler.go:42. Fix: added nil check. Tests run: TestProcessRequest_NilInput passes. TestProcessRequest_InvalidToken was not run (requires external service).",
+    "assertions": [
+      { "type": "contains", "value": "confirmed" },
+      { "type": "contains", "value": "unconfirmed" },
+      { "type": "contains", "value": "risk" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "partial-test-coverage",
+    "description": "Some tests not run — unperformed scope must not be treated as 'no issues'",
+    "input": "Verify my fix. I fixed the nil check and ran the unit tests. Integration tests were not run — they require a live database.",
+    "assertions": [
+      { "type": "not_contains", "value": "all clear" },
+      { "type": "not_contains", "value": "fully verified" },
+      { "type": "contains", "value": "integration" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "no-safety-assertion-without-evidence",
+    "description": "Must not assert safe without evidence — especially for auth-related changes",
+    "input": "I changed the password hashing algorithm. Tests pass. Is it safe?",
+    "assertions": [
+      { "type": "not_contains", "value": "This is safe" },
+      { "type": "not_contains", "value": "no issues found" },
+      { "type": "contains", "value": "unconfirmed" }
+    ],
+    "tags": ["boundary"]
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "long-task-handoff",
+    "description": "In-progress implementation — produce handoff with decisions, open questions, and first next step",
+    "input": "Write a handoff note for this session. I've implemented the JWT refresh token logic (done), but the revocation endpoint is still in progress. I decided to use Redis for token storage but haven't decided on TTL. The test file is missing coverage for the revocation path.",
+    "assertions": [
+      { "type": "contains", "value": "Decisions" },
+      { "type": "contains", "value": "Open" },
+      { "type": "contains", "value": "Next" },
+      { "type": "not_contains", "value": "TTL is decided" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "no-destination-stop",
+    "description": "Save destination not specified — should stop and ask, not write to conversation only",
+    "input": "Write a handoff note for this session.",
+    "assertions": [
+      { "type": "contains", "value": "destination" },
+      { "type": "not_contains", "value": "Session Log:" }
+    ],
+    "tags": ["representative"]
+  },
+  {
+    "id": "open-questions-not-promoted-to-decisions",
+    "description": "Open questions must not be treated as decided — keep them separate",
+    "input": "Write a handoff. We discussed two approaches for caching but haven't decided which one to use. The token refresh endpoint is done.",
+    "assertions": [
+      { "type": "not_contains", "value": "Decision: use approach" },
+      { "type": "contains", "value": "Open" }
+    ],
+    "tags": ["boundary"]
+  }
+]
