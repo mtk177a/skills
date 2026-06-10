@@ -7,7 +7,7 @@
 - `AGENTS.md`
 - `README.md`
 - `skills/README.md`
-- `docs/skill-authoring.md`
+- `docs/authoring.md`
 
 ## このリポジトリで期待する振る舞い
 

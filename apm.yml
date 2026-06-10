@@ -1,29 +1,29 @@
-name: agent-skills
+name: skills
 version: 0.1.0
 description: Personal Agent Skills package that aggregates maintained custom skills for APM consumers.
 
 dependencies:
   apm:
-    - mtk177a/agent-skills/skills/triage-agent-usage
-    - mtk177a/agent-skills/skills/calibrate-ai-learning
-    - mtk177a/agent-skills/skills/implement-changes
-    - mtk177a/agent-skills/skills/clarify-request
-    - mtk177a/agent-skills/skills/review-changes
-    - mtk177a/agent-skills/skills/audit-agent-rules
-    - mtk177a/agent-skills/skills/design-agent-instructions
-    - mtk177a/agent-skills/skills/design-skill
-    - mtk177a/agent-skills/skills/draft-issue
-    - mtk177a/agent-skills/skills/draft-review-comments
-    - mtk177a/agent-skills/skills/design-changes
-    - mtk177a/agent-skills/skills/draft-commit
-    - mtk177a/agent-skills/skills/break-failure-loop
-    - mtk177a/agent-skills/skills/format-markdown
-    - mtk177a/agent-skills/skills/scope-request
-    - mtk177a/agent-skills/skills/investigate-incident
-    - mtk177a/agent-skills/skills/plan-risky-change
-    - mtk177a/agent-skills/skills/record-session-handoff
-    - mtk177a/agent-skills/skills/summarize-changes
-    - mtk177a/agent-skills/skills/research-web-safely
-    - mtk177a/agent-skills/skills/scope-implementation
-    - mtk177a/agent-skills/skills/triage-review-feedback
-    - mtk177a/agent-skills/skills/validate-fix
+    - mtk177a/skills/skills/triage-agent-usage
+    - mtk177a/skills/skills/calibrate-ai-learning
+    - mtk177a/skills/skills/implement-changes
+    - mtk177a/skills/skills/clarify-request
+    - mtk177a/skills/skills/review-changes
+    - mtk177a/skills/skills/audit-agent-rules
+    - mtk177a/skills/skills/design-agent-instructions
+    - mtk177a/skills/skills/design-skill
+    - mtk177a/skills/skills/draft-issue
+    - mtk177a/skills/skills/draft-review-comments
+    - mtk177a/skills/skills/design-changes
+    - mtk177a/skills/skills/draft-commit
+    - mtk177a/skills/skills/break-failure-loop
+    - mtk177a/skills/skills/format-markdown
+    - mtk177a/skills/skills/scope-request
+    - mtk177a/skills/skills/investigate-incident
+    - mtk177a/skills/skills/plan-risky-change
+    - mtk177a/skills/skills/record-session-handoff
+    - mtk177a/skills/skills/summarize-changes
+    - mtk177a/skills/skills/research-web-safely
+    - mtk177a/skills/skills/scope-implementation
+    - mtk177a/skills/skills/triage-review-feedback
+    - mtk177a/skills/skills/validate-fix
