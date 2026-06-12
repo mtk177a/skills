@@ -47,6 +47,25 @@ When creating or editing a Skill, also review existing `skills/*/SKILL.md` files
 - Keep helper scripts and reference materials to the minimum needed for the Skill to work
 - Skill bodies must be readable by agents that have no prior context about this repository
 
+## APM validation
+
+- Do not run a non-dry-run `apm install` or `apm update` in this repository. They deploy the repository's Skills to `.agents/skills/`, causing them to appear alongside globally installed copies.
+- For routine validation in this repository, use commands that do not deploy Skills:
+
+  ```bash
+  apm install --frozen --dry-run --no-policy
+  apm pack --dry-run --offline
+  ```
+
+- Run a full install and `apm audit --ci --no-policy` only in a disposable copy outside this repository.
+- Maintain `apm.yml` manually; do not regenerate it. Update its dependency list when adding, removing, or renaming a Skill.
+- Because `apm.yml` depends on this repository's own Skills, commit and push Skill and manifest changes before updating the lockfile.
+- Update the lockfile by running `apm update --yes` in a disposable copy, then copy only the resulting `apm.lock.yaml` back into this repository.
+- Commit `apm.lock.yaml` updates separately with a summary such as `fix: refresh APM lockfile after <change>`.
+- An empty `.agents/` directory may exist because agent tools can create it.
+- Do not store review notes, temporary files, or other working artifacts under `.agents/`; use a temporary directory outside this repository instead.
+- Remove APM-deployed `.agents/skills/` and `apm_modules/` when present.
+
 ## Commit message convention
 
 - Use Conventional Commits; write the summary in English, short and specific
