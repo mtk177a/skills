@@ -3,7 +3,8 @@
 ## Iter 0 — Static check
 
 - description and body are internally consistent on "Skill design and drafting"
-- `docs/authoring.md` are treated as primary sources
+- bundled `references/authoring-guide.md` is treated as the portable primary source
+- project-local sources such as `AGENTS.md`, `README.md`, and `docs/authoring.md` are supplemental when present
 - overlap check, boundary definition, and auxiliary directory judgment can all be completed standalone
 - the Skill functions as a proposal-assembly tool, not a general authoring guide recap
 
@@ -38,12 +39,22 @@ Requirements checklist:
 2. Do not propose a name derived from the vague description
 3. Surface what information is needed to proceed
 
+### Scenario D: Project-scoped Skill outside this repository
+
+The user wants to design a Skill in a different repository that has no `docs/authoring.md`. The executor must use the bundled portable authoring guide, inspect only project-local sources that actually exist, and avoid assuming this repository's APM or directory policies.
+
+Requirements checklist:
+1. [critical] Uses bundled `references/authoring-guide.md` rather than requiring root `docs/authoring.md`
+2. Distinguishes portable authoring criteria from target-repository constraints
+3. Does not assume this repository's APM lockfile workflow or repository directory policy
+
 ## Failure Pattern Ledger
 
 - `authoring guidance repeated without proposal framing`
 - `overlap check omitted or shallow`
 - `metadata proposed without trigger-oriented description`
 - `abstract request reaches naming step too early`
+- `repository-local authoring docs treated as portable dependencies`
 
 ## Iter 1 — date unknown
 

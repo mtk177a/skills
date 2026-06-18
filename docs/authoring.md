@@ -1,5 +1,7 @@
 # Skill Authoring Guide
 
+This is the authoring guide for Skills maintained in this repository. Portable Skill design guidance that must travel with an individual Skill should live inside that Skill's own `references/` directory.
+
 ## What makes a good Skill
 
 A good Skill lets an agent decide when to use it without hesitation, and contains the right amount of detail — no more, no less.

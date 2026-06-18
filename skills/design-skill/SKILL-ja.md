@@ -28,15 +28,16 @@ license: MIT
 
 ## 手順
 
-1. 一次情報として `docs/authoring.md` を確認する。
-2. 目的、範囲、対象ユーザーを 1〜2 行で定義する。抽象的な依頼しかない場合は、先に利用場面を 1 文で固定する。
-3. 既存 Skills との重複、競合、統合候補を確認する。
-4. `name` と `description` を決める。利用場面が読み取れることを優先し、責務境界が未確定なら仮称のまま承認を取る。
-5. 境界 (`Always` / `Ask first` / `Never`) を定義する。
-6. 手順、出力フォーマット、必要なら補助ディレクトリ (`evals/`, `references/`, `scripts/`, `assets/`) の要否を決める。
-7. 影響範囲 (`AGENTS.md` / docs / scripts / `apm.yml`) を列挙する。
-8. 差分提案 → 承認 → 実装の順で進める。
-9. Markdown 編集が含まれる場合は `format-markdown` の適用判断を行う。
+1. ポータブルな一次情報として同梱の `references/authoring-guide.md` を確認する。
+2. 対象リポジトリに `AGENTS.md`、`README.md`、`docs/authoring.md` などが存在する場合は、そのリポジトリ向けの補足制約として確認する。
+3. 目的、範囲、対象ユーザーを 1〜2 行で定義する。抽象的な依頼しかない場合は、先に利用場面を 1 文で固定する。
+4. 対象リポジトリで確認できる既存 Skills との重複、競合、統合候補を確認する。
+5. `name` と `description` を決める。利用場面が読み取れることを優先し、責務境界が未確定なら仮称のまま承認を取る。
+6. 境界 (`Always` / `Ask first` / `Never`) を定義する。
+7. 手順、出力フォーマット、必要なら補助ディレクトリ (`evals/`, `references/`, `scripts/`, `assets/`) の要否を決める。
+8. 影響範囲 (`AGENTS.md` / docs / scripts / `apm.yml`) は、対象リポジトリに存在する、または関係するファイルだけ列挙する。
+9. 差分提案 → 承認 → 実装の順で進める。
+10. Markdown 編集が含まれる場合は `format-markdown` の適用判断を行う。
 
 ## 出力フォーマット (提案時)
 
@@ -62,8 +63,9 @@ license: MIT
 ### Always:
 
 - 目的・範囲・境界を明記する
-- `docs/authoring.md` を一次情報として扱う
-- 既存 Skills との重複を確認する
+- 同梱の `references/authoring-guide.md` をポータブルな一次情報として扱う
+- 対象リポジトリのルールが存在する場合は補足制約として扱う
+- 確認できる既存 Skills との重複を確認する
 - `description` から利用場面が分かるようにする
 - 入力が抽象的なときは、`name` を急いで確定せず利用場面を先に固定する
 
@@ -85,4 +87,4 @@ license: MIT
 - 既存スタイルと整合
 - 明確な境界 (`Always` / `Ask first` / `Never`)
 - `description` は短く、利用場面が分かる表現を優先する
-- 一般ガイドの全文再掲は避け、必要なルールは `docs/authoring.md` への導線で補う
+- 提案では一般ガイドの全文再掲を避け、ポータブルな基準は `references/authoring-guide.md`、対象リポジトリの補足制約は存在するローカル docs への導線で補う

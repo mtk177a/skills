@@ -26,15 +26,16 @@ license: MIT
 
 ## Steps
 
-1. Read `docs/authoring.md` as primary sources.
-2. Define purpose, scope, and target user in 1–2 lines. If the request is abstract, fix the usage context in one sentence first.
-3. Check for overlap, conflicts, and merge candidates with existing Skills.
-4. Decide `name` and `description`. Prioritize making the usage context readable; if the responsibility boundary is not confirmed, use a working name and get approval.
-5. Define boundaries (`Always` / `Ask first` / `Never`).
-6. Decide steps, output format, and whether optional directories (`evals/`, `references/`, `scripts/`, `assets/`) are needed.
-7. List the impact scope (`AGENTS.md` / docs / scripts / `apm.yml`).
-8. Proceed in the order: propose diff → get approval → implement.
-9. If Markdown editing is involved, make a judgment call on whether to apply `format-markdown`.
+1. Read the bundled `references/authoring-guide.md` as the portable primary source.
+2. Review project-local sources such as `AGENTS.md`, `README.md`, and `docs/authoring.md` when they exist, and treat them as supplemental constraints for the target repository.
+3. Define purpose, scope, and target user in 1–2 lines. If the request is abstract, fix the usage context in one sentence first.
+4. Check for overlap, conflicts, and merge candidates with existing Skills in the target repository when available.
+5. Decide `name` and `description`. Prioritize making the usage context readable; if the responsibility boundary is not confirmed, use a working name and get approval.
+6. Define boundaries (`Always` / `Ask first` / `Never`).
+7. Decide steps, output format, and whether optional directories (`evals/`, `references/`, `scripts/`, `assets/`) are needed.
+8. List the impact scope (`AGENTS.md` / docs / scripts / `apm.yml`) only for files that exist or are relevant in the target repository.
+9. Proceed in the order: propose diff → get approval → implement.
+10. If Markdown editing is involved, make a judgment call on whether to apply `format-markdown`.
 
 ## Output format (proposal)
 
@@ -60,8 +61,9 @@ license: MIT
 ### Always:
 
 - State purpose, scope, and boundaries explicitly
-- Treat `docs/authoring.md` as primary sources
-- Check for overlap with existing Skills
+- Treat bundled `references/authoring-guide.md` as the portable primary source
+- Treat target-repository rules as supplemental constraints when present
+- Check for overlap with existing Skills when available
 - Make the usage context readable from `description`
 - When input is abstract, fix the usage context first before rushing to confirm a `name`
 
@@ -83,4 +85,4 @@ Principles:
 - Align with existing style
 - Clear boundaries (`Always` / `Ask first` / `Never`)
 - Keep `description` short; prioritize expressions that make the usage context clear
-- Avoid reproducing full general guidelines; use a pointer to `docs/authoring.md` for anything that needs elaboration
+- Avoid reproducing full general guidelines in proposals; point to `references/authoring-guide.md` for portable criteria and to project-local docs only when they exist
