@@ -19,9 +19,9 @@ license: MIT
 
 ## Prerequisites (important)
 
-- `AGENTS.md` and Skills are configuration contracts and must be treated more carefully than ordinary code changes.
-- Final judgment on approval boundaries follows `AGENTS.md`; this Skill audits and proposes within that assumption.
-- Do not directly edit `AGENTS.md` / Skills / docs without explicit user approval.
+- Repository instruction documents and Skills are configuration contracts and must be treated more carefully than ordinary code changes.
+- Final judgment on approval boundaries follows the target repository's applicable instruction or policy documents; use `AGENTS.md` when present.
+- Do not directly edit repository instruction documents / Skills / docs without explicit user approval.
 - Even for typo-level fixes, produce a proposal first, then edit.
 
 ## Steps
@@ -82,12 +82,12 @@ Always produce the following sections.
 
 ### Always:
 
-- Do not directly edit `AGENTS.md` / Skills / docs without explicit user approval
+- Do not directly edit repository instruction documents / Skills / docs without explicit user approval
 - Start from the minimal, safe change
 
 ### Ask first:
 
-- Before actually editing `AGENTS.md` / `skills/*/SKILL.md` / `docs`
+- Before actually editing repository instruction documents / `skills/*/SKILL.md` / `docs`
 - When a naming change or responsibility reorganization would affect users
 
 ### Never:

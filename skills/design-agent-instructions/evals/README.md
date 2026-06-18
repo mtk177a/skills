@@ -5,6 +5,7 @@
 - description and body are internally consistent on "designing and creating an instruction document set"
 - roles of `AGENTS.md` / `CLAUDE.md` / `.github/copilot-instructions.md` / `GEMINI.md` are distinguishable
 - only necessary documents are proposed — unnecessary documents are not assumed
+- repository-local docs such as `docs/authoring.md` are used only when present, not assumed as portable dependencies
 - at least one `[critical]` assertion is identified: no unnecessary documents proposed by default
 
 ## Scenarios
@@ -37,12 +38,22 @@ Requirements checklist:
 1. [critical] Do not recommend adding `GEMINI.md` when Gemini is not part of the workflow
 2. Explicitly state the document is optional
 
+### Scenario D: Repository without authoring docs
+
+The target repository has `README.md` and `AGENTS.md`, but no `docs/authoring.md` or language policy document. The executor must design the instruction document set from the available sources and must not require repository-local docs that do not exist.
+
+Requirements checklist:
+1. [critical] Does not require `docs/authoring.md` or any absent repo-local docs
+2. Uses existing `README.md` / instruction documents as the available source set
+3. Clearly marks missing local policies as absent rather than inventing them
+
 ## Failure Pattern Ledger
 
 - `all documents proposed by default`
 - `document roles overlap without exclusion rules`
 - `agent-specific optional document treated as mandatory`
 - `optional document criteria inferred, not surfaced early`
+- `repository-local docs treated as portable dependencies`
 
 ## Iter 1 — date unknown
 

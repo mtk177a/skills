@@ -27,11 +27,11 @@ license: MIT
 ## Steps
 
 1. Confirm the purpose and scope (global / repository / subdirectory).
-2. Review the existing instruction document set and primary sources.
+2. Review the existing instruction document set and project-local primary sources when present.
 3. Document the loading order:
    - `~/.codex/AGENTS.md` → repository root `AGENTS.md` → per-subdirectory `AGENTS.md`
-4. Fix the primary source documents to rely on:
-   - e.g., `README.md`, `docs/authoring.md`
+4. Fix the source documents to rely on:
+   - e.g., existing `README.md`, `docs/*`, language policy docs, or other repository-local instructions
 5. Define the role of each document:
    - `AGENTS.md`: formal contract
    - `CLAUDE.md`: supplementary instructions for Claude Code
@@ -84,7 +84,7 @@ license: MIT
 
 - Document the loading order
 - When related instruction documents exist, evaluate consistency as a document set rather than optimizing a single document in isolation
-- Fix primary sources before drafting content
+- Fix available source documents before drafting content
 - Propose only the documents needed; do not add unnecessary ones
 - Propose in minimal, reviewable units
 
@@ -105,5 +105,5 @@ license: MIT
 
 - The `AGENTS.md` specification may change; confirm when uncertain
 - Avoid repeating the same fact in multiple documents; divide content by role
-- Do not contradict the language (Japanese/English) rules in `docs/authoring.md` or existing documents
+- Do not contradict existing language (Japanese/English) rules or repository-local documentation when present
 - Treat `GEMINI.md` as optional; include it as a candidate only when the target repository requires it
