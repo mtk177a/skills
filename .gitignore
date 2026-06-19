@@ -23,4 +23,8 @@ tasks/
 
 # APM local install artifacts
 apm_modules/
-.agents/
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/refresh-apm-lockfile/
+!.agents/skills/refresh-apm-lockfile/**

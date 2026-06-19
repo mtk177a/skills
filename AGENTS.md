@@ -38,6 +38,14 @@ When creating or editing a Skill, also review existing `skills/*/SKILL.md` files
 - Do not create per-agent classification directories like `common/`, `codex/`, or `claude-code/`
 - Express agent-specific differences in Skill names or `description`, not in directory structure
 
+## Repository-local operational Skills
+
+- Repository-local operational Skills may live under `.agents/skills/<skill-name>/` only when they are exclusively for maintaining this repository itself and should not be distributed as part of the public Skill catalog.
+- These repo-local Skills are source files, not APM deployment output, when they are explicitly tracked by git.
+- Do not add repo-local Skills to `README.md`, `README.ja.md`, or `apm.yml`.
+- Keep repo-local Skill names kebab-case and include `SKILL.md`, `SKILL-ja.md`, and minimal supporting files only when needed.
+- The current tracked repo-local Skill exception is `.agents/skills/refresh-apm-lockfile/`.
+
 ## Working rules
 
 - Keep changes small and easy to review
@@ -64,7 +72,7 @@ When creating or editing a Skill, also review existing `skills/*/SKILL.md` files
 - Commit `apm.lock.yaml` updates separately with a summary such as `fix: refresh APM lockfile after <change>`.
 - An empty `.agents/` directory may exist because agent tools can create it.
 - Do not store review notes, temporary files, or other working artifacts under `.agents/`; use a temporary directory outside this repository instead.
-- Remove APM-deployed `.agents/skills/` and `apm_modules/` when present.
+- Remove APM-deployed `.agents/skills/*` and `apm_modules/` when present, except explicitly tracked repo-local operational Skills such as `.agents/skills/refresh-apm-lockfile/`.
 
 ## Commit message convention
 
