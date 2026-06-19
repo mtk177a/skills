@@ -22,6 +22,7 @@ license: MIT
 - Does the task require reading the repository?
 - Does it require changes across multiple files?
 - Does it require delegating implementation and test execution?
+- Is this an agent, workflow, prompt, or code improvement loop that may need candidate search?
 - Is there uncertainty that requires a high-capability model?
 - Is the cost of failure and rework high?
 - Is the priority learning or meeting a deadline?
@@ -33,6 +34,7 @@ license: MIT
 - IDE completion, simple single-function fixes: completion model
 - Small existing-pattern implementations: lightweight coding agent
 - Multi-file changes with test execution: Codex or Claude Code
+- Repeated agent / workflow / prompt improvement: treat as search design, not only another local edit
 - Unknown-cause incidents, security, billing, authorization: use a high-capability model explicitly
 
 ## Steps
@@ -42,9 +44,10 @@ license: MIT
 3. If the repo needs to be read but changes are local and follow existing patterns, consider completion or a lightweight coding agent.
 4. If multi-file changes and test execution are needed, consider Codex or Claude Code.
 5. If unknown-cause incidents, security, billing, authorization, or destructive changes are involved, use a high-capability model explicitly.
-6. If learning is a strong priority, separate tasks to delegate to AI from decisions the person must make themselves.
-7. When choosing a heavier option, have the reason ready to state in one line.
-8. After selecting a tool, cut work units as small as possible and minimize the context to pass.
+6. If the work is repeated agent, workflow, prompt, or code improvement, decide whether candidate search and case-level evaluation are needed before recommending another local edit.
+7. If learning is a strong priority, separate tasks to delegate to AI from decisions the person must make themselves.
+8. When choosing a heavier option, have the reason ready to state in one line.
+9. After selecting a tool, cut work units as small as possible and minimize the context to pass.
 
 ## Output format
 
@@ -52,6 +55,7 @@ license: MIT
 - Recommended model / profile: ...
 - Work units: ...
 - Minimum context to pass: ...
+- Search design needed?: ...
 - Things the person should decide first: ...
 - Prerequisites for understanding and review: ...
 
@@ -60,6 +64,7 @@ license: MIT
 ### Always:
 
 - Consider whether the lightest option is sufficient first
+- Do not classify repeated self-improvement loops as simple local edits without checking for search design needs
 - State the reason for using a heavy agent session
 - Keep passed context to the minimum
 - When learning is a priority, separate what the person can explain from what to delegate to AI

@@ -22,6 +22,17 @@
 - `implement-changes`: 受け入れた変更のみを適用する
 - `validate-fix`: 検証結果と残る未解決事項を文書化する
 
+## 停滞からの回復ワークフロー
+
+`break-failure-loop` → `diversify-agent-search` → `design-changes` → `implement-changes`
+
+- `break-failure-loop`: 同じ仮説での反復を止め、根拠を整理する
+- `diversify-agent-search`: 利用可能な場合、候補アーカイブ、多様性軸、ケース別評価で探索を広げる
+- `design-changes`: 選んだ分岐を実装可能な計画に落とす
+- `implement-changes`: 分岐と停止条件が明確になってから実装を再開する
+
+各 Skill は単独でも動く必要があります。`diversify-agent-search` は探索設計を深める companion であり、他 Skill の必須依存ではありません。
+
 ## 停止条件
 
 次の場合は停止し、承認または明確化を求めます:

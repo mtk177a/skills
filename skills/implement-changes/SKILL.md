@@ -16,6 +16,7 @@ license: MIT
 - When you want to proceed with a new feature or fix using TDD
 - When you want to implement safely in small units
 - When you want to progress while organizing to a state ready to hand off to verification
+- When you need to avoid continuing implementation after repeated same-hypothesis failures
 
 ## Input (optional)
 
@@ -36,10 +37,11 @@ license: MIT
 7. Write the minimal implementation to make the test pass (Green).
 8. Refactor only when the test is passing.
 9. Add new insights to the test list and repeat.
-10. Update the test execution plan and verification handoff content.
-11. Leave the reason for the change, verification basis, and explanation points for the user in the handoff.
-12. Only when high-risk changes or quality uncertainty remain, explicitly state the need for additional confirmation.
-13. For the concrete TDD rhythm, refer to `references/tdd_twada.md`.
+10. If the same test or behavior fails under the same hypothesis twice, stop implementation and record whether a structurally different branch is needed.
+11. Update the test execution plan and verification handoff content.
+12. Leave the reason for the change, verification basis, and explanation points for the user in the handoff.
+13. Only when high-risk changes or quality uncertainty remain, explicitly state the need for additional confirmation.
+14. For the concrete TDD rhythm, refer to `references/tdd_twada.md`.
 
 ## Output format
 
@@ -54,6 +56,8 @@ license: MIT
   - ...
 - Current test: ...
 - Current phase: Blocked | Red | Green | Refactor | Done
+- Same-hypothesis repetition check: ...
+- Structurally different branch if blocked: ...
 - Verification handoff: ...
 - Reason for change: ...
 - Verification basis: ...
@@ -69,8 +73,10 @@ license: MIT
 - Stop as `Blocked` when entry conditions are not met
 - State expected behavior and verification handoff explicitly
 - Leave reason for change, verification basis, and explanation points
+- Stop rather than keep editing when TDD iterations repeat the same hypothesis without progress
 - Assess whether to proceed using only the input when `design-changes` output is not available
 - Do not use another agent / subagent by default; proceed with this Skill alone first
+- Keep the Skill useful even when no companion Skill is installed
 
 ### Ask first:
 
@@ -82,3 +88,4 @@ license: MIT
 
 - Start implementation without confirming Red
 - Remove tests to force a pass
+- Continue local edits after repeated same-hypothesis failures without recording a different branch or stop reason

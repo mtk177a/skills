@@ -20,6 +20,17 @@ A minimal reference for how the core Skills connect into common workflows.
 - `implement-changes`: Apply only the accepted changes
 - `validate-fix`: Document verification results and remaining open items
 
+## Stagnation recovery workflow
+
+`break-failure-loop` → `diversify-agent-search` → `design-changes` → `implement-changes`
+
+- `break-failure-loop`: Stop repeated same-hypothesis attempts and organize the evidence
+- `diversify-agent-search`: When available, widen the search with candidate archives, diversity axes, and case-level evaluation
+- `design-changes`: Turn the selected branch into an implementable plan
+- `implement-changes`: Resume implementation only after the branch and stop conditions are clear
+
+Each Skill should still work on its own. `diversify-agent-search` is a companion for deeper search design, not a required dependency for the other Skills.
+
 ## Stop conditions
 
 Stop and request approval or clarification when:

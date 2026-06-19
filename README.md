@@ -8,7 +8,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 
 ## Skills
 
-23 Skills covering common development workflows:
+24 Skills covering common development workflows:
 
 | Skill | Description |
 |-------|-------------|
@@ -19,6 +19,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `design-agent-instructions` | Design AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md instruction sets |
 | `design-changes` | Design change scope, impact, risk, and verification approach before implementing |
 | `design-skill` | Design a new Skill or significantly revise an existing Skill's responsibilities |
+| `diversify-agent-search` | Widen stuck agent or workflow improvement with multiple candidates, diversity axes, and case-level evaluation |
 | `draft-commit` | Generate commit message drafts or commit split proposals from a diff |
 | `draft-issue` | Turn a clarified request into an issue draft and filing steps |
 | `draft-review-comments` | Turn organized findings into inline PR comments and a review summary |

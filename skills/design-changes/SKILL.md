@@ -16,6 +16,7 @@ license: MIT
 - When you want to separate what to change from what not to change
 - When you want to organize dependencies and risks before implementing
 - When you want to define the testing and verification approach up front
+- When uncertainty or rework cost is high enough that a single design candidate may be premature
 
 ## Input (optional)
 
@@ -36,7 +37,8 @@ license: MIT
 9. Explicitly state the conditions for proceeding to implementation, the scope, and stop conditions.
 10. Split change units into minimal diffs; explicitly flag anything that should proceed only with approval.
 11. Explicitly state concepts to understand before changing, key tradeoffs, and decisions the user must be able to explain.
-12. If high-risk or uncertain design decisions remain, explicitly state the need for additional confirmation.
+12. For high-uncertainty or high-rework-cost changes, check whether the plan has considered a structurally different alternative, not only a local variation of the same design.
+13. If high-risk or uncertain design decisions remain, explicitly state the need for additional confirmation.
 
 ## Output format
 
@@ -47,6 +49,8 @@ license: MIT
 - Module boundaries: ...
 - Concepts to understand before changing: ...
 - Key tradeoffs: ...
+- Alternative design candidates considered:
+  - ...
 - Decisions the user must explain: ...
 - Key risks: ...
 - Mitigations: ...
@@ -61,6 +65,7 @@ license: MIT
 ## Companion skills
 
 - `plan-risky-change`
+- `diversify-agent-search` if available when design work is stuck around one candidate and needs a candidate archive or diversity axes
 
 ## Boundaries
 
@@ -72,14 +77,17 @@ license: MIT
 - State conditions to proceed and stop conditions explicitly
 - For readability improvements, define change units at the granularity the reader follows
 - Leave concepts to understand and decisions to explain
+- For high-uncertainty work, consider at least one structurally different alternative before treating the design as settled
 - Match existing style and design
 - Do not use another agent / subagent by default; return design decisions from this Skill first
+- Keep the Skill useful even when no companion Skill is installed
 
 ## Self-review checklist
 
 - Does the plan make the entry points and major branches immediately clear?
 - Are change units aligned with comment granularity and roles?
 - Do change units match the reader's unit of understanding?
+- Has a design assumption been challenged with a structurally different candidate when uncertainty is high?
 - Can the user explain the key tradeoffs in their own words?
 
 ### Ask first:

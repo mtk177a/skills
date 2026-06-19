@@ -10,7 +10,7 @@
 
 ## Skill 一覧
 
-開発作業全般をカバーする 23 の Skill を収録しています。
+開発作業全般をカバーする 24 の Skill を収録しています。
 
 | Skill | 説明 |
 |-------|------|
@@ -21,6 +21,7 @@
 | `design-agent-instructions` | AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md を設計する |
 | `design-changes` | 実装前に変更方針・影響範囲・リスク・確認方針を設計する |
 | `design-skill` | 新しい Skill を設計するか、既存 Skill の責務を大きく見直す |
+| `diversify-agent-search` | 停滞した agent / workflow 改善を、複数候補・多様性軸・ケース別評価で広げる |
 | `draft-commit` | 差分からコミットメッセージ案やコミット分割案を作成する |
 | `draft-issue` | 明確化した課題を Issue の起票案と起票手順に落とし込む |
 | `draft-review-comments` | 整理済みの指摘を GitHub PR の行コメントとレビュー要約に変換する |

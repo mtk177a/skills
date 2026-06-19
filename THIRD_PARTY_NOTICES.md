@@ -28,6 +28,20 @@ No text has been copied verbatim from any of the above sources.
 
 ---
 
+## skills/diversify-agent-search/SKILL.md
+
+Original guidance inspired by public writing and research on self-improving agents, prompt evolution, quality-diversity search, and feedback incorporation:
+
+- LayerX Zenn article: <https://zenn.dev/layerx/articles/b36ceffe6b5e20>
+- GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning: <https://arxiv.org/abs/2507.19457>
+- Darwin Godel Machine: Open-Ended Evolution of Self-Improving Agents: <https://arxiv.org/abs/2505.22954>
+- Diverse Prompts: Illuminating the Prompt Space of Large Language Models with MAP-Elites: <https://arxiv.org/abs/2504.14367>
+- Feedback Friction: LLMs Struggle to Fully Incorporate External Feedback: <https://arxiv.org/abs/2506.11930>
+
+No external article text, paper text, or code has been copied verbatim.
+
+---
+
 ## Evaluation format
 
 The `evals/README.md` format used in this repository is inspired by the empirical prompt-tuning methodology described in [mizchi/skills](https://github.com/mizchi/skills). The content in each `evals/README.md` is independently authored; this repository does not contain copied text from that project.
