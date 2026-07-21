@@ -1,11 +1,11 @@
 lockfile_version: '1'
-generated_at: '2026-07-21T04:20:05.948490+00:00'
+generated_at: '2026-07-21T07:05:23.198593+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: mtk177a/skills
   name: audit-agent-rules
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/audit-agent-rules
   is_virtual: true
@@ -23,7 +23,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: break-failure-loop
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/break-failure-loop
   is_virtual: true
@@ -41,7 +41,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: calibrate-ai-learning
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/calibrate-ai-learning
   is_virtual: true
@@ -59,7 +59,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: clarify-request
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/clarify-request
   is_virtual: true
@@ -77,7 +77,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: cognitive-rhythm-writing
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/cognitive-rhythm-writing
   is_virtual: true
@@ -87,13 +87,13 @@ dependencies:
   - .agents/skills/cognitive-rhythm-writing/SKILL.md
   - .agents/skills/cognitive-rhythm-writing/UPSTREAM.md
   deployed_file_hashes:
-    .agents/skills/cognitive-rhythm-writing/SKILL.md: sha256:65486e64f33ce2ab03c5db198b1f92e2838e71abfb1a80085d1b405340c11437
-    .agents/skills/cognitive-rhythm-writing/UPSTREAM.md: sha256:a3da9cd9be0ba3e698e0de58030d8c5fc4aea4180ddc469a9f3be1743d7da604
-  content_hash: sha256:a18ec396f0720235feaa937cd198c8aef7dc078db4f7033776265604d4cd218a
+    .agents/skills/cognitive-rhythm-writing/SKILL.md: sha256:dd0f2f3b642cc54568f6fb198109e3c266229655fb6611e2367ed2199c493e61
+    .agents/skills/cognitive-rhythm-writing/UPSTREAM.md: sha256:4e4a7798c3142b98c2ce4242668ea86fe53910614c5b67467ffd2f7d5966a425
+  content_hash: sha256:c7148a556a93348ef22609a0ea8c3fd87c01725ea633022cf116d31cc5b0c489
 - repo_url: mtk177a/skills
   name: define-referents
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/define-referents
   is_virtual: true
@@ -107,13 +107,13 @@ dependencies:
   deployed_file_hashes:
     .agents/skills/define-referents/SKILL-ja.md: sha256:1828b2a69a6976b65cd45a3a8b0aee59077db2fa463ee4ff13b64977b86bf5e4
     .agents/skills/define-referents/SKILL.md: sha256:36fe14587916a1197e231e3a906520e4db5bda5c696208e7c6401684b59e3d57
-    .agents/skills/define-referents/evals/README.md: sha256:1fb44cb4b9a1af91d267a31cda8586ce0f98a65696ad61dbdaab64e6e6f2ee1c
+    .agents/skills/define-referents/evals/README.md: sha256:196cf2994460aea849aa8c105e9c369db20a97f9b6896a539b818bd65a0972da
     .agents/skills/define-referents/references/referents-before-labels.md: sha256:2b0a09fb8d8b5306bf77c0ae343c1d329e2254de7ac0b306b18ab3a92e691c02
-  content_hash: sha256:de15a98153fb7569984a426b872eba12a011951a047065aafc6292df767de478
+  content_hash: sha256:aee034a7443cc4093c578965a99cf0cd0ffc290c2bbf79c2add427361c2d47e9
 - repo_url: mtk177a/skills
   name: design-agent-instructions
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/design-agent-instructions
   is_virtual: true
@@ -131,7 +131,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: design-changes
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/design-changes
   is_virtual: true
@@ -149,7 +149,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: design-skill
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/design-skill
   is_virtual: true
@@ -169,7 +169,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: diversify-agent-search
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/diversify-agent-search
   is_virtual: true
@@ -187,7 +187,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: draft-commit
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/draft-commit
   is_virtual: true
@@ -207,7 +207,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: draft-issue
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/draft-issue
   is_virtual: true
@@ -225,7 +225,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: draft-review-comments
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/draft-review-comments
   is_virtual: true
@@ -243,7 +243,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: format-markdown
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/format-markdown
   is_virtual: true
@@ -261,7 +261,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: implement-changes
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/implement-changes
   is_virtual: true
@@ -281,7 +281,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: investigate-incident
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/investigate-incident
   is_virtual: true
@@ -299,7 +299,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: japanese-tech-writing
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/japanese-tech-writing
   is_virtual: true
@@ -309,13 +309,13 @@ dependencies:
   - .agents/skills/japanese-tech-writing/SKILL.md
   - .agents/skills/japanese-tech-writing/UPSTREAM.md
   deployed_file_hashes:
-    .agents/skills/japanese-tech-writing/SKILL.md: sha256:fefa815da10fbef2a248d883e75a4d161ec0f9e7162f3707f94eff7d8e366606
-    .agents/skills/japanese-tech-writing/UPSTREAM.md: sha256:1b515bd724d0a01d1be93e25f2fb85bfe3f61eb1646b22e06eb29aea45b74b37
-  content_hash: sha256:bf11c96c70e5649b09394ef9a93a8a77a9d8c777a5cc468678226a6b8e43bdea
+    .agents/skills/japanese-tech-writing/SKILL.md: sha256:1e6eaef2bea7b046d8e062ed58aba5df418ca0f0d58e7ffee9e905220ca3dcf3
+    .agents/skills/japanese-tech-writing/UPSTREAM.md: sha256:cd9ad43458fccd141d338e932fb375c6ed04e5d6e47fccbecbdb3262f4dd248c
+  content_hash: sha256:0709cee25db9ced089fe3f0aa9b384aa578f7d082d95b8a0c9339f8537f9f3f5
 - repo_url: mtk177a/skills
   name: plan-risky-change
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/plan-risky-change
   is_virtual: true
@@ -333,7 +333,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: record-session-handoff
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/record-session-handoff
   is_virtual: true
@@ -351,7 +351,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: research-web-safely
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/research-web-safely
   is_virtual: true
@@ -369,7 +369,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: review-changes
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/review-changes
   is_virtual: true
@@ -387,7 +387,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: scope-implementation
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/scope-implementation
   is_virtual: true
@@ -405,7 +405,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: scope-request
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/scope-request
   is_virtual: true
@@ -423,7 +423,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: summarize-changes
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/summarize-changes
   is_virtual: true
@@ -441,7 +441,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: triage-agent-usage
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/triage-agent-usage
   is_virtual: true
@@ -459,7 +459,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: triage-review-feedback
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/triage-review-feedback
   is_virtual: true
@@ -477,7 +477,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: validate-fix
   host: github.com
-  resolved_commit: 9898d3852e8e90cf8b7bad3b0101a640130bee37
+  resolved_commit: a797eb1a9ac42f86398f15cb40fd6f53ab3ef722
   version: unknown
   virtual_path: skills/validate-fix
   is_virtual: true
@@ -654,7 +654,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/cognitive-rhythm-writing
   active_owner: mtk177a/skills/skills/cognitive-rhythm-writing
-  content_hash: sha256:65486e64f33ce2ab03c5db198b1f92e2838e71abfb1a80085d1b405340c11437
+  content_hash: sha256:dd0f2f3b642cc54568f6fb198109e3c266229655fb6611e2367ed2199c493e61
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/cognitive-rhythm-writing/UPSTREAM.md
@@ -663,7 +663,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/cognitive-rhythm-writing
   active_owner: mtk177a/skills/skills/cognitive-rhythm-writing
-  content_hash: sha256:a3da9cd9be0ba3e698e0de58030d8c5fc4aea4180ddc469a9f3be1743d7da604
+  content_hash: sha256:4e4a7798c3142b98c2ce4242668ea86fe53910614c5b67467ffd2f7d5966a425
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/define-referents
@@ -699,7 +699,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/define-referents
   active_owner: mtk177a/skills/skills/define-referents
-  content_hash: sha256:1fb44cb4b9a1af91d267a31cda8586ce0f98a65696ad61dbdaab64e6e6f2ee1c
+  content_hash: sha256:196cf2994460aea849aa8c105e9c369db20a97f9b6896a539b818bd65a0972da
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/define-referents/references/referents-before-labels.md
@@ -1113,7 +1113,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/japanese-tech-writing
   active_owner: mtk177a/skills/skills/japanese-tech-writing
-  content_hash: sha256:fefa815da10fbef2a248d883e75a4d161ec0f9e7162f3707f94eff7d8e366606
+  content_hash: sha256:1e6eaef2bea7b046d8e062ed58aba5df418ca0f0d58e7ffee9e905220ca3dcf3
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/japanese-tech-writing/UPSTREAM.md
@@ -1122,7 +1122,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/japanese-tech-writing
   active_owner: mtk177a/skills/skills/japanese-tech-writing
-  content_hash: sha256:1b515bd724d0a01d1be93e25f2fb85bfe3f61eb1646b22e06eb29aea45b74b37
+  content_hash: sha256:cd9ad43458fccd141d338e932fb375c6ed04e5d6e47fccbecbdb3262f4dd248c
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/plan-risky-change
