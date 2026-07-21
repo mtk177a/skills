@@ -8,7 +8,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 
 ## Skills
 
-24 Skills covering common development workflows:
+25 Skills covering common development workflows:
 
 | Skill | Description |
 |-------|-------------|
@@ -16,6 +16,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `break-failure-loop` | Stop and reframe when an agent has failed twice with the same error or approach |
 | `calibrate-ai-learning` | Use when delegation is getting too deep or you want to maintain understanding while working |
 | `clarify-request` | Use when a request is ambiguous — ask 1–4 clarifying questions or state assumptions |
+| `define-referents` | Fix concrete referents and semantic roles before introducing new or ambiguous terms |
 | `design-agent-instructions` | Design AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md instruction sets |
 | `design-changes` | Design change scope, impact, risk, and verification approach before implementing |
 | `design-skill` | Design a new Skill or significantly revise an existing Skill's responsibilities |

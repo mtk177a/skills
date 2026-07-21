@@ -42,6 +42,17 @@ No external article text, paper text, or code has been copied verbatim.
 
 ---
 
+## skills/define-referents
+
+Original guidance inspired by Yuichi Uemura's article about fixing referents and semantic roles before introducing terms:
+
+- Article: <https://zenn.dev/u1/articles/codex-referent-before-label>
+- Upstream workflow name: `semantic-generation`
+
+The Skill and its bundled reference are independently authored. No article or embedded Skill text has been copied verbatim.
+
+---
+
 ## Evaluation format
 
 The `evals/README.md` format used in this repository is inspired by the empirical prompt-tuning methodology described in [mizchi/skills](https://github.com/mizchi/skills). The content in each `evals/README.md` is independently authored; this repository does not contain copied text from that project.

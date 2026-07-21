@@ -10,7 +10,7 @@
 
 ## Skill 一覧
 
-開発作業全般をカバーする 24 の Skill を収録しています。
+開発作業全般をカバーする 25 の Skill を収録しています。
 
 | Skill | 説明 |
 |-------|------|
@@ -18,6 +18,7 @@
 | `break-failure-loop` | 同じエラーや方針で 2 回以上失敗したときに立ち止まり再構成する |
 | `calibrate-ai-learning` | 委任が深くなりすぎている時や、理解を保ちながら作業したい時に使う |
 | `clarify-request` | 依頼が曖昧なときに 1〜4 個の確認質問をするか前提を明示して進む |
+| `define-referents` | 新語や曖昧語を導入する前に、具体的な指示対象と意味上の役割を固定する |
 | `design-agent-instructions` | AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md を設計する |
 | `design-changes` | 実装前に変更方針・影響範囲・リスク・確認方針を設計する |
 | `design-skill` | 新しい Skill を設計するか、既存 Skill の責務を大きく見直す |
