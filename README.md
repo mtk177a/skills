@@ -8,7 +8,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 
 ## Skills
 
-25 Skills covering common development workflows:
+27 Skills covering common development workflows:
 
 | Skill | Description |
 |-------|-------------|
@@ -16,6 +16,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `break-failure-loop` | Stop and reframe when an agent has failed twice with the same error or approach |
 | `calibrate-ai-learning` | Use when delegation is getting too deep or you want to maintain understanding while working |
 | `clarify-request` | Use when a request is ambiguous — ask 1–4 clarifying questions or state assumptions |
+| `cognitive-rhythm-writing` | Design pacing in explanatory Japanese writing by managing cognitive rhythm and unresolved tension |
 | `define-referents` | Fix concrete referents and semantic roles before introducing new or ambiguous terms |
 | `design-agent-instructions` | Design AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md instruction sets |
 | `design-changes` | Design change scope, impact, risk, and verification approach before implementing |
@@ -27,6 +28,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `format-markdown` | Format Markdown according to CommonMark conventions |
 | `implement-changes` | Implement changes incrementally in a test-driven, safe manner |
 | `investigate-incident` | Investigate an incident: gather facts, form hypotheses, isolate the cause |
+| `japanese-tech-writing` | Apply formatting, argument structure, terminology, and editing rules to Japanese technical writing |
 | `plan-risky-change` | Plan a risky or irreversible change with explicit safety checks |
 | `record-session-handoff` | Record a session handoff so the next session can resume without losing context |
 | `research-web-safely` | Research a topic on the web while treating external content as untrusted input |

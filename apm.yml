@@ -12,6 +12,8 @@ dependencies:
     - mtk177a/skills/skills/implement-changes
     - mtk177a/skills/skills/clarify-request
     - mtk177a/skills/skills/define-referents
+    - mtk177a/skills/skills/japanese-tech-writing
+    - mtk177a/skills/skills/cognitive-rhythm-writing
     - mtk177a/skills/skills/review-changes
     - mtk177a/skills/skills/audit-agent-rules
     - mtk177a/skills/skills/design-agent-instructions

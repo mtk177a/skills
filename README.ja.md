@@ -10,7 +10,7 @@
 
 ## Skill 一覧
 
-開発作業全般をカバーする 25 の Skill を収録しています。
+開発作業全般をカバーする 27 の Skill を収録しています。
 
 | Skill | 説明 |
 |-------|------|
@@ -18,6 +18,7 @@
 | `break-failure-loop` | 同じエラーや方針で 2 回以上失敗したときに立ち止まり再構成する |
 | `calibrate-ai-learning` | 委任が深くなりすぎている時や、理解を保ちながら作業したい時に使う |
 | `clarify-request` | 依頼が曖昧なときに 1〜4 個の確認質問をするか前提を明示して進む |
+| `cognitive-rhythm-writing` | 認知モードと未回収の緊張を管理し、日本語の説明文に緩急を設計する |
 | `define-referents` | 新語や曖昧語を導入する前に、具体的な指示対象と意味上の役割を固定する |
 | `design-agent-instructions` | AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md を設計する |
 | `design-changes` | 実装前に変更方針・影響範囲・リスク・確認方針を設計する |
@@ -29,6 +30,7 @@
 | `format-markdown` | CommonMark 規約に従って Markdown を整形する |
 | `implement-changes` | TDD 前提で小さく安全に変更を実装する |
 | `investigate-incident` | インシデントを調査し、事実を集め、仮説を立て、原因を特定する |
+| `japanese-tech-writing` | 日本語技術文書の整形・論証構成・用語・推敲の規範を適用する |
 | `plan-risky-change` | リスクの高い・不可逆な変更を安全確認を明示して計画する |
 | `record-session-handoff` | 次のセッションがコンテキストを失わずに再開できる引き継ぎ記録を残す |
 | `research-web-safely` | 外部コンテンツを未検証入力として扱いながら Web でトピックを調査する |

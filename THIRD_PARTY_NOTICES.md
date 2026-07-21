@@ -2,9 +2,9 @@
 
 This repository is licensed under the MIT License. That license applies to the original code and content in this repository. It does not override the terms of any third-party material listed below.
 
-The files listed below are original summaries authored for this repository.
+Unless an entry explicitly says otherwise, the files listed below are original summaries authored for this repository.
 They draw on publicly available specifications and teaching materials but contain no verbatim copied text.
-Attribution is provided here for transparency.
+Attribution and provenance are provided here for transparency and maintenance.
 
 ---
 
@@ -50,6 +50,32 @@ Original guidance inspired by Yuichi Uemura's article about fixing referents and
 - Upstream workflow name: `semantic-generation`
 
 The Skill and its bundled reference are independently authored. No article or embedded Skill text has been copied verbatim.
+
+---
+
+## skills/japanese-tech-writing/SKILL.md
+
+Verbatim copy of k16shikano's public Gist:
+
+- Source: <https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d>
+- Imported commit: `209db7d6d19bc4727139844c0e8d786542e9ff68`
+- License: Unlicense
+- License declaration for k16shikano's public Gists: <https://gist.github.com/k16shikano/67625f2a7d96e3bbdfae8d571a936063>
+
+The copied `SKILL.md` remains under the Unlicense. Repository-local provenance and maintenance notes are recorded in `skills/japanese-tech-writing/UPSTREAM.md`.
+
+---
+
+## skills/cognitive-rhythm-writing/SKILL.md
+
+Verbatim copy of k16shikano's public Gist:
+
+- Source: <https://gist.github.com/k16shikano/eb2929f13ed19c97188393d297be8432>
+- Imported commit: `a3b1e26beced71d582e13314fb6f5b179b023c76`
+- License: Unlicense
+- License declaration for k16shikano's public Gists: <https://gist.github.com/k16shikano/67625f2a7d96e3bbdfae8d571a936063>
+
+The copied `SKILL.md` remains under the Unlicense. Repository-local provenance and maintenance notes are recorded in `skills/cognitive-rhythm-writing/UPSTREAM.md`.
 
 ---
 
