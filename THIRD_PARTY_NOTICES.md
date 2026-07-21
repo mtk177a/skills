@@ -55,27 +55,27 @@ The Skill and its bundled reference are independently authored. No article or em
 
 ## skills/japanese-tech-writing/SKILL.md
 
-Verbatim copy of k16shikano's public Gist:
+Minimally adapted from k16shikano's public Gist:
 
 - Source: <https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d>
 - Imported commit: `209db7d6d19bc4727139844c0e8d786542e9ff68`
 - License: Unlicense
 - License declaration for k16shikano's public Gists: <https://gist.github.com/k16shikano/67625f2a7d96e3bbdfae8d571a936063>
 
-The copied `SKILL.md` remains under the Unlicense. Repository-local provenance and maintenance notes are recorded in `skills/japanese-tech-writing/UPSTREAM.md`.
+The adapted `SKILL.md` remains under the Unlicense. The local copy adds the required `license` frontmatter field. Repository-local provenance and maintenance notes are recorded in `skills/japanese-tech-writing/UPSTREAM.md`.
 
 ---
 
 ## skills/cognitive-rhythm-writing/SKILL.md
 
-Verbatim copy of k16shikano's public Gist:
+Minimally adapted from k16shikano's public Gist:
 
 - Source: <https://gist.github.com/k16shikano/eb2929f13ed19c97188393d297be8432>
 - Imported commit: `a3b1e26beced71d582e13314fb6f5b179b023c76`
 - License: Unlicense
 - License declaration for k16shikano's public Gists: <https://gist.github.com/k16shikano/67625f2a7d96e3bbdfae8d571a936063>
 
-The copied `SKILL.md` remains under the Unlicense. Repository-local provenance and maintenance notes are recorded in `skills/cognitive-rhythm-writing/UPSTREAM.md`.
+The adapted `SKILL.md` remains under the Unlicense. Local changes declare the companion Skill requirement, provide the paired installation command, and correct internal numbering references. Repository-local provenance and maintenance notes are recorded in `skills/cognitive-rhythm-writing/UPSTREAM.md`.
 
 ---
 

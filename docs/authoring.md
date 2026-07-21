@@ -6,7 +6,7 @@ This is the authoring guide for Skills maintained in this repository. Portable S
 
 A good Skill lets an agent decide when to use it without hesitation, and contains the right amount of detail — no more, no less.
 
-Write the body in English. Use proper nouns, configuration keys, and established technical terms as-is.
+Write the body in English by default. A Skill whose core purpose is Japanese writing or editing may keep a Japanese `SKILL.md` as the canonical source instead of maintaining a duplicate Japanese translation. Document that exception and the Skill's provenance. Use proper nouns, configuration keys, and established technical terms as-is.
 
 Prioritize:
 
@@ -145,8 +145,8 @@ Before opening a pull request for a new Skill:
 - [ ] Directory name is kebab-case and matches the frontmatter `name`
 - [ ] `SKILL.md` exists with `name`, `description`, and `license` frontmatter
 - [ ] `description` makes the usage context clear without reading the body
-- [ ] Body is written in English
-- [ ] `SKILL-ja.md` Japanese reference translation exists
+- [ ] Body is written in English, or a Japanese writing/editing exception is documented
+- [ ] `SKILL-ja.md` Japanese reference translation exists unless `SKILL.md` is the documented Japanese canonical source
 - [ ] No secrets, personal information, or internal URLs
 - [ ] `scripts/`, `references/`, `assets/` contain only what the Skill needs (empty directories removed)
 - [ ] `evals/README.md` Iter 0 static check is complete

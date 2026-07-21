@@ -49,7 +49,7 @@ When creating or editing a Skill, also review existing `skills/*/SKILL.md` files
 ## Working rules
 
 - Keep changes small and easy to review
-- Write Skill bodies in English; keep proper nouns, configuration keys, and established technical terms in their original form
+- Write Skill bodies in English by default. A Skill whose core purpose is Japanese writing or editing may use a Japanese `SKILL.md` as its canonical source and omit a duplicate `SKILL-ja.md`; document the exception and provenance.
 - Do not hardcode local absolute paths or environment-specific assumptions
 - Focus Skill content on "when to use," "what to provide as input," and "what to avoid" rather than step-by-step instructions
 - Keep helper scripts and reference materials to the minimum needed for the Skill to work

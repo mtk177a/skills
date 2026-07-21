@@ -2,9 +2,10 @@
 
 This document describes the language policy for Skills and documentation in this repository.
 
-## English as the canonical source
+## Canonical source language
 
-`SKILL.md` is the single canonical source for each Skill. It is written in English.
+`SKILL.md` is the single canonical source for each Skill. It is written in English by default.
+A Skill whose core purpose is Japanese writing or editing may use a Japanese `SKILL.md` as its canonical source. In that case, document the exception and provenance and do not add a duplicate `SKILL-ja.md`.
 
 Required frontmatter:
 
@@ -18,7 +19,7 @@ license: MIT
 
 ## Japanese translations
 
-`SKILL-ja.md` is a non-canonical Japanese translation of `SKILL.md`, placed alongside it:
+When `SKILL.md` is canonical English, `SKILL-ja.md` is a non-canonical Japanese translation placed alongside it:
 
 ```
 skills/<skill-name>/
@@ -37,7 +38,7 @@ The same policy applies to other translated files:
 
 | File | Canonical | Translation |
 |------|-----------|-------------|
-| `SKILL.md` | English | `SKILL-ja.md` |
+| `SKILL.md` | English by default; Japanese for a documented Japanese writing/editing exception | `SKILL-ja.md` when English is canonical |
 | `README.md` | English | `README.ja.md` |
 | `AGENTS.md` | English | `AGENTS-ja.md` |
 | `CLAUDE.md` | English | `CLAUDE-ja.md` |
@@ -51,7 +52,7 @@ If a quick update is made and the Japanese translation is not ready, note the ga
 
 ## Language in Skill bodies
 
-- Skill bodies: English
+- Skill bodies: English by default; Japanese for a documented Japanese writing/editing exception
 - Proper nouns, configuration keys, and established technical terms: keep in original form
 - Avoid agent-specific jargon unless it is the core of the Skill's value
 

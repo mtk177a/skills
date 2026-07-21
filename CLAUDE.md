@@ -12,7 +12,7 @@ This file provides supplementary instructions for Claude Code. `AGENTS.md` is th
 
 - Treat `skills/<skill-name>/SKILL.md` as the basic unit
 - Keep frontmatter `name` and `description` consistent when creating or editing a Skill
-- Treat the English Skill body as canonical and maintain `SKILL-ja.md` as a Japanese reference translation
+- Treat the English Skill body as canonical and maintain `SKILL-ja.md` as a Japanese reference translation, except when a Japanese writing or editing Skill documents a Japanese canonical `SKILL.md`
 - Express agent-specific differences in Skill names or descriptions; do not add per-agent directories
 
 ## How to work

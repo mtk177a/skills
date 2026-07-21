@@ -14,7 +14,7 @@
 
 - `skills/<skill-name>/SKILL.md` を基本単位として扱う
 - 新規 Skill や編集対象 Skill では、frontmatter の `name` と `description` を前提に整合を取る
-- Skill 本文は英語正本とし、`SKILL-ja.md` を日本語参考訳として管理する
+- Skill 本文は英語正本とし、`SKILL-ja.md` を日本語参考訳として管理する。ただし、日本語の執筆・推敲用 Skill が日本語の `SKILL.md` を正本とする例外を文書化している場合は除く
 - エージェント固有差分は Skill 名や説明で表し、エージェント別ディレクトリを増やさない
 
 ## 進め方

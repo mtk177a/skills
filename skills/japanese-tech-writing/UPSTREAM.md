@@ -5,6 +5,8 @@
 - License: Unlicense
 - License declaration: <https://gist.github.com/k16shikano/67625f2a7d96e3bbdfae8d571a936063>
 
-`SKILL.md` is a verbatim copy of the source at the imported commit. Compare it
-with the upstream Gist before refreshing it; keep local maintenance notes in
-this file rather than editing the copied Skill.
+`SKILL.md` is a minimally adapted copy of the source at the imported commit.
+The local copy adds the required `license: Unlicense` frontmatter field.
+
+When refreshing it, compare the fixed imported commit and the current upstream
+Gist, then reapply and review this documented local change.

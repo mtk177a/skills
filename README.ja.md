@@ -64,6 +64,12 @@ dependencies:
 apm install mtk177a/skills/skills/review-changes
 ```
 
+`cognitive-rhythm-writing` は `japanese-tech-writing` を必要とします。bundle から2件を一緒に導入します。
+
+```bash
+apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing
+```
+
 ### その他のクライアント
 
 `skills/<name>/SKILL.md` を探索するクライアントであれば動作します。検証済みクライアントとインストール方法については [docs/compatibility.md](docs/compatibility.md) を参照してください。
@@ -91,7 +97,7 @@ apm install mtk177a/skills/skills/review-changes
 ├── skills/
 │   └── <skill-name>/
 │       ├── SKILL.md
-│       ├── SKILL-ja.md
+│       ├── SKILL-ja.md  # 任意の日本語参考訳
 │       ├── evals/
 │       ├── references/
 │       ├── scripts/

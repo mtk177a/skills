@@ -4,9 +4,10 @@
 
 このドキュメントは、このリポジトリの Skill とドキュメントの言語方針を説明します。
 
-## 英語を正本とする
+## 正本の言語
 
-`SKILL.md` は各 Skill の唯一の正本ソースです。英語で書きます。
+`SKILL.md` は各 Skill の唯一の正本ソースです。英語を原則とします。
+日本語の執筆・推敲そのものを目的とする Skill は、日本語の `SKILL.md` を正本にできます。その場合は例外と出典を文書化し、重複する `SKILL-ja.md` は追加しません。
 
 必須 frontmatter:
 
@@ -20,7 +21,7 @@ license: MIT
 
 ## 日本語訳
 
-`SKILL-ja.md` は `SKILL.md` の非正本の日本語訳で、同じ場所に置きます:
+`SKILL.md` が英語正本の場合、`SKILL-ja.md` は非正本の日本語訳として同じ場所に置きます:
 
 ```
 skills/<skill-name>/
@@ -39,7 +40,7 @@ skills/<skill-name>/
 
 | ファイル | 正本 | 訳 |
 |----------|------|----|
-| `SKILL.md` | 英語 | `SKILL-ja.md` |
+| `SKILL.md` | 原則は英語。文書化した日本語の執筆・推敲用 Skill は日本語 | 英語正本の場合は `SKILL-ja.md` |
 | `README.md` | 英語 | `README.ja.md` |
 | `AGENTS.md` | 英語 | `AGENTS-ja.md` |
 | `CLAUDE.md` | 英語 | `CLAUDE-ja.md` |
@@ -53,7 +54,7 @@ skills/<skill-name>/
 
 ## Skill 本文の言語
 
-- Skill 本文: 英語
+- Skill 本文: 原則は英語。文書化した日本語の執筆・推敲用 Skill は日本語
 - 固有名詞、設定キー、技術用語: 元の形式のままにする
 - エージェント固有の専門用語は、その Skill の核心的な価値でない限り避ける
 
