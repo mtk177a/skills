@@ -66,7 +66,7 @@ Requirements checklist:
 - `incorrect row patched with explanatory prose`
 - `mechanical edit triggers unnecessary referent table`
 
-## Iter 1 — not yet executed
+## Iter 1 — Blank-slate behavior check (2026-07-21)
 
 ### Changes
 
@@ -74,8 +74,29 @@ Requirements checklist:
 
 ### Execution results
 
-Not yet executed with a blank-slate agent.
+Each scenario ran in a fresh subagent context that received only the Skill path and the user-style scenario. The requirement checklist was withheld from the executor and applied afterward by the parent.
+
+| Scenario | Result | Observation |
+| --- | --- | --- |
+| A | Pass | Split the numeric value, start condition, and event into three rows, then returned only the table. |
+| B | Pass | Preserved test → record results → isolate cause → choose countermeasure and kept the cause unknown. |
+| C | Pass | Performed only the requested Markdown spacing edit without creating a referent table. |
+| D | Pass | Returned a standalone one-row table in chat without creating a file or presenting follow-on prose. |
+| E | Pass | Replaced the incorrect `state` role with `event` in the row and returned only the corrected table. |
+
+All five critical requirements passed. No target body or final identifier was generated before the confirmation boundary.
+
+### Structured reflection
+
+- The role split and two-stage submission contract were reproduced without exposing the checklist to executors.
+- Scenario B kept records, means, and purpose distinct instead of compressing the sequence into one working label.
+- Scenario C confirmed that the mechanical-edit exclusion prevents unnecessary terminology approval.
+- The table output cannot reveal the executor's token-by-token field completion order; the independently understandable concrete-referent columns are the observable proxy for the referent-before-label constraint.
+
+### Failure pattern ledger update
+
+None of the listed failure patterns appeared in Iter 1. Keep the ledger unchanged for regression checks.
 
 ### Next fix proposal
 
-- Run the five scenarios and revise only failure patterns observed in executor output.
+- Make no Skill-body change from Iter 1. Re-run these scenarios after any change to the workflow, table contract, or submission boundary.
