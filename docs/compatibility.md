@@ -16,7 +16,7 @@ The table below lists clients that have been explicitly tested. Clients not list
 | Codex | — | — | install, list, invoke |
 | GitHub Copilot / `gh skill` | — | — | install, list, invoke |
 | Gemini CLI | — | — | install, list, invoke |
-| APM (`apm install`) | ✓ | 2026-06-10 | install (apm 0.13.0), frozen dry-run, pack dry-run (plugin format) |
+| APM (`apm install`) | ✓ | 2026-07-21 | install (apm 0.26.0), frozen dry-run, offline pack dry-run, audit |
 | `npx skills add` | — | — | install |
 
 Entries marked with `—` are pending verification.
