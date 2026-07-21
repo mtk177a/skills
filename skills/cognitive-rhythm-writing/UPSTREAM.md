@@ -14,5 +14,9 @@ The local copy:
 - corrects references from exception forms 1–3 to 1–4 and from inspection step
   3 to step 4
 
+`SKILL.md` is the canonical Skill body and is intentionally written in
+Japanese because the Skill's core purpose is Japanese writing and editing. No
+duplicate `SKILL-ja.md` is maintained.
+
 When refreshing it, compare the fixed imported commit and the current upstream
 Gist, then reapply and review these documented local changes.

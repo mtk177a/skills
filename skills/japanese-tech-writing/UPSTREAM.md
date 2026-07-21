@@ -7,6 +7,9 @@
 
 `SKILL.md` is a minimally adapted copy of the source at the imported commit.
 The local copy adds the required `license: Unlicense` frontmatter field.
+`SKILL.md` is the canonical Skill body and is intentionally written in
+Japanese because the Skill's core purpose is Japanese writing and editing. No
+duplicate `SKILL-ja.md` is maintained.
 
 When refreshing it, compare the fixed imported commit and the current upstream
 Gist, then reapply and review this documented local change.

@@ -110,10 +110,10 @@ apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tec
 
 個人用リポジトリのため、外部からの貢献は想定していません。
 
-Skill を活用したい場合は、MIT ライセンスの範囲で自由に利用・改変できます。Skill の構成については [docs/authoring.md](docs/authoring.md) を参照してください。
+このリポジトリ向けに独自作成したコードとコンテンツは、MIT ライセンスの範囲で利用・改変できます。第三者の著作物を基にしたファイルには個別のライセンスが適用されます。詳細は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) を参照してください。Skill の構成については [docs/authoring.md](docs/authoring.md) を参照してください。
 
 ## ライセンス
 
-[MIT License](LICENSE)
+このリポジトリで独自作成したコードとコンテンツには [MIT License](LICENSE) を適用します。第三者の著作物を基にした素材には、[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載した個別の条件が適用されます。
 
 Copyright (c) 2026 mtk177a

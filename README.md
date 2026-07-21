@@ -108,10 +108,10 @@ Any client that discovers `skills/<name>/SKILL.md` files should work. See [docs/
 
 This is a personal repository. External contributions are not expected.
 
-If you find a Skill useful and want to adapt it, the MIT license allows that. See [docs/authoring.md](docs/authoring.md) for how Skills are structured.
+Original code and content authored for this repository may be used and adapted under the MIT License. Third-party-derived files retain their individual licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). See [docs/authoring.md](docs/authoring.md) for how Skills are structured.
 
 ## License
 
-[MIT License](LICENSE)
+Original code and content in this repository are licensed under the [MIT License](LICENSE). Third-party-derived material remains subject to the terms listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Copyright (c) 2026 mtk177a
