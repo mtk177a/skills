@@ -12,7 +12,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 
 | Skill | Description |
 |-------|-------------|
-| `audit-agent-rules` | Audit AGENTS.md / Skills / docs for naming, boundaries, approval rules, and heavy defaults |
+| `audit-agent-guidance` | Audit durable agent guidance against intended behavior, observed usage, client semantics, and evaluation evidence |
 | `break-failure-loop` | Stop and reframe when an agent has failed twice with the same error or approach |
 | `calibrate-ai-learning` | Use when delegation is getting too deep or you want to maintain understanding while working |
 | `clarify-request` | Use when a request is ambiguous — ask 1–4 clarifying questions or state assumptions |

@@ -4,15 +4,57 @@ This document describes the evaluation approach used for Skills in this reposito
 
 ## Evaluation assets per Skill
 
-Each Skill has an `evals/` directory:
+Each Skill has an `evals/` directory. The README is required; structured assets are optional and should be added when they make repeated evaluation more reproducible.
 
 ```
 skills/<skill-name>/
 └── evals/
-    └── README.md    # Iter 0 check, scenarios, execution results, reflection
+    ├── README.md       # purpose, procedure, result summary, and reflection
+    ├── triggers.json   # optional trigger, non-trigger, and near-miss cases
+    └── evals.json      # optional realistic tasks, inputs, assertions, and baseline conditions
 ```
 
-## evals/README.md structure
+Do not migrate every existing Skill merely to match this structure. The other 26 Skills may adopt structured assets when each receives its next significant revision.
+
+## Asset responsibilities
+
+### evals/README.md
+
+Keep the human-readable evaluation contract and summarized record:
+
+- purpose and intended behavior
+- execution procedure and environment
+- static checks and scenario overview
+- summarized results, failures, and unexecuted checks
+- iteration notes and the next validation question
+
+The exact headings may vary. Do not use the README as a substitute for raw evidence, and do not commit raw traces into it.
+
+### evals/triggers.json
+
+Use this optional asset for reusable:
+
+- `should-trigger` cases
+- `should-not-trigger` cases
+- near-miss cases that resemble the target responsibility but belong elsewhere
+- run counts, observability rules, and pass thresholds
+
+Run trigger cases more than once. Record client, model, date, and run count because trigger behavior can vary across environments and runs.
+
+Count a trigger only from evidence the client exposes. If Skill loading is not observable, record `not exposed`; do not infer a load event from output wording.
+
+### evals/evals.json
+
+Use this optional asset for:
+
+- realistic tasks and their inputs
+- behavioral assertions and critical requirements
+- baseline conditions
+- isolation and coexistence configurations
+
+Keep scenarios rich enough to expose judgment errors without embedding the desired answer in the task.
+
+## Example evals/README.md structure
 
 ```markdown
 # <skill-name> evals
@@ -41,6 +83,7 @@ Requirements checklist:
 ## Iter N — YYYY-MM-DD
 
 ### Changes
+
 - <what changed from previous>
 
 ### Execution results
@@ -68,13 +111,21 @@ Requirements checklist:
 
 ## Running evaluations
 
-Evaluations are run manually using a blank-slate subagent: an agent that starts with no context about this repository and receives only the Skill and the scenario description as input.
+Run evaluations with a blank-slate executor: an agent or client session that starts without repository history and receives only the inputs required by the scenario.
 
 **Blank-slate executor protocol:**
-1. Spawn a fresh subagent with no repository context
+
+1. Start a fresh executor with no repository context.
 2. Provide the SKILL.md content and the scenario description
 3. Observe whether the output satisfies each item in the requirements checklist
-4. Record results honestly — mark as "not yet executed" if the run was not performed
+4. Record results honestly
+
+Evaluate both:
+
+- **Isolation:** the target Skill without adjacent Skills that could mask a gap
+- **Coexistence:** the target Skill with adjacent Skills or instruction surfaces that are present in normal use
+
+Record an unavailable observation as `not exposed` and a skipped run as `not executed`. Neither status counts as a pass.
 
 The evaluator's role is to check behavior reproducibility, not to render a subjective judgment.
 
@@ -93,4 +144,17 @@ Only after Iter 0 passes should you formalize scenarios in `evals/README.md`.
 
 ## Baseline comparison
 
-When significantly revising a Skill, record a before/after comparison in `evals/README.md` to confirm the change is an improvement and did not regress existing scenarios.
+When significantly revising a Skill, compare the candidate with the previous version or with no Skill if the previous version is unavailable. Use the same task inputs, client, model, reasoning settings, and environment for both sides. A significant revision is not complete merely because the candidate passes in isolation; compare it with the baseline and check coexistence.
+
+## Result metadata and artifact handling
+
+Record:
+
+- client, model, reasoning settings, and date
+- run count and trigger rate
+- assertion results with supporting evidence
+- isolation and coexistence configuration
+- token and duration values when the client exposes them
+- `not executed` and `not exposed` items
+
+Store raw JSONL, authentication material, and full session logs only in a temporary directory outside the repository. Do not commit credentials, raw sessions, or unredacted traces.

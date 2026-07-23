@@ -14,7 +14,7 @@
 
 | Skill | 説明 |
 |-------|------|
-| `audit-agent-rules` | AGENTS.md / Skills / docs の命名・境界・承認ルール・既定の重さを監査する |
+| `audit-agent-guidance` | 永続的な agent guidance を期待する挙動、観測済みの利用状況、client semantics、評価証拠に照らして監査する |
 | `break-failure-loop` | 同じエラーや方針で 2 回以上失敗したときに立ち止まり再構成する |
 | `calibrate-ai-learning` | 委任が深くなりすぎている時や、理解を保ちながら作業したい時に使う |
 | `clarify-request` | 依頼が曖昧なときに 1〜4 個の確認質問をするか前提を明示して進む |

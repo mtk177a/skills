@@ -15,7 +15,7 @@ dependencies:
     - mtk177a/skills/skills/japanese-tech-writing
     - mtk177a/skills/skills/cognitive-rhythm-writing
     - mtk177a/skills/skills/review-changes
-    - mtk177a/skills/skills/audit-agent-rules
+    - mtk177a/skills/skills/audit-agent-guidance
     - mtk177a/skills/skills/design-agent-instructions
     - mtk177a/skills/skills/design-skill
     - mtk177a/skills/skills/diversify-agent-search

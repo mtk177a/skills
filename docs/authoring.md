@@ -15,6 +15,12 @@ Prioritize:
 - Readable preconditions, inputs, and expected outputs
 - Minimal agent-specific language
 - Clear scope for any helper scripts or reference materials
+- High-judgment workflows designed from the intended outcome and evidence, not from a predetermined artifact
+- Instruction freedom matched to task fragility and context dependence: goals and constraints when multiple approaches are valid; concise ordered steps and verification when sequence or completeness affects correctness
+- Complete diagnosis kept separate from staged implementation or rollout
+- Discovery and findings without arbitrary numeric limits
+
+When comparing against existing Skills, inspect the relevant examples needed to resolve responsibility overlap and converge on a judgment. Stop when that purpose is met; do not impose an arbitrary count or scan the full catalog without a reason.
 
 ## Writing the description
 
@@ -32,6 +38,12 @@ Avoid:
 - Subjective phrases like "a useful Skill"
 - Descriptions that assume Codex without stating it
 - Frontmatter stuffed with internal implementation details
+
+## Writing operational boundaries
+
+Use `Always`, `Ask first`, and `Never` only when those categories carry meaningful distinctions for the workflow. Do not add empty sections or treat the presence of all three headings as a universal quality requirement.
+
+Express the required behavior and safety properties rather than copying a boundary template mechanically. If an existing guardrail is replaced, define how to verify that the replacement preserves equivalent or stronger protection.
 
 ## Naming a Skill
 

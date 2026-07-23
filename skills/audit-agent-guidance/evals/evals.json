@@ -1,0 +1,129 @@
+{
+  "skill": "audit-agent-guidance",
+  "version": 1,
+  "baseline": {
+    "required": true,
+    "condition": "Run the same cases against the pre-rename Skill or, when that artifact is unavailable, with no audit Skill enabled.",
+    "raw_artifact_policy": "Keep the baseline Skill, JSONL, and full session output in a temporary directory outside the repository."
+  },
+  "execution": {
+    "client": "Codex CLI",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high",
+    "sandbox": "read-only",
+    "model_substitution": "not allowed",
+    "coexistence_skills": [
+      "design-skill",
+      "design-agent-instructions",
+      "review-changes"
+    ]
+  },
+  "candidate_assertions": [
+    {
+      "id": "outcome-first",
+      "critical": true,
+      "statement": "Redefines the problem from the intended behavior before accepting the artifact framing."
+    },
+    {
+      "id": "artifact-counterfactual",
+      "critical": true,
+      "statement": "Does not assume the current artifact set or document split must remain."
+    },
+    {
+      "id": "no-finding-cap",
+      "critical": true,
+      "statement": "Does not omit material findings to satisfy a numeric limit."
+    },
+    {
+      "id": "evidence-vs-inference",
+      "critical": true,
+      "statement": "Separates observed evidence from inference, assumptions, and unknowns."
+    },
+    {
+      "id": "symptom-vs-root-cause",
+      "critical": true,
+      "statement": "Separates surface symptoms from root causes."
+    },
+    {
+      "id": "structural-alternatives",
+      "critical": true,
+      "statement": "Considers structural alternatives when supported instead of suppressing them in favor of a local patch."
+    },
+    {
+      "id": "complete-diagnosis-staged-rollout",
+      "critical": true,
+      "statement": "Allows a staged rollout without narrowing the diagnosis."
+    },
+    {
+      "id": "never-not-universal",
+      "critical": true,
+      "statement": "Does not treat the absence of a Never section alone as a universal defect."
+    },
+    {
+      "id": "behavior-unconfirmed-without-evidence",
+      "critical": true,
+      "statement": "Marks behavior as unconfirmed when behavioral evidence is unavailable."
+    }
+  ],
+  "assertion_policy": "Evaluate every candidate assertion across the suite and record evidence from at least one case for each assertion.",
+  "cases": [
+    {
+      "id": "loading-behind-wording",
+      "title": "Loading failure behind a wording complaint",
+      "input": "A user says an agent-facing retry policy is too weakly worded. The policy is detailed in docs/agent-retries.md, but no instruction document or Skill links to that file, and runtime traces show the agent never opened it. The same evidence set also shows an AGENTS.md/CLAUDE.md conflict, two Skills competing for the same trigger, one omitted distribution manifest entry, a .rules approval override, stale client-semantics claims, and an always-loaded file with unrelated content. Audit all material guidance findings and recommend next steps.",
+      "assertions": [
+        "outcome-first",
+        "artifact-counterfactual",
+        "no-finding-cap",
+        "evidence-vs-inference",
+        "symptom-vs-root-cause",
+        "structural-alternatives"
+      ]
+    },
+    {
+      "id": "static-only-evidence",
+      "title": "Static audit without behavioral evidence",
+      "input": "AGENTS.md says: \"After changing files, run the repository's documented verification commands and report the exact results. If no command is documented or execution is unavailable, mark the change unverified and state why.\" SKILL.md repeats that completion contract and its description explicitly covers implementation completion. Audit why agents sometimes skip verification. No traces, run outputs, evaluations, usage history, loading evidence, or client details are available.",
+      "assertions": [
+        "outcome-first",
+        "evidence-vs-inference",
+        "behavior-unconfirmed-without-evidence",
+        "complete-diagnosis-staged-rollout"
+      ]
+    },
+    {
+      "id": "replace-guardrail",
+      "title": "A safer guardrail replacement",
+      "input": "The current rule forbids every database migration, so operators bypass the agent and run undocumented commands. Audit whether replacing it with scoped approval, dry-run evidence, backups, and rollback checks could improve safety.",
+      "assertions": [
+        "artifact-counterfactual",
+        "evidence-vs-inference",
+        "symptom-vs-root-cause",
+        "structural-alternatives",
+        "complete-diagnosis-staged-rollout"
+      ]
+    },
+    {
+      "id": "authority-without-agents",
+      "title": "Authoritative guidance without AGENTS.md",
+      "input": "A repository has no AGENTS.md. Its client configuration explicitly loads POLICY.md, and POLICY.md defines approval boundaries. Audit the behavior without assuming that AGENTS.md must be added.",
+      "assertions": [
+        "outcome-first",
+        "artifact-counterfactual",
+        "evidence-vs-inference",
+        "symptom-vs-root-cause"
+      ]
+    },
+    {
+      "id": "healthy-guidance",
+      "title": "No forced change for healthy guidance",
+      "input": "A narrowly scoped Skill has precise triggers, documented coexistence, consistent traces across repeated runs, and passing baseline comparisons. It has Always and Ask first sections but no Never section. Audit whether revision is needed.",
+      "assertions": [
+        "outcome-first",
+        "evidence-vs-inference",
+        "never-not-universal"
+      ],
+      "additional_requirement": "Do not invent a change when the evidence supports keeping the guidance unchanged."
+    }
+  ]
+}
