@@ -11,5 +11,6 @@ This repository manages personally authored and maintained agent Skills.
 - Do not propose copying external Skills verbatim
 - Do not include secrets, personal information, customer information, or internal URLs
 - Do not hardcode OS-specific assumptions or local absolute paths
-- Match the style of existing Skills and docs; keep content concise
+- Inspect the existing Skills needed to resolve responsibility overlap and converge on a judgment; stop when that purpose is met, do not impose an arbitrary count, and keep content concise
+- Use concise ordered steps and verification when sequence or completeness materially affects correctness
 - Changes to repository rule documents or Skill bodies require approval before proceeding

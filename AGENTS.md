@@ -14,7 +14,7 @@ If a deeper `AGENTS.md` exists in a subdirectory, that file takes precedence.
 - `README.md`
 - `docs/authoring.md`
 
-When creating or editing a Skill, also review existing `skills/*/SKILL.md` files to match their style.
+When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files needed to resolve responsibility overlap and converge on a judgment. Stop when that purpose is met; do not impose an arbitrary count.
 
 ## What belongs in this repository
 
@@ -51,7 +51,8 @@ When creating or editing a Skill, also review existing `skills/*/SKILL.md` files
 - Keep changes small and easy to review
 - Write Skill bodies in English by default. A Skill whose core purpose is Japanese writing or editing may use a Japanese `SKILL.md` as its canonical source and omit a duplicate `SKILL-ja.md`; document the exception and provenance.
 - Do not hardcode local absolute paths or environment-specific assumptions
-- Focus Skill content on "when to use," "what to provide as input," and "what to avoid" rather than step-by-step instructions
+- Prioritize clear triggers, inputs, expected outputs, and boundaries in Skill bodies
+- Add concise ordered steps and verification when sequence or completeness materially affects correctness
 - Keep helper scripts and reference materials to the minimum needed for the Skill to work
 - Skill bodies must be readable by agents that have no prior context about this repository
 
@@ -67,12 +68,11 @@ When creating or editing a Skill, also review existing `skills/*/SKILL.md` files
 
 - Run a full install and `apm audit --ci --no-policy` only in a disposable copy outside this repository.
 - Maintain `apm.yml` manually; do not regenerate it. Update its dependency list when adding, removing, or renaming a Skill.
-- Because `apm.yml` depends on this repository's own Skills, commit and push Skill and manifest changes before updating the lockfile.
-- Update the lockfile by running `apm update --yes` in a disposable copy, then copy only the resulting `apm.lock.yaml` back into this repository.
+- After Skill or `apm.yml` changes are committed and pushed, refresh the lockfile with `.agents/skills/refresh-apm-lockfile/`.
 - Commit `apm.lock.yaml` updates separately with a summary such as `fix: refresh APM lockfile after <change>`.
 - An empty `.agents/` directory may exist because agent tools can create it.
 - Do not store review notes, temporary files, or other working artifacts under `.agents/`; use a temporary directory outside this repository instead.
-- Remove APM-deployed `.agents/skills/*` and `apm_modules/` when present, except explicitly tracked repo-local operational Skills such as `.agents/skills/refresh-apm-lockfile/`.
+- If APM-deployed `.agents/skills/*` or `apm_modules/` are present, stop and report them. Remove them only after confirming they are generated artifacts and obtaining approval; preserve explicitly tracked repo-local operational Skills such as `.agents/skills/refresh-apm-lockfile/`.
 
 ## Commit message convention
 
