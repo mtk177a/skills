@@ -1,11 +1,11 @@
 lockfile_version: '1'
-generated_at: '2026-07-23T06:55:06.087579+00:00'
+generated_at: '2026-07-24T02:42:16.523034+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: mtk177a/skills
   name: audit-agent-guidance
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/audit-agent-guidance
   is_virtual: true
@@ -27,7 +27,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: break-failure-loop
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/break-failure-loop
   is_virtual: true
@@ -45,7 +45,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: calibrate-ai-learning
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/calibrate-ai-learning
   is_virtual: true
@@ -63,7 +63,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: clarify-request
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/clarify-request
   is_virtual: true
@@ -81,7 +81,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: cognitive-rhythm-writing
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/cognitive-rhythm-writing
   is_virtual: true
@@ -99,7 +99,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: define-referents
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/define-referents
   is_virtual: true
@@ -119,7 +119,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: design-agent-instructions
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/design-agent-instructions
   is_virtual: true
@@ -137,7 +137,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: design-changes
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/design-changes
   is_virtual: true
@@ -155,7 +155,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: design-skill
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/design-skill
   is_virtual: true
@@ -165,17 +165,21 @@ dependencies:
   - .agents/skills/design-skill/SKILL-ja.md
   - .agents/skills/design-skill/SKILL.md
   - .agents/skills/design-skill/evals/README.md
+  - .agents/skills/design-skill/evals/evals.json
+  - .agents/skills/design-skill/evals/triggers.json
   - .agents/skills/design-skill/references/authoring-guide.md
   deployed_file_hashes:
-    .agents/skills/design-skill/SKILL-ja.md: sha256:56e7f0949b0223eaf4e0db7d5a8352edc4ff046dfeccc0a7b479ba1b2ee97d25
-    .agents/skills/design-skill/SKILL.md: sha256:dedf05acf58224051814e2cf30e35257dfea7164a6f542024be8a3cfda11289f
-    .agents/skills/design-skill/evals/README.md: sha256:23eb1b1d38d62193650cee8825bbae04161bc8c31981c9687e2fa965e9f0c062
-    .agents/skills/design-skill/references/authoring-guide.md: sha256:d0f3cf82d19bf3920ad89736d22056a1786d785d9323f8079b0eeea3fdd6b8df
-  content_hash: sha256:aec65433e0200ac17d3d18360762bc732a529fe1f709c57e04c91a15f4199335
+    .agents/skills/design-skill/SKILL-ja.md: sha256:7c7c11c355e8830c734664c1f212e0f592a350b6ca06bc33801e62c924d6df70
+    .agents/skills/design-skill/SKILL.md: sha256:0a60a51a864eb11ab5ec680978ee9d8ae0a4e7327a25e79c26f847b4d544c9b1
+    .agents/skills/design-skill/evals/README.md: sha256:3a648ad10d1f1f3f45601fa3ec3064b9e0d036ebba2b0e3ad719b2ca5ed837d3
+    .agents/skills/design-skill/evals/evals.json: sha256:5f871579cdcb8749217067372e49b50ee575c67de19e5d26e46d88450fa6a22c
+    .agents/skills/design-skill/evals/triggers.json: sha256:67c3519d3c5b5bf7153060f194b9aa03acfa7e86cc8e6c2eaf2e054193d93114
+    .agents/skills/design-skill/references/authoring-guide.md: sha256:85602701f271c682a1499ae148d69e7a65eabeac5d1c2c2e71876e7a6a042ec9
+  content_hash: sha256:e3a2389eacff8c4cb545e6efaced0181ff24c4c4f90867931aae732d31fdf02f
 - repo_url: mtk177a/skills
   name: diversify-agent-search
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/diversify-agent-search
   is_virtual: true
@@ -193,7 +197,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: draft-commit
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/draft-commit
   is_virtual: true
@@ -213,7 +217,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: draft-issue
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/draft-issue
   is_virtual: true
@@ -231,7 +235,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: draft-review-comments
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/draft-review-comments
   is_virtual: true
@@ -249,7 +253,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: format-markdown
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/format-markdown
   is_virtual: true
@@ -267,7 +271,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: implement-changes
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/implement-changes
   is_virtual: true
@@ -287,7 +291,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: investigate-incident
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/investigate-incident
   is_virtual: true
@@ -305,7 +309,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: japanese-tech-writing
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/japanese-tech-writing
   is_virtual: true
@@ -323,7 +327,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: plan-risky-change
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/plan-risky-change
   is_virtual: true
@@ -341,7 +345,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: record-session-handoff
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/record-session-handoff
   is_virtual: true
@@ -359,7 +363,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: research-web-safely
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/research-web-safely
   is_virtual: true
@@ -377,7 +381,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: review-changes
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/review-changes
   is_virtual: true
@@ -395,7 +399,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: scope-implementation
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/scope-implementation
   is_virtual: true
@@ -413,7 +417,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: scope-request
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/scope-request
   is_virtual: true
@@ -431,7 +435,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: summarize-changes
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/summarize-changes
   is_virtual: true
@@ -449,7 +453,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: triage-agent-usage
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/triage-agent-usage
   is_virtual: true
@@ -467,7 +471,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: triage-review-feedback
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/triage-review-feedback
   is_virtual: true
@@ -485,7 +489,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: validate-fix
   host: github.com
-  resolved_commit: 2b33ff1dabaabab04f21dc6e33c8ae782f7642be
+  resolved_commit: 866edb9bd6e1bf7be66f75661063f7c5e204ae3e
   version: unknown
   virtual_path: skills/validate-fix
   is_virtual: true
@@ -833,7 +837,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/design-skill
   active_owner: mtk177a/skills/skills/design-skill
-  content_hash: sha256:56e7f0949b0223eaf4e0db7d5a8352edc4ff046dfeccc0a7b479ba1b2ee97d25
+  content_hash: sha256:7c7c11c355e8830c734664c1f212e0f592a350b6ca06bc33801e62c924d6df70
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/design-skill/SKILL.md
@@ -842,7 +846,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/design-skill
   active_owner: mtk177a/skills/skills/design-skill
-  content_hash: sha256:dedf05acf58224051814e2cf30e35257dfea7164a6f542024be8a3cfda11289f
+  content_hash: sha256:0a60a51a864eb11ab5ec680978ee9d8ae0a4e7327a25e79c26f847b4d544c9b1
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/design-skill/evals/README.md
@@ -851,7 +855,25 @@ deployments:
   owners:
   - mtk177a/skills/skills/design-skill
   active_owner: mtk177a/skills/skills/design-skill
-  content_hash: sha256:23eb1b1d38d62193650cee8825bbae04161bc8c31981c9687e2fa965e9f0c062
+  content_hash: sha256:3a648ad10d1f1f3f45601fa3ec3064b9e0d036ebba2b0e3ad719b2ca5ed837d3
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/design-skill/evals/evals.json
+  runtime: null
+  scope: project
+  owners:
+  - mtk177a/skills/skills/design-skill
+  active_owner: mtk177a/skills/skills/design-skill
+  content_hash: sha256:5f871579cdcb8749217067372e49b50ee575c67de19e5d26e46d88450fa6a22c
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/design-skill/evals/triggers.json
+  runtime: null
+  scope: project
+  owners:
+  - mtk177a/skills/skills/design-skill
+  active_owner: mtk177a/skills/skills/design-skill
+  content_hash: sha256:67c3519d3c5b5bf7153060f194b9aa03acfa7e86cc8e6c2eaf2e054193d93114
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/design-skill/references/authoring-guide.md
@@ -860,7 +882,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/design-skill
   active_owner: mtk177a/skills/skills/design-skill
-  content_hash: sha256:d0f3cf82d19bf3920ad89736d22056a1786d785d9323f8079b0eeea3fdd6b8df
+  content_hash: sha256:85602701f271c682a1499ae148d69e7a65eabeac5d1c2c2e71876e7a6a042ec9
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/diversify-agent-search
