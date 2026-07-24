@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "skill": "design-agent-instructions",
+  "evaluated_on": "2026-07-24",
+  "environment": {
+    "client": "Codex CLI 0.145.0",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high"
+  },
+  "baseline": {
+    "commit": "42ebd18cb2406d1cfcbeb34cd289fd620c8e4f9b"
+  },
+  "candidate": {
+    "behavior_files": {
+      "SKILL.md": "sha256:8b3b9f2ba13684b643d2dfed996eaeb364457cbc06060169221a1d8cbad4ccb0"
+    },
+    "final_trigger_files": {
+      "SKILL.md": "sha256:9b4b30de8b051534723c26a48ff23e5c124e25be51a20bbcecc430f20f3a5089"
+    },
+    "difference": "Only the description routing boundary changed between the behavior and final trigger snapshots."
+  },
+  "execution": {
+    "driver": "Temporary Python orchestration script; not retained as repository source.",
+    "normalized_behavior_invocation": "codex exec --ephemeral --ignore-user-config --ignore-rules --sandbox workspace-write --model gpt-5.6-sol -c 'model_reasoning_effort=\"high\"' -c 'skills.config=[<disabled-duplicate-skill>]' -C <disposable-run-dir> -o <output> <blank-slate-prompt>",
+    "normalized_trigger_invocation": "codex exec --ephemeral --json --ignore-user-config --ignore-rules --sandbox read-only --model gpt-5.6-sol -c 'model_reasoning_effort=\"high\"' -c 'skills.config=[<disabled-duplicate-skills>]' -C <disposable-run-dir> -o <output> <selection-prompt>",
+    "verdict_rule": "Grade every assigned behavior requirement. For triggering, an observable local SKILL.md open counts as a load; mixed repeated results are unstable.",
+    "raw_artifacts": "Temporary and not committed."
+  },
+  "behavior": {
+    "baseline_counts": {
+      "pass": 8,
+      "partial": 3,
+      "fail": 1
+    },
+    "candidate_counts": {
+      "pass": 12,
+      "partial": 0,
+      "fail": 0
+    },
+    "cases": [
+      {
+        "id": "scenario-a-active-clients",
+        "requirements": [
+          {
+            "requirement": "client semantics are verified or marked unconfirmed",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate treats Codex and Claude Code loading separately and cites the documented bridge behavior."
+          },
+          {
+            "requirement": "one canonical source and only required bridges are selected",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate selects AGENTS.md as the shared source and a thin CLAUDE.md bridge."
+          },
+          {
+            "requirement": "behavioral guidance is separated from enforcement",
+            "baseline": "fail",
+            "candidate": "pass",
+            "evidence": "The candidate assigns hard denials to permissions, hooks, sandbox, or CI rather than prose."
+          },
+          {
+            "requirement": "files are not edited",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "Fixture hashes were unchanged in both conditions."
+          }
+        ]
+      },
+      {
+        "id": "scenario-b-conflicting-ownership",
+        "requirements": [
+          {
+            "requirement": "authority, source of truth, and enforcement are established before roles",
+            "baseline": "partial",
+            "candidate": "pass",
+            "evidence": "The candidate distinguishes semantic guidance, bridge content, and enforceable client policy before assigning ownership."
+          },
+          {
+            "requirement": "duplication is bridged or removed",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate uses a thin import bridge and rejects copied shared rules."
+          },
+          {
+            "requirement": "approval safety is preserved",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate requires enforced policy to remain at least as strict as the shared boundary."
+          },
+          {
+            "requirement": "loading, precedence, and adherence validation are defined",
+            "baseline": "partial",
+            "candidate": "pass",
+            "evidence": "The candidate defines per-client loading checks, policy dry-runs, and behavior scenarios."
+          }
+        ]
+      },
+      {
+        "id": "scenario-e-diagnosis-first",
+        "requirements": [
+          {
+            "requirement": "reorganization is not presented as a demonstrated fix",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate stops redesign until the behavioral cause is established."
+          },
+          {
+            "requirement": "missing evidence is identified and diagnosis routes to audit-agent-guidance",
+            "baseline": "partial",
+            "candidate": "pass",
+            "evidence": "The candidate explicitly hands loading, trace, client, and conflict diagnosis to audit-agent-guidance."
+          },
+          {
+            "requirement": "the result stops at the smallest supported decision",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate leaves source, bridge, and removal decisions unresolved pending diagnosis."
+          },
+          {
+            "requirement": "files are not edited",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "Fixture hashes were unchanged in both conditions."
+          }
+        ]
+      }
+    ]
+  },
+  "triggers": {
+    "final_candidate_result": "pass",
+    "cases": [
+      {
+        "id": "new-multi-client-instruction-set",
+        "expected": "should_trigger",
+        "baseline_observations": [
+          true
+        ],
+        "candidate_observations": [
+          true
+        ]
+      },
+      {
+        "id": "reorganize-after-diagnosis",
+        "expected": "should_trigger",
+        "baseline_observations": [
+          true
+        ],
+        "candidate_observations": [
+          true
+        ]
+      },
+      {
+        "id": "unexplained-non-adherence",
+        "expected": "should_not_trigger",
+        "baseline_observations": [
+          false
+        ],
+        "candidate_observations": [
+          false
+        ]
+      },
+      {
+        "id": "agent-skill-design",
+        "expected": "should_not_trigger",
+        "baseline_observations": [
+          false
+        ],
+        "candidate_observations": [
+          false
+        ]
+      },
+      {
+        "id": "approved-instruction-implementation",
+        "expected": "should_not_trigger",
+        "baseline_observations": [
+          false,
+          true
+        ],
+        "baseline_result": "unstable",
+        "pre_fix_candidate_observations": [
+          true
+        ],
+        "pre_fix_candidate_result": "fail",
+        "final_candidate_observations": [
+          false,
+          false
+        ],
+        "final_candidate_result": "pass",
+        "evidence": "The final description states that approved document execution belongs to an implementation workflow."
+      }
+    ]
+  },
+  "regressions": [],
+  "unverified": [
+    "Live Codex and Claude Code instruction loading, imports, precedence, permissions, and hooks",
+    "Claude Code execution and other clients",
+    "Behavior outputs under the final description hash; the body was unchanged and explicit behavior invocation does not use description routing"
+  ]
+}

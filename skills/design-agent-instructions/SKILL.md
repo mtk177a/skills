@@ -1,109 +1,63 @@
 ---
 name: design-agent-instructions
-description: Use when you want to design the instruction document set for AGENTS.md / CLAUDE.md / .github/copilot-instructions.md / GEMINI.md.
+description: Designs new or reorganized durable instruction document sets for the agent clients a repository actually uses. Use before editing when deciding source-of-truth roles, loading and precedence relationships, shared versus client-specific guidance, and necessary companion files; not for diagnosing unexplained behavior, ordinary Skill design, or executing an approved document change, which belongs to an implementation workflow.
 license: MIT
 ---
 
 # Design Agent Instructions
 
-## Purpose
+## Objective
 
-- Provide a safe process for designing and creating agent instruction document sets.
-- When multiple documents exist, determine the structure without breaking role separation and consistency.
+- Design the smallest instruction document set that reaches the intended clients with clear authority and minimal duplication.
+- Base document roles on verified client semantics and repository needs rather than assuming that one filename or hierarchy is universal.
+- Produce an implementation-ready handoff without editing the instruction set.
 
-## When to use
+## Evidence
 
-- When you want to create a new `AGENTS.md`
-- When you want to reorganize the full instruction set including `AGENTS.md` / `CLAUDE.md` / `.github/copilot-instructions.md` / `GEMINI.md`
-- When you need to decide which documents to create and what goes where
-- When you want to judge whether adding companion documents is necessary or whether `AGENTS.md` alone is sufficient
+Gather what is available:
 
-## Input (optional)
+- intended behavior, scope, active users, clients, and models
+- existing instruction documents, client configuration, imports, rules, hooks, policy surfaces, and general project documentation
+- current official client documentation when loading, discovery, precedence, enforcement, or supported filenames are material
+- observed loading evidence, traces, corrections, or failures
+- applicable local policy and authorization boundaries
 
-- Purpose / scope / constraints (e.g., global / repository / subdirectory)
-- Key rules to add
-- Existing related documents (`AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `GEMINI.md`, README, docs)
+Distinguish observed evidence, inference, assumptions, and unknowns. If the request begins from unexplained behavior and loading or authority is uncertain, diagnose it with `audit-agent-guidance` before treating a document redesign as the fix.
 
-## Steps
+## Workflow
 
-1. Confirm the purpose and scope (global / repository / subdirectory).
-2. Review the existing instruction document set and project-local primary sources when present.
-3. Document the loading order:
-   - `~/.codex/AGENTS.md` → repository root `AGENTS.md` → per-subdirectory `AGENTS.md`
-4. Fix the source documents to rely on:
-   - e.g., existing `README.md`, `docs/*`, language policy docs, or other repository-local instructions
-5. Define the role of each document:
-   - `AGENTS.md`: formal contract
-   - `CLAUDE.md`: supplementary instructions for Claude Code
-   - `.github/copilot-instructions.md`: condensed / supplementary instructions for GitHub Copilot
-   - `GEMINI.md`: supplementary instructions for Gemini
-6. Decide which documents are needed. Do not add unnecessary documents. Include a companion document as a candidate only when that agent is actively used and `AGENTS.md` alone is insufficient for repo-specific guidance.
-7. Separate shared facts from what each document should and should not contain.
-8. Present a minimal template or document set proposal.
-9. List candidates for repo-specific rules and how to divide them without duplication.
-10. Note impact (on operations / reviews / sharing).
-11. Obtain approval before creating or editing.
+1. Define the intended behavior, scope, active clients, and what must be shared or client-specific. If unexplained non-adherence is the primary question and loading or authority remains uncertain, stop document design and explicitly hand off to `audit-agent-guidance` with the missing evidence.
+2. Review the existing instruction set and project-local primary sources. Do not assume that an absent standard filename is itself a defect.
+3. For each target client, verify and record the relevant loading, discovery, precedence, import, and enforcement semantics. Do not project one client's hierarchy onto another.
+4. Identify the canonical source for each shared fact or rule. Use imports, references, or generated views only when the target client supports them and they reduce drift without hiding authority.
+5. Separate durable behavioral guidance from enforced permissions or lifecycle automation. Use client policy, settings, or hooks when a guarantee is required and the client provides that mechanism.
+6. Decide which documents and configuration surfaces are necessary. Include a client-specific companion only when that client is actively used and cannot consume the canonical guidance directly.
+7. Define what belongs in each surface and what is explicitly excluded. Keep general project facts in ordinary documentation unless they must be present in agent context.
+8. Check duplication, contradictions, context cost, portability, ownership, update paths, and behavior after compaction or lazy loading when relevant.
+9. Compare the proposed set with keeping the current set, removing redundant guidance, or using a smaller bridge document.
+10. Define validation from the material risks: loading observability, precedence conflicts, instruction adherence, enforcement boundaries, and coexistence across active clients.
+11. Produce a scoped implementation handoff. Do not create or edit files as part of this design workflow.
 
-## Output format
+## Reporting contract
 
-- Summary of changes: ...
-- Purpose / scope: ...
-- Target documents: ...
-- Loading order: ...
-- Primary sources: ...
-- Role of each document: ...
-- Template or document set proposal:
+Use a structure suited to the decision. Include:
 
-  ```markdown
-  # AGENTS.md
+- the recommended document set and why it is preferable to the alternatives
+- intended behavior, scope, active clients, and unresolved assumptions
+- verified loading, discovery, precedence, import, and enforcement semantics by client
+- canonical sources and per-surface responsibilities
+- documents or surfaces intentionally omitted
+- duplication, context, portability, maintenance, and migration risks
+- validation coverage and implementation-ready change units
+- an explicit diagnostic handoff to `audit-agent-guidance` when unresolved behavior prevents a sound document design
 
-  ## Purpose
-  - ...
-
-  ## Guidelines
-  - ...
-
-  ## Avoid
-  - ...
-
-  ## How to work
-  - ...
-  ```
-
-- Role notes when related documents exist:
-  - `AGENTS.md`: ...
-  - `CLAUDE.md`: ...
-  - `.github/copilot-instructions.md`: ...
-  - `GEMINI.md`: ...
-- Impact / risk: ...
-- Approval: Is it OK to proceed with this approach?
+Do not force a companion document, a fixed filename, or a fixed heading template. If behavior is unconfirmed, identify the diagnostic evidence needed instead of presenting the design as a demonstrated fix.
 
 ## Boundaries
 
-### Always:
-
-- Document the loading order
-- When related instruction documents exist, evaluate consistency as a document set rather than optimizing a single document in isolation
-- Fix available source documents before drafting content
-- Propose only the documents needed; do not add unnecessary ones
-- Propose in minimal, reviewable units
-
-### Ask first:
-
-- When editing an existing `AGENTS.md`
-- When simultaneously creating or revising `CLAUDE.md`, `.github/copilot-instructions.md`, or `GEMINI.md`
-- When editing or adding to instruction document groups that include `docs/*`
-- When changing responsibility boundaries between documents
-- When adding organization policy or security items to a template
-
-### Never:
-
-- Edit or create instruction documents or Skills without approval
-- Include secrets or confidential information in templates
-
-## Notes (optional)
-
-- The `AGENTS.md` specification may change; confirm when uncertain
-- Avoid repeating the same fact in multiple documents; divide content by role
-- Do not contradict existing language (Japanese/English) rules or repository-local documentation when present
-- Treat `GEMINI.md` as optional; include it as a candidate only when the target repository requires it
+- Use `audit-agent-guidance` when the primary need is diagnosing why existing guidance behaves inconsistently. Use `design-skill` for reusable Skill responsibility and trigger design.
+- Treat instruction documents as behavioral context, not hard enforcement, unless current client semantics establish otherwise.
+- Do not assume `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, or `GEMINI.md` is loaded by a client without verification.
+- Do not duplicate shared facts across files merely to make the set look complete.
+- Keep the workflow read-only. Editing requires user authorization and the target environment's applicable policy; do not invent an additional universal approval gate.
+- Keep secrets, credentials, personal information, and non-public operational data out of templates and examples.

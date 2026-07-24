@@ -1,103 +1,70 @@
 ---
 name: design-changes
-description: 実装前に、変更方針・影響範囲・リスク・確認方針を設計したいときに使う。
+description: code または configuration を変更する前に、実装可能な変更方針、対象・対象外の scope、risk、decision point、verification coverage を設計する。request が理解済みで、実装前に impact または trade-off を整理するときに使う。未定義 request の明確化、Agent Skill の設計、変更の実装、高リスクな approval / rollback planning の単独処理には使わない。
 license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。
 
-# Design Changes (変更設計)
+# Design Changes
 
 ## 目的
 
-- 実装前に変更方針を固め、影響範囲と確認方針を明確にする。
-- 要件に対して実装可能な設計を作り、単体でレビューや着手判断に使える変更方針と検証戦略を決める。
+- 実装 workflow が scope、risk、verification の判断をやり直さずに使える、最小で decision-complete な方針を作る。
+- 変更するものと維持するものを分け、impact boundary を review 可能にする。
+- 実装 handoff で止まり、対象ファイルを編集しない。
 
-## 使う場面
+## 証拠と入力
 
-- 変更対象や非対象を切り分けたいとき
-- 実装前に依存やリスクを整理したいとき
-- テストや確認の考え方を先に決めたいとき
-- 不確実性や手戻りコストが高く、単一の設計候補だけでは早すぎる可能性があるとき
+利用できる範囲で次を集める:
 
-## 入力 (任意)
+- 期待する挙動、合意済み scope、制約、non-goals
+- 関連する entry point、module、interface、data flow、configuration、tests
+- 既存仕様、repository guidance、確立済みの implementation pattern
+- 観測済み failure、trace、過去の試行、design decision
+- dependency、migration、compatibility、security、rollout の制約
 
-- `scope-request` の整理結果
-- 関連ファイルや既存仕様
-- 既存コードや構成の理解メモ
+確認済み evidence、推論、前提、不明点、計画した verification を区別する。成功条件と non-goals を定義できるほど request が理解されていない場合は、変更設計の前に request scoping へ回す。
 
-## 手順
+## Workflow
 
-1. 既存構造とエントリポイントを確認する。
-2. 可読性改善が主目的なら、入口、主要な分岐、大きな処理の流れ、補助関数群を先に特定する。
-3. 長いファイルでは、処理段階ごとのまとまりを先に把握してから変更計画を書く。
-4. 変更対象と変更対象外を分ける。
-5. 依存関係、モジュール境界、影響範囲を整理する。
-6. インデント、コメント、空行、コメントアウトコード整理のような変更では、局所差分ではなく読み手が追う単位で変更単位を切る。
-7. リスクと回避策を列挙する。
-8. テスト戦略と確認方針を決める。
-9. 実装へ進める条件、対象範囲、停止条件を明示する。
-10. 変更単位を最小差分に分割し、承認前提で進めるべき点があれば明示する。
-11. 変更前に理解すべき概念、主要なトレードオフ、ユーザーが説明すべき判断を明示する。
-12. 不確実性や手戻りコストが高い変更では、局所的な同案変種ではなく、構造的に異なる代替案を検討したか確認する。
-13. 高リスクまたは不確実な設計判断が残る場合は、追加確認の必要性を明示する。
+1. 期待する挙動、合意済み scope、non-goals、適用される制約を捉え直す。未解決の requirement を推測せずに設計を始められることを確認する。
+2. 既存構造を確認し、変更が影響し得る entry point、主要 branch、ownership boundary、現在の verification path を特定する。
+3. 最小で一貫した変更と、明示的な non-target を定義する。影響する interface、module、data、configuration、dependency、consumer を特定する。
+4. 不確実性、coupling、手戻りコストのため判断に必要な場合だけ、最小変更と構造的に異なる代替案を比較する。
+5. 各 material risk を、prevention、mitigation、rollback、detection strategy のいずれかと対応付ける。plan がどう扱うかを示さずに risk だけを列挙しない。
+6. 変更する各責務、挙動、regression risk、failure boundary を、verification method と期待する evidence へ対応付ける。1つの check が複数 claim を明確に露出する場合は再利用し、固有 risk がある場合だけ追加する。
+7. 実装へ進む条件、implementation scope、stop condition を定義する。dependency 追加、破壊的操作、未解決の authority、高リスクな approval / rollback の必要性を実装前に明示する。高リスク control が必要な場合は `plan-risky-change` への handoff を明記し、この workflow は通常の change design で止める。
+8. behavior と ownership に沿った最小で review 可能な単位へ分ける。可読性変更では、孤立した空白や comment の差分ではなく、処理段階と読み手の理解単位で分ける。
+9. acceptance、安全性、将来の maintenance に影響する場合、重要な trade-off とユーザーまたは reviewer が理解すべき概念を記録する。
+10. 実装可能な handoff を作る。計画した check と観測済み result を分け、変更を実装しない。
 
-## 出力フォーマット
+## 判断基準
 
-- 設計の要約: ...
-- 変更対象: ...
-- 変更対象外: ...
-- 依存と影響: ...
-- モジュール境界: ...
-- 変更前に理解すべき概念: ...
-- 主なトレードオフ: ...
-- 検討した代替設計候補:
-  - ...
-- ユーザーが説明すべき判断: ...
-- 主なリスク: ...
-- 回避策: ...
-- テスト戦略: ...
-- 確認方針: ...
-- 実装へ進む条件: ...
-- 実装の対象範囲: ...
-- 停止条件 (`Ask first`): ...
-- 変更単位: ...
-- セルフレビュー観点: ...
+- 確立済みの boundary を保ち、期待する挙動を満たす最小変更を優先する。
+- 実証済みの failure が構造変更を必要としない限り、既存 style と design を維持する。
+- downstream consumer が必要とする場合だけ厳密な output template を使い、それ以外は変更に適した構造で必要情報を報告する。
+- impact と不確実性から、static check、targeted regression、反復的 empirical evaluation のいずれかを選ぶ。普遍的な test、scenario、alternative、run の件数を設けない。
+- 通常の implementation handoff を超える明示 approval、rollback、recovery control が必要な場合は `plan-risky-change` を使う。
 
-## Companion skills (推奨)
+## 報告契約
 
-- `plan-risky-change`
-- `diversify-agent-search`: 利用可能で、設計が単一候補に停滞し、候補アーカイブや多様性軸が必要な場合
+変更に適した構成を使い、次を含める:
+
+- 推奨方針と、その evidence、前提、未解決の問い
+- 変更するものと維持するもの
+- dependency、影響する boundary、consumer、compatibility impact
+- mitigation または control と対応付けた material risk
+- verification coverage: 責務または risk → 起こり得る failure → check と期待する evidence
+- 実装へ進む条件、implementation scope、stop condition、review 可能な変更単位
+
+代替設計、module map、migration detail、rollback、user explanation point は重要な場合だけ含める。計画した validation は未実行と明示し、観測済み evidence として報告しない。
 
 ## 境界
 
-### Always:
-
-- 変更対象と変更対象外を分ける
-- リスクと確認方針をセットで出す
-- テスト戦略を明示する
-- 実装へ進む条件と停止条件を明示する
-- 可読性改善では、読み手の理解単位で変更単位を切る
-- 変更前に理解すべき概念と、説明すべき判断を残す
-- 不確実性が高い作業では、設計が固まったと扱う前に構造的に異なる代替案を少なくとも 1 つ検討する
-- 既存スタイルや設計に合わせる
-- 別エージェント / サブエージェントは既定で使わず、まずこの Skill 単体で設計判断を返す
-- 関連 Skill が未導入でも、この Skill 単体で使えるようにする
-
-## 確認方針 / セルフレビュー観点
-
-- 入口と大枝が一目で分かる計画になっているか
-- コメントの粒度と役割がそろう変更単位になっているか
-- 変更単位が読み手の理解単位と一致しているか
-- 不確実性が高い場合、設計前提を構造的に異なる候補で問い直したか
-- 主要なトレードオフを、ユーザーが自分の言葉で説明できるか
-
-### Ask first:
-
-- 依存追加や大きな設計変更が必要な場合
-- 大規模整理や破壊的変更が必要な場合
-
-### Never:
-
-- 設計なしで大きな変更へ入る
-- 無断で大規模な構造刷新を進める
+- objective または成功条件が未定義なら `scope-request`、Agent Skill の責務と trigger 設計には `design-skill`、この handoff の採用後の実装には `implement-changes` を使う。
+- 明示 control が必要な destructive、security-sensitive、migration、dependency、その他の高リスク作業では `plan-risky-change` と組み合わせる。設計が同じ近傍で停滞した場合だけ `diversify-agent-search` を使う。
+- high-risk boundary が該当する場合、追加 approval または rollback work を説明するだけでなく、implementation handoff で `plan-risky-change` を明記する。
+- workflow を read-only に保つ。dependency を追加せず、破壊的変更を行わず、実装を始めない。
+- 固定見出し、空の checklist section、alternative の最小件数、test の最小件数を強制しない。
+- 別 agent または subagent を既定で使わない。利用できる evidence から設計判断を作り、未解決の高影響な選択はユーザーへ残す。

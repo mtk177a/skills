@@ -1,92 +1,124 @@
 # design-agent-instructions evals
 
-## Iter 0 — Static check
+## Purpose
 
-- description and body are internally consistent on "designing and creating an instruction document set"
-- roles of `AGENTS.md` / `CLAUDE.md` / `.github/copilot-instructions.md` / `GEMINI.md` are distinguishable
-- only necessary documents are proposed — unnecessary documents are not assumed
-- repository-local docs such as `docs/authoring.md` are used only when present, not assumed as portable dependencies
-- at least one `[critical]` assertion is identified: no unnecessary documents proposed by default
+Verify that the Skill designs the smallest instruction document set from active-client semantics and repository evidence without assuming universal filenames, confusing behavioral guidance with enforcement, or editing files.
+
+## Assets
+
+- `triggers.json`: core and near-miss routing cases with observable Skill-load policy
+- [`results.json`](results.json): immutable revision identifiers, behavior evidence, and trigger observations for the currently accepted revision
+- this README: static contract, coverage, scenarios, and summarized results
+
+## Static check
+
+- [x] `description` covers new and reorganized instruction sets and excludes diagnosis, Skill design, and implementation.
+- [x] The body requires per-client loading, discovery, precedence, import, and enforcement verification when material.
+- [x] No client-specific filename or hierarchy is treated as universal.
+- [x] Shared facts, client-specific guidance, ordinary documentation, and enforced policy are separated.
+- [x] The reporting contract is adaptive rather than a fixed template.
+- [x] The `description` routes approved document execution to an implementation workflow.
+- [x] Editing remains outside the design workflow and follows target-environment authorization.
+
+## Coverage map
+
+| Responsibility or boundary | Plausible failure | Scenario | Grading |
+| --- | --- | --- | --- |
+| Active-client semantics | Projects one client's hierarchy onto another | A | Requirements 1–3 |
+| Source-of-truth and duplication | Copies shared rules into every file | B | Requirements 1–3 |
+| Necessary companion files | Adds files for unused clients | C | Requirements 1–2 |
+| Local primary sources | Requires absent repository conventions | D | Requirements 1–3 |
+| Diagnosis versus design | Treats a rewrite as a behavioral fix without loading evidence | E | Requirements 1–3 |
+| Read-only handoff | Edits instruction files during design | All | Critical no-edit requirement |
+| Trigger boundary | Collides with diagnosis, Skill design, or approved implementation | `triggers.json` | Observable Skill loads |
+
+Keep titles and requirement checklists hidden from the executor. Run at least one applicable scenario in a writable disposable repository and compare guidance-file hashes before and after; a read-only sandbox cannot verify that the Skill chose not to edit.
 
 ## Scenarios
 
-### Scenario A: Minimal instruction document set design
+### Scenario A: Codex and Claude Code use one repository
 
-A new repository needs `AGENTS.md` and `.github/copilot-instructions.md`, but it is unclear whether `CLAUDE.md` and `GEMINI.md` are needed. The executor must organize the primary source, loading order, and per-document roles, and propose only the documents that are actually needed.
-
-Requirements checklist:
-1. [critical] Propose only needed documents — do not assume all four are required
-2. State the loading order explicitly
-3. Separate per-document roles
-4. Do not proceed to create or edit before approval
-
-### Scenario B: Redesign with responsibility conflicts in existing documents
-
-Existing `AGENTS.md` and `CLAUDE.md` duplicate the same rules; `.github/copilot-instructions.md` is under-specified; `GEMINI.md` appears unnecessary. The executor must organize responsibility conflicts and return a document-set proposal stating what goes where and what is omitted.
+The repository actively uses Codex and Claude Code. It currently has `AGENTS.md`, but no evidence has been gathered about what each client loads.
 
 Requirements checklist:
-1. [critical] Identify document-level responsibility conflicts and overlaps
-2. Treat `GEMINI.md` as optional — do not include it unnecessarily
-3. Separate shared facts from document-specific content
-4. Retain impact and risks for an approval decision
 
-### Scenario C: Optional document not forced when agent not in use
+1. [critical] Verify current semantics for both clients rather than assuming both load `AGENTS.md`
+2. Identify a canonical source and any required bridge or import without duplicating shared rules
+3. Separate behavioral guidance from enforced permissions or hooks
+4. Produce a design handoff without editing files
 
-The team uses only Claude Code and GitHub Copilot. Someone suggests adding `GEMINI.md`. The executor must treat it as optional and not recommend it when Gemini is not being used.
+### Scenario B: Existing documents with conflicting ownership
+
+`AGENTS.md`, `CLAUDE.md`, and a client policy file duplicate some rules and contradict one approval boundary.
 
 Requirements checklist:
-1. [critical] Do not recommend adding `GEMINI.md` when Gemini is not part of the workflow
-2. Explicitly state the document is optional
+
+1. [critical] Identify authority, source-of-truth, and enforcement differences before assigning document roles
+2. Remove or bridge duplication rather than synchronizing copies by hand
+3. Preserve the required approval safety property
+4. Define validation for loading, precedence, and adherence
+
+### Scenario C: Optional client document
+
+The team uses only Claude Code and GitHub Copilot. Someone proposes adding `GEMINI.md`.
+
+Requirements checklist:
+
+1. [critical] Do not recommend `GEMINI.md` when Gemini is not an active target
+2. Explain the evidence that would justify adding it later
+3. Do not force a four-document set or fixed template
 
 ### Scenario D: Repository without authoring docs
 
-The target repository has `README.md` and `AGENTS.md`, but no `docs/authoring.md` or language policy document. The executor must design the instruction document set from the available sources and must not require repository-local docs that do not exist.
+The target repository has `README.md` and one client instruction file, but no `docs/authoring.md` or language policy.
 
 Requirements checklist:
-1. [critical] Does not require `docs/authoring.md` or any absent repo-local docs
-2. Uses existing `README.md` / instruction documents as the available source set
-3. Clearly marks missing local policies as absent rather than inventing them
+
+1. [critical] Use available primary sources and mark absent policies as unknown
+2. Do not require this repository's filenames or conventions
+3. Keep the proposed set portable where local guidance is silent
+
+### Scenario E: Unexplained instruction non-adherence
+
+A user asks to reorganize an existing instruction set because agents sometimes ignore a rule. No loading evidence, traces, client versions, or precedence information are available.
+
+Requirements checklist:
+
+1. [critical] Do not present document reorganization as a demonstrated fix
+2. Identify the missing diagnostic evidence and route the root-cause question to `audit-agent-guidance`
+3. Stop at the smallest diagnostic or design decision that current evidence supports
 
 ## Failure Pattern Ledger
 
-- `all documents proposed by default`
-- `document roles overlap without exclusion rules`
-- `agent-specific optional document treated as mandatory`
-- `optional document criteria inferred, not surfaced early`
+- `AGENTS.md treated as a universal client contract`
+- `client-specific companion files proposed without active-client evidence`
+- `behavioral guidance confused with enforced policy`
+- `shared rules copied across documents instead of assigned a canonical source`
 - `repository-local docs treated as portable dependencies`
+- `document redesign presented as a behavioral fix without loading evidence`
+- `design workflow edits files`
 
-## Iter 1 — date unknown
+## Historical evidence
 
-### Changes
-- Initial run. Skill body unchanged from Iter 0.
-- Pattern applied: `(baseline)`
+The previous Skill version recorded successful runs for minimal document selection and responsibility conflict organization. Those results predate the client-semantics redesign and do not validate the current candidate.
 
-### Execution results
+Current static semantics were checked against [OpenAI agents guidance](https://developers.openai.com/codex/concepts/customization#agents-guidance) and [Claude Code memory and CLAUDE.md](https://code.claude.com/docs/en/memory). Recheck them when loading or precedence affects a future design.
 
-| Scenario | Result | steps | duration | retries | Weak phase |
-|---|---|---|---|---|---|
-| A | ○ | N/A | N/A | 0 | — |
-| B | ○ | N/A | N/A | 0 | — |
+## Current revision — 2026-07-24
 
-Note: `spawn_agent` / `wait_agent` could not retrieve `tool_uses` or `duration_ms`; steps/duration are unrecorded for this iteration.
-
-### Structured reflection
-
-- Scenario A:
-  - Issue: The judgment on whether supplementary documents are needed depends on which agents are actually in use — a runtime assumption.
-  - Cause: The body says "propose only needed documents" but the criteria for including supplementary documents could be stated more upfront.
-  - General Fix Rule: Skills with optional supplementary documents should state adoption criteria early in "When to use" or "Steps."
-- Scenario B:
-  - Issue: Responsibility conflict reorganization works, but the canonical destination for shared facts partially depends on reader judgment due to limited examples.
-  - Cause: While `AGENTS.md` is stated as the formal contract, the boundary for what stays in README/docs lacks concrete examples.
-  - General Fix Rule: Document-set design Skills should provide at least one-line examples for the contract / supplementary-instruction / general-documentation split.
-
-### Ledger updates
-
-- Re-seen: `all documents proposed by default` — did not recur; only necessary documents were proposed
-- Re-seen: `agent-specific optional document treated as mandatory` — did not recur; `GEMINI.md` was kept optional
-- Added: `optional document criteria inferred, not surfaced early`
-
-### Next fix proposal
-
-- Add one line to "When to use" or "Steps" stating that supplementary documents are only candidates when the target agent is actively used
+- Client: Codex CLI 0.145.0
+- Model / reasoning: `gpt-5.6-sol` / high
+- Baseline: commit `42ebd18cb2406d1cfcbeb34cd289fd620c8e4f9b`
+- Behavior candidate `SKILL.md`: `sha256:8b3b9f2ba13684b643d2dfed996eaeb364457cbc06060169221a1d8cbad4ccb0`
+- Final trigger candidate `SKILL.md`: `sha256:9b4b30de8b051534723c26a48ff23e5c124e25be51a20bbcecc430f20f3a5089`; only the `description` routing boundary changed between the two snapshots
+- Selected scenarios: A, B, and E
+- Candidate grading: 12 / 12 requirements passed; baseline: 8 passed, 3 partial, and 1 failed
+- Improvements: enforcement was separated from behavioral guidance, authority and validation became conditional on client evidence, and the diagnosis-first case explicitly handed off to `audit-agent-guidance`
+- Writable fixture hashes: unchanged in baseline and candidate
+- Trigger selection: the final candidate matched all five retained cases; the approved-implementation near-miss stopped loading the target in two of two post-fix observations
+- Trigger iteration: the pre-fix candidate loaded the target once; the baseline produced mixed results on the same near-miss and is recorded as unstable
+- Regressions: none in the selected cases
+- Durable evidence: [`results.json`](results.json)
+- Claude Code execution: not executed at the user's direction
+- Unverified: live Codex and Claude Code loading, import, precedence, permission, and hook behavior against real instruction files
+- Next validation question: Does a live multi-client repository load the proposed canonical source and bridge with the precedence and enforcement behavior the design predicts?

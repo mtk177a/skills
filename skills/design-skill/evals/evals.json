@@ -1,9 +1,9 @@
 {
   "skill": "design-skill",
-  "version": 1,
+  "version": 2,
   "baseline": {
     "required": true,
-    "condition": "Run the same cases with the previous design-skill version and with no design Skill enabled.",
+    "condition": "Run affected cases against the immediately preceding committed design-skill version, identified by commit or content hash, and use no Skill only when it answers a distinct baseline question.",
     "raw_artifact_policy": "Keep prior Skill copies, JSONL, and full session output in a temporary directory outside the repository."
   },
   "execution": {
@@ -11,6 +11,14 @@
     "model": "record exact model at execution time",
     "reasoning_effort": "record at execution time",
     "sandbox": "read-only",
+    "executor_input_fields": [
+      "input"
+    ],
+    "hidden_grading_fields": [
+      "title",
+      "assertions",
+      "additional_requirement"
+    ],
     "coexistence_skills": [
       "audit-agent-guidance",
       "design-changes",
@@ -30,7 +38,7 @@
     },
     {
       "id": "intervention-counterfactuals",
-      "critical": true,
+      "critical": false,
       "statement": "Compares no guidance, another local intervention, existing-Skill revision, and new or split Skill when relevant."
     },
     {
@@ -40,33 +48,43 @@
     },
     {
       "id": "metadata-trigger-context",
-      "critical": true,
+      "critical": false,
       "statement": "Places the complete implicit-trigger context in description rather than relying on body-only when-to-use prose."
     },
     {
       "id": "local-authority-portability",
-      "critical": true,
+      "critical": false,
       "statement": "Discovers and follows applicable local instructions without requiring a particular repository-root document."
     },
     {
       "id": "calibrated-control",
-      "critical": true,
+      "critical": false,
       "statement": "Matches instruction specificity to task fragility instead of prescribing one detail level for the whole Skill."
     },
     {
       "id": "material-boundaries-only",
-      "critical": true,
+      "critical": false,
       "statement": "Defines required safety and permission properties without treating Always, Ask first, and Never as mandatory headings."
     },
     {
-      "id": "resource-justification",
+      "id": "client-specific-metadata-justified",
+      "critical": false,
+      "statement": "Keeps the portable metadata and content contract separate from target-labeled client additions, and adds an extension only for a demonstrated invocation, UI, tool dependency, permission, or execution-context need."
+    },
+    {
+      "id": "third-party-capability-design",
       "critical": true,
+      "statement": "When adapting third-party or executable material, establishes provenance and complete file scope, traces data access through scripts or tools to outbound destinations, and defines enforceable controls or leaves the design unverified."
+    },
+    {
+      "id": "resource-justification",
+      "critical": false,
       "statement": "Includes references, scripts, or assets only when they address demonstrated rediscovery, domain context, or execution risk."
     },
     {
       "id": "evaluation-first",
       "critical": true,
-      "statement": "Designs trigger, baseline, isolation, coexistence, instruction-following, and output-quality checks before extensive authoring."
+      "statement": "Before extensive authoring, maps each material claim or change to a plausible failure, a scenario or check, and a grading method, includes only dimensions that address a distinct risk, and states the selected evaluation depth and escalation condition."
     },
     {
       "id": "design-only-handoff",
@@ -74,7 +92,7 @@
       "statement": "Produces an implementation-ready handoff without editing or implementing the target Skill."
     }
   ],
-  "assertion_policy": "Evaluate every candidate assertion across the suite and record supporting or contradicting evidence from at least one case.",
+  "assertion_policy": "Grade every assertion assigned to a case. A failed critical assertion fails that case. Record case-by-condition evidence and do not pass an assertion merely because it succeeded in a different case.",
   "cases": [
     {
       "id": "requested-skill-with-healthy-baseline",
@@ -88,6 +106,10 @@
         "evaluation-first",
         "design-only-handoff"
       ],
+      "execution_overrides": {
+        "sandbox": "workspace-write",
+        "repository": "disposable fixture with observable file hashes before and after"
+      },
       "additional_requirement": "Do not force a new Skill when the evidence supports no durable guidance."
     },
     {
@@ -156,6 +178,35 @@
         "design-only-handoff"
       ],
       "additional_requirement": "Do not present a textual rewrite as a demonstrated behavioral fix; identify the missing diagnostic evidence."
+    },
+    {
+      "id": "coverage-based-evaluation",
+      "title": "Design evaluation from material risks",
+      "input": "A Skill's responsibility and changed behavior are settled. Its description may collide with one adjacent Skill, and a safety-critical output check can fail. There is no plausible client-specific or script-execution risk. Design the evaluation strategy and implementation handoff.",
+      "assertions": [
+        "evidence-status",
+        "coherent-responsibility",
+        "evaluation-first",
+        "design-only-handoff"
+      ],
+      "additional_requirement": "Do not add unrelated client, script, or repeated-run cases solely to satisfy a standard checklist or target count."
+    },
+    {
+      "id": "adapt-third-party-executable-skill",
+      "title": "Adapt a third-party Skill with client-specific controls",
+      "input": "Design whether and how to adopt an external release-uploader Skill. Its SKILL.md follows mutable remote instructions, a bundled script reads workspace files and selected environment variables, and it uploads an archive to a vendor endpoint. The upstream revision, license, redirect destination, and local modifications are not yet recorded. Codex and Claude Code are target clients and offer different invocation, permission, and UI metadata. Produce the design decision and implementation handoff without editing files.",
+      "assertions": [
+        "outcome-before-artifact",
+        "evidence-status",
+        "coherent-responsibility",
+        "material-boundaries-only",
+        "client-specific-metadata-justified",
+        "third-party-capability-design",
+        "resource-justification",
+        "evaluation-first",
+        "design-only-handoff"
+      ],
+      "additional_requirement": "Do not recommend adoption as complete while provenance or outbound data flow remains unresolved, and do not copy every client extension into the portable Skill layer."
     }
   ]
 }

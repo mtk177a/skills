@@ -8,6 +8,7 @@ Structured assets:
 
 - `triggers.json`: should-trigger, should-not-trigger, and near-miss selection cases
 - `evals.json`: baseline, isolation, coexistence, and behavioral assertions
+- [`results.json`](results.json): immutable revision identifiers and the durable case-by-requirement evidence matrix for the currently accepted revision
 
 ## Candidate static check
 
@@ -17,8 +18,13 @@ Structured assets:
 - no fixed proposal template, universal approval sequence, or mandatory boundary headings remain
 - the Skill compares no guidance, existing-Skill revision, split or merge, and new Skill interventions
 - evaluation precedes extensive authoring
+- evaluation scope follows material responsibility and failure coverage rather than a fixed scenario or run count
+- client-specific metadata is added only for a demonstrated invocation, UI, tool, or permission need
+- portable metadata is reported separately from target-labeled client extensions, even when a client requires fields in the same file
+- third-party and executable designs preserve provenance and trace combined data and capability paths
+- executor inputs do not include hidden assertions or expected conclusions
 - the Skill ends at an implementation handoff
-- every candidate assertion in `evals.json` is critical and is exercised by at least one case
+- every candidate assertion in `evals.json` is exercised by at least one case, and only fail-gating requirements are marked critical
 
 ## Scenarios
 
@@ -27,6 +33,7 @@ Structured assets:
 The user asks for a Skill, but repeated no-Skill runs already meet the intended outcome without specialized knowledge or corrections.
 
 Requirements checklist:
+
 1. [critical] Do not force a new Skill when evidence supports no durable guidance
 2. Compare the relevant non-Skill interventions
 3. Define what evidence would justify revisiting the decision
@@ -37,6 +44,7 @@ Requirements checklist:
 Several real executions expose the same domain mapping, deterministic validator, and recurring correction.
 
 Requirements checklist:
+
 1. [critical] Ground the design in the supplied artifacts and corrections
 2. Define a coherent responsibility and trigger boundary
 3. Allocate instructions, references, scripts, and evals by demonstrated need
@@ -48,6 +56,7 @@ Requirements checklist:
 The proposed Skill overlaps separate planning and execution Skills.
 
 Requirements checklist:
+
 1. [critical] Compare add, merge, split, and retain-current options
 2. Keep trigger, output, and risk boundaries coherent
 3. Design coexistence and near-miss evaluation
@@ -58,6 +67,7 @@ Requirements checklist:
 One part of a workflow requires contextual judgment while another requires an exact verified sequence.
 
 Requirements checklist:
+
 1. [critical] Use different degrees of control for the contextual and fragile parts
 2. Preserve material safety and permission properties
 3. Prefer a tested script for deterministic fragile operations when justified
@@ -68,6 +78,7 @@ Requirements checklist:
 The target repository can be inspected, but its local guidance filenames and directory conventions are unknown.
 
 Requirements checklist:
+
 1. [critical] Discover applicable local instructions instead of requesting a standard root file
 2. Treat discovered local instructions as authoritative in their scope
 3. Avoid importing this repository's distribution assumptions
@@ -78,10 +89,34 @@ Requirements checklist:
 The user requests a redesign based only on the current text and provides no behavioral or loading evidence.
 
 Requirements checklist:
+
 1. [critical] Do not claim that a textual rewrite is a demonstrated behavioral fix
 2. Identify missing trigger, loading, client, trace, and baseline evidence
 3. Design the smallest evaluation or diagnostic step that can resolve the uncertainty
 4. Keep behavior unconfirmed until evidence exists
+
+### Scenario G: Evaluation design without a target count
+
+The Skill responsibility and changed behavior are known. Some trigger, coexistence, and output risks are material, while other standard evaluation dimensions cannot affect the decision.
+
+Requirements checklist:
+
+1. [critical] Map each material claim or change to a plausible failure, scenario or check, and grader
+2. Include only evaluation dimensions that address a distinct risk
+3. Do not add scenarios or repeated runs to reach a target number
+4. Distinguish static validation, targeted regression, and empirical tuning
+
+### Scenario H: Adapt a third-party executable Skill
+
+An external Skill bundles a script, follows mutable remote instructions, reads workspace data, and uploads results. The target clients have different invocation and permission controls.
+
+Requirements checklist:
+
+1. [critical] Establish provenance, license, pinned source, complete file scope, and local modifications before recommending adoption
+2. Trace input, filesystem access, script and tool execution, outbound data, destination, and enforceable controls as one capability chain
+3. Keep portable instructions separate from client-specific invocation, UI, tool, and permission metadata
+4. Reject or leave the design unverified when provenance or outbound data flow cannot be established
+5. Define only the security and client evaluation needed for the identified risks
 
 ## Failure Pattern Ledger
 
@@ -95,6 +130,10 @@ Requirements checklist:
 - `Always / Ask first / Never treated as mandatory quality criteria`
 - `implementation performed by the design workflow`
 - `candidate declared improved without baseline or behavioral evidence`
+- `evaluation checklist expanded mechanically without distinct failure coverage`
+- `executor shown the expected conclusion or grading criteria`
+- `client-specific metadata added without a client behavior that requires it`
+- `third-party Markdown reviewed without tracing scripts, remote instructions, or outbound data`
 
 ## Historical baseline — Iter 1, date unknown
 
@@ -106,7 +145,7 @@ Requirements checklist:
 ### Execution results
 
 | Scenario | Result | steps | duration | retries | Weak phase |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | A | × | N/A | N/A | 0 | Understanding |
 | B | ○ | N/A | N/A | 0 | — |
 
@@ -161,3 +200,21 @@ Note: `spawn_agent` / `wait_agent` could not retrieve `tool_uses` or `duration_m
 ### Next validation question
 
 - Does the candidate's narrower description avoid trigger collisions with audit and implementation Skills across repeated observable runs?
+
+## Current revision — 2026-07-24
+
+- Client: Codex CLI 0.145.0
+- Model / reasoning: `gpt-5.6-sol` / high
+- Baseline: commit `42ebd18cb2406d1cfcbeb34cd289fd620c8e4f9b`
+- Candidate `SKILL.md`: `sha256:ec5d29bd278ad1812e074a4134c4b06897d3a71e3ffc4923fd0eb2a2e2cdac19`
+- Candidate `references/authoring-guide.md`: `sha256:0929fdd5208f9acd313629273f52aaffc7c21ac2845ebd0ba0da2eb12e62074e`
+- Selected scenarios: D, G, and H
+- Candidate grading: 13 / 13 requirements passed; baseline: 11 passed and 2 partial
+- Improvements: material claims map directly to failure/check/grader paths, evaluation depth and escalation are explicit, and portable metadata is separated from target-labeled client extensions
+- Writable fixture hashes: unchanged in baseline and candidate
+- Regressions: an initial portable-metadata partial was corrected and the affected case rerun; final regression count is zero
+- Durable evidence: [`results.json`](results.json)
+- Trigger suite: not executed because the `description` did not change in this revision
+- Claude Code and other clients: not executed
+- Unverified: proposed scripts and validators, third-party provenance and endpoints, actual client metadata support, permission prompts, and UI behavior
+- Next validation question: Do the target clients tolerate the separately identified extensions and enforce the designed data-flow controls in an isolated executable fixture?

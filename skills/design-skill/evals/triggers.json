@@ -1,19 +1,12 @@
 {
   "skill": "design-skill",
-  "version": 1,
+  "version": 2,
   "run_policy": {
-    "runs_per_case": 3,
     "protocol": "Present each prompt as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
     "count_only_observed_skill_loads": true,
     "unobservable_result": "not exposed",
-    "thresholds": {
-      "should_trigger": {
-        "minimum_loads": 2
-      },
-      "should_not_trigger": {
-        "maximum_loads": 1
-      }
-    }
+    "repetition_rule": "Run each retained case under the target condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant. Use matched repetitions for baseline and candidate.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every observed condition. Mixed observed results are unstable, not a pass."
   },
   "cases": [
     {
@@ -75,12 +68,6 @@
       "expected": "should_not_trigger",
       "category": "near_miss",
       "prompt": "The Skill responsibility is already settled. Run repeated trigger experiments and tune only its description based on false-positive and false-negative results."
-    },
-    {
-      "id": "format-skill-markdown",
-      "expected": "should_not_trigger",
-      "category": "out_of_scope",
-      "prompt": "Normalize this SKILL.md to CommonMark spacing and list syntax without changing any wording or behavior."
     }
   ]
 }

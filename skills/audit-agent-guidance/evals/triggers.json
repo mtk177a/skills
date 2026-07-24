@@ -1,19 +1,12 @@
 {
   "skill": "audit-agent-guidance",
-  "version": 1,
+  "version": 2,
   "run_policy": {
-    "runs_per_case": 3,
     "protocol": "Wrap each query as a trigger-selection task: choose matching repository Skills from name and description, open each selected SKILL.md so loading is observable, report the selected names, and do not solve the underlying task.",
     "count_only_observed_skill_loads": true,
     "unobservable_result": "not exposed",
-    "thresholds": {
-      "should_trigger": {
-        "minimum_loads": 2
-      },
-      "should_not_trigger": {
-        "maximum_loads": 1
-      }
-    }
+    "repetition_rule": "Run each retained case under the target condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant. Use matched repetitions for baseline and candidate.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every observed condition. Mixed observed results are unstable, not a pass."
   },
   "cases": [
     {
@@ -47,10 +40,28 @@
       "prompt": "Audit approval boundaries and precedence across AGENTS.md, CLAUDE.md, SKILL.md, and relevant client policy surfaces. Compare the current system with structural alternatives."
     },
     {
+      "id": "third-party-skill-trust-boundary",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "Audit this imported Skill as agent guidance. Trace its remote instructions, scripts, filesystem reads, network destinations, and permission controls as one trust and data-flow boundary before we adopt it."
+    },
+    {
+      "id": "diagnosis-before-instruction-redesign",
+      "expected": "should_trigger",
+      "category": "coexistence",
+      "prompt": "Agents sometimes ignore our existing AGENTS.md and CLAUDE.md, but we do not know which files loaded or which policy won. Diagnose the cause and evidence gaps before redesigning the document set."
+    },
+    {
       "id": "ordinary-pr-review",
       "expected": "should_not_trigger",
       "category": "out_of_scope",
       "prompt": "Review this pull request diff for correctness, missing tests, security issues, and maintainability regressions."
+    },
+    {
+      "id": "standalone-script-vulnerability-review",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Perform a line-by-line vulnerability review of this shell script implementation, focusing on command injection, quoting bugs, temporary-file races, and unsafe permissions."
     },
     {
       "id": "new-skill-design",
@@ -71,10 +82,10 @@
       "prompt": "Review this Codex .rules file as a standalone command policy and tell me whether each allow, prompt, and forbid rule is correct."
     },
     {
-      "id": "markdown-formatting",
+      "id": "design-ready-existing-skill",
       "expected": "should_not_trigger",
-      "category": "out_of_scope",
-      "prompt": "Normalize this Markdown file to CommonMark, fixing heading spacing, lists, fences, and link syntax without changing its meaning."
+      "category": "coexistence",
+      "prompt": "The audit is complete and the responsibility boundary is settled. Design the approved split of this existing Skill, including metadata, resources, and evaluation coverage, without implementing it."
     }
   ]
 }

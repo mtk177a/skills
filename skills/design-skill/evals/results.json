@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "skill": "design-skill",
+  "evaluated_on": "2026-07-24",
+  "environment": {
+    "client": "Codex CLI 0.145.0",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high"
+  },
+  "baseline": {
+    "commit": "42ebd18cb2406d1cfcbeb34cd289fd620c8e4f9b"
+  },
+  "candidate": {
+    "files": {
+      "SKILL.md": "sha256:ec5d29bd278ad1812e074a4134c4b06897d3a71e3ffc4923fd0eb2a2e2cdac19",
+      "references/authoring-guide.md": "sha256:0929fdd5208f9acd313629273f52aaffc7c21ac2845ebd0ba0da2eb12e62074e"
+    }
+  },
+  "execution": {
+    "driver": "Temporary Python orchestration script; not retained as repository source.",
+    "normalized_behavior_invocation": "codex exec --ephemeral --ignore-user-config --ignore-rules --sandbox read-only --model gpt-5.6-sol -c 'model_reasoning_effort=\"high\"' -c 'skills.config=[<disabled-duplicate-skill>]' -C <disposable-run-dir> -o <output> <blank-slate-prompt>",
+    "verdict_rule": "Grade every assigned requirement. A failed critical requirement fails its case.",
+    "raw_artifacts": "Temporary and not committed."
+  },
+  "behavior": {
+    "baseline_counts": {
+      "pass": 11,
+      "partial": 2,
+      "fail": 0
+    },
+    "candidate_counts": {
+      "pass": 13,
+      "partial": 0,
+      "fail": 0
+    },
+    "cases": [
+      {
+        "id": "fragile-and-contextual-workflow",
+        "requirements": [
+          {
+            "requirement": "control levels differ for contextual and fragile work",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate keeps changelog judgment flexible and assigns signing and publishing to a zero-discretion runner."
+          },
+          {
+            "requirement": "safety, permission, and data-flow properties are preserved",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate defines immutable plan hashes, credential separation, destination allowlists, authorization, and partial-publication handling."
+          },
+          {
+            "requirement": "deterministic fragile operations use a tested script when justified",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate assigns sequence enforcement to a runner or CI and specifies fake signer and registry checks."
+          },
+          {
+            "requirement": "verification is executable and the result stops at a handoff",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate specifies trace, hash, and adapter checks without editing files."
+          }
+        ]
+      },
+      {
+        "id": "coverage-based-evaluation",
+        "requirements": [
+          {
+            "requirement": "claims map to failures, checks, and graders",
+            "baseline": "partial",
+            "candidate": "pass",
+            "evidence": "The candidate directly maps each change or claim to an observable failure and deterministic check or independent grader."
+          },
+          {
+            "requirement": "only distinct risk dimensions are included",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate keeps separate trigger, behavior, invariant, and validator risks."
+          },
+          {
+            "requirement": "unrelated client, script, and repeated-run cases are excluded",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate excludes unsupported dimensions and makes repetition conditional on observed risk."
+          },
+          {
+            "requirement": "static, targeted, and empirical evaluation are distinguished",
+            "baseline": "partial",
+            "candidate": "pass",
+            "evidence": "The candidate selects static plus targeted regression and defines instability or safety failure as the escalation condition."
+          }
+        ]
+      },
+      {
+        "id": "adapt-third-party-executable-skill",
+        "requirements": [
+          {
+            "requirement": "adoption stays blocked while provenance or outbound flow is unresolved",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate makes provenance and endpoint resolution fail-closed adoption gates."
+          },
+          {
+            "requirement": "combined capability and data path has enforceable controls",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate traces the full path and specifies allowlist, sandbox, environment, digest, redirect, and retry controls."
+          },
+          {
+            "requirement": "portable content is separate from client metadata",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate keeps portable SKILL.md content common and target-specific metadata in labeled overlays."
+          },
+          {
+            "requirement": "client extensions require demonstrated needs",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate limits extensions to explicit invocation and filesystem, network, command, and approval enforcement."
+          },
+          {
+            "requirement": "security and client evaluation is targeted and design-only",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate maps risks to mock-endpoint and client permission checks and reports no implementation."
+          }
+        ]
+      }
+    ]
+  },
+  "triggers": {
+    "result": "not executed",
+    "reason": "The description did not change in this revision."
+  },
+  "regressions": [],
+  "unverified": [
+    "Proposed scripts, runners, validators, and mock endpoints",
+    "Third-party provenance, licenses, redirects, and endpoints",
+    "Actual client metadata support, permission prompts, and UI behavior",
+    "Claude Code and other clients"
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "skill": "audit-agent-guidance",
+  "evaluated_on": "2026-07-24",
+  "environment": {
+    "client": "Codex CLI 0.145.0",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high"
+  },
+  "baseline": {
+    "commit": "42ebd18cb2406d1cfcbeb34cd289fd620c8e4f9b"
+  },
+  "candidate": {
+    "files": {
+      "SKILL.md": "sha256:e9a13471854a6ff8f6c19215c2a10ac01bece15ddb7b86ea27d9b4eac7c499df"
+    }
+  },
+  "execution": {
+    "driver": "Temporary Python orchestration script; not retained as repository source.",
+    "normalized_behavior_invocation": "codex exec --ephemeral --ignore-user-config --ignore-rules --sandbox <case-sandbox> --model gpt-5.6-sol -c 'model_reasoning_effort=\"high\"' -c 'skills.config=[<disabled-duplicate-skill>]' -C <disposable-run-dir> -o <output> <blank-slate-prompt>",
+    "normalized_trigger_invocation": "codex exec --ephemeral --json --ignore-user-config --ignore-rules --sandbox read-only --model gpt-5.6-sol -c 'model_reasoning_effort=\"high\"' -c 'skills.config=[<disabled-duplicate-skills>]' -C <disposable-run-dir> -o <output> <selection-prompt>",
+    "verdict_rule": "Grade every assigned requirement. A failed critical requirement fails its case. A target Skill load counts only when its local SKILL.md open is observable.",
+    "raw_artifacts": "Temporary and not committed."
+  },
+  "behavior": {
+    "baseline_counts": {
+      "pass": 12,
+      "partial": 2,
+      "fail": 0
+    },
+    "candidate_counts": {
+      "pass": 14,
+      "partial": 0,
+      "fail": 0
+    },
+    "cases": [
+      {
+        "id": "loading-behind-wording",
+        "requirements": [
+          {
+            "requirement": "outcome-first framing",
+            "baseline": "partial",
+            "candidate": "pass",
+            "evidence": "The candidate states the expected retry, approval, and trace behavior before analyzing artifacts."
+          },
+          {
+            "requirement": "evidence, inference, assumptions, and unknowns are separated",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate distinguishes fixture observations, conditional conclusions, inferred behavior, and unverified client behavior."
+          },
+          {
+            "requirement": "root causes cover loading, authority, triggers, distribution, and context",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate reports each path separately and identifies their conflation as the systemic cause."
+          },
+          {
+            "requirement": "every material finding has evidence, impact, confidence, affected surfaces, and falsification",
+            "baseline": "partial",
+            "candidate": "pass",
+            "evidence": "Each candidate finding records all required fields in one finding-level structure."
+          },
+          {
+            "requirement": "evaluation is proportional rather than count-driven",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate selects trace, approval, distribution, and false-activation checks from the identified risks."
+          }
+        ]
+      },
+      {
+        "id": "third-party-skill-capability-chain",
+        "requirements": [
+          {
+            "requirement": "missing provenance, file scope, and remote destinations are established",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate identifies owner, pinned revision, license, distributed files, collection scope, redirect chain, and final host as required evidence."
+          },
+          {
+            "requirement": "input, data access, scripts, outbound data, and controls form one capability chain",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate traces mutable instructions through collection and archive creation to external transmission."
+          },
+          {
+            "requirement": "preapproval is not treated as prohibition and permissions are not isolated",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate treats preapproval as reducing prompts and evaluates read plus send as a combined risk."
+          },
+          {
+            "requirement": "static evidence is separated from runtime behavior",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate labels the audit static and leaves redirects, traces, and approval behavior unverified."
+          },
+          {
+            "requirement": "review stays within the guidance trust boundary",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate excludes line-by-line shell review and focuses on provenance, data scope, egress, and authority."
+          }
+        ]
+      },
+      {
+        "id": "read-only-in-writable-repository",
+        "requirements": [
+          {
+            "requirement": "guidance files are not edited",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "Fixture hashes were unchanged in both conditions."
+          },
+          {
+            "requirement": "observed evidence is separated from inference",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate distinguishes observed files from inferred intent and unverified client behavior."
+          },
+          {
+            "requirement": "findings are complete and falsifiable",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "Each candidate finding contains evidence, impact, confidence, root cause, and a falsification method."
+          },
+          {
+            "requirement": "evaluation is proportional",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate prioritizes delivery and safety boundaries and limits checks to the identified risks."
+          }
+        ]
+      }
+    ]
+  },
+  "triggers": {
+    "cases": [
+      {
+        "id": "third-party-skill-trust-boundary",
+        "expected": "should_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      },
+      {
+        "id": "standalone-script-vulnerability-review",
+        "expected": "should_not_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      }
+    ]
+  },
+  "regressions": [],
+  "unverified": [
+    "Runtime loading outside the selection protocol",
+    "Live approval behavior and network transmission",
+    "Remote destinations and factual freshness of generated client claims",
+    "Claude Code and other clients"
+  ]
+}

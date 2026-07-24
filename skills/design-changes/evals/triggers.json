@@ -1,0 +1,49 @@
+{
+  "skill": "design-changes",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Present each prompt as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case under the target condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant. Use matched repetitions for baseline and candidate.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every observed condition. Mixed observed results are unstable, not a pass."
+  },
+  "cases": [
+    {
+      "id": "application-change-design",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "Before implementation, design the database and API changes for adding organization-level billing. Separate targets and non-targets, map impact and risks, and define verification and stop conditions."
+    },
+    {
+      "id": "readability-refactor-design",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "Design a readability refactor for this long request handler before editing it. Identify entry points, processing stages, behavior-preserving change units, risks, and verification."
+    },
+    {
+      "id": "undefined-request",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "I have a vague idea that onboarding should be better, but I do not know the users, problem, success criteria, or constraints. Help me clarify the request first."
+    },
+    {
+      "id": "agent-skill-design",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Decide whether to create, merge, or split an Agent Skill for release handoffs, including its responsibility, trigger boundary, resources, and evaluation."
+    },
+    {
+      "id": "approved-implementation",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "The change design is approved. Implement the listed code changes, run the tests, and report the resulting diff."
+    },
+    {
+      "id": "high-risk-migration-coexistence",
+      "expected": "should_trigger",
+      "category": "coexistence",
+      "prompt": "Design the implementation impact and verification for an authentication data migration, and also establish the explicit approval, backup, rollback, and recovery controls required before execution."
+    }
+  ]
+}

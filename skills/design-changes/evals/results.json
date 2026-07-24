@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "skill": "design-changes",
+  "evaluated_on": "2026-07-24",
+  "environment": {
+    "client": "Codex CLI 0.145.0",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high"
+  },
+  "baseline": {
+    "commit": "42ebd18cb2406d1cfcbeb34cd289fd620c8e4f9b"
+  },
+  "candidate": {
+    "files": {
+      "SKILL.md": "sha256:9961cebd1303592754a960a73be677afa21c737d20d409fdfc2808fa84b9809d"
+    }
+  },
+  "execution": {
+    "driver": "Temporary Python orchestration script; not retained as repository source.",
+    "normalized_behavior_invocation": "codex exec --ephemeral --ignore-user-config --ignore-rules --sandbox workspace-write --model gpt-5.6-sol -c 'model_reasoning_effort=\"high\"' -c 'skills.config=[<disabled-duplicate-skill>]' -C <disposable-run-dir> -o <output> <blank-slate-prompt>",
+    "normalized_trigger_invocation": "codex exec --ephemeral --json --ignore-user-config --ignore-rules --sandbox read-only --model gpt-5.6-sol -c 'model_reasoning_effort=\"high\"' -c 'skills.config=[<disabled-duplicate-skills>]' -C <disposable-run-dir> -o <output> <selection-prompt>",
+    "verdict_rule": "Grade every assigned requirement. A failed critical requirement fails its case. A target Skill load counts only when its local SKILL.md open is observable.",
+    "raw_artifacts": "Temporary and not committed."
+  },
+  "behavior": {
+    "baseline_counts": {
+      "pass": 14,
+      "partial": 1,
+      "fail": 0
+    },
+    "candidate_counts": {
+      "pass": 15,
+      "partial": 0,
+      "fail": 0
+    },
+    "cases": [
+      {
+        "id": "small-feature",
+        "requirements": [
+          {
+            "requirement": "proceed and stop conditions are separated",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate separates prerequisites from explicit no-go conditions."
+          },
+          {
+            "requirement": "targets, non-targets, and consumers are identified",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate separates changed responsibilities and names legacy clients, generated SDKs, and authentication consumers."
+          },
+          {
+            "requirement": "the handoff is read-only",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "Fixture hashes were unchanged in both conditions."
+          },
+          {
+            "requirement": "changed behavior and regressions map to checks and evidence",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate verification table maps each responsibility and failure to a check and expected result."
+          },
+          {
+            "requirement": "inapplicable report sections are omitted",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "Every emitted candidate section contains decision-relevant content."
+          }
+        ]
+      },
+      {
+        "id": "dependency-stop",
+        "requirements": [
+          {
+            "requirement": "dependency selection and authorization are stop conditions",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate requires package, version, evaluation, manifest change, and explicit authorization before implementation."
+          },
+          {
+            "requirement": "a decision-relevant no-dependency alternative is compared",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate compares dependency-free and package paths with applicability and trade-offs."
+          },
+          {
+            "requirement": "no dependency or implementation is performed",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "Fixture hashes were unchanged in both conditions."
+          },
+          {
+            "requirement": "proposed validation is separate from observed evidence",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate labels all planned validation as unexecuted."
+          },
+          {
+            "requirement": "dependency and compatibility risks have controls and checks",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate pairs selection, compatibility, clean-install, build, and license risks with checks."
+          }
+        ]
+      },
+      {
+        "id": "auth-high-risk",
+        "requirements": [
+          {
+            "requirement": "auth boundaries are identified and high-risk controls route to plan-risky-change",
+            "baseline": "partial",
+            "candidate": "pass",
+            "evidence": "The candidate names authentication, identity, policy, enforcement, session, and token boundaries and explicitly hands controls to plan-risky-change."
+          },
+          {
+            "requirement": "design is not presented as implementation authorization",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate stops implementation pending a separately approved high-risk plan."
+          },
+          {
+            "requirement": "authorization and failure handling have targeted verification",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate defines decision-table, tenant-boundary, timeout, cache, policy, and token-revocation evidence."
+          },
+          {
+            "requirement": "impact remains complete while rollout may be staged",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate covers interactive and service consumers and supports shadow and canary rollout."
+          },
+          {
+            "requirement": "alternatives, tests, and runs are risk-driven",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "The candidate limits alternatives and checks to concrete auth, authorization, failure, and recovery risks."
+          }
+        ]
+      }
+    ]
+  },
+  "triggers": {
+    "result": "pass",
+    "cases": [
+      {
+        "id": "application-change-design",
+        "expected": "should_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      },
+      {
+        "id": "readability-refactor-design",
+        "expected": "should_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      },
+      {
+        "id": "undefined-request",
+        "expected": "should_not_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      },
+      {
+        "id": "agent-skill-design",
+        "expected": "should_not_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      },
+      {
+        "id": "approved-implementation",
+        "expected": "should_not_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      },
+      {
+        "id": "high-risk-migration-coexistence",
+        "expected": "should_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      }
+    ]
+  },
+  "regressions": [],
+  "unverified": [
+    "Real application entry points, dependency constraints, auth boundaries, and test commands",
+    "Rollback and recovery procedures",
+    "Claude Code and other clients"
+  ]
+}

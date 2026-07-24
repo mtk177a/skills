@@ -25,6 +25,7 @@ license: MIT
 - Skillなし、または旧版のbaseline
 - 適用可能なローカル指示と配布上の制約
 - 隣接Skill、そのdescription、共存時の挙動
+- 第三者または executable material を改変する場合の provenance、license、全ファイル一覧、capability path
 
 適用可能なローカル指示は、そのscope内で権威ある情報として扱う。同梱guideは、ローカル指示が規定していない部分のポータブルなbaselineとして使う。観測事実、推論、前提、不明点を分ける。文章上もっともらしいことしか確認できない場合は、改善が実証済みであるかのように扱わず、静的な仮説と明記する。
 
@@ -33,12 +34,12 @@ license: MIT
 1. 新しいSkillが必要だと仮定せず、期待する能力と、繰り返し発生する失敗または知識gapを定義する。
 2. 代表的な実タスクとbaseline挙動を確認する。agentに不足するもの、既に処理できるもの、再利用すべき修正を分ける。
 3. 永続的なguidanceなし、ローカル指示やtool、既存Skillの更新・統合、分割、新規Skillを比較する。
-4. 隣接Skillと配布surfaceを確認する。artifactを選ぶ前に、責務重複、trigger競合、context cost、共存riskを解消する。
+4. 隣接Skillと配布surfaceを確認する。artifactを選ぶ前に、責務重複、trigger競合、context cost、共存risk、第三者 trust または capability boundary を解消する。
 5. 一貫した責務単位を1つ選ぶ。対象利用者、scope内のtask、除外、入力、出力、failure handlingを定義する。
 6. `name` と `description` の案を作る。暗黙triggerに必要なcontextを`description`へ入れ、衝突を防ぐ場合はnegative boundaryも含める。
-7. agentが知らない再利用可能な内容だけを、`SKILL.md`、`references/`、`scripts/`、`assets/`、eval資産へ割り当てる。すべてを同じ詳細度に固定せず、taskの壊れやすさに指示の自由度を合わせる。
-8. workflowに必要な場合だけ、安全性やpermissionの境界を定義する。特定の見出しtemplateを強制せず、必要な安全特性を保持する。
-9. 大量の本文を書く前に評価を設計する。対象client・modelに関係するtrigger、non-trigger、near-miss、baseline、isolation、coexistence、instruction-following、output-qualityを扱う。
+7. agentが知らない再利用可能な内容だけを、`SKILL.md`、`references/`、`scripts/`、`assets/`、eval資産へ割り当てる。portable metadata draft は共通 contract に限定し、client-specific addition は handoff で別に列挙する。invocation control、UI、tool dependency、permission behavior が必要とする場合だけ extension を追加し、format 上同じファイルへ置く場合は target を明示して他 client の許容性を検証する。すべてを同じ詳細度に固定せず、taskの壊れやすさに指示の自由度を合わせる。
+8. workflowに必要な場合だけ、安全性やpermissionの境界を定義する。外部指示、scripts、tools、filesystem access、network access が関係する場合は、data と capability の組み合わせを追跡し、利用可能なら hard guarantee を client の強制可能な control へ移す。特定の見出しtemplateを強制せず、必要な安全特性を保持する。
+9. 大量の本文を書く前に評価を設計する。重要な責務、trigger boundary、安全特性、変更した挙動を、起こり得る失敗、シナリオまたは確認、採点方法へ対応付ける。static validation、targeted regression、反復的 empirical tuning のどれが妥当かと、次の level へ深める evidence を明示する。trigger、baseline、isolation、coexistence、instruction-following、output-quality、client、model の被覆は、関連する risk を扱う場合だけ含め、普遍的な case 数や run 数を目標にしない。
 10. 実際に影響するtarget surfaceだけを特定し、実装handoffを作る。このworkflowではSkillを編集・実装しない。
 
 ## 判断基準
@@ -58,8 +59,9 @@ license: MIT
 - 責務とtrigger境界の案
 - Skillを推奨する場合のmetadata案
 - 本文とresourceの配置
-- 実装後も保持すべき安全性・permission特性
-- 評価・rollout戦略
+- portable metadata / content と、別に列挙した client-specific addition、および第三者 provenance の要件
+- 実装後も保持すべき安全性、data-flow、permission特性
+- evaluation coverage、採点方法、選んだ深さと escalation condition、rollout戦略
 - 影響するtarget surfaceと、実装可能なhandoff
 
 証拠が永続的guidance不要、または別の介入を支持する場合は、Skill案を強制しない。ファイル編集、依存追加、repository policy変更は行わず、権限を持つ実装workflowへ引き渡す。

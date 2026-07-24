@@ -1,0 +1,43 @@
+{
+  "skill": "design-agent-instructions",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Present each prompt as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case under the target condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant. Use matched repetitions for baseline and candidate.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every observed condition. Mixed observed results are unstable, not a pass."
+  },
+  "cases": [
+    {
+      "id": "new-multi-client-instruction-set",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "Design the smallest durable instruction document set for a repository that actively uses Codex and Claude Code. Decide the canonical source, required bridge files, loading and precedence relationships, and validation without editing files."
+    },
+    {
+      "id": "reorganize-after-diagnosis",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "The audit established that duplicated AGENTS.md and CLAUDE.md rules and a conflicting client policy cause the observed behavior. Design the corrected source-of-truth and enforcement document set, with an implementation handoff only."
+    },
+    {
+      "id": "unexplained-non-adherence",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Agents sometimes ignore our existing AGENTS.md and CLAUDE.md, but we do not know which files loaded or which policy won. Diagnose the cause and evidence gaps before deciding whether to reorganize the document set."
+    },
+    {
+      "id": "agent-skill-design",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Design whether to create, merge, or split an Agent Skill for repository onboarding, including its responsibility, trigger boundary, resources, and evaluation."
+    },
+    {
+      "id": "approved-instruction-implementation",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "The instruction document design is approved. Edit AGENTS.md and CLAUDE.md as specified, run the documented checks, and report the resulting diff."
+    }
+  ]
+}
