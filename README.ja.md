@@ -13,7 +13,7 @@
 開発作業全般をカバーする 27 の Skill を収録しています。
 
 | Skill | 説明 |
-|-------|------|
+| --- | --- |
 | `audit-agent-guidance` | 永続的な agent guidance を期待する挙動、観測済みの利用状況、client semantics、評価証拠に照らして監査する |
 | `break-failure-loop` | 同じエラーや方針で 2 回以上失敗したときに立ち止まり再構成する |
 | `calibrate-ai-learning` | 委任が深くなりすぎている時や、理解を保ちながら作業したい時に使う |
@@ -93,6 +93,7 @@ apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tec
 │   ├── compatibility.md
 │   ├── evaluation.md
 │   ├── localization.md
+│   ├── security.md
 │   └── workflows.md
 ├── skills/
 │   └── <skill-name>/
@@ -110,7 +111,7 @@ apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tec
 
 個人用リポジトリのため、外部からの貢献は想定していません。
 
-このリポジトリ向けに独自作成したコードとコンテンツは、MIT ライセンスの範囲で利用・改変できます。第三者の著作物を基にしたファイルには個別のライセンスが適用されます。詳細は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) を参照してください。Skill の構成については [docs/authoring.md](docs/authoring.md) を参照してください。
+このリポジトリ向けに独自作成したコードとコンテンツは、MIT ライセンスの範囲で利用・改変できます。第三者の著作物を基にしたファイルには個別のライセンスが適用されます。詳細は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) を参照してください。Skill の構成は [docs/authoring.md](docs/authoring.md)、第三者または executable Skill の review は [docs/security.md](docs/security.md) を参照してください。
 
 ## ライセンス
 

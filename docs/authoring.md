@@ -22,6 +22,32 @@ Prioritize:
 
 When comparing against existing Skills, inspect the relevant examples needed to resolve responsibility overlap and converge on a judgment. Stop when that purpose is met; do not impose an arbitrary count or scan the full catalog without a reason.
 
+## Use a semantic contract, not a heading template
+
+Skills do not need identical headings. They do need enough information for a blank-slate agent to select, execute, and verify the workflow without inventing missing policy.
+
+Check for these semantic responsibilities:
+
+- objective and one coherent responsibility
+- complete trigger context and material exclusions in `description`
+- evidence, inputs, or preconditions needed before acting
+- workflow or decision logic
+- required output information or an exact output format when a downstream consumer needs one
+- authority, failure handling, and safety or permission boundaries when material
+- verification or evaluation of the behavior that can fail
+- bundled resources and the conditions under which they should be read or executed
+
+Use the smallest structure that expresses those responsibilities. Two common archetypes are:
+
+| Archetype | Typical semantic structure |
+| --- | --- |
+| Judgment-oriented | Objective, Evidence, Workflow, optional decision criteria or dimensions, Reporting contract, Boundaries |
+| Operational | Objective, Inputs or Preconditions, ordered Steps, Output format, Verification, Boundaries |
+
+These are review models, not mandatory headings. A Skill may mix them when contextual judgment selects an approach and a fragile operation then requires an exact sequence.
+
+Do not add a body-level `When to use` section merely to repeat `description`. Keep one only when the agent needs loaded-time branching after the Skill has already been selected. Likewise, use exact output templates, `Always` / `Ask first` / `Never`, companion-Skill sections, and self-review checklists only when their distinctions materially change execution.
+
 ## Writing the description
 
 The `description` is the entry point for usage decisions, not a general explanation. Include:
@@ -30,7 +56,7 @@ The `description` is the entry point for usage decisions, not a general explanat
 - What kind of work it assists with
 - If it depends on a specific agent, what that dependency is
 - Focus on usage context over execution mechanics
-- Move internal details (roles, orchestration) to the body under `Purpose` or `When to use`
+- Put all information needed for implicit selection in `description`; move loaded-time roles, orchestration, and execution mechanics to the body
 
 Avoid:
 
@@ -94,6 +120,8 @@ Bring a Skill into this repository only when:
 
 Even then, review the `frontmatter` and `description` to align with this repository's conventions — do not import verbatim.
 
+Before adopting or adapting a third-party Skill, review its provenance, license, complete file set, external references, scripts, tool and network use, and combined capabilities. Treat Markdown instructions as executable influence rather than inherently safe text. Follow [Security review](security.md) for the repository checklist.
+
 ## Keeping secrets and private information out
 
 Never include the following in Skill bodies, helper scripts, reference materials, or assets:
@@ -125,13 +153,16 @@ When iterating on a Skill, manage evaluation assets alongside the content.
 - Skill-level scenarios and checklists go in `skills/<skill-name>/evals/`
 - Multi-Skill flow evaluations go in `docs/` (see `evaluation.md`)
 - Start with Iter 0: statically check that `description` and body are consistent, that output format is defined, and that the Skill is self-contained
-- Formalize scenarios and requirement checklists runnable by a blank-slate subagent
-- Include at least one `[critical]` item in each checklist so pass/fail is unambiguous
+- Before adding scenarios, map each material Skill claim or change to a plausible failure, a scenario that can expose it, and a grading method
+- Add a scenario only when it covers a distinct responsibility, boundary, coexistence risk, or known regression; do not target a universal scenario count
+- Formalize scenarios and requirement checklists runnable by a blank-slate executor
+- Keep desired answers and grading criteria out of the executor input
+- Mark requirements `[critical]` only when violating them should make the scenario fail; do not make every observation critical by default
 - Do not make another agent or subagent a default behavior in Skill bodies
 - Suggest additional agents only when the user explicitly asks, or as an optional enhancement for high-risk or high-uncertainty cases
 
 The purpose of evaluation is not the author's subjective judgment but verifying that another agent can reproduce the intended behavior without confusion.
-Prioritize reusable scenarios, decision criteria, and failure patterns over informal notes.
+Prioritize reusable scenarios, decision criteria, and failure patterns over informal notes. Use repeated empirical prompt tuning only when observed failures, high impact, instability, or a substantial redesign justify the additional cost.
 
 ## Notes on references/
 
@@ -157,9 +188,11 @@ Before opening a pull request for a new Skill:
 - [ ] Directory name is kebab-case and matches the frontmatter `name`
 - [ ] `SKILL.md` exists with `name`, `description`, and `license` frontmatter
 - [ ] `description` makes the usage context clear without reading the body
+- [ ] The body satisfies the semantic contract without copying a heading template mechanically
 - [ ] Body is written in English, or a Japanese writing/editing exception is documented
 - [ ] `SKILL-ja.md` Japanese reference translation exists unless `SKILL.md` is the documented Japanese canonical source
 - [ ] No secrets, personal information, or internal URLs
+- [ ] Third-party provenance and capability risks have been reviewed when external material is included
 - [ ] `scripts/`, `references/`, `assets/` contain only what the Skill needs (empty directories removed)
 - [ ] `evals/README.md` Iter 0 static check is complete
 
@@ -167,12 +200,18 @@ Before opening a pull request for a new Skill:
 
 When adapting a Codex-specific Skill for Claude Code or GitHub Copilot, review whether Codex-specific language should stay.
 
+Do not assume that compatible clients discover the same instruction filenames or apply the same precedence rules. As of the linked official documentation, Codex uses `AGENTS.md` for durable repository guidance, while Claude Code reads `CLAUDE.md` and can use an import or bridge to reuse `AGENTS.md`. Recheck current client documentation when this behavior affects a design.
+
 Check:
 
 - Over-reliance on specific tool names
 - Whether the request format and output format make sense for other agents
 - Whether steps assume Codex-specific features
 - Whether agent-specific differences are adequately described in `description` or the body
+- Whether shared guidance has one canonical source and client-specific bridge files avoid duplication
+- Whether a requirement needs behavioral guidance or a client-enforced policy, permission, or hook
 
 Keep Codex-specific language only when that specificity is the core value of the Skill.
 Otherwise, rewrite around purpose and decision criteria, making the mechanics swappable.
+
+Sources: [OpenAI agents guidance](https://developers.openai.com/codex/concepts/customization#agents-guidance), [Claude Code memory and CLAUDE.md](https://code.claude.com/docs/en/memory).

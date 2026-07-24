@@ -11,7 +11,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 27 Skills covering common development workflows:
 
 | Skill | Description |
-|-------|-------------|
+| --- | --- |
 | `audit-agent-guidance` | Audit durable agent guidance against intended behavior, observed usage, client semantics, and evaluation evidence |
 | `break-failure-loop` | Stop and reframe when an agent has failed twice with the same error or approach |
 | `calibrate-ai-learning` | Use when delegation is getting too deep or you want to maintain understanding while working |
@@ -91,6 +91,7 @@ Any client that discovers `skills/<name>/SKILL.md` files should work. See [docs/
 │   ├── compatibility.md
 │   ├── evaluation.md
 │   ├── localization.md
+│   ├── security.md
 │   └── workflows.md
 ├── skills/
 │   └── <skill-name>/
@@ -108,7 +109,7 @@ Any client that discovers `skills/<name>/SKILL.md` files should work. See [docs/
 
 This is a personal repository. External contributions are not expected.
 
-Original code and content authored for this repository may be used and adapted under the MIT License. Third-party-derived files retain their individual licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). See [docs/authoring.md](docs/authoring.md) for how Skills are structured.
+Original code and content authored for this repository may be used and adapted under the MIT License. Third-party-derived files retain their individual licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). See [docs/authoring.md](docs/authoring.md) for how Skills are structured and [docs/security.md](docs/security.md) for third-party and executable Skill review.
 
 ## License
 

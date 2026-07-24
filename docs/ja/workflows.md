@@ -33,6 +33,20 @@
 
 各 Skill は単独でも動く必要があります。`diversify-agent-search` は探索設計を深める companion であり、他 Skill の必須依存ではありません。
 
+## Durable guidance の workflow
+
+挙動または根本原因が不確かな場合だけ診断を使います。
+
+`audit-agent-guidance` → `design-skill` または `design-agent-instructions` → `design-changes` → 承認済みの実装 → targeted evaluation
+
+- `audit-agent-guidance`: 既存 guidance の挙動、証拠不足、loading、authority、trigger、根本原因を診断する
+- `design-skill`: Skill を維持、更新、統合、分割、削除、新規作成のどれにするかを判断し、評価戦略を定義する
+- `design-agent-instructions`: 対象 client 向けの文書セットと source-of-truth 関係を設計する
+- `design-changes`: 選んだ設計を、scope のある変更単位、risk、verification coverage へ落とす
+- targeted evaluation: 普遍的なケース数を課さず、重要な claim、変更した挙動、regression、関連する coexistence risk を検証する
+
+診断がすでに evidence で裏付けられている場合は audit を省きます。未観測の挙動が修正済みだと design work だけで主張しません。
+
 ## 停止条件
 
 次の場合は停止し、承認または明確化を求めます:

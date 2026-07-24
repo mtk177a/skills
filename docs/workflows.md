@@ -31,6 +31,20 @@ A minimal reference for how the core Skills connect into common workflows.
 
 Each Skill should still work on its own. `diversify-agent-search` is a companion for deeper search design, not a required dependency for the other Skills.
 
+## Durable guidance workflow
+
+Use diagnosis only when behavior or root cause is uncertain:
+
+`audit-agent-guidance` → `design-skill` or `design-agent-instructions` → `design-changes` → authorized implementation → targeted evaluation
+
+- `audit-agent-guidance`: Diagnose existing guidance behavior, evidence gaps, loading, authority, triggers, and root causes
+- `design-skill`: Decide whether to keep, update, merge, split, remove, or create a Skill and define its evaluation strategy
+- `design-agent-instructions`: Design the document set and source-of-truth relationships for the target clients
+- `design-changes`: Turn the selected design into scoped change units, risks, and verification coverage
+- targeted evaluation: Validate the material claims, changed behavior, regressions, and relevant coexistence risks without imposing a universal case count
+
+Skip the audit when the diagnosis is already supported by evidence. Do not use design work to claim that an unobserved behavior has been fixed.
+
 ## Stop conditions
 
 Stop and request approval or clarification when:
