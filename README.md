@@ -20,7 +20,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `define-referents` | Fix concrete referents and semantic roles before introducing new or ambiguous terms |
 | `design-agent-instructions` | Design AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md instruction sets |
 | `design-changes` | Design change scope, impact, risk, and verification approach before implementing |
-| `design-skill` | Design a new Skill or significantly revise an existing Skill's responsibilities |
+| `design-skill` | Decide whether and how to create, merge, split, or substantially rescope a Skill before implementation |
 | `diversify-agent-search` | Widen stuck agent or workflow improvement with multiple candidates, diversity axes, and case-level evaluation |
 | `draft-commit` | Generate commit message drafts or commit split proposals from a diff |
 | `draft-issue` | Turn a clarified request into an issue draft and filing steps |

@@ -1,88 +1,63 @@
 ---
 name: design-skill
-description: Use when designing a new Skill, or when significantly revising an existing Skill's responsibilities and boundaries.
+description: Designs whether and how to create, merge, split, or substantially rescope an Agent Skill before implementation. Use when defining a Skill's responsibility, trigger boundary, reusable resources, and evaluation strategy; not for routine wording edits, audits of existing behavior, or implementation itself.
 license: MIT
 ---
 
 # Design Skill
 
-## Purpose
+## Objective
 
-- Build a new Skill proposal, taking into account existing rules and overlap checks.
-- When significantly redesigning an existing Skill, organize its responsibilities, boundaries, and output contract.
+- Decide whether a reusable Skill is the right intervention before drafting one.
+- Produce an evidence-grounded design that an implementation workflow can apply without rediscovering the responsibility, trigger, resource, or evaluation decisions.
+- Keep diagnosis, design, and implementation distinct. An existing audit may supply evidence, but this Skill must remain usable without one.
 
-## When to use
+## Evidence
 
-- When you want to add a new Skill
-- When you want to significantly revise an existing Skill (responsibilities, boundaries, or structure change)
-- When you need to decide what `name`, `description`, and boundaries to use
-- When a request is still abstract and you need to fix the usage context in one sentence before drafting a Skill proposal
+Read `references/authoring-guide.md` completely before making design decisions.
 
-## Input (optional)
+Gather what is available:
 
-- Purpose, target task, intended user
-- Related existing Skills, README, docs
-- Source Skill or reference structure if applicable
+- intended outcome, users, clients, models, and failure signals
+- real task examples, corrections, traces, or outputs that expose a reusable gap
+- the no-Skill or previous-version baseline
+- applicable local instructions and distribution constraints
+- adjacent Skills, their descriptions, and coexistence behavior
 
-## Steps
+Treat applicable local instructions as authoritative within their scope. Use the bundled guide as a portable baseline where local guidance is silent. Distinguish observed evidence, inference, assumptions, and unknowns. If only textual plausibility is available, label the design as a static hypothesis rather than demonstrated improvement.
 
-1. Read the bundled `references/authoring-guide.md` as the portable primary source.
-2. Review project-local sources such as `AGENTS.md`, `README.md`, and `docs/authoring.md` when they exist, and treat them as supplemental constraints for the target repository.
-3. Define purpose, scope, and target user in 1–2 lines. If the request is abstract, fix the usage context in one sentence first.
-4. Check for overlap, conflicts, and merge candidates with existing Skills in the target repository when available.
-5. Decide `name` and `description`. Prioritize making the usage context readable; if the responsibility boundary is not confirmed, use a working name and get approval.
-6. Define boundaries (`Always` / `Ask first` / `Never`).
-7. Decide steps, output format, and whether optional directories (`evals/`, `references/`, `scripts/`, `assets/`) are needed.
-8. List the impact scope (`AGENTS.md` / docs / scripts / `apm.yml`) only for files that exist or are relevant in the target repository.
-9. Proceed in the order: propose diff → get approval → implement.
-10. If Markdown editing is involved, make a judgment call on whether to apply `format-markdown`.
+## Workflow
 
-## Output format (proposal)
+1. Define the intended capability and the recurring failure or knowledge gap without assuming that a new Skill is required.
+2. Examine representative tasks and baseline behavior. Identify what the agent lacks, what it already handles, and which corrections are genuinely reusable.
+3. Compare the relevant interventions: no durable guidance, a local instruction or tool, an update or merge of an existing Skill, a split, or a new Skill.
+4. Inspect adjacent Skills and distribution surfaces. Resolve responsibility overlap, trigger competition, context cost, and coexistence risks before choosing an artifact.
+5. Choose one coherent unit of responsibility. Define its target user, in-scope tasks, exclusions, inputs, outputs, and failure handling.
+6. Draft a `name` and `description`. Put the complete implicit-trigger context in `description`, including a negative boundary when it prevents a likely collision.
+7. Allocate only non-obvious reusable content across `SKILL.md`, `references/`, `scripts/`, `assets/`, and evaluation assets. Match instruction freedom to task fragility instead of fixing every workflow to one level of detail.
+8. Define safety or permission boundaries only where the workflow needs them. Preserve required safety properties without forcing a particular heading template.
+9. Design evaluation before extensive authoring: trigger, non-trigger, near-miss, baseline, isolation, coexistence, instruction-following, and output-quality cases relevant to the intended clients and models.
+10. Identify only the target surfaces actually affected by the design and produce an implementation handoff. Do not edit or implement the Skill as part of this workflow.
 
-- Summary of changes: ...
-- Purpose / scope: ...
-- Conflicts / overlaps: ...
-- Primary sources: ...
-- Metadata:
-  - name: ...
-  - description: ...
-- Steps:
-  1. ...
-- Boundaries:
-  - Always: ...
-  - Ask first: ...
-  - Never: ...
-- Optional directories needed: ...
-- Impact scope: ...
-- Approval: Is it OK to proceed with this approach?
+## Decision criteria
 
-## Boundaries
+- Prefer no Skill when the model already performs the task reliably and no reusable specialized context or procedure is missing.
+- Prefer updating or merging when the trigger, output contract, and risk boundary remain coherent.
+- Prefer a new or split Skill when combining responsibilities would make triggering, loading, or execution ambiguous.
+- Bundle references or scripts only when they save repeated rediscovery, provide domain evidence, or make fragile operations verifiable.
+- Keep the main instructions concise enough that every loaded section earns its context cost.
 
-### Always:
+## Reporting contract
 
-- State purpose, scope, and boundaries explicitly
-- Treat bundled `references/authoring-guide.md` as the portable primary source
-- Treat target-repository rules as supplemental constraints when present
-- Check for overlap with existing Skills when available
-- Make the usage context readable from `description`
-- When input is abstract, fix the usage context first before rushing to confirm a `name`
+Use a structure suited to the decision rather than a fixed proposal template. Include:
 
-### Ask first:
+- the recommended intervention and why it is preferable to the alternatives
+- evidence, assumptions, and unresolved questions
+- proposed responsibility and trigger boundary
+- metadata draft when a Skill is recommended
+- content and resource allocation
+- safety and permission properties that must survive implementation
+- evaluation and rollout strategy
+- affected target surfaces and an implementation-ready handoff
 
-- Changes to `AGENTS.md` content
-- Significant redesign of an existing Skill
-
-### Never:
-
-- Execute large changes without approval
-- Add dependencies or reuse external code without authorization
-
-## Notes (optional)
-
-Principles:
-
-- Keep changes small and reviewable
-- Align with existing style
-- Clear boundaries (`Always` / `Ask first` / `Never`)
-- Keep `description` short; prioritize expressions that make the usage context clear
-- Avoid reproducing full general guidelines in proposals; point to `references/authoring-guide.md` for portable criteria and to project-local docs only when they exist
+Do not force a Skill proposal when the evidence supports no durable guidance or a different intervention. Do not implement files, add dependencies, or alter repository policy; leave those actions to the authorized implementation workflow.

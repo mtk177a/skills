@@ -1,0 +1,161 @@
+{
+  "skill": "design-skill",
+  "version": 1,
+  "baseline": {
+    "required": true,
+    "condition": "Run the same cases with the previous design-skill version and with no design Skill enabled.",
+    "raw_artifact_policy": "Keep prior Skill copies, JSONL, and full session output in a temporary directory outside the repository."
+  },
+  "execution": {
+    "client": "record at execution time",
+    "model": "record exact model at execution time",
+    "reasoning_effort": "record at execution time",
+    "sandbox": "read-only",
+    "coexistence_skills": [
+      "audit-agent-guidance",
+      "design-changes",
+      "implement-changes"
+    ]
+  },
+  "candidate_assertions": [
+    {
+      "id": "outcome-before-artifact",
+      "critical": true,
+      "statement": "Defines the intended capability and recurring gap before accepting that a new Skill is required."
+    },
+    {
+      "id": "evidence-status",
+      "critical": true,
+      "statement": "Separates observed evidence, inference, assumptions, and unknowns and does not claim behavioral improvement from static plausibility alone."
+    },
+    {
+      "id": "intervention-counterfactuals",
+      "critical": true,
+      "statement": "Compares no guidance, another local intervention, existing-Skill revision, and new or split Skill when relevant."
+    },
+    {
+      "id": "coherent-responsibility",
+      "critical": true,
+      "statement": "Defines a coherent responsibility with explicit trigger boundary, exclusions, inputs, outputs, and failure handling."
+    },
+    {
+      "id": "metadata-trigger-context",
+      "critical": true,
+      "statement": "Places the complete implicit-trigger context in description rather than relying on body-only when-to-use prose."
+    },
+    {
+      "id": "local-authority-portability",
+      "critical": true,
+      "statement": "Discovers and follows applicable local instructions without requiring a particular repository-root document."
+    },
+    {
+      "id": "calibrated-control",
+      "critical": true,
+      "statement": "Matches instruction specificity to task fragility instead of prescribing one detail level for the whole Skill."
+    },
+    {
+      "id": "material-boundaries-only",
+      "critical": true,
+      "statement": "Defines required safety and permission properties without treating Always, Ask first, and Never as mandatory headings."
+    },
+    {
+      "id": "resource-justification",
+      "critical": true,
+      "statement": "Includes references, scripts, or assets only when they address demonstrated rediscovery, domain context, or execution risk."
+    },
+    {
+      "id": "evaluation-first",
+      "critical": true,
+      "statement": "Designs trigger, baseline, isolation, coexistence, instruction-following, and output-quality checks before extensive authoring."
+    },
+    {
+      "id": "design-only-handoff",
+      "critical": true,
+      "statement": "Produces an implementation-ready handoff without editing or implementing the target Skill."
+    }
+  ],
+  "assertion_policy": "Evaluate every candidate assertion across the suite and record supporting or contradicting evidence from at least one case.",
+  "cases": [
+    {
+      "id": "requested-skill-with-healthy-baseline",
+      "title": "A requested Skill that may not add value",
+      "input": "A user asks for a Skill that converts short meeting notes into three bullet points. Three baseline runs without a Skill all produce correct, concise summaries, and there is no domain vocabulary, required template, tool, or recurring correction. Design the appropriate intervention.",
+      "assertions": [
+        "outcome-before-artifact",
+        "evidence-status",
+        "intervention-counterfactuals",
+        "resource-justification",
+        "evaluation-first",
+        "design-only-handoff"
+      ],
+      "additional_requirement": "Do not force a new Skill when the evidence supports no durable guidance."
+    },
+    {
+      "id": "extract-proven-workflow",
+      "title": "Design from a proven recurring workflow",
+      "input": "A team has completed four invoice-export tasks. Each required the same private-to-public field mapping, the same deterministic CSV validator, and the same correction that cancelled invoices must be excluded. Design a portable Skill from these artifacts without including customer data.",
+      "assertions": [
+        "outcome-before-artifact",
+        "evidence-status",
+        "coherent-responsibility",
+        "metadata-trigger-context",
+        "calibrated-control",
+        "resource-justification",
+        "evaluation-first",
+        "design-only-handoff"
+      ]
+    },
+    {
+      "id": "overlap-and-coexistence",
+      "title": "Merge or split overlapping Skills",
+      "input": "An installed catalog has plan-schema-migration for planning and run-schema-migration for approved execution. A proposed database-migration Skill would cover both and shares trigger phrases with each. Decide whether to add, merge, or keep the existing split and produce a design handoff.",
+      "assertions": [
+        "intervention-counterfactuals",
+        "coherent-responsibility",
+        "metadata-trigger-context",
+        "material-boundaries-only",
+        "evaluation-first",
+        "design-only-handoff"
+      ]
+    },
+    {
+      "id": "fragile-and-contextual-workflow",
+      "title": "Mixed degrees of freedom",
+      "input": "A release workflow allows context-dependent changelog grouping, but signing and publishing must run in an exact verified sequence. Design the Skill, resource allocation, safety properties, and evaluations.",
+      "assertions": [
+        "coherent-responsibility",
+        "calibrated-control",
+        "material-boundaries-only",
+        "resource-justification",
+        "evaluation-first",
+        "design-only-handoff"
+      ]
+    },
+    {
+      "id": "unknown-repository-layout",
+      "title": "Portable design in an unfamiliar repository",
+      "input": "Design a new Skill in a repository whose instruction and authoring file names are unknown. The repository can be inspected, but no standard root guidance filename may be assumed.",
+      "assertions": [
+        "evidence-status",
+        "local-authority-portability",
+        "coherent-responsibility",
+        "evaluation-first",
+        "design-only-handoff"
+      ],
+      "additional_requirement": "Discover applicable local guidance without requesting or requiring a hard-coded repository-root document."
+    },
+    {
+      "id": "diagnosis-before-redesign",
+      "title": "Insufficient evidence for a requested redesign",
+      "input": "A user asks to redesign a Skill because agents sometimes ignore it, but provides only the SKILL.md text. There is no loading evidence, trigger history, trace, client information, or baseline. Produce the next design decision.",
+      "assertions": [
+        "outcome-before-artifact",
+        "evidence-status",
+        "intervention-counterfactuals",
+        "evaluation-first",
+        "design-only-handoff"
+      ],
+      "additional_requirement": "Do not present a textual rewrite as a demonstrated behavioral fix; identify the missing diagnostic evidence."
+    }
+  ]
+}

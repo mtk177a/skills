@@ -1,6 +1,6 @@
 ---
 name: design-skill
-description: 新しい Skill を設計したいときや、既存 Skill の責務・境界を大きく見直したいときに使う。
+description: Agent Skillを新規作成・統合・分割・大幅な責務変更のどれで設計すべきか、実装前に判断する。Skillの責務、trigger境界、再利用資源、評価戦略を定義するときに使う。通常の文言修正、既存挙動の監査、実装自体には使わない。
 license: MIT
 ---
 
@@ -10,81 +10,56 @@ license: MIT
 
 ## 目的
 
-- 新しい Skill の提案を、既存ルールと重複確認を踏まえて組み立てる。
-- 既存 Skill の大きな再設計時に、責務、境界、出力契約を整理する。
+- 草案を書く前に、再利用可能なSkillが適切な介入かを判断する。
+- 実装工程が責務、trigger、資源、評価の判断をやり直さずに適用できる、証拠に基づく設計を作る。
+- 診断、設計、実装を分離する。既存の監査結果は証拠として利用できるが、このSkill単独でも機能させる。
 
-## 使う場面
+## 証拠
 
-- 新しい Skill を追加したい
-- 既存 Skill を大きく改修したい (責務/境界/構成が変わる)
-- どんな `name`、`description`、境界で定義すべきか決めたい
-- 依頼がまだ抽象的で、まず利用場面を 1 文に固定してから Skill 案へ落としたい
+設計判断の前に `references/authoring-guide.md` を完全に読む。
 
-## 入力 (任意)
+利用できる範囲で以下を集める。
 
-- 目的、対象作業、想定利用者
-- 関連する既存 Skill、README、docs
-- 必要なら移行元 Skill や参考にしたい構成
+- 期待する結果、利用者、client、model、失敗の兆候
+- 再利用可能なgapを示す実タスク例、修正履歴、trace、出力
+- Skillなし、または旧版のbaseline
+- 適用可能なローカル指示と配布上の制約
+- 隣接Skill、そのdescription、共存時の挙動
 
-## 手順
+適用可能なローカル指示は、そのscope内で権威ある情報として扱う。同梱guideは、ローカル指示が規定していない部分のポータブルなbaselineとして使う。観測事実、推論、前提、不明点を分ける。文章上もっともらしいことしか確認できない場合は、改善が実証済みであるかのように扱わず、静的な仮説と明記する。
 
-1. ポータブルな一次情報として同梱の `references/authoring-guide.md` を確認する。
-2. 対象リポジトリに `AGENTS.md`、`README.md`、`docs/authoring.md` などが存在する場合は、そのリポジトリ向けの補足制約として確認する。
-3. 目的、範囲、対象ユーザーを 1〜2 行で定義する。抽象的な依頼しかない場合は、先に利用場面を 1 文で固定する。
-4. 対象リポジトリで確認できる既存 Skills との重複、競合、統合候補を確認する。
-5. `name` と `description` を決める。利用場面が読み取れることを優先し、責務境界が未確定なら仮称のまま承認を取る。
-6. 境界 (`Always` / `Ask first` / `Never`) を定義する。
-7. 手順、出力フォーマット、必要なら補助ディレクトリ (`evals/`, `references/`, `scripts/`, `assets/`) の要否を決める。
-8. 影響範囲 (`AGENTS.md` / docs / scripts / `apm.yml`) は、対象リポジトリに存在する、または関係するファイルだけ列挙する。
-9. 差分提案 → 承認 → 実装の順で進める。
-10. Markdown 編集が含まれる場合は `format-markdown` の適用判断を行う。
+## Workflow
 
-## 出力フォーマット (提案時)
+1. 新しいSkillが必要だと仮定せず、期待する能力と、繰り返し発生する失敗または知識gapを定義する。
+2. 代表的な実タスクとbaseline挙動を確認する。agentに不足するもの、既に処理できるもの、再利用すべき修正を分ける。
+3. 永続的なguidanceなし、ローカル指示やtool、既存Skillの更新・統合、分割、新規Skillを比較する。
+4. 隣接Skillと配布surfaceを確認する。artifactを選ぶ前に、責務重複、trigger競合、context cost、共存riskを解消する。
+5. 一貫した責務単位を1つ選ぶ。対象利用者、scope内のtask、除外、入力、出力、failure handlingを定義する。
+6. `name` と `description` の案を作る。暗黙triggerに必要なcontextを`description`へ入れ、衝突を防ぐ場合はnegative boundaryも含める。
+7. agentが知らない再利用可能な内容だけを、`SKILL.md`、`references/`、`scripts/`、`assets/`、eval資産へ割り当てる。すべてを同じ詳細度に固定せず、taskの壊れやすさに指示の自由度を合わせる。
+8. workflowに必要な場合だけ、安全性やpermissionの境界を定義する。特定の見出しtemplateを強制せず、必要な安全特性を保持する。
+9. 大量の本文を書く前に評価を設計する。対象client・modelに関係するtrigger、non-trigger、near-miss、baseline、isolation、coexistence、instruction-following、output-qualityを扱う。
+10. 実際に影響するtarget surfaceだけを特定し、実装handoffを作る。このworkflowではSkillを編集・実装しない。
 
-- 変更点の要約: ...
-- 目的・範囲: ...
-- 競合/重複: ...
-- 一次情報: ...
-- メタデータ:
-  - name: ...
-  - description: ...
-- 手順:
-  1. ...
-- 境界:
-  - Always: ...
-  - Ask first: ...
-  - Never: ...
-- 補助ディレクトリの要否: ...
-- 影響範囲: ...
-- 承認: この方針で進めてよいですか？
+## 判断基準
 
-## 境界
+- modelが既に安定してtaskを実行でき、再利用可能な専門contextや手順が不足していない場合は、Skillを作らない。
+- trigger、出力契約、risk境界を一貫したまま保てる場合は、既存Skillの更新・統合を優先する。
+- 責務をまとめるとtrigger、loading、実行が曖昧になる場合は、新規Skillまたは分割を優先する。
+- referenceやscriptは、繰り返す再調査を減らす、domain evidenceを提供する、壊れやすい操作を検証可能にする場合だけ同梱する。
+- main instructionは簡潔に保ち、読み込まれる各sectionがcontext costに見合うようにする。
 
-### Always:
+## 報告契約
 
-- 目的・範囲・境界を明記する
-- 同梱の `references/authoring-guide.md` をポータブルな一次情報として扱う
-- 対象リポジトリのルールが存在する場合は補足制約として扱う
-- 確認できる既存 Skills との重複を確認する
-- `description` から利用場面が分かるようにする
-- 入力が抽象的なときは、`name` を急いで確定せず利用場面を先に固定する
+固定の提案templateではなく、判断に合う構成を使う。以下の情報を含める。
 
-### Ask first:
+- 推奨する介入と、代替案より適切な理由
+- 証拠、前提、未解決の問い
+- 責務とtrigger境界の案
+- Skillを推奨する場合のmetadata案
+- 本文とresourceの配置
+- 実装後も保持すべき安全性・permission特性
+- 評価・rollout戦略
+- 影響するtarget surfaceと、実装可能なhandoff
 
-- `AGENTS.md` の記述変更
-- 既存 Skill の大幅な再設計
-
-### Never:
-
-- 勝手に大きな変更を実行する
-- 依存追加や外部コードの無断流用
-
-## 注意点 (任意)
-
-原則:
-
-- 変更は小さく・レビュー可能な単位
-- 既存スタイルと整合
-- 明確な境界 (`Always` / `Ask first` / `Never`)
-- `description` は短く、利用場面が分かる表現を優先する
-- 提案では一般ガイドの全文再掲を避け、ポータブルな基準は `references/authoring-guide.md`、対象リポジトリの補足制約は存在するローカル docs への導線で補う
+証拠が永続的guidance不要、または別の介入を支持する場合は、Skill案を強制しない。ファイル編集、依存追加、repository policy変更は行わず、権限を持つ実装workflowへ引き渡す。

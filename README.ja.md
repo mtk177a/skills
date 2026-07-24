@@ -22,7 +22,7 @@
 | `define-referents` | 新語や曖昧語を導入する前に、具体的な指示対象と意味上の役割を固定する |
 | `design-agent-instructions` | AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md を設計する |
 | `design-changes` | 実装前に変更方針・影響範囲・リスク・確認方針を設計する |
-| `design-skill` | 新しい Skill を設計するか、既存 Skill の責務を大きく見直す |
+| `design-skill` | Skill を新規作成・統合・分割・大幅な責務変更のどれで設計するか、実装前に判断する |
 | `diversify-agent-search` | 停滞した agent / workflow 改善を、複数候補・多様性軸・ケース別評価で広げる |
 | `draft-commit` | 差分からコミットメッセージ案やコミット分割案を作成する |
 | `draft-issue` | 明確化した課題を Issue の起票案と起票手順に落とし込む |

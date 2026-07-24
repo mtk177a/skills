@@ -1,74 +1,98 @@
 # Portable Skill Authoring Guide
 
-Use this reference when designing a Skill outside any specific repository.
-Project-local files such as `AGENTS.md`, `README.md`, and `docs/authoring.md` may add constraints, but they are supplemental to this portable baseline unless the user asks to follow them.
+Use this reference as a cross-repository design baseline. Discover applicable local instructions instead of assuming a particular root document or directory layout. Local instructions govern their own scope; this guide fills gaps rather than overriding them.
 
-## What makes a good Skill
+## Start from demonstrated value
 
-A good Skill helps an agent decide when to use it without hesitation, and gives only the detail needed to perform that work.
+A Skill should preserve specialized knowledge, a repeatable workflow, or a fragile operation that the agent would otherwise rediscover or mishandle. Prefer evidence from:
 
-Prioritize:
+- a completed real task and the corrections needed to make it succeed
+- repeated failures, traces, outputs, review comments, or operational history
+- domain artifacts such as schemas, runbooks, interfaces, and tested scripts
+- baseline runs without the Skill or with the previous version
 
-- A short statement of the Skill's purpose
-- Clear "when to use" and "when not to use" guidance
-- Readable preconditions, inputs, and expected outputs
-- Minimal agent-specific language
-- Clear scope for helper scripts, references, assets, or evals
+Do not infer that a requested Skill must exist. If ordinary model behavior already meets the intended outcome reliably, durable instructions may add context cost without adding capability. When behavioral evidence is unavailable, record the proposal as a hypothesis and design the evaluation needed to test it.
 
-## Description
+## Choose the intervention before the artifact
 
-The `description` is the main trigger for usage decisions. It should state:
+Compare the relevant options:
 
-- The situation that should trigger the Skill
-- The kind of work it helps with
-- Any required agent or tool dependency, if that dependency is part of the Skill's value
+- no durable guidance
+- a local instruction, reference, tool, or script
+- update or merge an existing Skill
+- split an overloaded Skill
+- create a new Skill
 
-Avoid vague descriptions, subjective claims, and implementation details that belong in the body.
+Treat a Skill as one coherent unit of work. Too narrow a unit forces unnecessary composition and context loading; too broad a unit makes triggering and instructions ambiguous. Prefer updating or merging when the trigger, output contract, and safety boundary remain coherent. Prefer a new or split Skill when those properties differ materially.
 
-## Naming
+## Design discovery metadata
 
-Use kebab-case. Prefer names that show both the action and the object.
+The Agent Skills format requires a `SKILL.md` with `name` and `description`. Applicable local policy may require additional metadata.
 
-Good patterns:
+- Keep `name` aligned with the directory and within the target clients' supported syntax.
+- Use a specific action-and-object or otherwise unambiguous name.
+- Put what the Skill does and when it should trigger in `description`.
+- Front-load the key use case and trigger terms so shortening by a client does not erase them.
+- Include a negative trigger boundary when it prevents a likely collision.
+- Keep execution mechanics in the body unless they are themselves required trigger context.
 
-- `scope-request`
-- `design-changes`
-- `implement-changes`
-- `review-changes`
-- `triage-review-feedback`
+The body cannot repair a missing implicit trigger because clients normally choose the Skill from metadata before loading the body.
 
-Avoid names that are broader than the actual responsibility. Single-word names are acceptable only when the responsibility is narrow enough that the name is not likely to be misread.
+## Spend context on what the agent lacks
 
-## Boundaries
+Assume the agent already knows general software concepts. Include domain facts, non-obvious failure modes, required procedures, and validated defaults that change its behavior.
 
-Define operational boundaries explicitly:
+Use progressive disclosure:
 
-- `Always`: behavior the agent should consistently perform
-- `Ask first`: cases that require user confirmation
-- `Never`: behavior that is out of scope or unsafe
+- Keep core decisions and procedures in `SKILL.md`.
+- Put focused, conditionally needed knowledge in `references/`.
+- Put deterministic or repeatedly reconstructed operations in tested `scripts/`.
+- Put distributable templates and output resources in `assets/`.
+- Keep references directly discoverable from `SKILL.md`; avoid reference chains.
 
-When the request is abstract, fix the usage context in one sentence before choosing a final name or detailed boundary.
+Do not bundle a generic guide merely because a reference directory is available. Every file should remove a demonstrated ambiguity, repeated rediscovery, or execution risk.
 
-## Overlap Decisions
+## Match control to fragility
 
-Before creating a new Skill, check existing Skills when they are available.
+Use goals, decision criteria, and examples when multiple approaches are valid. Use ordered steps, validators, or narrow scripts when sequence and consistency are safety-critical. A single Skill may mix these levels.
 
-Prefer updating an existing Skill when the new behavior is the same workflow with clearer criteria or a small missing step.
-Prefer a new Skill when the trigger, output contract, or risk boundary differs enough that combining them would make usage decisions ambiguous.
+Prefer a clear default with an escape condition over an unranked menu. Use exact output templates only when downstream consumers require exact structure; otherwise state the required information and let the agent adapt the presentation.
 
-## Self-Contained References
+## Define material boundaries
 
-Bundle reference material inside the Skill only when a blank-slate agent needs it at judgment time.
+Describe inputs, outputs, exclusions, failure handling, authority, and permission boundaries when they affect correct execution.
 
-- Use `references/` for formats, decision criteria, and compact source material.
-- Use `scripts/` only when executable support is necessary.
-- Use `assets/` only for distributable supplementary materials.
-- Use `evals/` for scenarios and checklists that verify the Skill's behavior.
+Do not require `Always`, `Ask first`, and `Never` headings as a universal structure. Use them only when the categories clarify distinct operational behavior. Preserve safety properties across redesigns and verify replacements rather than retaining wording mechanically.
 
-Do not require repository-root documents unless the Skill is intentionally project-specific.
+Keep portable Skills independent of unnamed external documents and companion Skills. For an intentionally project-specific Skill, make the dependency and environment explicit.
 
-## Safety
+## Design evaluation before extensive instructions
 
-Do not include secrets, customer names, personal information, internal URLs, API keys, tokens, or private operational details in Skill bodies, references, scripts, or assets.
+Evaluation should determine whether the Skill adds value, not merely whether its text looks complete. Cover the dimensions that matter:
 
-When adding dependencies, using external code, making destructive changes, or changing repository policy, ask for approval first.
+- should-trigger, should-not-trigger, and near-miss selection
+- baseline without the Skill or with the prior version
+- isolation and coexistence with adjacent Skills
+- instruction following and output quality on realistic tasks
+- supported clients and models when behavior may differ
+- scripts and critical operations with executable verification
+
+Use the same inputs and environment for baseline and candidate comparisons. Count trigger activation only from observable client evidence. Record skipped or unavailable observations as unexecuted or unexposed rather than passing them.
+
+## Produce an implementation handoff
+
+A design is ready to implement when it states:
+
+- the selected intervention and rejected alternatives
+- the evidence and unresolved assumptions
+- responsibility, trigger boundary, inputs, outputs, and exclusions
+- metadata and content allocation
+- required safety and permission properties
+- evaluation cases and acceptance criteria
+- actual target surfaces and migration or rollout needs
+
+The design workflow should stop at this handoff. Editing, dependency changes, policy changes, deployment, and publication follow the authorization rules of the target environment.
+
+## Canonical sources
+
+This guide summarizes, rather than replaces, the [Agent Skills specification](https://agentskills.io/specification), [Agent Skills authoring best practices](https://agentskills.io/skill-creation/best-practices), [OpenAI Build skills guide](https://learn.chatgpt.com/docs/build-skills), and [Anthropic Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices).
