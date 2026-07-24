@@ -56,20 +56,21 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 - Keep helper scripts and reference materials to the minimum needed for the Skill to work
 - Skill bodies must be readable by agents that have no prior context about this repository
 
-## APM validation
+## APM source and lockfile workflow
 
-- Do not run a non-dry-run `apm install` or `apm update` in this repository. They deploy the repository's Skills to `.agents/skills/`, causing them to appear alongside globally installed copies.
-- For routine validation in this repository, use commands that do not deploy Skills:
+- This repository owns two APM phases: publishing canonical Skill and manifest source, then generating and verifying the repository lockfile from that pushed source. Deploying packages into consumer repositories is outside this workflow.
+- Maintain `apm.yml` manually; do not regenerate it. Update its dependency list when adding, removing, or renaming a public Skill.
+- Before committing a public Skill or `apm.yml` change, run the relevant Skill evaluations and the non-deploying repository check:
 
   ```bash
   apm install --frozen --dry-run --no-policy
-  apm pack --dry-run --offline
   ```
 
-- Run a full install and `apm audit --ci --no-policy` only in a disposable copy outside this repository.
-- Maintain `apm.yml` manually; do not regenerate it. Update its dependency list when adding, removing, or renaming a Skill.
-- After Skill or `apm.yml` changes are committed and pushed, refresh the lockfile with `.agents/skills/refresh-apm-lockfile/`.
-- Commit `apm.lock.yaml` updates separately with a summary such as `fix: refresh APM lockfile after <change>`.
+- Commit and push the public Skill and manifest source before refreshing the lockfile.
+- After the source commit is pushed, use `.agents/skills/refresh-apm-lockfile/` as the single entry point for lockfile generation and verification. Do not choose or substitute APM update commands manually.
+- The repo-local refresh Skill runs lock generation, a full frozen install, and `apm audit --ci --no-policy` in a disposable copy outside this repository.
+- Commit an updated `apm.lock.yaml` separately with a summary such as `fix: refresh APM lockfile after <change>`. If the refresh reports that no public source changed, do not create a lockfile commit.
+- Do not run a non-dry-run `apm install` or `apm update` in this repository. They deploy the repository's Skills to `.agents/skills/`, causing them to appear alongside globally installed copies.
 - An empty `.agents/` directory may exist because agent tools can create it.
 - Do not store review notes, temporary files, or other working artifacts under `.agents/`; use a temporary directory outside this repository instead.
 - If APM-deployed `.agents/skills/*` or `apm_modules/` are present, stop and report them. Remove them only after confirming they are generated artifacts and obtaining approval; preserve explicitly tracked repo-local operational Skills such as `.agents/skills/refresh-apm-lockfile/`.

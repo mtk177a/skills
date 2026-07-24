@@ -37,6 +37,40 @@ count_lock_deps() {
   grep -cE '^  virtual_path: ' "$1/apm.lock.yaml" || true
 }
 
+public_source_requires_refresh() {
+  local lock="$ROOT/apm.lock.yaml"
+  local locked_commits
+  local locked_commit_count
+
+  if [[ "$(count_lock_deps "$ROOT")" != "$EXPECTED_DEPS" ]]; then
+    info "public source delta: refresh required (manifest and lockfile dependency counts differ)"
+    return 0
+  fi
+
+  locked_commits="$(awk '/^[[:space:]]*resolved_commit:/ {print $2}' "$lock" | sort -u)"
+  locked_commit_count="$(printf '%s\n' "$locked_commits" | awk 'NF {count++} END {print count + 0}')"
+  if [[ "$locked_commit_count" != "1" ]]; then
+    info "public source delta: refresh required (lockfile does not have one common source commit)"
+    return 0
+  fi
+
+  if ! git cat-file -e "$locked_commits^{commit}" 2>/dev/null; then
+    info "public source delta: refresh required (recorded source commit is unavailable locally)"
+    return 0
+  fi
+
+  LOCK_BASE_SHA="$locked_commits"
+  if git diff --quiet "$locked_commits" "$HEAD_SHA" -- apm.yml skills; then
+    info "public source delta: no refresh required"
+    info "recorded source commit: $LOCK_BASE_SHA"
+    return 1
+  fi
+
+  info "public source delta: refresh required"
+  info "recorded source commit: $LOCK_BASE_SHA"
+  return 0
+}
+
 lock_matches_head() {
   local repo_dir="$1"
   local expected_deps="$2"
@@ -55,6 +89,7 @@ require_command cp
 require_command rm
 require_command awk
 require_command find
+require_command sort
 
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
@@ -73,6 +108,23 @@ HEAD_SHA="$LOCAL_SHA"
 EXPECTED_DEPS="$(count_manifest_deps)"
 [[ "$EXPECTED_DEPS" -gt 0 ]] || die "no APM dependencies found in apm.yml"
 
+apm lock --help >/dev/null 2>&1 || die "installed APM CLI does not support 'apm lock'; update APM before refreshing the lockfile"
+
+info "preconditions: passed"
+info "repository: $ROOT"
+info "upstream: $UPSTREAM"
+info "head: $HEAD_SHA"
+info "expected dependencies: $EXPECTED_DEPS"
+
+if ! public_source_requires_refresh; then
+  info "disposable copy: not created"
+  info "APM command used: not run"
+  info "resolved commit in lockfile: $LOCK_BASE_SHA"
+  info "working repository diff: none"
+  info "next: no lockfile commit is needed"
+  exit 0
+fi
+
 TMP_PARENT="$(mktemp -d /tmp/agent-skills-apm-lock.XXXXXX)"
 TMP_REPO="$TMP_PARENT/repo"
 KEEP_TMP=1
@@ -86,31 +138,32 @@ cleanup() {
 }
 trap cleanup EXIT
 
-info "repository: $ROOT"
-info "upstream: $UPSTREAM"
-info "head: $HEAD_SHA"
-info "expected dependencies: $EXPECTED_DEPS"
 info "disposable copy: $TMP_REPO"
 
 git clone "$ROOT" "$TMP_REPO"
 
-APM_COMMAND='apm update --yes'
+APM_COMMAND='apm lock --update --no-policy'
 info "running in disposable copy: $APM_COMMAND"
 (
   cd "$TMP_REPO"
-  apm update --yes
+  apm lock --update --no-policy
 )
 
-if ! lock_matches_head "$TMP_REPO" "$EXPECTED_DEPS"; then
-  APM_COMMAND='apm install --update --ssh --no-policy'
-  info "lockfile was not refreshed by apm update; running fallback: $APM_COMMAND"
-  (
-    cd "$TMP_REPO"
-    apm install --update --ssh --no-policy
-  )
-fi
-
 lock_matches_head "$TMP_REPO" "$EXPECTED_DEPS" || die "disposable lockfile does not match HEAD or dependency count after APM refresh"
+
+info "verifying in disposable copy: apm install --frozen --no-policy"
+(
+  cd "$TMP_REPO"
+  apm install --frozen --no-policy
+)
+
+info "verifying in disposable copy: apm audit --ci --no-policy"
+(
+  cd "$TMP_REPO"
+  apm audit --ci --no-policy
+)
+
+lock_matches_head "$TMP_REPO" "$EXPECTED_DEPS" || die "verified disposable lockfile no longer matches HEAD or dependency count"
 
 cp "$TMP_REPO/apm.lock.yaml" "$ROOT/apm.lock.yaml"
 
