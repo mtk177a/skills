@@ -8,7 +8,7 @@ A minimal reference for how the core Skills connect into common workflows.
 
 - `scope-request`: Clarify purpose, completion criteria, constraints, assumptions, and open questions
 - `design-changes`: Define what changes, what is out of scope, risks, test strategy, and stop conditions
-- `implement-changes`: Build incrementally with TDD, leave a clear handoff for verification
+- `implement-changes`: Apply approved changes in small units, choose TDD or another suitable verification method, and leave an evidence-based handoff
 - `review-changes`: Review the diff and categorize findings as `must` / `should` / `suggestion` / `nit`
 - `validate-fix`: Summarize what was verified, what was not, and what risks remain
 

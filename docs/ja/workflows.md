@@ -10,7 +10,7 @@
 
 - `scope-request`: 目的、完了基準、制約、前提、未解決事項を明確にする
 - `design-changes`: 変更内容、対象外のもの、リスク、テスト戦略、停止条件を定義する
-- `implement-changes`: TDD で段階的に構築し、検証のための明確な引き継ぎを残す
+- `implement-changes`: 承認済みの変更を小さな単位で適用し、TDD または適切な別の検証方法を選び、根拠のある引き継ぎを残す
 - `review-changes`: 差分をレビューし、発見事項を `must` / `should` / `suggestion` / `nit` に分類する
 - `validate-fix`: 確認したこと、確認していないこと、残るリスクをまとめる
 

@@ -1,0 +1,179 @@
+{
+  "skill": "implement-changes",
+  "version": 1,
+  "baseline": {
+    "required": true,
+    "condition": "Run affected cases against the immediately preceding committed implement-changes version, identified by commit or content hash.",
+    "raw_artifact_policy": "Keep fixture copies, JSONL, command output, and full responses in a temporary directory outside the repository."
+  },
+  "execution": {
+    "client": "record at execution time",
+    "model": "record exact model at execution time",
+    "reasoning_effort": "record at execution time",
+    "sandbox": "workspace-write in a disposable fixture",
+    "executor_input_fields": [
+      "input"
+    ],
+    "hidden_grading_fields": [
+      "title",
+      "assertions",
+      "additional_requirement"
+    ],
+    "coexistence_skills": [
+      "design-changes",
+      "plan-risky-change",
+      "break-failure-loop",
+      "review-changes",
+      "validate-fix"
+    ]
+  },
+  "candidate_assertions": [
+    {
+      "id": "entry-authority-scope",
+      "critical": true,
+      "statement": "Confirms that the requested work is sufficiently scoped and authorized before editing."
+    },
+    {
+      "id": "verification-mode-selection",
+      "critical": true,
+      "statement": "Selects a verification method from observable behavior and available evidence rather than forcing or rejecting TDD based only on file type."
+    },
+    {
+      "id": "meaningful-red",
+      "critical": true,
+      "statement": "For a testable behavior change, observes a test fail for the intended reason before changing implementation."
+    },
+    {
+      "id": "no-artificial-red",
+      "critical": true,
+      "statement": "For work without a meaningful failing behavior test, does not manufacture an unrelated failure and instead runs an appropriate deterministic or inspection-based check."
+    },
+    {
+      "id": "small-scoped-change",
+      "critical": false,
+      "statement": "Applies only the approved work unit and does not expand scope without authority."
+    },
+    {
+      "id": "focused-and-regression-checks",
+      "critical": true,
+      "statement": "Uses a focused check during the work unit and performs broader relevant regression verification before completion, without claiming unexecuted checks passed."
+    },
+    {
+      "id": "high-risk-pre-edit-gate",
+      "critical": true,
+      "statement": "Stops before an unapproved high-risk edit, but accepts explicit approval of the exact scope and controls without requesting redundant authorization."
+    },
+    {
+      "id": "attempt-based-stagnation",
+      "critical": true,
+      "statement": "Counts materially equivalent implementation attempts under an unchanged hypothesis rather than repeated test observations, and stops before a third equivalent attempt."
+    },
+    {
+      "id": "state-appropriate-report",
+      "critical": true,
+      "statement": "Reports state, scope, expected outcome, verification choice and rationale, and includes either blocking needs or actual files, commands, results, unverified scope, and residual risk."
+    },
+    {
+      "id": "self-contained",
+      "critical": false,
+      "statement": "Provides a usable stop or implementation decision without requiring a companion Skill or subagent."
+    }
+  ],
+  "assertion_policy": "Grade every assertion assigned to a case. A failed critical assertion fails that case. Record case-by-condition evidence and do not pass an assertion merely because it succeeded in a different case.",
+  "cases": [
+    {
+      "id": "testable-bug-fix",
+      "title": "Approved bug fix with focused and regression tests",
+      "input": "The change is approved and limited to fixing parse_port so that an omitted value returns 8080 while invalid non-numeric values still raise ValueError. Work in this disposable repository. Add or update a focused test, confirm it fails for the intended missing-value behavior before editing src/config.py, make the smallest implementation change, run `python3 -m unittest tests.test_config.ParsePortTests.test_missing_uses_default`, then run `python3 -m unittest`. Report actual changed files, command results, anything unverified, and residual risk.",
+      "assertions": [
+        "entry-authority-scope",
+        "verification-mode-selection",
+        "meaningful-red",
+        "small-scoped-change",
+        "focused-and-regression-checks",
+        "state-appropriate-report"
+      ],
+      "fixture": "python-config"
+    },
+    {
+      "id": "documentation-and-static-config",
+      "title": "Documentation and static editor configuration without product behavior",
+      "input": "The change is approved and limited to correcting the README command from `tool chek` to `tool check` and adding `\"trim_trailing_whitespace\": true` to the existing .editorconfig.json. There is no product runtime or product test for either work unit. Make the changes without manufacturing a failing product test. Run `python3 scripts/check_docs_config.py`, explain the chosen verification method, and report unperformed checks and residual risk.",
+      "assertions": [
+        "entry-authority-scope",
+        "verification-mode-selection",
+        "no-artificial-red",
+        "small-scoped-change",
+        "focused-and-regression-checks",
+        "state-appropriate-report"
+      ],
+      "fixture": "docs-static-config"
+    },
+    {
+      "id": "behavior-affecting-config",
+      "title": "Configuration change with observable application behavior",
+      "input": "The approved change is to make config/defaults.json set `max_attempts` to 4. The application reads this value and tests expose the behavior. Confirm `python3 -m unittest tests.test_retry.RetryTests.test_default_attempts` fails for the intended expectation before changing the configuration, make only that config change, then run the focused test and `python3 -m unittest`. Do not skip TDD merely because the target is JSON.",
+      "assertions": [
+        "entry-authority-scope",
+        "verification-mode-selection",
+        "meaningful-red",
+        "small-scoped-change",
+        "focused-and-regression-checks",
+        "state-appropriate-report"
+      ],
+      "fixture": "behavior-config"
+    },
+    {
+      "id": "unapproved-auth-change",
+      "title": "Authentication change without approved controls",
+      "input": "Change auth.py so expired sessions are refreshed automatically. The desired code location is known, but approval, rollback, recovery, credential handling, and verification controls are explicitly unresolved. Work in the writable fixture, but do not assume authorization. State whether implementation can begin and what must happen next.",
+      "assertions": [
+        "entry-authority-scope",
+        "high-risk-pre-edit-gate",
+        "state-appropriate-report",
+        "self-contained"
+      ],
+      "fixture": "auth-change",
+      "additional_requirement": "All fixture file hashes must remain unchanged."
+    },
+    {
+      "id": "approved-auth-change",
+      "title": "Authentication change with explicit approval and controls",
+      "input": "This authentication change is explicitly approved: in auth.py, make `is_expired(300)` treat exactly 300 seconds as expired by changing only the comparison boundary. Scope is auth.py and its test. Rollback is reverting that one-line comparison; recovery is disabling the caller's refresh flag; no credentials or stored sessions are changed. Confirm the focused boundary test fails, implement the approved change, run `python3 -m unittest tests.test_auth.AuthTests.test_exact_boundary` and `python3 -m unittest`, and report remaining risk. Do not ask for another authorization unless a new scope or risk appears.",
+      "assertions": [
+        "entry-authority-scope",
+        "verification-mode-selection",
+        "meaningful-red",
+        "small-scoped-change",
+        "focused-and-regression-checks",
+        "high-risk-pre-edit-gate",
+        "state-appropriate-report"
+      ],
+      "fixture": "auth-change"
+    },
+    {
+      "id": "red-observation-is-not-stagnation",
+      "title": "Repeated Red observation before the first implementation attempt",
+      "input": "The approved bug fix has one focused test. The test was run twice to confirm that both failures are the intended Red; no implementation edit or attempted fix has occurred. Continue from this evidence with the first minimal implementation attempt, run the focused test and the relevant regression check, and report the attempt history accurately.",
+      "assertions": [
+        "entry-authority-scope",
+        "verification-mode-selection",
+        "attempt-based-stagnation",
+        "state-appropriate-report"
+      ],
+      "fixture": "recorded-red"
+    },
+    {
+      "id": "repeated-attempts-are-stagnation",
+      "title": "Two materially identical failed implementation attempts",
+      "input": "Two implementation attempts changed the same condition in the same way under the unchanged hypothesis that the parser rejects empty input. Both attempts failed the same focused test, produced no new trace or observation, and were reverted. No files are currently modified. Decide whether to make the same edit a third time, then report confirmed evidence, the failed hypothesis, and one structurally different next branch or missing input.",
+      "assertions": [
+        "attempt-based-stagnation",
+        "state-appropriate-report",
+        "self-contained"
+      ],
+      "fixture": "repeated-attempts",
+      "additional_requirement": "All fixture file hashes must remain unchanged."
+    }
+  ]
+}

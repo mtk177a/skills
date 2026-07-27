@@ -1,0 +1,392 @@
+{
+  "schema_version": 1,
+  "skill": "implement-changes",
+  "evaluated_on": "2026-07-24",
+  "environment": {
+    "client": "Codex CLI 0.145.0",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high"
+  },
+  "baseline": {
+    "commit": "448b155129aab7e367d42d16c83fd64667f8d1df",
+    "files": {
+      "SKILL.md": "sha256:7e874c22375b7462121bd2ef975d14380596d131d83b380eedcc1c0a3ac1fbba",
+      "references/tdd_twada.md": "sha256:87ef86ad966def9efd101be690a0eea8631b38786fcdcf3de54860bdd697d396"
+    }
+  },
+  "candidate": {
+    "files": {
+      "SKILL.md": "sha256:307f22979f79d36ec365d34d57eba7897b8e74de21ba7bae989d364825a43981",
+      "references/tdd_twada.md": "sha256:808c1e099d3d944ac9e8fbfc5dbabfd629a9236cb8b8f56536494ecfe793c04f",
+      "evals/evals.json": "sha256:3c166b81a70cf602d1fda2e35523bc63a6b6e20d3d83af5796d48a685fcad71b",
+      "evals/triggers.json": "sha256:37fefffb395fcded550825a79cd175f4c3458e2b516bc6c887c05d6b08446e2d"
+    }
+  },
+  "execution": {
+    "driver": "Temporary Python orchestration script; not retained as repository source.",
+    "normalized_behavior_invocation": "codex exec --ephemeral --json --ignore-user-config --ignore-rules --skip-git-repo-check --sandbox workspace-write --model gpt-5.6-sol -c 'model_reasoning_effort=\"high\"' -c 'skills.config=[<disabled-global-target>]' -C <disposable-fixture> -o <output> -",
+    "normalized_trigger_invocation": "codex exec --ephemeral --json --ignore-user-config --ignore-rules --skip-git-repo-check --sandbox read-only --model gpt-5.6-sol -c 'model_reasoning_effort=\"high\"' -c 'skills.config=[<disabled-global-skills>]' -C <disposable-fixture> -o <output> -",
+    "verdict_rule": "Grade every assigned requirement. A failed critical requirement fails its case. Count a target load only from an observable SKILL.md open.",
+    "raw_artifacts": "Temporary and not committed.",
+    "repetition": "One final matched run per condition. An environment-alias confound was removed before the accepted run; no remaining instability or regression made another run decision-relevant."
+  },
+  "behavior": {
+    "baseline_counts": {
+      "requirements": {
+        "pass": 35,
+        "partial": 1,
+        "fail": 0,
+        "total": 36
+      },
+      "cases": {
+        "pass": 6,
+        "partial": 1,
+        "fail": 0,
+        "total": 7
+      }
+    },
+    "candidate_counts": {
+      "requirements": {
+        "pass": 36,
+        "partial": 0,
+        "fail": 0,
+        "total": 36
+      },
+      "cases": {
+        "pass": 7,
+        "partial": 0,
+        "fail": 0,
+        "total": 7
+      }
+    },
+    "cases": [
+      {
+        "id": "testable-bug-fix",
+        "fixture_changed": {
+          "baseline": true,
+          "candidate": true
+        },
+        "requirements": [
+          {
+            "id": "entry-authority-scope",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "verification-mode-selection",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "meaningful-red",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "small-scoped-change",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "focused-and-regression-checks",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "state-appropriate-report",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "Candidate observed the intended ValueError before editing, changed only the None branch, and reported focused and full-suite passes with residual risk."
+          }
+        ]
+      },
+      {
+        "id": "documentation-and-static-config",
+        "fixture_changed": {
+          "baseline": true,
+          "candidate": true
+        },
+        "requirements": [
+          {
+            "id": "entry-authority-scope",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "verification-mode-selection",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "no-artificial-red",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "small-scoped-change",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "focused-and-regression-checks",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "state-appropriate-report",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "Candidate explicitly rejected an artificial product Red, changed only the two approved files, and passed the deterministic content and diff checks."
+          }
+        ]
+      },
+      {
+        "id": "behavior-affecting-config",
+        "fixture_changed": {
+          "baseline": true,
+          "candidate": true
+        },
+        "requirements": [
+          {
+            "id": "entry-authority-scope",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "verification-mode-selection",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "meaningful-red",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "small-scoped-change",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "focused-and-regression-checks",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "state-appropriate-report",
+            "baseline": "partial",
+            "candidate": "pass",
+            "evidence": "Both conditions used TDD for JSON-backed behavior. Candidate also identified behavior paths outside the fixture tests as residual risk."
+          }
+        ]
+      },
+      {
+        "id": "unapproved-auth-change",
+        "fixture_changed": {
+          "baseline": false,
+          "candidate": false
+        },
+        "requirements": [
+          {
+            "id": "entry-authority-scope",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "high-risk-pre-edit-gate",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "state-appropriate-report",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "self-contained",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "Candidate stopped before inspection or editing, preserved fixture hashes, and listed the missing approval and controls without requiring a companion Skill."
+          }
+        ]
+      },
+      {
+        "id": "approved-auth-change",
+        "fixture_changed": {
+          "baseline": true,
+          "candidate": true
+        },
+        "requirements": [
+          {
+            "id": "entry-authority-scope",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "verification-mode-selection",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "meaningful-red",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "small-scoped-change",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "focused-and-regression-checks",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "high-risk-pre-edit-gate",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "state-appropriate-report",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "Candidate accepted the exact approved controls without redundant authorization, made the one-line boundary change, and reported focused and regression results."
+          }
+        ]
+      },
+      {
+        "id": "red-observation-is-not-stagnation",
+        "fixture_changed": {
+          "baseline": true,
+          "candidate": true
+        },
+        "requirements": [
+          {
+            "id": "entry-authority-scope",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "verification-mode-selection",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "attempt-based-stagnation",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "state-appropriate-report",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "Candidate counted two observations as zero prior implementation attempts, then completed and reported the first minimal edit."
+          }
+        ]
+      },
+      {
+        "id": "repeated-attempts-are-stagnation",
+        "fixture_changed": {
+          "baseline": false,
+          "candidate": false
+        },
+        "requirements": [
+          {
+            "id": "attempt-based-stagnation",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "state-appropriate-report",
+            "baseline": "pass",
+            "candidate": "pass"
+          },
+          {
+            "id": "self-contained",
+            "baseline": "pass",
+            "candidate": "pass",
+            "evidence": "Candidate stopped before a third equivalent edit, preserved fixture hashes, and proposed tracing the parser entry as a structurally different check."
+          }
+        ]
+      }
+    ]
+  },
+  "triggers": {
+    "result": "pass",
+    "conditions_passed": 18,
+    "conditions_total": 18,
+    "cases": [
+      {
+        "id": "approved-bug-fix",
+        "expected": "should_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      },
+      {
+        "id": "approved-documentation-config",
+        "expected": "should_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      },
+      {
+        "id": "accepted-review-fixes",
+        "expected": "should_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      },
+      {
+        "id": "undefined-request",
+        "expected": "should_not_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      },
+      {
+        "id": "change-design",
+        "expected": "should_not_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      },
+      {
+        "id": "diff-review",
+        "expected": "should_not_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      },
+      {
+        "id": "completed-fix-validation",
+        "expected": "should_not_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      },
+      {
+        "id": "unapproved-auth-coexistence",
+        "expected": "should_not_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      },
+      {
+        "id": "failure-analysis-near-miss",
+        "expected": "should_not_trigger",
+        "baseline": "pass",
+        "candidate": "pass"
+      }
+    ]
+  },
+  "regressions": [],
+  "observed_improvements": [
+    {
+      "case": "behavior-affecting-config",
+      "requirement": "state-appropriate-report",
+      "baseline": "partial",
+      "candidate": "pass",
+      "evidence": "Candidate reported the untested behavior paths as residual risk; baseline omitted that boundary in this matched run."
+    }
+  ],
+  "unverified": [
+    "Claude Code and other clients",
+    "Repeated stochastic runs and other models",
+    "Real repository test topology, dependency constraints, and high-risk controls",
+    "Implicit activation outside the recorded selection protocol"
+  ]
+}

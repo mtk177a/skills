@@ -26,7 +26,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `draft-issue` | Turn a clarified request into an issue draft and filing steps |
 | `draft-review-comments` | Turn organized findings into inline PR comments and a review summary |
 | `format-markdown` | Format Markdown according to CommonMark conventions |
-| `implement-changes` | Implement changes incrementally in a test-driven, safe manner |
+| `implement-changes` | Implement approved changes in small units with TDD or another appropriate verification method |
 | `investigate-incident` | Investigate an incident: gather facts, form hypotheses, isolate the cause |
 | `japanese-tech-writing` | Apply formatting, argument structure, terminology, and editing rules to Japanese technical writing |
 | `plan-risky-change` | Plan a risky or irreversible change with explicit safety checks |

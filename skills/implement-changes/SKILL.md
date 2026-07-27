@@ -1,91 +1,131 @@
 ---
 name: implement-changes
-description: Implement changes incrementally with test-driven development to progress safely.
+description: Implement approved, sufficiently scoped code, documentation, or configuration changes in small units, choosing TDD when a meaningful failing test can express the expected behavior and another verification method when it cannot. Use after the change approach is clear; not for designing changes, reviewing a diff, or only validating completed work.
 license: MIT
 ---
 
 # Implement Changes
 
-## Purpose
+## Objective
 
-- Use test-driven development as the default behavior to implement incrementally and safely.
-- Drive from implementation decisions through testing to verification handoff, using this Skill alone first.
+- Apply an authorized and sufficiently clear change in small, reviewable work
+  units.
+- Choose verification from the expected outcome and available evidence instead of
+  forcing one development method on every change.
+- Finish with evidence that distinguishes executed checks from unverified scope
+  and residual risk.
 
-## When to use
+## Inputs and preconditions
 
-- When you want to proceed with a new feature or fix using TDD
-- When you want to implement safely in small units
-- When you want to progress while organizing to a state ready to hand off to verification
-- When you need to avoid continuing implementation after repeated same-hypothesis failures
+Gather what is available:
 
-## Input (optional)
+- the approved objective, expected behavior, scope, exclusions, and stop
+  conditions
+- output from `design-changes` or another accepted implementation handoff
+- target files, repository guidance, existing behavior, and affected consumers
+- focused checks, broader regression commands, and environment constraints
+- authorization and controls for dependency, destructive, migration,
+  authentication, authorization, credential, permission, or cryptographic changes
 
-- Output from `design-changes`
-- Overview of the target feature
-- Test execution command
-- Implementation target files, constraints
-- Entry conditions, scope, stop conditions
+`design-changes` output is optional. Infer low-impact local details from the
+request and existing implementation, but do not invent requirements, authority,
+or risk acceptance. If a missing item could materially change the implementation,
+stop as `Blocked`.
 
-## Steps
+## Workflow
 
-1. Confirm the given entry conditions, scope, and stop conditions. If not stated explicitly, infer requirements from input and existing implementation; record anything missing as missing.
-2. If entry conditions are not met, or a stop condition applies, do not proceed to implementation; output the reason for stopping and the next items to confirm.
-3. Only when ready to proceed: break implementation tasks into small units; make the target and expected behavior explicit.
-4. Create a test list.
-5. Select exactly one item from the test list.
-6. Translate it into a concrete test; confirm it fails (Red).
-7. Write the minimal implementation to make the test pass (Green).
-8. Refactor only when the test is passing.
-9. Add new insights to the test list and repeat.
-10. If the same test or behavior fails under the same hypothesis twice, stop implementation and record whether a structurally different branch is needed.
-11. Update the test execution plan and verification handoff content.
-12. Leave the reason for the change, verification basis, and explanation points for the user in the handoff.
-13. Only when high-risk changes or quality uncertainty remain, explicitly state the need for additional confirmation.
-14. For the concrete TDD rhythm, refer to `references/tdd_twada.md`.
+1. Confirm the objective, authorization, entry conditions, scope, exclusions, and
+   stop conditions before editing.
+2. For a high-risk change, confirm that its exact scope and required controls are
+   already approved. If not, stop before editing and identify the missing
+   approval, rollback, recovery, or verification decision. Use
+   `plan-risky-change` as an optional handoff when available, but provide a
+   self-contained stop report.
+3. Inspect the relevant implementation and guidance. Split the change into small
+   work units, each with an expected outcome and a verification method.
+4. Select one work unit. Choose its verification mode using the criteria below and
+   record the reason.
+5. For a TDD work unit:
+   - create or update one focused test
+   - run it and confirm that it fails for the intended reason (Red)
+   - make the smallest implementation change that passes it (Green)
+   - refactor only while the test remains passing
+6. For a non-TDD work unit:
+   - establish the relevant baseline or pre-change observation when useful
+   - make the smallest scoped change
+   - run the selected deterministic or inspection-based checks
+   - do not manufacture an unrelated failure merely to create a Red phase
+7. Record new evidence and update the remaining work units. If it exposes a
+   material scope, dependency, test-strategy, or risk change, stop and request the
+   required decision before expanding the work.
+8. Track implementation attempts separately from test executions. If two
+   materially equivalent attempts under the same unchanged hypothesis fail
+   without new evidence, stop before a third equivalent edit. Record the failed
+   hypothesis and one structurally different branch or missing input.
+9. After each work unit, run its focused checks. Before reporting completion, run
+   the broader relevant regression checks available for the affected scope.
+   Record checks that do not exist, cannot be run, or were intentionally excluded;
+   do not present them as passing.
+10. Report the final state using the semantic contract below.
 
-## Output format
+## Choosing the verification mode
 
-- Target: ...
-- Work units: ...
-- Files to change: ...
-- Expected behavior: ...
-- Entry condition check result: ...
-- Scope: ...
-- Stop conditions (Ask first): ...
-- Test list:
-  - ...
-- Current test: ...
-- Current phase: Blocked | Red | Green | Refactor | Done
-- Same-hypothesis repetition check: ...
-- Structurally different branch if blocked: ...
-- Verification handoff: ...
-- Reason for change: ...
-- Verification basis: ...
-- User explanation points: ...
-- Next action: ...
+Use TDD by default when all of the following hold:
+
+- the work changes observable behavior
+- a focused automated check can express the expected outcome
+- the check can fail meaningfully before implementation
+- writing and running it is practical for the work unit
+
+Do not decide from the file extension alone. A configuration change that affects
+observable behavior may warrant TDD. Documentation, static metadata, schema-only
+configuration, generated output, or behavior-preserving refactoring may instead
+need:
+
+- existing tests before and after the change
+- parser or schema validation
+- lint or formatting checks
+- dry-run, render, build, or consumer checks
+- deterministic diff or invariant checks
+- focused inspection when no automated oracle exists
+
+When TDD is not applicable, state why and identify the alternative evidence.
+When it is selected, read `references/tdd_twada.md` for the concrete cycle.
+
+## Reporting contract
+
+Adapt the presentation to the task; do not emit empty headings. Always include:
+
+- state: `Blocked`, `In progress`, or `Done`
+- authorized scope, work units, expected outcomes, and actual changed files
+- selected verification method for each completed work unit and why it fits
+- the reason for the change and the handoff needed for review or validation
+
+For `Blocked`, include:
+
+- the stop reason and evidence
+- missing information, authority, or controls
+- the scope left unchanged
+- the next decision or structurally different check
+
+For `Done`, include:
+
+- focused and broader checks actually run, with commands and results
+- unperformed checks and unconfirmed items
+- residual correctness, safety, and maintainability risks
+- any user-facing explanation points needed to evaluate the result
 
 ## Boundaries
 
-### Always:
-
-- Follow the Red → Green → Refactor order
-- Advance tests one at a time
-- Stop as `Blocked` when entry conditions are not met
-- State expected behavior and verification handoff explicitly
-- Leave reason for change, verification basis, and explanation points
-- Stop rather than keep editing when TDD iterations repeat the same hypothesis without progress
-- Assess whether to proceed using only the input when `design-changes` output is not available
-- Do not use another agent / subagent by default; proceed with this Skill alone first
-- Keep the Skill useful even when no companion Skill is installed
-
-### Ask first:
-
-- When test strategy or dependencies would change significantly
-- When destructive or large-scale changes are needed
-- When entry conditions cannot be met and prerequisite confirmation is needed
-
-### Never:
-
-- Start implementation without confirming Red
-- Remove tests to force a pass
-- Continue local edits after repeated same-hypothesis failures without recording a different branch or stop reason
+- Do not edit before confirming sufficient scope and authority.
+- Do not remove or weaken a valid test merely to make the change pass.
+- Do not force Red → Green when no meaningful failing behavior check exists.
+- Do not treat repeated test observation as repeated implementation failure.
+- Do not continue an unchanged third attempt without new evidence or a different
+  hypothesis.
+- Do not claim an unexecuted check passed or imply broader safety than the evidence
+  supports.
+- Ask before materially expanding scope, adding dependencies, changing the agreed
+  test strategy, or performing an unapproved destructive or high-risk operation.
+- Do not use another agent or subagent by default. Keep the workflow useful when no
+  companion Skill is installed.

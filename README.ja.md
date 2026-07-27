@@ -28,7 +28,7 @@
 | `draft-issue` | 明確化した課題を Issue の起票案と起票手順に落とし込む |
 | `draft-review-comments` | 整理済みの指摘を GitHub PR の行コメントとレビュー要約に変換する |
 | `format-markdown` | CommonMark 規約に従って Markdown を整形する |
-| `implement-changes` | TDD 前提で小さく安全に変更を実装する |
+| `implement-changes` | 承認済みの変更を小さな単位で、TDD または適切な別の検証方法を使って実装する |
 | `investigate-incident` | インシデントを調査し、事実を集め、仮説を立て、原因を特定する |
 | `japanese-tech-writing` | 日本語技術文書の整形・論証構成・用語・推敲の規範を適用する |
 | `plan-risky-change` | リスクの高い・不可逆な変更を安全確認を明示して計画する |
