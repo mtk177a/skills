@@ -38,7 +38,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `summarize-changes` | Summarize changes in a diff or commit range for review or documentation |
 | `triage-agent-usage` | Assess whether agent usage is appropriate and calibrate delegation level |
 | `triage-review-feedback` | Evaluate existing review findings and decide accept, defer, or reject while preserving their provenance, evidence, and uncertainty |
-| `validate-fix` | Verify a fix: summarize what was checked, what was not, and what risks remain |
+| `validate-fix` | Verify whether a specific completed fix resolved its original finding or expected behavior using appropriate read-only evidence |
 
 ## Installation
 

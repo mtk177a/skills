@@ -10,7 +10,7 @@ A minimal reference for how the core Skills connect into common workflows.
 - `design-changes`: Define what changes, what is out of scope, risks, test strategy, and stop conditions
 - `implement-changes`: Apply approved changes in small units, choose TDD or another suitable verification method, and leave an evidence-based handoff
 - `review-changes`: Review the effective code, documentation, or configuration diff and report evidence, impact, confidence, executed checks, and canonical labels
-- `validate-fix`: Summarize what was verified, what was not, and what risks remain
+- `validate-fix`: Verify a specific completed fix with appropriate read-only evidence and report per-target status, unconfirmed scope, and residual risk
 
 ## Review workflow
 
@@ -20,7 +20,7 @@ A minimal reference for how the core Skills connect into common workflows.
 - `triage-review-feedback`: Evaluate existing findings and decide accept, defer, or reject while preserving their provenance, original label, evidence, impact, confidence, verification, and unknowns
 - `draft-review-comments`: Convert organized findings and already supplied decisions into unposted GitHub comment drafts without discovering problems, triaging findings, deciding review actions or timing, or posting comments
 - `implement-changes`: Apply only the accepted changes
-- `validate-fix`: Verify whether a specific completed fix or finding was resolved, and document remaining uncertainty
+- `validate-fix`: Verify whether a specific completed fix or finding was resolved using evidence appropriate to code, documentation, or configuration, and preserve per-target status and remaining uncertainty
 
 The review finding label, potential impact, confidence, triage decision, and implementation priority are separate values. Accepting a concern does not automatically accept the reviewer's proposed implementation. A high-impact `question` remains a question until its premise is confirmed; downstream Skills must not erase the potential impact or turn it into an asserted defect.
 

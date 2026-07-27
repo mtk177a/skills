@@ -1,0 +1,55 @@
+{
+  "skill": "validate-fix",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Present each prompt as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case under the target condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant. Use matched repetitions for baseline and candidate.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every observed condition. Mixed observed results are unstable, not a pass."
+  },
+  "cases": [
+    {
+      "id": "specific-code-fix",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "The implementation for review finding F-12 is complete. Verify only whether that specific null-handling problem is resolved in the target revision, run appropriate read-only checks, and report what remains unconfirmed."
+    },
+    {
+      "id": "documentation-configuration-fix",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "Verify whether the completed README command correction and static configuration fix satisfy their original requirements. Use parser, content, or other appropriate read-only evidence rather than inventing a failing product test."
+    },
+    {
+      "id": "full-diff-review",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Perform a full review of the updated pull request diff, reconcile previous findings, and discover any new correctness, safety, compatibility, or maintainability problems."
+    },
+    {
+      "id": "existing-feedback-triage",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Evaluate these existing review comments and decide which findings to accept, defer, or reject before implementation."
+    },
+    {
+      "id": "implement-approved-fix",
+      "expected": "should_not_trigger",
+      "category": "coexistence",
+      "prompt": "The finding and response approach are approved. Implement the scoped code and documentation fixes, run relevant checks, and report the result."
+    },
+    {
+      "id": "summarize-supplied-results",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Summarize the test output and implementation notes I supplied into a short status update. Do not inspect the diff or independently verify the fix."
+    },
+    {
+      "id": "draft-review-comments",
+      "expected": "should_not_trigger",
+      "category": "coexistence",
+      "prompt": "Turn these already organized findings into unposted GitHub inline review comments and a concise review summary."
+    }
+  ]
+}
