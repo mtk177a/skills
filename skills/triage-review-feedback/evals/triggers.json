@@ -1,0 +1,47 @@
+{
+  "skill": "triage-review-feedback",
+  "version": 1,
+  "execution": {
+    "catalog": [
+      "review-changes",
+      "triage-review-feedback",
+      "validate-fix",
+      "draft-review-comments",
+      "implement-changes"
+    ],
+    "observable_activation": "The executor must open the selected SKILL.md and end with a machine-readable selected-skill line.",
+    "repetition": "Run one matched baseline and candidate observation. Repeat only after an unexpected or unstable selection."
+  },
+  "cases": [
+    {
+      "id": "triage-human-feedback",
+      "prompt": "人間のレビューコメントが5件あります。根拠を確認して採用、保留、却下に分け、対応方針を決めてください。",
+      "expected": "should_trigger"
+    },
+    {
+      "id": "triage-ai-review",
+      "prompt": "An AI reviewer left findings with mixed confidence. Decide which existing findings to accept, defer, or reject before we plan the fixes.",
+      "expected": "should_trigger"
+    },
+    {
+      "id": "discover-new-findings",
+      "prompt": "Review the current unstaged code and configuration diff for correctness, safety, and missing tests.",
+      "expected": "should_not_trigger"
+    },
+    {
+      "id": "implement-accepted-feedback",
+      "prompt": "The review findings have already been accepted and scoped. Implement the approved fixes now.",
+      "expected": "should_not_trigger"
+    },
+    {
+      "id": "validate-completed-fix",
+      "prompt": "The fix for review thread 42 is complete. Verify whether that specific finding is resolved and report remaining risks.",
+      "expected": "should_not_trigger"
+    },
+    {
+      "id": "draft-pr-comments",
+      "prompt": "Turn these already organized findings into GitHub PR inline comments with locations and a short review summary.",
+      "expected": "should_not_trigger"
+    }
+  ]
+}

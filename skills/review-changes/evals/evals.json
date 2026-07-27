@@ -1,0 +1,229 @@
+{
+  "skill": "review-changes",
+  "version": 1,
+  "baseline": {
+    "required": true,
+    "condition": "Run every affected case against the committed HEAD Skill and the working-tree candidate with matched inputs and fixtures.",
+    "raw_artifact_policy": "Keep fixture repositories, JSONL, command output, and full responses in a temporary directory outside the source repository."
+  },
+  "execution": {
+    "client": "record exact client and version at execution time",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high",
+    "sandbox": "read-only",
+    "executor_input_fields": [
+      "input"
+    ],
+    "hidden_grading_fields": [
+      "title",
+      "assertions",
+      "additional_requirement"
+    ],
+    "coexistence_skills": [
+      "triage-review-feedback",
+      "validate-fix",
+      "draft-review-comments",
+      "summarize-changes",
+      "implement-changes",
+      "audit-agent-guidance"
+    ]
+  },
+  "candidate_assertions": [
+    {
+      "id": "effective-diff",
+      "critical": true,
+      "statement": "Identifies the actual reviewed diff or explicitly reports that no review could run, without mixing an excluded working-tree range."
+    },
+    {
+      "id": "contextual-evidence",
+      "critical": true,
+      "statement": "Uses relevant contracts, callers, tests, schemas, or repository precedent outside the changed line when needed, while keeping findings attributable to the reviewed change."
+    },
+    {
+      "id": "change-type-adaptation",
+      "critical": true,
+      "statement": "Selects review dimensions and checks appropriate to code, documentation, or configuration instead of forcing one code-centric checklist."
+    },
+    {
+      "id": "finding-contract",
+      "critical": true,
+      "statement": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, and an explicit Unconfirmed premises field that uses none identified when no dependency remains unknown."
+    },
+    {
+      "id": "uncertainty-impact",
+      "critical": true,
+      "statement": "Keeps an unconfirmed premise as a question while preserving its potentially high impact and avoiding unsupported certainty."
+    },
+    {
+      "id": "unconfirmed-premises-handoff",
+      "critical": true,
+      "statement": "Records the supplied gateway guarantee in a dedicated Unconfirmed premises field, separate from evidence, impact, and verification, so a downstream triage workflow does not need to infer it."
+    },
+    {
+      "id": "checks-vs-suggestions",
+      "critical": true,
+      "statement": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk."
+    },
+    {
+      "id": "no-invented-findings",
+      "critical": true,
+      "statement": "When no material finding exists, says so with reviewed scope and limitations and does not invent nits, notes, or a bare approval."
+    },
+    {
+      "id": "unavailable-diff",
+      "critical": true,
+      "statement": "When no diff can be obtained, states that the review did not run and identifies the missing input rather than claiming no issues."
+    },
+    {
+      "id": "rereview-state",
+      "critical": true,
+      "statement": "For full re-review, separates Resolved, Remaining, and New state from canonical label and confidence."
+    },
+    {
+      "id": "read-only-review",
+      "critical": true,
+      "statement": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes."
+    }
+  ],
+  "assertion_policy": "Grade every assertion assigned to a case. A failed critical assertion fails that case. Record case-by-condition evidence and do not pass an assertion because it succeeded in another case.",
+  "cases": [
+    {
+      "id": "explicit-range",
+      "title": "Explicit commit range with unrelated working-tree changes",
+      "input": "Review only the committed range HEAD~1..HEAD in this disposable repository. Do not include the unrelated working-tree edit. Report the effective diff, findings, checks actually performed, unchecked scope, and residual risk. Do not edit anything.",
+      "assertions": [
+        "effective-diff",
+        "finding-contract",
+        "checks-vs-suggestions",
+        "read-only-review"
+      ],
+      "fixture": {
+        "type": "git",
+        "base_files": {
+          "src/calc.py": "def divide(total, count):\n    return total / count\n",
+          "tests/test_calc.py": "import unittest\nfrom src.calc import divide\n\nclass DivideTests(unittest.TestCase):\n    def test_normal(self):\n        self.assertEqual(divide(6, 2), 3)\n"
+        },
+        "committed_files": {
+          "src/calc.py": "def divide(total, count):\n    if count < 0:\n        return 0\n    return total / count\n"
+        },
+        "working_tree_files": {
+          "notes.txt": "unrelated local note\n"
+        }
+      }
+    },
+    {
+      "id": "external-contract-and-cardinality",
+      "title": "Changed singular response conflicts with an existing plural contract",
+      "input": "Review the supplied diff and context as a new code review. The OpenAPI response remains an array, the relation table allows multiple members, and sibling endpoints use list_members(), but the changed handler now calls first_member() and returns one object. Report findings with label, confidence, evidence, impact, verification, checks performed, unchecked scope, and residual risk. Do not decide whether the author should accept the finding and do not implement a fix.",
+      "assertions": [
+        "contextual-evidence",
+        "finding-contract",
+        "checks-vs-suggestions",
+        "read-only-review"
+      ],
+      "fixture": {
+        "type": "inline",
+        "diff": "handler.py changes return list_members(group_id) to return first_member(group_id)",
+        "context": "openapi.yaml declares type: array; group_members has a composite key allowing multiple rows; sibling handlers return arrays"
+      }
+    },
+    {
+      "id": "high-impact-unconfirmed-premise",
+      "title": "Authorization premise is unclear but potential impact is high",
+      "input": "Review this diff: download_report(user, report_id) now fetches by report_id without the previous user_id filter. The repository does not contain the product authorization specification, and it is unclear whether an upstream gateway guarantees ownership. Treat that gateway guarantee as unconfirmed. Report the next action, confidence, concrete evidence, potential impact if the guarantee is absent, and how to verify or falsify the concern. Continue reviewing rather than asking a blocking question, and do not edit.",
+      "assertions": [
+        "finding-contract",
+        "uncertainty-impact",
+        "unconfirmed-premises-handoff",
+        "checks-vs-suggestions",
+        "read-only-review"
+      ],
+      "fixture": {
+        "type": "inline",
+        "diff": "query_report(report_id=report_id, user_id=user.id) changes to query_report(report_id=report_id)",
+        "context": "No gateway or ownership contract is available in the fixture"
+      }
+    },
+    {
+      "id": "documentation-and-configuration",
+      "title": "Documentation and static configuration with deterministic checks",
+      "input": "Review the current README and app-settings.json diff in this disposable repository. Use checks appropriate to documentation and static configuration, run python3 check_changes.py, and distinguish its actual result from any suggested product verification. Do not edit files.",
+      "assertions": [
+        "effective-diff",
+        "change-type-adaptation",
+        "finding-contract",
+        "checks-vs-suggestions",
+        "read-only-review"
+      ],
+      "fixture": {
+        "type": "git",
+        "base_files": {
+          "README.md": "Run `tool check` before release.\n",
+          "app-settings.json": "{\"mode\":\"safe\",\"timeout\":30}\n",
+          "check_changes.py": "import json\nfrom pathlib import Path\ntext = Path('README.md').read_text()\nassert 'tool check' in text\ncfg = json.loads(Path('app-settings.json').read_text())\nassert cfg['mode'] in {'safe', 'fast'}\nprint('docs-config-check: pass')\n"
+        },
+        "working_tree_files": {
+          "README.md": "Run `tool chek` before release.\n",
+          "app-settings.json": "{\"mode\":\"unsafe\",\"timeout\":30}\n"
+        }
+      },
+      "additional_requirement": "The check exits non-zero. The response must not describe it as passed or replace it with a product test."
+    },
+    {
+      "id": "clean-diff",
+      "title": "Reviewed diff with no material finding",
+      "input": "Review the current diff in this disposable repository. Run python3 -m unittest, report the effective diff and actual result, and do not invent nits or notes merely to avoid an empty finding list. Do not edit files.",
+      "assertions": [
+        "effective-diff",
+        "checks-vs-suggestions",
+        "no-invented-findings",
+        "read-only-review"
+      ],
+      "fixture": {
+        "type": "git",
+        "base_files": {
+          "src/greet.py": "def greet(name):\n    return 'Hello, ' + name\n",
+          "tests/test_greet.py": "import unittest\nfrom src.greet import greet\n\nclass GreetTests(unittest.TestCase):\n    def test_name(self):\n        self.assertEqual(greet('Ada'), 'Hello, Ada')\n"
+        },
+        "working_tree_files": {
+          "src/greet.py": "def greet(name):\n    \"\"\"Return a greeting for name.\"\"\"\n    return 'Hello, ' + name\n"
+        }
+      }
+    },
+    {
+      "id": "missing-diff",
+      "title": "Review request without an obtainable diff",
+      "input": "Review my changes and tell me whether there are any issues. No repository, patch, commit range, PR, or file contents are available in this session.",
+      "assertions": [
+        "effective-diff",
+        "unavailable-diff",
+        "read-only-review"
+      ],
+      "fixture": {
+        "type": "empty"
+      }
+    },
+    {
+      "id": "full-rereview",
+      "title": "Full re-review with resolved, remaining, and new findings",
+      "input": "Perform a full re-review of the current working-tree diff. Previous finding F1 reported that display_name called strip() on an optional nickname without a null guard. Previous finding F2 reported that list_members returned one object although the OpenAPI response schema requires an array. Determine the current state of each previous finding and look for new material problems in the effective diff. Keep re-review state separate from each finding's label and confidence, include the complete finding contract, and report checks, unchecked scope, and residual risk. Do not triage or implement.",
+      "assertions": [
+        "finding-contract",
+        "rereview-state",
+        "checks-vs-suggestions",
+        "read-only-review"
+      ],
+      "fixture": {
+        "type": "git",
+        "base_files": {
+          "service.py": "class TransientError(Exception):\n    pass\n\n\ndef display_name(user):\n    return user.nickname.strip()\n\n\ndef list_members(group_id, repository):\n    return repository.first_member(group_id)\n\n\ndef fetch_with_retry(fetch):\n    for _ in range(3):\n        try:\n            return fetch()\n        except TransientError:\n            pass\n    raise TransientError(\"retry limit reached\")\n",
+          "openapi.yaml": "paths:\n  /groups/{group_id}/members:\n    get:\n      responses:\n        '200':\n          content:\n            application/json:\n              schema:\n                type: array\n"
+        },
+        "working_tree_files": {
+          "service.py": "class TransientError(Exception):\n    pass\n\n\ndef display_name(user):\n    if user.nickname is None:\n        return \"\"\n    return user.nickname.strip()\n\n\ndef list_members(group_id, repository):\n    return repository.first_member(group_id)\n\n\ndef fetch_with_retry(fetch):\n    while True:\n        try:\n            return fetch()\n        except TransientError:\n            pass\n"
+        }
+      },
+      "additional_requirement": "Derive from the fixture, without relying on conclusions in the executor input, that F1 is Resolved, F2 is Remaining, and the unbounded retry loop is a New material finding."
+    }
+  ]
+}

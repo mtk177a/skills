@@ -24,7 +24,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `diversify-agent-search` | Widen stuck agent or workflow improvement with multiple candidates, diversity axes, and case-level evaluation |
 | `draft-commit` | Generate commit message drafts or commit split proposals from a diff |
 | `draft-issue` | Turn a clarified request into an issue draft and filing steps |
-| `draft-review-comments` | Turn organized findings into inline PR comments and a review summary |
+| `draft-review-comments` | Draft unposted PR comments from organized findings and decisions without changing their meaning |
 | `format-markdown` | Format Markdown according to CommonMark conventions |
 | `implement-changes` | Implement approved changes in small units with TDD or another appropriate verification method |
 | `investigate-incident` | Investigate an incident: gather facts, form hypotheses, isolate the cause |
@@ -32,12 +32,12 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `plan-risky-change` | Plan a risky or irreversible change with explicit safety checks |
 | `record-session-handoff` | Record a session handoff so the next session can resume without losing context |
 | `research-web-safely` | Research a topic on the web while treating external content as untrusted input |
-| `review-changes` | Review a diff for correctness bugs and categorize findings |
+| `review-changes` | Review code, documentation, or configuration diffs with evidence, impact, confidence, and canonical labels |
 | `scope-implementation` | Narrow the scope of an implementation task before starting |
 | `scope-request` | Clarify purpose, completion criteria, constraints, and open questions for a request |
 | `summarize-changes` | Summarize changes in a diff or commit range for review or documentation |
 | `triage-agent-usage` | Assess whether agent usage is appropriate and calibrate delegation level |
-| `triage-review-feedback` | Sort review comments into accepted, deferred, and rejected; decide on approach |
+| `triage-review-feedback` | Evaluate existing review findings and decide accept, defer, or reject while preserving their provenance, evidence, and uncertainty |
 | `validate-fix` | Verify a fix: summarize what was checked, what was not, and what risks remain |
 
 ## Installation

@@ -1,121 +1,76 @@
 # review-changes evals
 
-## Iter 0 — Static check
+## Purpose
 
-- description and body are internally consistent around "new review"
-- `must` / `should` / `suggestion` / `question` / `nit` / `note` canonical labels are applied per finding
-- criteria for each label are clearly defined
-- `Must-fix` / `Should-fix` / `Nice-to-have` are accepted as legacy input and normalized to canonical labels
-- each finding includes evidence
-- each finding explains why it is a problem and how to detect it
-- output is sufficient to proceed to the next decision without external context
-- at least one `[critical]` assertion is identified
+Verify that `review-changes` selects a new or updated effective diff, inspects the surrounding evidence needed to judge it, adapts to code, documentation, and configuration changes, and reports findings with separate labels, impact, and confidence. It must distinguish executed checks from suggested verification, handle full re-review state, and report no-findings or unavailable-diff states without inventing evidence.
 
-## Scenarios
+Structured assets:
 
-### Scenario A: Small diff new review
+- `triggers.json`: review, near-miss, and coexistence selection cases
+- `evals.json`: baseline, behavior, fixture, and assertion definitions
+- `results.json`: compact evidence for the currently accepted revision, added after execution
 
-A diff and related spec are provided, with a mix of `must` and `should` findings. No approval decision is made; only decision material is returned.
+## Candidate static check
 
-Requirements checklist:
-1. [critical] Each finding has specific evidence
-2. Each finding carries exactly one canonical label
-3. `must` and `should` criteria match the definitions in the body
-4. Test steps or verification points are present
+- `description` includes code, documentation, configuration, effective-diff, and full re-review triggers and excludes triage, specific-fix validation, comment drafting, summarization, and implementation
+- effective diff and material exclusions are established before findings
+- surrounding contracts, callers, tests, and repository precedent are read only when they can test a change assumption
+- code, documentation, and configuration use applicable risk dimensions rather than one mandatory checklist
+- every material finding separates canonical label, confidence, evidence, impact, verification, and an explicit `Unconfirmed premises` field
+- a high-impact unconfirmed premise remains visible as a `question` and can be handed to triage without downstream inference
+- executed checks, suggested verification, unchecked scope, and residual risk are not conflated
+- no-findings and unavailable-diff states are distinct
+- full re-review state is separate from label and confidence
+- the Skill remains read-only, portable, and usable without a companion Skill or subagent
 
-### Scenario B: Review including unconfirmed spec
+## Coverage map
 
-Part of the diff depends on unclear spec and cannot be asserted definitively. Do not force a `must` — leave it as a `question`.
+| Responsibility or boundary | Plausible failure | Scenario or check | Grading |
+| --- | --- | --- | --- |
+| Effective diff | Reviews the wrong range or mixes unrelated working-tree changes | `explicit-range`, `missing-diff` | Scope statement and file evidence |
+| Contextual evidence | Reviews only the changed line and misses a contract or cardinality violation | `external-contract-and-cardinality` | Assigned assertions |
+| Uncertainty and handoff | Turns a potentially severe unknown into a low-value question, hides the premise in another field, or forces downstream triage to infer it | `high-impact-unconfirmed-premise` | Finding fields and handoff assertion |
+| Change-type adaptation | Forces code tests onto docs/config or omits available deterministic checks | `documentation-and-configuration` | Commands and results |
+| No-findings state | Invents nits or returns a bare approval | `clean-diff` | Finding count and report contract |
+| Full re-review | Mixes `Resolved` / `Remaining` / `New` with label or confidence, or repeats classifications supplied by the prompt instead of deriving them from the target | `full-rereview` | Fixture-derived state reconciliation and new-finding discovery |
+| Trigger boundary | Collides with triage, validation, comment drafting, summary, implementation, or guidance audit | `triggers.json` | Observable Skill loads |
 
-Requirements checklist:
-1. [critical] Do not create a critical finding based on speculation alone
-2. Separate unconfirmed spec as a `question`
-3. Output contains enough information to pass to triage as-is
+## Execution protocol
 
-### Scenario C: Separating API contract from internal constraints
+1. Use committed `HEAD` as the baseline and the working-tree Skill as the candidate.
+2. Give the executor only the case `input` and its disposable fixture. Keep titles, assertions, and expected conclusions hidden.
+3. Use the same client, model, reasoning effort, sandbox, fixture, and grader for both conditions.
+4. For git fixtures, construct the declared base, candidate commit, working-tree changes, and checks in a temporary repository outside this source repository.
+5. Count a Skill trigger only from an observable `SKILL.md` open.
+6. Grade objective scope and command claims from the fixture and captured output; use a separate grader for judgment-heavy findings.
+7. Repeat only when an unexpected result, instability, client difference, or failure consequence could change the decision.
 
-A case where OpenAPI marks a field non-nullable but the internal storage column is nullable. Should organize findings around the external contract violation, not be pulled toward DB implementation details.
+For Codex CLI, use an ephemeral session with a pinned model and reasoning effort. Keep raw JSONL and full responses in a temporary directory.
 
-Requirements checklist:
-1. [critical] Findings are anchored to external contracts such as API or schema
-2. DB nullability is treated as a separate concern
-3. Contract violation and implementation detail are not mixed in the explanation
-4. A clear contract violation is classified as `must`
+Claude Code and other clients are outside the current execution plan and must be recorded as `not executed`.
 
-### Scenario D: Singular-field change vs. existing cardinality
+## Failure pattern ledger
 
-A new diff uses a singular field or single-record fetch in an area that already has a relation table, multi-record sibling endpoints, and bulk update SQL. Can cross-cutting cardinality assumptions be surfaced?
+- `wrong diff or base reviewed`
+- `diff-only inspection misses surrounding contract`
+- `question loses high potential impact`
+- `unconfirmed premise omitted or hidden in another finding field`
+- `confidence collapsed into canonical label`
+- `suggested check reported as executed`
+- `code test forced onto static documentation or configuration`
+- `clean diff padded with nits or notes`
+- `unavailable diff reported as no issues`
+- `re-review state mixed with label or copied from an answer-bearing prompt`
+- `review workflow routed to an adjacent Skill`
 
-Requirements checklist:
-1. [critical] Existing cardinality is confirmed by inspecting relations and sibling endpoints
-2. The impact of singularization on backward compatibility and neighboring API consistency is explained
-3. Conclusion is not drawn from a single code fragment alone
+## Current result
 
-### Scenario E: Grounding consistency comments in repo precedents
+On 2026-07-27, Codex CLI 0.145.0 with `gpt-5.6-sol` and high reasoning produced:
 
-No definite bug, but compared to handlers/wrappers/types with the same responsibility, this diff alone deviates in timezone or conversion policy. Can in-repo precedents be used to set the strength of the consistency comment?
+- baseline: 21/29 behavior requirements passed, 2 were partial, and 6 failed; 2/7 cases passed
+- candidate: 29/29 behavior requirements and 7/7 cases passed
+- trigger selection: 10/10 cases passed for both baseline and candidate
 
-Requirements checklist:
-1. [critical] Cross-cutting in-repo precedents are used as evidence for findings about the same responsibility
-2. When precedents are weak, the finding strength is reduced rather than overstated
-3. The finding is framed as a consistency gap, not a personal preference
-4. Recommended fixes use `should`; optional improvements use `suggestion`
+The baseline omitted the dedicated `Unconfirmed premises` field and, in two cases, other reporting details. The candidate preserved the gateway premise in that field, derived F1 as `Resolved`, F2 as `Remaining`, and the unbounded retry as `New` from the disposable repository rather than an answer-bearing prompt, and passed the retained cases. Every invocation used an isolated `HOME` so globally installed personal Skills were unavailable.
 
-### Scenario F: Review findings useful for learning
-
-A problem is found in a diff review, but the finding alone would not help detect the same problem next time. A thorough explanation of why it is a problem and how to detect it is included.
-
-Requirements checklist:
-1. [critical] Each finding retains matched evidence, why-it-is-a-problem, how-to-detect, and verification point
-2. The why-it-is-a-problem connects to spec, accident risk, maintainability, test gaps, or similar concerns
-3. The how-to-detect generalizes beyond the current diff into a reusable verification approach
-4. Approval decision is not finalized; findings are left as decision material
-
-### Scenario G: Separating minor suggestions from reference notes
-
-The diff contains minor naming variations, optional readability improvements, and future-watch notes. Non-blocking concerns should not be over-escalated.
-
-Requirements checklist:
-1. [critical] Minor naming or wording findings are not classified as `must` or `should`
-2. Optional improvement proposals are classified as `suggestion`
-3. Trivial findings are classified as `nit`
-4. Background information requiring no action is classified as `note`
-
-### Scenario H: Normalizing legacy label input
-
-Receive `Must-fix` / `Should-fix` / `Nice-to-have` from existing notes and align them to canonical labels in the normal output of `review-changes`.
-
-Requirements checklist:
-1. [critical] `Must-fix` / `Should-fix` / `Nice-to-have` are not used as primary headings in the output
-2. `Must-fix` is normalized to `must`
-3. `Should-fix` is normalized to `should`
-4. `Nice-to-have` is normalized to `suggestion` or `nit` based on content
-
-### Scenario I: State reconciliation in re-review
-
-Previous findings and current diff are provided; resolved, remaining, and newly found items are mixed. States and labels must not be conflated; output is organized as a re-review result.
-
-Requirements checklist:
-1. [critical] State labels are unified as `Resolved` / `Remaining` / `New`
-2. State and canonical label are treated as separate axes
-3. When a `Remaining` `must` exists, there is enough evidence to use it for an approval decision
-
-### Scenario J: Boundary — approve without reading
-
-A request to rubber-stamp a PR without providing a diff. Should produce a finding or explicit "no issues found with reasoning", not a bare LGTM.
-
-Requirements checklist:
-1. [critical] Does not output a bare LGTM or Approved without evidence
-2. Requests the diff or explains that review cannot proceed
-
-## Failure Pattern Ledger
-
-- `findings lack evidence`
-- `severity mixed with decision`
-- `review only meaningful inside triage flow`
-- `review not reusable for learning`
-- `learning note detached from finding`
-- `legacy labels used as primary output`
-- `uncertain premise classified as must`
-- `non-blocking suggestion escalated to should or must`
-- `status mixed with label`
+Claude Code and other clients were not executed. Detailed case-by-assertion and observable trigger evidence is in `results.json`; raw traces are intentionally not retained in the repository.

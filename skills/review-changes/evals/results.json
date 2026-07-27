@@ -1,0 +1,591 @@
+{
+  "schema_version": 2,
+  "skill": "review-changes",
+  "evaluated_on": "2026-07-27",
+  "environment": {
+    "client": "Codex CLI 0.145.0",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high",
+    "sandbox": "read-only"
+  },
+  "baseline": {
+    "commit": "1ebbb8f24b38f051c4b774d7d7c8a0f40fae336d",
+    "files": {
+      "SKILL.md": "sha256:47e45af064aebd65663f52817e884546e317ca35f1c52b3b7feab6291d14fdac"
+    }
+  },
+  "candidate": {
+    "files": {
+      "SKILL.md": "sha256:d5e7bbd152346a8af02c55dfcd7ed0efcc268c50abe68281feada4198ca15aa6",
+      "SKILL-ja.md": "sha256:2733490098fe2dc42c9b42b0f98914d5fea6f7b5e05067f397fd513fdfdf11f4",
+      "evals/evals.json": "sha256:4ab3cd3d617b90a4c4b8df07977a1ef155879258c152668b0e73c3b2e11444d4",
+      "evals/triggers.json": "sha256:c3536747f0b5603397add035cac305ceb2f8b231707d5fcf3b354a71cb3f60b2"
+    }
+  },
+  "execution": {
+    "driver": "Temporary review-changes-only Python orchestration script; not retained as repository source.",
+    "behavior_invocation": "codex exec --ephemeral --json --ignore-user-config --ignore-rules --skip-git-repo-check --sandbox read-only --model gpt-5.6-sol -c 'model_reasoning_effort=\"high\"' -C <disposable-fixture> -o <output> -",
+    "behavior_configuration": "Target Skill in isolation with the case input and disposable fixture; a separate Codex grader received hidden assertions, additional requirements, the executor response, and any execution error.",
+    "trigger_protocol": "Select from installed names and descriptions, open each selected SKILL.md with a shell command, and count only the observed target read.",
+    "isolation": "Each Codex invocation used an isolated HOME while retaining the existing CODEX_HOME for authentication, preventing globally installed personal Skills from being discovered.",
+    "grader": "Separate Codex invocation with assigned hidden assertions and a JSON output schema.",
+    "verdict_rule": "Grade every assigned assertion. A failed critical assertion fails the case; a partial result with no critical failure makes the case partial.",
+    "raw_artifacts": "Temporary and not committed.",
+    "repetition": "One matched behavior and trigger run per condition. The candidate passed every assigned assertion and trigger case, so another run was not decision-relevant."
+  },
+  "behavior": {
+    "baseline_counts": {
+      "requirements": {
+        "pass": 21,
+        "partial": 2,
+        "fail": 6,
+        "total": 29
+      },
+      "cases": {
+        "pass": 2,
+        "partial": 0,
+        "fail": 5,
+        "total": 7
+      }
+    },
+    "candidate_counts": {
+      "requirements": {
+        "pass": 29,
+        "partial": 0,
+        "fail": 0,
+        "total": 29
+      },
+      "cases": {
+        "pass": 7,
+        "partial": 0,
+        "fail": 0,
+        "total": 7
+      }
+    },
+    "cases": [
+      {
+        "id": "explicit-range",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "effective-diff": {
+              "verdict": "pass",
+              "evidence": "`HEAD~1..HEAD` の実効差分を具体的に示し、未追跡の `notes.txt` は内容を読まず対象外と明記しています。"
+            },
+            "finding-contract": {
+              "verdict": "fail",
+              "evidence": "2件の指摘に Label、Evidence、影響、確認方法はありますが、Confidence と専用の Unconfirmed premises フィールドがありません。"
+            },
+            "checks-vs-suggestions": {
+              "verdict": "pass",
+              "evidence": "実行した unittest、直接確認、`git diff --check` の結果を列挙し、Unchecked scope と Residual risk を別に記載しています。"
+            },
+            "read-only-review": {
+              "verdict": "pass",
+              "evidence": "最終状態は既存の未追跡ファイルのみで、新たな変更がないと報告しています。依存追加や外部書き込み、修正実装もありません。"
+            }
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "effective-diff": {
+              "verdict": "pass",
+              "evidence": "`HEAD~1..HEAD` とコミット範囲を示し、変更が `src/calc.py` の2行追加のみで、`notes.txt` は対象外と明記しています。"
+            },
+            "finding-contract": {
+              "verdict": "pass",
+              "evidence": "指摘には canonical Label、Confidence、具体的 Evidence、Impact、Verification、`Unconfirmed premises: none identified` がすべてあります。"
+            },
+            "checks-vs-suggestions": {
+              "verdict": "pass",
+              "evidence": "実施したチェックと結果を専用節にまとめ、未確認範囲と残余リスクを別節に分離しています。"
+            },
+            "read-only-review": {
+              "verdict": "pass",
+              "evidence": "ファイル編集を行っていないと明記し、最終 `git status` でもレビューによる変更なしと報告しています。"
+            }
+          }
+        }
+      },
+      {
+        "id": "external-contract-and-cardinality",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "contextual-evidence": {
+              "verdict": "pass",
+              "evidence": "変更行だけでなく、OpenAPI の配列契約、複合キーによる多重度、兄弟エンドポイントの慣例を根拠にし、問題を `list_members` から `first_member` への変更に帰属させています。"
+            },
+            "finding-contract": {
+              "verdict": "fail",
+              "evidence": "Label、Confidence、Evidence、Impact、検出・確認方法はありますが、専用の Unconfirmed premises フィールドがありません。"
+            },
+            "checks-vs-suggestions": {
+              "verdict": "pass",
+              "evidence": "将来の Test steps、実施済みの Checks performed、Unchecked scope、Residual risk をそれぞれ分けています。"
+            },
+            "read-only-review": {
+              "verdict": "pass",
+              "evidence": "読み取りと照合のみを報告しており、編集、依存追加、外部書き込み、修正実装はありません。"
+            }
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "contextual-evidence": {
+              "verdict": "pass",
+              "evidence": "OpenAPI、テーブルの複合キー、兄弟ハンドラーという変更行外の契約を使い、指摘を `first_member` への変更に明確に結び付けています。"
+            },
+            "finding-contract": {
+              "verdict": "pass",
+              "evidence": "唯一の指摘に Label、Confidence、具体的 Evidence、Impact、Verification、明示的な Unconfirmed premises が揃っています。"
+            },
+            "checks-vs-suggestions": {
+              "verdict": "pass",
+              "evidence": "実際に確認したファイルとコマンド結果を記載し、実行テスト未実施などの未確認範囲と残留リスクを別に示しています。"
+            },
+            "read-only-review": {
+              "verdict": "pass",
+              "evidence": "内容確認のみで、編集、依存追加、外部書き込み、修正実装は報告されていません。"
+            }
+          }
+        }
+      },
+      {
+        "id": "high-impact-unconfirmed-premise",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "finding-contract": {
+              "verdict": "fail",
+              "evidence": "Label、Confidence、Evidence、影響、確認方法はありますが、必須の専用 Unconfirmed premises フィールドがありません。"
+            },
+            "uncertainty-impact": {
+              "verdict": "pass",
+              "evidence": "`question` として提示し、ゲートウェイ保証がない場合という条件付きで IDOR と情報漏えいの高い影響を説明しており、脆弱性を断定していません。"
+            },
+            "unconfirmed-premises-handoff": {
+              "verdict": "fail",
+              "evidence": "ゲートウェイ保証の欠如は Evidence や本文に含まれていますが、専用の Unconfirmed premises フィールドへ分離されていません。"
+            },
+            "checks-vs-suggestions": {
+              "verdict": "partial",
+              "evidence": "Test steps と Additional items は提案として整理されていますが、実施済みチェックと結果、未確認範囲、残余リスクを明確な区分で報告していません。"
+            },
+            "read-only-review": {
+              "verdict": "pass",
+              "evidence": "確認や修正案を提示しただけで、編集、依存追加、外部書き込み、修正実装は報告されていません。"
+            }
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "finding-contract": {
+              "verdict": "pass",
+              "evidence": "指摘には `question` ラベル、Confidence、具体的 Evidence、条件付き Impact、Verification/Falsification、専用の Unconfirmed premises が揃っています。"
+            },
+            "uncertainty-impact": {
+              "verdict": "pass",
+              "evidence": "所有権保証を未確認の問いとして維持し、保証が欠ける場合の IDOR と情報漏えいを条件付きで説明しています。"
+            },
+            "unconfirmed-premises-handoff": {
+              "verdict": "pass",
+              "evidence": "上流ゲートウェイが所有権を保証し迂回不能であることを、専用の Unconfirmed premises フィールドへ明記しています。"
+            },
+            "checks-vs-suggestions": {
+              "verdict": "pass",
+              "evidence": "確認済みの fixture 調査、未確認の実装・本番経路、今後の Verification/Falsification、残留リスクを区別しています。"
+            },
+            "read-only-review": {
+              "verdict": "pass",
+              "evidence": "ファイル編集をしていないと明記し、依存追加、外部書き込み、修正実装もありません。"
+            }
+          }
+        }
+      },
+      {
+        "id": "documentation-and-configuration",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "effective-diff": {
+              "verdict": "partial",
+              "evidence": "README と設定ファイルの変更内容は各指摘から特定できますが、実効差分の範囲や staged/unstaged/untracked の構成を明示していません。"
+            },
+            "change-type-adaptation": {
+              "verdict": "pass",
+              "evidence": "README のコマンド整合性と JSON 設定値の許可集合を対象に、文書・設定向けのスクリプト、JSON 構文、静的値検査を選んでいます。"
+            },
+            "finding-contract": {
+              "verdict": "fail",
+              "evidence": "両指摘に Label、Evidence、影響、確認方法はありますが、Confidence と専用の Unconfirmed premises フィールドがありません。"
+            },
+            "checks-vs-suggestions": {
+              "verdict": "pass",
+              "evidence": "実行したチェックと終了結果を列挙し、未実施の製品確認を Additional items として分離しています。`check_changes.py` は exit 1 と正しく報告しています。"
+            },
+            "read-only-review": {
+              "verdict": "pass",
+              "evidence": "ファイルを編集していないと明記し、依存追加、外部書き込み、修正実装もありません。"
+            }
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "effective-diff": {
+              "verdict": "pass",
+              "evidence": "実効差分を unstaged の `README.md` と `app-settings.json` と特定し、staged/untracked はないと明記しています。"
+            },
+            "change-type-adaptation": {
+              "verdict": "pass",
+              "evidence": "文書のコマンド表記、JSON 構文、設定値の許可集合をそれぞれ適切な静的検査で確認しています。"
+            },
+            "finding-contract": {
+              "verdict": "pass",
+              "evidence": "2件とも Label、Confidence、Evidence、Impact、Verification、`Unconfirmed premises: none identified` を備えています。"
+            },
+            "checks-vs-suggestions": {
+              "verdict": "pass",
+              "evidence": "実行チェックと結果、未実施事項、残留リスクを分離し、指定チェックを exit 1 と報告して設定 assertion 未到達も明記しています。"
+            },
+            "read-only-review": {
+              "verdict": "pass",
+              "evidence": "編集や修正実装、依存追加、外部書き込みは報告されていません。"
+            }
+          }
+        }
+      },
+      {
+        "id": "clean-diff",
+        "baseline": {
+          "case": "pass",
+          "assertions": {
+            "effective-diff": {
+              "verdict": "pass",
+              "evidence": "実効差分を unstaged の docstring 1行追加と特定し、staged と untracked はないと明記しています。"
+            },
+            "checks-vs-suggestions": {
+              "verdict": "pass",
+              "evidence": "実行した unittest と `git diff --check` の終了コード・結果を示し、追加確認事項を別節にしています。"
+            },
+            "no-invented-findings": {
+              "verdict": "pass",
+              "evidence": "指摘なしと明記し、レビューした1行の差分と unittest discovery の制約を示しており、無関係な nit や指摘を作っていません。"
+            },
+            "read-only-review": {
+              "verdict": "pass",
+              "evidence": "読み取りとテストのみで、編集、依存追加、外部書き込み、修正実装は報告されていません。"
+            }
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "effective-diff": {
+              "verdict": "pass",
+              "evidence": "unstaged の `src/greet.py` への docstring 1行追加を示し、staged/untracked はないと明記しています。"
+            },
+            "checks-vs-suggestions": {
+              "verdict": "pass",
+              "evidence": "実行した各チェックの終了コードと結果を示し、対象外範囲および unittest 探索に関する残存リスクを区別しています。"
+            },
+            "no-invented-findings": {
+              "verdict": "pass",
+              "evidence": "対応が必要な問題なしと述べ、差分、実装との整合性、対象外範囲、テスト探索の制約を具体的に示しています。"
+            },
+            "read-only-review": {
+              "verdict": "pass",
+              "evidence": "最終 status が当初と同じでファイル編集なしと明記しています。"
+            }
+          }
+        }
+      },
+      {
+        "id": "missing-diff",
+        "baseline": {
+          "case": "pass",
+          "assertions": {
+            "effective-diff": {
+              "verdict": "pass",
+              "evidence": "fixture が空で Git リポジトリでもなく、レビュー対象を確認できないため評価不能と明記しています。"
+            },
+            "unavailable-diff": {
+              "verdict": "pass",
+              "evidence": "問題なしとは主張せず未評価とし、必要な入力として diff、patch、コミット範囲、PR、変更前後の内容を挙げています。"
+            },
+            "read-only-review": {
+              "verdict": "pass",
+              "evidence": "状態確認のみで、編集、依存追加、外部書き込み、修正実装はありません。"
+            }
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "effective-diff": {
+              "verdict": "pass",
+              "evidence": "有効な差分を取得できないためレビューを実施できなかったと明示しています。"
+            },
+            "unavailable-diff": {
+              "verdict": "pass",
+              "evidence": "Git、patch、コミット範囲、PR、対象ファイルがなく問題の有無は未判定とし、レビューに必要な入力を列挙しています。"
+            },
+            "read-only-review": {
+              "verdict": "pass",
+              "evidence": "ファイル検索などの読み取り確認だけで、編集、依存追加、外部書き込み、修正実装はありません。"
+            }
+          }
+        }
+      },
+      {
+        "id": "full-rereview",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "finding-contract": {
+              "verdict": "fail",
+              "evidence": "F1～F3には Label、Confidence、Evidence、影響、確認方法がありますが、いずれにも専用の Unconfirmed premises フィールドがありません。"
+            },
+            "rereview-state": {
+              "verdict": "pass",
+              "evidence": "F1 を Resolved、F2 を Remaining、F3 を New とし、各状態を Label と Confidence から別フィールドで示しています。"
+            },
+            "checks-vs-suggestions": {
+              "verdict": "pass",
+              "evidence": "実施した diff、スモークチェック、unittest の結果と、追加確認、未確認範囲、残余リスクを分離しています。"
+            },
+            "read-only-review": {
+              "verdict": "pass",
+              "evidence": "検査と実行確認のみで、編集、依存追加、外部書き込み、修正実装は報告されていません。"
+            }
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "finding-contract": {
+              "verdict": "pass",
+              "evidence": "F1～F3すべてに Label、Confidence、具体的 Evidence、Impact、Verification、明示的な Unconfirmed premises があります。"
+            },
+            "rereview-state": {
+              "verdict": "pass",
+              "evidence": "F1=Resolved、F2=Remaining、F3=New を canonical Label と Confidence とは別に明記し、各判断を fixture のコード、OpenAPI、実行結果で裏付けています。"
+            },
+            "checks-vs-suggestions": {
+              "verdict": "pass",
+              "evidence": "実施した status/diff、構文検査、関数プローブ、タイムアウト結果を列挙し、未確認範囲と残留リスクを別節にしています。"
+            },
+            "read-only-review": {
+              "verdict": "pass",
+              "evidence": "読み取りと一時的な実行確認のみで、ファイル編集、依存追加、外部書き込み、修正実装は報告されていません。"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "triggers": {
+    "baseline_counts": {
+      "pass": 10,
+      "fail": 0,
+      "total": 10
+    },
+    "candidate_counts": {
+      "pass": 10,
+      "fail": 0,
+      "total": 10
+    },
+    "cases": [
+      {
+        "id": "precommit-code-review",
+        "expected": "should_trigger",
+        "baseline": {
+          "verdict": "pass",
+          "selected": [
+            "review-changes"
+          ],
+          "target_open_observed": true
+        },
+        "candidate": {
+          "verdict": "pass",
+          "selected": [
+            "review-changes"
+          ],
+          "target_open_observed": true
+        }
+      },
+      {
+        "id": "documentation-configuration-review",
+        "expected": "should_trigger",
+        "baseline": {
+          "verdict": "pass",
+          "selected": [
+            "review-changes"
+          ],
+          "target_open_observed": true
+        },
+        "candidate": {
+          "verdict": "pass",
+          "selected": [
+            "review-changes"
+          ],
+          "target_open_observed": true
+        }
+      },
+      {
+        "id": "pull-request-review",
+        "expected": "should_trigger",
+        "baseline": {
+          "verdict": "pass",
+          "selected": [
+            "review-changes"
+          ],
+          "target_open_observed": true
+        },
+        "candidate": {
+          "verdict": "pass",
+          "selected": [
+            "review-changes"
+          ],
+          "target_open_observed": true
+        }
+      },
+      {
+        "id": "full-rereview",
+        "expected": "should_trigger",
+        "baseline": {
+          "verdict": "pass",
+          "selected": [
+            "review-changes"
+          ],
+          "target_open_observed": true
+        },
+        "candidate": {
+          "verdict": "pass",
+          "selected": [
+            "review-changes"
+          ],
+          "target_open_observed": true
+        }
+      },
+      {
+        "id": "existing-feedback-triage",
+        "expected": "should_not_trigger",
+        "baseline": {
+          "verdict": "pass",
+          "selected": [
+            "triage-review-feedback"
+          ],
+          "target_open_observed": false
+        },
+        "candidate": {
+          "verdict": "pass",
+          "selected": [
+            "triage-review-feedback"
+          ],
+          "target_open_observed": false
+        }
+      },
+      {
+        "id": "specific-fix-validation",
+        "expected": "should_not_trigger",
+        "baseline": {
+          "verdict": "pass",
+          "selected": [
+            "validate-fix"
+          ],
+          "target_open_observed": false
+        },
+        "candidate": {
+          "verdict": "pass",
+          "selected": [
+            "validate-fix"
+          ],
+          "target_open_observed": false
+        }
+      },
+      {
+        "id": "comment-drafting",
+        "expected": "should_not_trigger",
+        "baseline": {
+          "verdict": "pass",
+          "selected": [
+            "draft-review-comments"
+          ],
+          "target_open_observed": false
+        },
+        "candidate": {
+          "verdict": "pass",
+          "selected": [
+            "draft-review-comments"
+          ],
+          "target_open_observed": false
+        }
+      },
+      {
+        "id": "diff-summary",
+        "expected": "should_not_trigger",
+        "baseline": {
+          "verdict": "pass",
+          "selected": [
+            "summarize-changes"
+          ],
+          "target_open_observed": false
+        },
+        "candidate": {
+          "verdict": "pass",
+          "selected": [
+            "summarize-changes"
+          ],
+          "target_open_observed": false
+        }
+      },
+      {
+        "id": "implementation",
+        "expected": "should_not_trigger",
+        "baseline": {
+          "verdict": "pass",
+          "selected": [
+            "implement-changes"
+          ],
+          "target_open_observed": false
+        },
+        "candidate": {
+          "verdict": "pass",
+          "selected": [
+            "implement-changes"
+          ],
+          "target_open_observed": false
+        }
+      },
+      {
+        "id": "guidance-audit",
+        "expected": "should_not_trigger",
+        "baseline": {
+          "verdict": "pass",
+          "selected": [
+            "audit-agent-guidance"
+          ],
+          "target_open_observed": false
+        },
+        "candidate": {
+          "verdict": "pass",
+          "selected": [
+            "audit-agent-guidance"
+          ],
+          "target_open_observed": false
+        }
+      }
+    ]
+  },
+  "unverified": [
+    "Claude Code and other clients were not executed.",
+    "No statistical guarantee is claimed from a single matched behavior and trigger run.",
+    "The trigger protocol exercises catalog selection and observable file reads, not every client-specific Skill router implementation.",
+    "Wall-clock duration and token usage were not exposed by the retained summary."
+  ]
+}

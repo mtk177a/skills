@@ -26,7 +26,7 @@
 | `diversify-agent-search` | 停滞した agent / workflow 改善を、複数候補・多様性軸・ケース別評価で広げる |
 | `draft-commit` | 差分からコミットメッセージ案やコミット分割案を作成する |
 | `draft-issue` | 明確化した課題を Issue の起票案と起票手順に落とし込む |
-| `draft-review-comments` | 整理済みの指摘を GitHub PR の行コメントとレビュー要約に変換する |
+| `draft-review-comments` | 整理済みの指摘と判断の意味を変えず、未投稿の PR コメント案へ変換する |
 | `format-markdown` | CommonMark 規約に従って Markdown を整形する |
 | `implement-changes` | 承認済みの変更を小さな単位で、TDD または適切な別の検証方法を使って実装する |
 | `investigate-incident` | インシデントを調査し、事実を集め、仮説を立て、原因を特定する |
@@ -34,12 +34,12 @@
 | `plan-risky-change` | リスクの高い・不可逆な変更を安全確認を明示して計画する |
 | `record-session-handoff` | 次のセッションがコンテキストを失わずに再開できる引き継ぎ記録を残す |
 | `research-web-safely` | 外部コンテンツを未検証入力として扱いながら Web でトピックを調査する |
-| `review-changes` | 差分を正確性でレビューし、指摘を分類する |
+| `review-changes` | コード・文書・設定の差分を、根拠・影響・確信度・正規ラベル付きでレビューする |
 | `scope-implementation` | 実装タスクの範囲を開始前に絞り込む |
 | `scope-request` | 依頼の目的・完了条件・制約・未解決事項を整理する |
 | `summarize-changes` | 差分またはコミット範囲をレビューや文書化のために要約する |
 | `triage-agent-usage` | エージェント利用が適切か評価し、委任レベルを調整する |
-| `triage-review-feedback` | レビュー指摘を採用・保留・却下に分け、対応方針を決める |
+| `triage-review-feedback` | 既存レビュー指摘の出所、根拠、不確実性を保持し、採用・保留・却下と対応方針を決める |
 | `validate-fix` | 修正を検証し、確認済み・未確認・残るリスクを整理する |
 
 ## インストール

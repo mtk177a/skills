@@ -1,0 +1,67 @@
+{
+  "skill": "draft-review-comments",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Present each prompt as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case once under matched baseline and candidate conditions, then repeat only after an unexpected or unstable selection.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every condition. Mixed observed results are unstable, not a pass.",
+    "coexistence_skills": [
+      "review-changes",
+      "triage-review-feedback",
+      "validate-fix",
+      "implement-changes"
+    ]
+  },
+  "cases": [
+    {
+      "id": "organized-inline-draft",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "Turn these already organized findings, labels, evidence, impact, confidence, and locations into unposted GitHub PR inline comment drafts. Do not review the diff or post anything."
+    },
+    {
+      "id": "supplied-triage-summary",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "The findings, accept/defer decisions, follow-up timing, and Approve action are already decided. Draft a concise PR review summary and approval supplement without changing those decisions."
+    },
+    {
+      "id": "discover-new-findings",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Review the current code, documentation, and configuration diff for new correctness, safety, compatibility, and test problems."
+    },
+    {
+      "id": "triage-existing-feedback",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Evaluate these existing review findings and decide which to accept, defer, or reject, including implementation priority and response approach."
+    },
+    {
+      "id": "determine-rereview-state",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Re-review the updated diff, determine which previous findings are Resolved or Remaining, discover any New findings, and choose the review action."
+    },
+    {
+      "id": "validate-completed-fix",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Verify only whether the completed fix for finding F2 is resolved and report the checks, unconfirmed scope, and remaining risk."
+    },
+    {
+      "id": "implement-findings",
+      "expected": "should_not_trigger",
+      "category": "coexistence",
+      "prompt": "The findings are accepted and scoped. Implement the fixes and run the relevant tests now."
+    },
+    {
+      "id": "post-drafted-comments",
+      "expected": "should_not_trigger",
+      "category": "safety",
+      "prompt": "The review comment drafts are final. Post the inline comments and submit the GitHub review now."
+    }
+  ]
+}
