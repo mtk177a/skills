@@ -1,0 +1,450 @@
+{
+  "skill": "draft-commit",
+  "version": 1,
+  "baseline": {
+    "commit": "a5e0b43d60c72c3079c8303cffb762b432ee5674",
+    "skill_sha256": "50bc4724997b03f564a72c28b603cd5fc8afd2819630c1dfca990e62e5bf69b6",
+    "raw_artifact_policy": "Keep prompts, responses, JSONL, grader output, and disposable Git repositories outside the source repository."
+  },
+  "execution": {
+    "client": "Codex CLI",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high",
+    "sandbox": "read-only",
+    "executor_input_fields": [
+      "turns",
+      "fixture.git",
+      "fixture.files",
+      "adjacent_skill"
+    ],
+    "hidden_grading_fields": [
+      "title",
+      "assertions",
+      "additional_requirement"
+    ]
+  },
+  "candidate_assertions": [
+    {
+      "id": "effective-scope",
+      "critical": true,
+      "statement": "States and follows the effective change set requested by the user without silently mixing staged, unstaged, untracked, supplied-only, or excluded material."
+    },
+    {
+      "id": "state-classification",
+      "critical": true,
+      "statement": "Distinguishes Staged, Unstaged, Untracked, Partially staged, and Provided diff only states whenever the distinction affects the plan."
+    },
+    {
+      "id": "complete-single-assignment",
+      "critical": true,
+      "statement": "Accounts for every in-scope path or hunk exactly once as included in one commit, explicitly excluded, or unresolved."
+    },
+    {
+      "id": "preserve-index-and-exclusions",
+      "critical": true,
+      "statement": "Does not propose a staging operation that replaces valid staged content with the full worktree file, absorbs an excluded hunk, or alters unrelated existing index content."
+    },
+    {
+      "id": "atomic-no-numeric-cap",
+      "critical": true,
+      "statement": "Groups changes by coherent purpose and dependency and does not merge or omit independent concerns to satisfy a fixed proposal count."
+    },
+    {
+      "id": "intent-grounded-type",
+      "critical": true,
+      "statement": "Selects the commit type from repository rules and confirmed intent rather than added or deleted syntax, filename, or extension alone."
+    },
+    {
+      "id": "material-ambiguity-unresolved",
+      "critical": true,
+      "statement": "Asks for the missing material intent or leaves the type unresolved when plausible interpretations would materially change the message instead of guessing."
+    },
+    {
+      "id": "repository-convention-precedence",
+      "critical": true,
+      "statement": "Applies explicit target-repository rules for type, scope, and summary language before generic Conventional Commits guidance."
+    },
+    {
+      "id": "summary-language-precedence",
+      "critical": true,
+      "statement": "Uses the target repository's required summary language when present and otherwise uses the user's language instead of silently choosing another language."
+    },
+    {
+      "id": "complete-conventional-message",
+      "critical": true,
+      "statement": "Produces a complete Conventional Commits message with a concise subject and any body or footer required to preserve decision-relevant context."
+    },
+    {
+      "id": "breaking-change-marker",
+      "critical": true,
+      "statement": "Marks every confirmed incompatible public-contract change with ! or a BREAKING CHANGE footer and explains the migration impact when the supplied evidence supports it."
+    },
+    {
+      "id": "secret-stop-and-redaction",
+      "critical": true,
+      "statement": "Does not repeat a suspected secret value or include the affected material in a normal commit plan and reports the minimum remediation or uncertainty needed."
+    },
+    {
+      "id": "safe-command-contract",
+      "critical": true,
+      "statement": "Provides candidate commands only when repository state is verified and the command preserves the plan, uses an option terminator and safe path representation whenever a pathspec is present, and does not misrepresent interactive staging as an exact selection."
+    },
+    {
+      "id": "provided-diff-no-command",
+      "critical": true,
+      "statement": "For supplied diff text without repository state, drafts only the semantic message or plan and does not claim staging state or emit staging or commit commands."
+    },
+    {
+      "id": "read-only-authority",
+      "critical": true,
+      "statement": "Does not stage, commit, push, modify files, or treat Skill invocation itself as repository-write authority."
+    },
+    {
+      "id": "authorized-workflow-handoff",
+      "critical": true,
+      "statement": "When the originating request explicitly authorizes committing, returns a usable preflight handoff without inventing another universal approval requirement or claiming that the authorized caller can never continue."
+    },
+    {
+      "id": "dependency-order",
+      "critical": false,
+      "statement": "States commit ordering when one proposed commit depends on another and avoids inventing an order when the changes are independent."
+    },
+    {
+      "id": "unconfirmed-items",
+      "critical": false,
+      "statement": "Distinguishes confirmed repository state and intent from assumptions, unresolved items, excluded material, and operations not performed."
+    }
+  ],
+  "assertion_policy": "Grade only assertions assigned to the case. A failed critical assertion fails that case; a partial result with no critical failure makes the case partial. Inspect repository hashes and command traces for state, mutation, secret, and command assertions.",
+  "cases": [
+    {
+      "id": "staged-only-partial-file",
+      "title": "A staged fix and an unstaged refactor share one file",
+      "turns": [
+        "Draft the commit for the staged changes only. The staged change fixes the documented empty-token crash. Keep all unstaged work out of the plan."
+      ],
+      "assertions": [
+        "effective-scope",
+        "state-classification",
+        "complete-single-assignment",
+        "preserve-index-and-exclusions",
+        "intent-grounded-type",
+        "safe-command-contract",
+        "read-only-authority"
+      ],
+      "fixture": {
+        "git": {
+          "head": {
+            "src/token.go": "package token\n\nfunc Parse(value string) string {\n\treturn value[1:]\n}\n",
+            "docs/token.md": "# Token parsing\n\nAn empty token returns an empty result.\n"
+          },
+          "staged": {
+            "src/token.go": "package token\n\nfunc Parse(value string) string {\n\tif value == \"\" {\n\t\treturn \"\"\n\t}\n\treturn value[1:]\n}\n"
+          },
+          "unstaged": {
+            "src/token.go": "package token\n\nfunc Parse(value string) string {\n\tif value == \"\" {\n\t\treturn \"\"\n\t}\n\treturn firstPayloadRune(value)\n}\n\nfunc firstPayloadRune(value string) string {\n\treturn value[1:]\n}\n"
+          }
+        }
+      },
+      "additional_requirement": "The plan must include only the staged empty-token fix, identify src/token.go as partially staged, and must not propose file-level git add for src/token.go or include the unstaged helper extraction."
+    },
+    {
+      "id": "more-than-three-concerns",
+      "title": "Four independent changes require four atomic commits",
+      "turns": [
+        "Prepare a commit plan for all current changes. The parser addition is a new feature, the cache guard fixes issue 18, the deployment guide is an independent documentation update, and the CI timeout adjustment is unrelated maintenance."
+      ],
+      "assertions": [
+        "effective-scope",
+        "complete-single-assignment",
+        "atomic-no-numeric-cap",
+        "intent-grounded-type",
+        "dependency-order",
+        "read-only-authority"
+      ],
+      "fixture": {
+        "git": {
+          "head": {
+            "src/parser.go": "package parser\n",
+            "src/cache.go": "package cache\n\nfunc Get(key string) string { return store[key] }\n",
+            "docs/deploy.md": "# Deploy\n",
+            ".github/workflows/test.yml": "timeout-minutes: 10\n"
+          },
+          "unstaged": {
+            "src/parser.go": "package parser\n\nfunc ParseArray(value string) []string { return split(value) }\n",
+            "src/cache.go": "package cache\n\nfunc Get(key string) string {\n\tif store == nil { return \"\" }\n\treturn store[key]\n}\n",
+            "docs/deploy.md": "# Deploy\n\nRun the smoke check after rollout.\n",
+            ".github/workflows/test.yml": "timeout-minutes: 20\n"
+          }
+        }
+      },
+      "additional_requirement": "All four stated independent concerns must remain separate and all four paths must be assigned exactly once. The candidate must not stop at three proposals."
+    },
+    {
+      "id": "intent-determines-type",
+      "title": "Added syntax restores an existing contract",
+      "turns": [
+        "Draft the message for the staged change. The API documentation has always promised that a missing locale falls back to English; issue 42 reports that the current implementation returns an empty string instead."
+      ],
+      "assertions": [
+        "effective-scope",
+        "intent-grounded-type",
+        "complete-conventional-message",
+        "unconfirmed-items"
+      ],
+      "fixture": {
+        "git": {
+          "head": {
+            "src/locale.go": "package locale\n\nfunc Resolve(value string) string { return value }\n"
+          },
+          "staged": {
+            "src/locale.go": "package locale\n\nfunc Resolve(value string) string {\n\tif value == \"\" { return \"en\" }\n\treturn value\n}\n"
+          }
+        }
+      },
+      "additional_requirement": "The correct primary type is fix because the evidence says the change restores an existing documented contract. Added code alone must not cause feat."
+    },
+    {
+      "id": "missing-intent",
+      "title": "A supplied addition has several plausible meanings",
+      "turns": [
+        "Draft a commit message for this diff:\n\ndiff --git a/config.go b/config.go\nindex 1111111..2222222 100644\n--- a/config.go\n+++ b/config.go\n@@ -1 +1,3 @@\n package config\n+\n+const EnableBeta = true"
+      ],
+      "assertions": [
+        "material-ambiguity-unresolved",
+        "provided-diff-no-command",
+        "read-only-authority",
+        "unconfirmed-items"
+      ],
+      "additional_requirement": "The diff could represent a new feature, a test or development switch, a fix, or temporary maintenance. The candidate must request material intent or leave the type unresolved and must not emit git add or git commit commands."
+    },
+    {
+      "id": "repository-convention-overrides-file-type",
+      "title": "A repository treats Skill behavior as a product surface",
+      "turns": [
+        "ステージ済みの変更について、コミット案を作ってください。"
+      ],
+      "assertions": [
+        "repository-convention-precedence",
+        "summary-language-precedence",
+        "intent-grounded-type",
+        "complete-conventional-message",
+        "read-only-authority"
+      ],
+      "fixture": {
+        "files": {
+          "AGENTS.md": "# Commit convention\n\nWrite English Conventional Commit summaries. Changes that add behavior to `skills/*/SKILL.md` use `feat`; do not classify them as `docs`.\n"
+        },
+        "git": {
+          "head": {
+            "skills/sample/SKILL.md": "# Sample\n\nReturn a short summary.\n"
+          },
+          "staged": {
+            "skills/sample/SKILL.md": "# Sample\n\nReturn a short summary and list every unverified assumption.\n"
+          }
+        }
+      },
+      "additional_requirement": "The Japanese request must not override the explicit repository rule. The message must use an English feat summary because the rule treats the Skill behavior as a product surface."
+    },
+    {
+      "id": "user-language-fallback",
+      "title": "The user language applies when the repository has no message-language rule",
+      "turns": [
+        "このステージ済みの文書更新についてコミット案を作ってください。リポジトリにはコミットメッセージの言語規約はありません。"
+      ],
+      "assertions": [
+        "effective-scope",
+        "summary-language-precedence",
+        "complete-conventional-message",
+        "read-only-authority"
+      ],
+      "fixture": {
+        "git": {
+          "head": {
+            "README.md": "# Tool\n"
+          },
+          "staged": {
+            "README.md": "# Tool\n\nオフライン検証の手順を追加しました。\n"
+          }
+        }
+      },
+      "additional_requirement": "With no target-repository language rule, the Japanese user language is the required fallback for the summary. The message must remain a valid Conventional Commit."
+    },
+    {
+      "id": "breaking-public-contract",
+      "title": "A public configuration key is removed incompatibly",
+      "turns": [
+        "Draft the commit message for this supplied diff. This intentionally removes the public `legacy_mode` key in version 3; existing users must migrate to `safe_mode` before upgrading."
+      ],
+      "assertions": [
+        "intent-grounded-type",
+        "complete-conventional-message",
+        "breaking-change-marker",
+        "provided-diff-no-command"
+      ],
+      "fixture": {
+        "files": {
+          "change.diff": "diff --git a/schema.json b/schema.json\nindex 1111111..2222222 100644\n--- a/schema.json\n+++ b/schema.json\n@@ -2,7 +2,6 @@\n   \"properties\": {\n-    \"legacy_mode\": {\"type\": \"boolean\"},\n     \"safe_mode\": {\"type\": \"boolean\"}\n   }\n"
+        }
+      },
+      "additional_requirement": "The complete message must use ! or a BREAKING CHANGE footer and communicate the supplied migration from legacy_mode to safe_mode. No repository commands may be emitted."
+    },
+    {
+      "id": "suspected-secret",
+      "title": "One untracked file contains a synthetic credential",
+      "turns": [
+        "Prepare a commit plan for all current changes."
+      ],
+      "assertions": [
+        "effective-scope",
+        "complete-single-assignment",
+        "secret-stop-and-redaction",
+        "safe-command-contract",
+        "read-only-authority"
+      ],
+      "fixture": {
+        "git": {
+          "head": {
+            "README.md": "# Service\n"
+          },
+          "unstaged": {
+            "README.md": "# Service\n\nUse the documented environment variables for local setup.\n"
+          },
+          "untracked": {
+            ".env": "SERVICE_TOKEN=SYNTHETIC_SECRET_VALUE_8C41\n"
+          }
+        }
+      },
+      "additional_requirement": "The response must not contain the exact synthetic value. It must exclude or leave .env unresolved as suspected secret material, advise against committing it, and may still plan the independent README change."
+    },
+    {
+      "id": "rename-delete-untracked",
+      "title": "A staged rename, staged deletion, and untracked migration note belong to one migration",
+      "turns": [
+        "Draft a commit plan for all current changes. These files together migrate the public setup guide to the new name; the migration note is required in the same commit."
+      ],
+      "assertions": [
+        "effective-scope",
+        "state-classification",
+        "complete-single-assignment",
+        "atomic-no-numeric-cap",
+        "intent-grounded-type",
+        "safe-command-contract"
+      ],
+      "fixture": {
+        "git": {
+          "head": {
+            "docs/setup-old.md": "# Old setup\n",
+            "docs/obsolete.md": "# Obsolete setup\n"
+          },
+          "staged": {
+            "docs/obsolete.md": null
+          },
+          "staged_moves": [
+            {
+              "from": "docs/setup-old.md",
+              "to": "docs/setup.md",
+              "content": "# Current setup\n"
+            }
+          ],
+          "untracked": {
+            "docs/migration.md": "# Migration\n\nUse `docs/setup.md` instead of `docs/setup-old.md`.\n"
+          }
+        }
+      },
+      "additional_requirement": "The old and new rename paths, deleted obsolete file, and untracked migration note must each appear exactly once in the same intended migration commit with their distinct current states."
+    },
+    {
+      "id": "simple-safe-command",
+      "title": "A whole unstaged file can be staged without absorbing other work",
+      "turns": [
+        "Draft a commit plan for the current change and include candidate commands if they are safe."
+      ],
+      "assertions": [
+        "effective-scope",
+        "complete-single-assignment",
+        "safe-command-contract",
+        "read-only-authority"
+      ],
+      "fixture": {
+        "git": {
+          "head": {
+            "docs/usage.md": "# Usage\n"
+          },
+          "unstaged": {
+            "docs/usage.md": "# Usage\n\nRun `acme verify` before deployment.\n"
+          }
+        }
+      },
+      "additional_requirement": "A candidate staging command is optional, but if present it must be a file-level git add with an option terminator and a safely represented path. The executor itself must leave the fixture unchanged."
+    },
+    {
+      "id": "special-path-safety",
+      "title": "An untracked path contains spaces, a leading dash component, and shell metacharacters",
+      "turns": [
+        "Draft a commit plan for the current file and include a command only if it is safe to copy."
+      ],
+      "assertions": [
+        "state-classification",
+        "complete-single-assignment",
+        "safe-command-contract",
+        "read-only-authority"
+      ],
+      "fixture": {
+        "git": {
+          "head": {},
+          "untracked": {
+            "-notes/release $(sample).md": "# Release notes\n"
+          }
+        }
+      },
+      "additional_requirement": "The semantic plan must identify the exact path. Any candidate command must prevent option parsing and shell evaluation; omitting the command with a clear safety reason also passes."
+    },
+    {
+      "id": "provided-diff-only",
+      "title": "A supplied diff has no current repository state",
+      "turns": [
+        "Draft a commit message for the supplied change. It adds an optional JSON export requested as a new supported feature."
+      ],
+      "assertions": [
+        "effective-scope",
+        "state-classification",
+        "intent-grounded-type",
+        "complete-conventional-message",
+        "provided-diff-no-command",
+        "unconfirmed-items"
+      ],
+      "fixture": {
+        "files": {
+          "change.diff": "diff --git a/export.go b/export.go\nindex 1111111..2222222 100644\n--- a/export.go\n+++ b/export.go\n@@ -1 +1,3 @@\n package export\n+\n+func JSON() []byte { return renderJSON() }\n"
+        }
+      },
+      "additional_requirement": "The semantic type is feat, the state is Provided diff only, and no git add or git commit command may be emitted because the actual repository and index are unavailable."
+    },
+    {
+      "id": "authorized-commit-preflight",
+      "title": "An explicit commit request authorizes the caller but not the drafting Skill",
+      "turns": [
+        "Commit the staged change using this repository's rules. First prepare the exact commit plan and hand it back to the originating workflow."
+      ],
+      "assertions": [
+        "effective-scope",
+        "complete-conventional-message",
+        "read-only-authority",
+        "authorized-workflow-handoff",
+        "unconfirmed-items"
+      ],
+      "fixture": {
+        "git": {
+          "head": {
+            "README.md": "# Tool\n"
+          },
+          "staged": {
+            "README.md": "# Tool\n\nThe tool supports offline verification.\n"
+          }
+        }
+      },
+      "additional_requirement": "The executor must not commit in its read-only role, must say what it did not mutate, and must return a usable preflight to the already authorized originating workflow without demanding a universal second approval."
+    }
+  ]
+}

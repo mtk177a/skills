@@ -22,7 +22,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `design-changes` | Design change scope, impact, risk, and verification approach before implementing |
 | `design-skill` | Decide whether and how to create, merge, split, or substantially rescope a Skill before implementation |
 | `diversify-agent-search` | Widen stuck agent or workflow improvement with multiple candidates, diversity axes, and case-level evaluation |
-| `draft-commit` | Generate commit message drafts or commit split proposals from a diff |
+| `draft-commit` | Draft atomic commit plans and Conventional Commits messages while preserving Git staging boundaries |
 | `draft-issue` | Turn a clarified request into an issue draft and filing steps |
 | `draft-review-comments` | Draft unposted PR comments from organized findings and decisions without changing their meaning |
 | `format-markdown` | Format Markdown according to CommonMark conventions |

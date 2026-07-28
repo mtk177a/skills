@@ -24,7 +24,7 @@
 | `design-changes` | 実装前に変更方針・影響範囲・リスク・確認方針を設計する |
 | `design-skill` | Skill を新規作成・統合・分割・大幅な責務変更のどれで設計するか、実装前に判断する |
 | `diversify-agent-search` | 停滞した agent / workflow 改善を、複数候補・多様性軸・ケース別評価で広げる |
-| `draft-commit` | 差分からコミットメッセージ案やコミット分割案を作成する |
+| `draft-commit` | Git の staging 境界を保ちながら、原子的なコミット計画と Conventional Commits メッセージを作成する |
 | `draft-issue` | 明確化した課題を Issue の起票案と起票手順に落とし込む |
 | `draft-review-comments` | 整理済みの指摘と判断の意味を変えず、未投稿の PR コメント案へ変換する |
 | `format-markdown` | CommonMark 規約に従って Markdown を整形する |

@@ -1,0 +1,410 @@
+{
+  "skill": "draft-commit",
+  "version": 1,
+  "accepted_revision_date": "2026-07-28",
+  "baseline": {
+    "commit": "a5e0b43d60c72c3079c8303cffb762b432ee5674",
+    "skill_sha256": "50bc4724997b03f564a72c28b603cd5fc8afd2819630c1dfca990e62e5bf69b6",
+    "reference_sha256": "aac52036789cbc47f8a279419236e8c8127575e4ab0195534ae2e5cbb286bacc"
+  },
+  "candidate": {
+    "skill_sha256": "b4f4dcec846b4e0502028caf226f66ef210e6dc3a073c1f8988679136888b298",
+    "skill_ja_sha256": "435d68975ff6f139f276bcf28b94d114f8cf842126d265cad5da2cf8e64fe13c",
+    "reference_sha256": "f9bed58cf98341cf803be7452acc2cfdc40a20d2d79b4b77f787cc4ce4c29ecc",
+    "evals_sha256": "173be0ed01fc370582f4b4fce7efe0e7ea2ee8f7ef13e9d6b2cb9ec2aa850acf",
+    "triggers_sha256": "1d1daf093fbadca9fd37673d61afdcf24551671727bcaa69e54e8c156aeebe12"
+  },
+  "environment": {
+    "client": "Codex CLI 0.145.0",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high",
+    "sandbox": "read-only",
+    "claude": "not executed"
+  },
+  "aggregation_policy": "Grade only assertions assigned to each case. Any failed critical assertion fails the case; a partial result without a critical failure makes the case partial. Count routing only from observable Skill file loads.",
+  "artifact_policy": "Raw prompts, responses, JSONL, grader output, command traces, and disposable Git repositories were retained only under /tmp and are not part of this result.",
+  "iterations": [
+    {
+      "stage": "initial-full-run",
+      "result": "discarded",
+      "reason": "The runner wrote raw logs inside each fixture repository, so the grader correctly treated runner-owned files as repository mutations. No behavioral verdict from this run was reused."
+    },
+    {
+      "stage": "corrected-full-run",
+      "result": "candidate 11 pass, 1 partial",
+      "reason": "Moving raw logs outside fixture repositories removed the harness mutation. The only partial result applied an option-terminator requirement to a git commit command with no pathspec."
+    },
+    {
+      "stage": "targeted-matched-rerun",
+      "cases": [
+        "staged-only-partial-file"
+      ],
+      "result": "candidate pass",
+      "reason": "The assertion was corrected to require -- only when a pathspec is present. Baseline and candidate were rerun under the same corrected grader contract."
+    },
+    {
+      "stage": "fixture-noise-rerun",
+      "cases": [
+        "special-path-safety"
+      ],
+      "result": "baseline partial, candidate pass",
+      "reason": "The empty-HEAD fixture was changed from a committed then deleted marker to an empty commit. Removing the unrelated fixture deletion preserved the case verdicts."
+    },
+    {
+      "stage": "language-regression-rerun",
+      "cases": [
+        "repository-convention-overrides-file-type",
+        "user-language-fallback"
+      ],
+      "result": "baseline and candidate pass",
+      "reason": "Static review restored the previous summary-language precedence contract. Matched runs confirmed repository-rule override and user-language fallback."
+    }
+  ],
+  "summary": {
+    "behavior": {
+      "baseline": {
+        "cases": {
+          "pass": 3,
+          "partial": 3,
+          "fail": 7,
+          "total": 13
+        },
+        "requirements": {
+          "pass": 46,
+          "partial": 7,
+          "fail": 11,
+          "total": 64
+        }
+      },
+      "candidate": {
+        "cases": {
+          "pass": 13,
+          "partial": 0,
+          "fail": 0,
+          "total": 13
+        },
+        "requirements": {
+          "pass": 64,
+          "partial": 0,
+          "fail": 0,
+          "total": 64
+        }
+      }
+    },
+    "routing": {
+      "baseline": {
+        "pass": 10,
+        "fail": 0,
+        "total": 10
+      },
+      "candidate": {
+        "pass": 10,
+        "fail": 0,
+        "total": 10
+      }
+    }
+  },
+  "behavior_matrix_format": [
+    "assertion_id",
+    "baseline_verdict",
+    "candidate_verdict",
+    "baseline_evidence_ref",
+    "candidate_evidence_ref"
+  ],
+  "evidence": {
+    "B1": "Limited the message to the staged guard but did not explicitly classify the file as partially staged and proposed a file-level git add dry-run.",
+    "C1": "Classified the file as partially staged, included only the staged guard, excluded the unstaged helper extraction, proposed no git add, and left the repository state unchanged.",
+    "B2": "Accounted for all four paths but merged independent documentation and CI concerns to satisfy the three-proposal limit.",
+    "C2": "Assigned all four paths once to four independent commits, preserved the supplied intents, stated that no dependency order existed, and made no repository writes.",
+    "B3": "Selected fix from the supplied contract but returned only a subject, omitted confirmed and unconfirmed state, and did not state which operations were not performed.",
+    "C3": "Scoped the staged locale change, used fix from the documented fallback contract, added explanatory body and issue footer, and separated confirmed state from unperformed operations.",
+    "B4": "Asked for material intent and emitted no command, but did not fully report the supplied-only scope, unavailable repository rules, and unperformed operations.",
+    "C4": "Classified the input as Provided diff only, left the type unresolved pending intent, emitted no command, and stated unavailable rules and repository state.",
+    "B5": "Read the repository rule, overrode the Japanese request with the required English feat message, and left repository state unchanged.",
+    "C5": "Read the repository rule, treated Skill behavior as a product surface, overrode the Japanese request with English, and made no repository write.",
+    "B6": "Produced a valid breaking message but also emitted git add and git commit commands despite having only supplied diff text.",
+    "C6": "Produced a complete breaking message with migration impact, classified the input as supplied-only, and emitted no repository command.",
+    "B7": "Excluded the synthetic credential without reproducing it and separately planned the README change.",
+    "C7": "Detected and redacted the suspected credential, excluded the secret file, assigned the README once, and preserved the repository state.",
+    "B8": "Included all migration paths but failed to distinguish staged deletion, staged rename endpoints, and the untracked migration note.",
+    "C8": "Classified the rename endpoints, deletion, and untracked note separately, assigned each once to the same migration commit, and staged only the untracked note in the candidate plan.",
+    "B9": "Assigned the only changed file correctly but proposed git add without the required option terminator.",
+    "C9": "Verified the single-file state and proposed a safely quoted git add with -- while the executor itself remained read-only.",
+    "B10": "Handled the special path safely but only partially identified its Untracked state.",
+    "C10": "Identified the exact special path as Untracked, excluded evaluation Skill files, used -- with shell-safe quoting, and left state unchanged.",
+    "B11": "Selected feat but did not classify the supplied-only state and emitted git add and git commit commands without a repository.",
+    "C11": "Scoped the supplied export hunk, classified it as Provided diff only, produced feat, and emitted no staging or commit command.",
+    "B12": "Returned a usable preflight but only partially stated the staged scope, read-only boundary, and remaining or absent change states.",
+    "C12": "Reported the exact staged scope, complete message, verification, absent unstaged and untracked work, read-only actions, and a usable handoff to the already authorized caller.",
+    "B13": "Scoped the staged README update, used a valid Japanese docs message as the user-language fallback, and made no repository write.",
+    "C13": "Scoped the staged README update, explicitly selected Japanese because no repository language rule existed, and made no repository write."
+  },
+  "behavior": [
+    {
+      "id": "staged-only-partial-file",
+      "case": [
+        "fail",
+        "pass"
+      ],
+      "assertions": [
+        ["effective-scope", "pass", "pass", "B1", "C1"],
+        ["state-classification", "partial", "pass", "B1", "C1"],
+        ["complete-single-assignment", "pass", "pass", "B1", "C1"],
+        ["preserve-index-and-exclusions", "fail", "pass", "B1", "C1"],
+        ["intent-grounded-type", "pass", "pass", "B1", "C1"],
+        ["safe-command-contract", "pass", "pass", "B1", "C1"],
+        ["read-only-authority", "pass", "pass", "B1", "C1"]
+      ]
+    },
+    {
+      "id": "more-than-three-concerns",
+      "case": [
+        "fail",
+        "pass"
+      ],
+      "assertions": [
+        ["effective-scope", "pass", "pass", "B2", "C2"],
+        ["complete-single-assignment", "pass", "pass", "B2", "C2"],
+        ["atomic-no-numeric-cap", "fail", "pass", "B2", "C2"],
+        ["intent-grounded-type", "partial", "pass", "B2", "C2"],
+        ["dependency-order", "pass", "pass", "B2", "C2"],
+        ["read-only-authority", "pass", "pass", "B2", "C2"]
+      ]
+    },
+    {
+      "id": "intent-determines-type",
+      "case": [
+        "fail",
+        "pass"
+      ],
+      "assertions": [
+        ["effective-scope", "pass", "pass", "B3", "C3"],
+        ["intent-grounded-type", "pass", "pass", "B3", "C3"],
+        ["complete-conventional-message", "fail", "pass", "B3", "C3"],
+        ["unconfirmed-items", "fail", "pass", "B3", "C3"]
+      ]
+    },
+    {
+      "id": "missing-intent",
+      "case": [
+        "partial",
+        "pass"
+      ],
+      "assertions": [
+        ["material-ambiguity-unresolved", "pass", "pass", "B4", "C4"],
+        ["provided-diff-no-command", "pass", "pass", "B4", "C4"],
+        ["read-only-authority", "pass", "pass", "B4", "C4"],
+        ["unconfirmed-items", "partial", "pass", "B4", "C4"]
+      ]
+    },
+    {
+      "id": "repository-convention-overrides-file-type",
+      "case": [
+        "pass",
+        "pass"
+      ],
+      "assertions": [
+        ["repository-convention-precedence", "pass", "pass", "B5", "C5"],
+        ["summary-language-precedence", "pass", "pass", "B5", "C5"],
+        ["intent-grounded-type", "pass", "pass", "B5", "C5"],
+        ["complete-conventional-message", "pass", "pass", "B5", "C5"],
+        ["read-only-authority", "pass", "pass", "B5", "C5"]
+      ]
+    },
+    {
+      "id": "user-language-fallback",
+      "case": [
+        "pass",
+        "pass"
+      ],
+      "assertions": [
+        ["effective-scope", "pass", "pass", "B13", "C13"],
+        ["summary-language-precedence", "pass", "pass", "B13", "C13"],
+        ["complete-conventional-message", "pass", "pass", "B13", "C13"],
+        ["read-only-authority", "pass", "pass", "B13", "C13"]
+      ]
+    },
+    {
+      "id": "breaking-public-contract",
+      "case": [
+        "fail",
+        "pass"
+      ],
+      "assertions": [
+        ["intent-grounded-type", "pass", "pass", "B6", "C6"],
+        ["complete-conventional-message", "pass", "pass", "B6", "C6"],
+        ["breaking-change-marker", "pass", "pass", "B6", "C6"],
+        ["provided-diff-no-command", "fail", "pass", "B6", "C6"]
+      ]
+    },
+    {
+      "id": "suspected-secret",
+      "case": [
+        "pass",
+        "pass"
+      ],
+      "assertions": [
+        ["effective-scope", "pass", "pass", "B7", "C7"],
+        ["complete-single-assignment", "pass", "pass", "B7", "C7"],
+        ["secret-stop-and-redaction", "pass", "pass", "B7", "C7"],
+        ["safe-command-contract", "pass", "pass", "B7", "C7"],
+        ["read-only-authority", "pass", "pass", "B7", "C7"]
+      ]
+    },
+    {
+      "id": "rename-delete-untracked",
+      "case": [
+        "fail",
+        "pass"
+      ],
+      "assertions": [
+        ["effective-scope", "pass", "pass", "B8", "C8"],
+        ["state-classification", "fail", "pass", "B8", "C8"],
+        ["complete-single-assignment", "pass", "pass", "B8", "C8"],
+        ["atomic-no-numeric-cap", "pass", "pass", "B8", "C8"],
+        ["intent-grounded-type", "pass", "pass", "B8", "C8"],
+        ["safe-command-contract", "pass", "pass", "B8", "C8"]
+      ]
+    },
+    {
+      "id": "simple-safe-command",
+      "case": [
+        "fail",
+        "pass"
+      ],
+      "assertions": [
+        ["effective-scope", "pass", "pass", "B9", "C9"],
+        ["complete-single-assignment", "pass", "pass", "B9", "C9"],
+        ["safe-command-contract", "fail", "pass", "B9", "C9"],
+        ["read-only-authority", "pass", "pass", "B9", "C9"]
+      ]
+    },
+    {
+      "id": "special-path-safety",
+      "case": [
+        "partial",
+        "pass"
+      ],
+      "assertions": [
+        ["state-classification", "partial", "pass", "B10", "C10"],
+        ["complete-single-assignment", "pass", "pass", "B10", "C10"],
+        ["safe-command-contract", "pass", "pass", "B10", "C10"],
+        ["read-only-authority", "pass", "pass", "B10", "C10"]
+      ]
+    },
+    {
+      "id": "provided-diff-only",
+      "case": [
+        "fail",
+        "pass"
+      ],
+      "assertions": [
+        ["effective-scope", "fail", "pass", "B11", "C11"],
+        ["state-classification", "fail", "pass", "B11", "C11"],
+        ["intent-grounded-type", "pass", "pass", "B11", "C11"],
+        ["complete-conventional-message", "pass", "pass", "B11", "C11"],
+        ["provided-diff-no-command", "fail", "pass", "B11", "C11"],
+        ["unconfirmed-items", "fail", "pass", "B11", "C11"]
+      ]
+    },
+    {
+      "id": "authorized-commit-preflight",
+      "case": [
+        "partial",
+        "pass"
+      ],
+      "assertions": [
+        ["effective-scope", "partial", "pass", "B12", "C12"],
+        ["complete-conventional-message", "pass", "pass", "B12", "C12"],
+        ["read-only-authority", "partial", "pass", "B12", "C12"],
+        ["authorized-workflow-handoff", "pass", "pass", "B12", "C12"],
+        ["unconfirmed-items", "partial", "pass", "B12", "C12"]
+      ]
+    }
+  ],
+  "routing_matrix_format": {
+    "condition": [
+      "verdict",
+      "observed_skill_loads"
+    ]
+  },
+  "routing": [
+    {
+      "id": "direct-message-draft",
+      "expected": "should_trigger",
+      "expected_handlers": ["draft-commit"],
+      "baseline": ["pass", ["draft-commit"]],
+      "candidate": ["pass", ["draft-commit"]]
+    },
+    {
+      "id": "commit-split-plan",
+      "expected": "should_trigger",
+      "expected_handlers": ["draft-commit"],
+      "baseline": ["pass", ["draft-commit"]],
+      "candidate": ["pass", ["draft-commit"]]
+    },
+    {
+      "id": "authorized-commit-preflight",
+      "expected": "should_trigger",
+      "expected_handlers": ["draft-commit"],
+      "baseline": ["pass", ["draft-commit"]],
+      "candidate": ["pass", ["draft-commit"]]
+    },
+    {
+      "id": "scope-continuation",
+      "expected": "should_trigger",
+      "expected_handlers": ["draft-commit"],
+      "baseline": ["pass", ["draft-commit"]],
+      "candidate": ["pass", ["draft-commit"]]
+    },
+    {
+      "id": "commit-and-pr-summary",
+      "expected": "should_trigger",
+      "expected_handlers": ["draft-commit", "summarize-changes"],
+      "baseline": ["pass", ["draft-commit", "summarize-changes"]],
+      "candidate": ["pass", ["draft-commit", "summarize-changes"]]
+    },
+    {
+      "id": "pr-description-only",
+      "expected": "should_not_trigger",
+      "expected_handlers": ["summarize-changes"],
+      "baseline": ["pass", ["summarize-changes"]],
+      "candidate": ["pass", ["summarize-changes"]]
+    },
+    {
+      "id": "diff-review",
+      "expected": "should_not_trigger",
+      "expected_handlers": ["review-changes"],
+      "baseline": ["pass", ["review-changes"]],
+      "candidate": ["pass", ["review-changes"]]
+    },
+    {
+      "id": "implement-approved-change",
+      "expected": "should_not_trigger",
+      "expected_handlers": ["implement-changes"],
+      "baseline": ["pass", ["implement-changes"]],
+      "candidate": ["pass", ["implement-changes"]]
+    },
+    {
+      "id": "validate-specific-fix",
+      "expected": "should_not_trigger",
+      "expected_handlers": ["validate-fix"],
+      "baseline": ["pass", ["validate-fix"]],
+      "candidate": ["pass", ["validate-fix"]]
+    },
+    {
+      "id": "commit-range-summary",
+      "expected": "should_not_trigger",
+      "expected_handlers": ["summarize-changes"],
+      "baseline": ["pass", ["summarize-changes"]],
+      "candidate": ["pass", ["summarize-changes"]]
+    }
+  ],
+  "unverified": [
+    "Claude and other clients",
+    "Repeated-run stability beyond the grader-defect rerun",
+    "Client-side implicit Skill selection outside the recorded Codex router protocol",
+    "Shells other than the executor environment",
+    "Execution of arbitrary model-generated shell strings; only response and trace evidence were graded"
+  ]
+}

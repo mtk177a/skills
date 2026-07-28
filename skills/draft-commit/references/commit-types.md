@@ -1,41 +1,73 @@
 # Commit Types Reference
 
 > **Attribution:** This file is an original summary authored for this repository.
-> The type definitions are based on the [Conventional Commits specification](https://www.conventionalcommits.org) (CC BY 3.0).
+> The message structure and type semantics are based on the [Conventional Commits specification](https://www.conventionalcommits.org) (CC BY 3.0).
 
-このファイルは、`draft-commit` のタイプ選定を補助するための参考資料。
-リポジトリやチームの明示的な規約がある場合はそちらを優先する。
-現在作業中の対象リポジトリに明示された規約がある場合は、その規約を優先する。
+Use this reference when `draft-commit` needs a non-obvious type, breaking-change marker, body, or footer decision. An explicit target-repository convention always takes precedence.
 
-## 判断フロー
+## Decision sequence
 
-1. 変更は挙動や仕様に影響するか
-2. 影響する場合:
-   - 新しい振る舞いや機能追加なら `feat`
-   - 不具合修正なら `fix`
-   - 速度や効率の改善なら `perf`
-   - 振る舞いは変えず構造改善なら `refactor`
-3. 影響しない場合:
-   - コード整形、フォーマット、空白、lint などは `style`
-   - ドキュメントやコメントの更新は `docs`
-   - テストのみの変更は `test`
-   - 雑務や補助的変更は `chore`
+1. Identify the commit's confirmed primary intent. Do not infer intent from file extension or syntax alone.
+2. Determine the user-visible or consumer-visible semantic effect.
+3. Determine whether the change preserves backward compatibility.
+4. Apply the target repository's type, scope, release, and language rules.
+5. Select the type and decide whether the message needs a body, footer, or breaking-change marker.
 
-## `style` の扱い (重要)
+If two types remain plausible because intent is missing, ask or leave the type unresolved. Do not choose whichever type appears first in this reference.
 
-- `style` は挙動や仕様に影響しない整形を指す。
-- 例: フォーマット適用、空白や改行の整備、lint での自動修正、並び順の整理など。
-- UI の見た目が変わる場合、体験や仕様に影響するなら `feat` または `fix` が基本。
+## Common types
 
-## UI 変更のタイプ目安
+| Type | Primary intent | Distinguishing evidence |
+| --- | --- | --- |
+| `feat` | Add a new capability or supported behavior | A consumer can do something newly intended |
+| `fix` | Restore behavior that should already have worked | Existing expectation, contract, or documented behavior was violated |
+| `refactor` | Improve internal structure without intending to change observable behavior | Public behavior and compatibility remain the same |
+| `perf` | Improve performance without changing the intended result | Time, memory, throughput, or resource use is the primary change |
+| `docs` | Change documentation or comments only | No product, build, test, or operational behavior changes under the repository convention |
+| `test` | Add or change tests without changing production behavior | Test coverage or test infrastructure is the primary change |
+| `build` | Change build system, packaging, or dependencies | Artifact construction or dependency resolution is the primary change |
+| `ci` | Change continuous-integration configuration or automation | CI execution is the primary change |
+| `style` | Change formatting without semantic effect | Whitespace, formatting, or equivalent presentation-only code changes |
+| `chore` | Perform repository maintenance not represented by a more specific allowed type | The repository convention permits `chore` for that maintenance purpose |
 
-- 新しいデザイン、色、レイアウトで体験が変わる: `feat`
-- UI の崩れ、読みにくさ、表示バグの修正: `fix`
-- 見た目は変わらず、CSS の整形や並び順整理のみ: `style`
+Repositories may define different or additional meanings. In particular, a repository may treat a Skill, schema, configuration, or documentation file as a product surface whose behavioral change is `feat` or `fix`; do not override that rule based on the filename.
 
-## 例
+## Ambiguous cases
 
-- `style`: Prettier で全体を整形
-- `docs`: README の使い方を更新
-- `feat`: 新しい設定画面を追加
-- `fix`: ボタンが重なって押せない不具合を修正
+- A null guard is `fix` when it restores an existing expectation, `feat` when accepting the input is new supported behavior, and `refactor` only when observable behavior is intentionally unchanged.
+- A dependency update is not automatically `build`; use the type that represents its primary product effect when the repository convention requires that.
+- A UI appearance change is `feat` when it intentionally changes the experience, `fix` when it repairs a defect, and `style` only when it is code formatting with no visible effect.
+- Moving or renaming files is `refactor` only when structure is the primary purpose and behavior remains unchanged. Otherwise use the type of the behavior delivered by the move.
+- Generated files, lockfiles, and documentation can belong in the same commit as the behavior they support when they are inseparable consequences rather than independent concerns.
+
+## Breaking changes
+
+A breaking change alters a public API, schema, configuration contract, supported environment, data format, migration requirement, or other consumer expectation incompatibly.
+
+Mark it with either:
+
+```text
+feat(api)!: remove the legacy endpoint
+```
+
+or:
+
+```text
+feat(api): replace the legacy endpoint
+
+BREAKING CHANGE: clients must migrate from `/v1/legacy` to `/v2/current`.
+```
+
+The breaking marker is independent of the type. A `fix`, `refactor`, or other allowed type can still be breaking.
+
+## Body and footers
+
+Use a body when the subject cannot carry decision-relevant context such as why the change was needed, how two changes relate, or what migration is required. Keep the subject concise and put the additional explanation after a blank line.
+
+Use footers for structured metadata required by the target workflow, such as:
+
+- `BREAKING CHANGE: <description>`
+- `Refs: #123`
+- another trailer explicitly required by the repository
+
+Do not invent issue references, co-author lines, release notes, or other trailers that are not supported by evidence or repository policy.
