@@ -17,7 +17,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `calibrate-ai-learning` | Use when delegation is getting too deep or you want to maintain understanding while working |
 | `clarify-request` | Iteratively clarify or structure an ambiguous request until the next workflow can start, proceed under low-impact assumptions, or report a blocker |
 | `cognitive-rhythm-writing` | Design pacing in explanatory Japanese writing by managing cognitive rhythm and unresolved tension |
-| `define-referents` | Fix concrete referents and semantic roles before introducing new or ambiguous terms |
+| `define-referents` | Ground ambiguous terms in concrete referents and return naming constraints to the originating workflow |
 | `design-agent-instructions` | Design AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md instruction sets |
 | `design-changes` | Design change scope, impact, risk, and verification approach before implementing |
 | `design-skill` | Decide whether and how to create, merge, split, or substantially rescope a Skill before implementation |

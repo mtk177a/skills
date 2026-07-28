@@ -1,79 +1,91 @@
 ---
 name: define-referents
-description: Use before drafting design documents, investigation reports, cause-isolation or countermeasure proposals, reasoning summaries, or identifiers when a new or ambiguous term could collapse different referents or semantic roles. Establish and obtain approval for a referent table before naming or prose. Do not use for quotations, mechanical edits, reuse of established names, boilerplate, casual conversation, or short text that uses only established terminology.
+description: Defines concrete referents, semantic roles, relationships, and naming constraints before a new or ambiguous term can collapse distinct concepts in a design, investigation, explanation, or identifier. Use as a semantic preflight when terminology itself could distort later reasoning or when the user requests a referent table; return a referent-and-naming handoff to the originating workflow. Not for clarifying the overall request, drafting the downstream document or code, mechanical edits, established-name reuse, ordinary wording choices, boilerplate, casual conversation, or short text using established terminology.
 license: MIT
 ---
 
 # Define Referents
 
-## Purpose
+## Objective
 
-- Fix each concrete referent and semantic role before assigning a term.
-- Prevent one fluent label from conflating a condition, state, event, value, record, purpose, or means.
-- Preserve the user's reasoning order across prose, design elements, and code identifiers.
+- Ground each material term in a concrete referent, its role, and its relationships before proposing the term.
+- Prevent a fluent label from hiding distinct conditions, states, events, values, records, purposes, means, entities, or other context-specific roles.
+- Return a referent-and-naming contract to the originating workflow without taking over its design, investigation, writing, or implementation responsibility.
 
 ## Required reference
 
-Read [references/referents-before-labels.md](references/referents-before-labels.md) completely whenever this Skill triggers. Use it as the semantic decision guide; keep this file as the execution contract.
+Read [references/referents-before-labels.md](references/referents-before-labels.md) completely whenever this Skill triggers. Use it as the semantic decision guide and this file as the execution contract.
 
-## Inputs
+## Evidence and inputs
 
-- The source requirement, observation, or reasoning sequence
-- The intended document, design element, or identifier
-- The output location, when the user authorized file creation
+Gather what is available:
+
+- the source requirement, observation, evidence, or reasoning sequence
+- the intended document, design element, explanation, or identifier
+- established domain terms and their authoritative sources
+- the originating workflow and the work it must resume after semantic preflight
+- explicit authorization for a separate file, when one is requested
+
+Distinguish confirmed information, inference, assumptions, and unknowns. Use safe, relevant read-only inspection to resolve discoverable facts when the target and inspection scope are clear. Do not invent a purpose, referent, role, relationship, or naming authority to complete a table.
 
 ## Workflow
 
-1. Identify the terms that would be introduced or reused with a potentially broader meaning.
-2. Create the referent table before drafting any body text or identifier.
-3. Fill `Source`, `Purpose`, `Concrete referent`, `Role`, and `Sequence / relationship` first. Leave the final two fields empty until these five fields are complete.
-4. Fill `Candidate term` only after the referent and role are fixed. Then fill `First-use definition` for a new term, or mark the term as established.
-5. Submit only the table and stop for user confirmation. Do not draft the target body in the same turn.
-6. After confirmation, read the approved table again and write the target body as a projection of it.
-7. Keep the same mapping in prose, design elements, and code identifiers. Use separate names for separate roles.
+1. Identify only the terms that would be introduced or reused with a broader or ambiguous meaning that could materially change later reasoning.
+2. Confirm that the source contains enough information to distinguish the relevant referents and relationships. If a material fact is missing, ask a focused question or report `Blocked`; do not generate a naming table from incomplete grounding.
+3. Create the Grounding table first. Do not include candidate terms, first-use definitions, or wording that presupposes a candidate term in this phase.
+4. Validate the Grounding table on its own: each row identifies a concrete referent, its current semantic role, its place in the reasoning, and any uncertainty without relying on a label.
+5. Only after every relevant Grounding row passes validation, create the Naming table. Prefer an established or user-provided term. If no precise term shortens the concrete wording without changing its boundary, use `concrete wording` instead of introducing a term.
+6. Choose the state:
+   - `Ready`: the mapping and naming constraints are settled enough for the originating workflow to continue.
+   - `Decision required`: competing mappings or candidate terms imply materially different public contracts or domain boundaries. Present the grounded alternatives and ask the decision-relevant question without selecting silently.
+   - `Blocked`: material evidence, information, or authority needed to ground the referent is unavailable.
+7. For a direct naming request, return the tables and state as the final deliverable. For a broader task, return them as a handoff and stop this Skill so the originating workflow can resume.
+8. If a Grounding row is corrected, invalidate every dependent Naming row, revise the grounding, and regenerate only the affected naming proposal. Do not overwrite user-authored or downstream content.
 
-## Referent table contract
+## Grounding table contract
 
-Use this column order without reordering it:
+Use this column order:
 
-| Source | Purpose | Concrete referent | Role | Sequence / relationship | First-use definition | Candidate term |
+| ID | Source | Purpose | Concrete referent | Semantic role | Sequence / relationship | Uncertainty |
 | --- | --- | --- | --- | --- | --- | --- |
 
-- Use only these roles: `start condition`, `state`, `event`, `value`, `record`, `purpose`, `means`.
-- Keep one role per row. Split a row when one candidate term would cover multiple roles.
-- Keep a table to 1–6 rows. Split larger tables at a boundary where the meaning or reasoning stage changes.
-- Preserve the source wording in `Sequence / relationship` when the user supplied an order such as test, isolate, then choose a countermeasure.
-- Prefer user-provided or established terms. Define every new term as “X means ...”; if that sentence cannot be written precisely, use the concrete description instead of introducing the term.
-- Confirm that hiding `Candidate term` still leaves the concrete referents and relationships understandable.
+- Use stable mechanical IDs such as `R1`; an ID is only a cross-table reference and is not a domain term.
+- State what the referent is rather than restating a proposed label.
+- Describe the semantic role in the current explanation or design. The common roles in the required reference are examples, not a closed taxonomy; use a precise context-specific role when needed.
+- Split rows when one label would otherwise hide distinct referents or materially different roles. Do not split the same referent merely because it participates in several relationships.
+- Preserve user-supplied reasoning order and uncertainty.
+- Record uncertainty as `confirmed`, `inferred`, `assumed`, or `unknown`, with a short basis when it is not obvious.
+- Split a table only when purposes or reasoning stages are meaningfully separate, or when the mapping can no longer be reviewed coherently. Do not split by a fixed row count.
 
-## Submission mode
+## Naming table contract
 
-- For an authorized file deliverable, save `referent-table-<slug>.md` beside the target document, report its path, and stop for confirmation.
-- For a response-only task, return the standalone table and stop for confirmation without creating a file.
-- Do not use a hash as evidence of creation order. The separate submission and confirmation boundary is the evidence.
+Create this table only after the Grounding table is complete:
 
-## Recovery
+| ID | Candidate term | Status | First-use definition |
+| --- | --- | --- | --- |
 
-- If body text was drafted before the table, discard only the agent-generated draft, create and submit the table, and wait again. Never delete user-authored content.
-- If a referent or role is corrected, revise the row and wait for confirmation before regenerating the affected body.
-- Do not repair an incorrect row by adding explanatory prose around it.
+- Use the Grounding ID to preserve an explicit one-to-one mapping.
+- Use `established`, `proposed`, `concrete wording`, or `decision required` for `Status`.
+- Define every proposed new term precisely as “X means ...”. For an established term, identify it as established and preserve the authoritative mapping from the Grounding table.
+- Multiple alternatives may reference the same ID only when the state is `Decision required`; state the semantic trade-off instead of choosing one silently.
+- Read each candidate term alone. It must not truthfully name another row whose distinction matters.
+- Hide the entire Naming table. The Grounding table must remain understandable without it.
+
+## Output and file handling
+
+- Start with `State: Ready`, `State: Decision required`, or `State: Blocked`.
+- Include the Grounding table whenever grounding is complete enough to support it. Include the Naming table only after the grounding passes its checks.
+- For `Decision required`, include the unresolved semantic choice, why it affects the public contract or domain boundary, and the question the user must decide.
+- For `Blocked`, include the missing evidence or information, the mapping left unsettled, and what can unblock it.
+- Return tables in the response by default. Create a separate referent-table file only when the user explicitly authorizes that additional artifact; authorization to create the target document does not authorize a sidecar file.
+- Never use a hash, file timestamp, or user confirmation as a substitute for the observable Grounding-then-Naming order.
 
 ## Boundaries
 
-### Always
-
-- Fix referents and roles before candidate terms.
-- Preserve uncertainty and reasoning order from the source.
-- Wait for explicit confirmation between the table and the target body.
-
-### Ask first
-
-- When competing candidate terms imply materially different public contracts or domain boundaries.
-- When the requested table location would require writing outside the authorized workspace.
-
-### Never
-
-- Use a corrected-word blacklist as the main safeguard.
-- Use one term for multiple semantic roles.
-- Introduce a new term without a precise first-use definition.
-- Overwrite user-authored text while recovering from an ordering mistake.
+- Do not require user confirmation when the mapping is complete and only a low-impact, local, reversible naming choice remains.
+- Do not treat this Skill as authorization to write the target document, design, report, or code.
+- Do not clarify the overall request when the ambiguity is not specifically about referents or terminology; return that responsibility to `clarify-request` or the originating workflow.
+- Do not force every referent into a closed role list or split tables at a fixed row count.
+- Do not use a corrected-word blacklist as the main safeguard.
+- Do not introduce a new term without a precise mapping and first-use definition.
+- Do not fetch the external provenance article at runtime; the bundled reference is self-contained.

@@ -1,102 +1,81 @@
 # define-referents evals
 
-## Iter 0 — Static check
+## Purpose
 
-- the description triggers only when new or ambiguous terms may collapse referents or roles
-- the body excludes quotations, mechanical edits, established-name reuse, boilerplate, casual conversation, and short established terminology
-- the table fixes five referent fields before filling the candidate term and first-use definition
-- the table and target body are separated by explicit user confirmation
-- the required reference defines role criteria and validation checks without requiring the external article at runtime
-- [critical] the executor must submit only the referent table and stop before drafting the target body
+Verify that `define-referents` makes the Grounding-then-Naming order observable, preserves uncertainty and context-specific semantic roles, and returns a naming constraint to the originating workflow without inventing missing meaning, forcing universal approval, creating unauthorized files, or taking over downstream work.
 
-## Scenarios
+## Assets
 
-### Scenario A: One phrase covers a threshold, condition, and event
+- `triggers.json`: trigger, non-trigger, near-miss, continuation, and coexistence routing cases
+- `evals.json`: realistic tasks and hidden requirement assignments
+- `results.json`: compact baseline/candidate evidence for the currently accepted revision after execution
+- this README: static contract, coverage, protocol, and summarized result
 
-A design draft proposes one new term for a numeric limit, the condition that compares history size with that limit, and the event that begins summarization.
+## Static check
 
-Requirements checklist:
-1. [critical] Put the value, start condition, and event in separate rows
-2. Leave candidate terms empty until the concrete referents and roles are fixed
-3. Submit only the table and wait for confirmation
-4. Do not draft the design body in the same turn
+- `description` targets terminology-specific ambiguity and excludes overall request clarification, downstream authoring, mechanical edits, established-name reuse, and ordinary wording.
+- The Skill ends with a referent-and-naming handoff rather than writing the downstream document, report, design, or code.
+- Grounding and Naming use separate observable tables, and no candidate term or first-use definition appears in Grounding.
+- `Ready`, `Decision required`, and `Blocked` have distinct entry and reporting conditions.
+- Confirmation is conditional on a material semantic decision rather than universal.
+- A separate table file requires explicit authorization.
+- Semantic roles are contextual rather than a closed taxonomy, and table splitting follows meaning rather than row count.
+- The bundled reference is self-contained and the external article is provenance only.
 
-### Scenario B: Preserve a cause-isolation sequence
+## Coverage map
 
-The cause is unknown. The intended order is to run a test, retain its results, isolate the cause from those results, and choose a countermeasure only after isolation.
+| Responsibility or boundary | Plausible failure | Scenario or check | Grading |
+| --- | --- | --- | --- |
+| Observable Grounding before Naming | Generates a label or definition while supposedly grounding the referent | `threshold-condition-event`, `low-impact-local-identifier` | Response-order and content inspection |
+| Distinct referents and sequence | Reuses one fluent label for a threshold, condition, and event or hides an unknown cause | `threshold-condition-event`, `incident-unknown-cause` | Requirement-level grader |
+| Missing input handling | Invents the meaning of an underspecified boolean to complete the table | `underspecified-public-boolean` | Critical assertion |
+| Conditional decision boundary | Always waits for confirmation or silently selects a public contract | `low-impact-local-identifier`, `public-contract-alternatives` | State and question inspection |
+| Context-specific roles and semantic splitting | Forces actor, component, interface, or policy into the old role list or splits at six rows | `contextual-roles-coherent-flow` | Table inspection |
+| File and downstream ownership | Creates a sidecar or drafts the design/code under the semantic-preflight Skill | `design-handoff-no-sidecar`, `implementation-handoff-no-edit` | Fixture hashes and response inspection |
+| Correction recovery | Retains a naming proposal whose Grounding row was corrected | `corrected-grounding-row` | Multi-turn comparison |
+| Trigger boundary | Misses explicit referent work or absorbs clarification, ordinary design, implementation, investigation, and mechanical writing | `triggers.json` | Observable Skill load |
+| Coexistence | Prevents or replaces the originating specialized workflow | design, incident, and implementation handoff cases | Requirement-level grader |
 
-Requirements checklist:
-1. [critical] Preserve test → record results → isolate cause → choose countermeasure
-2. Distinguish records and means from the purpose of isolating the cause
-3. Reject a short work label that collapses the sequence
-4. Keep the cause unknown until evidence identifies it
+## Behavioral execution protocol
 
-### Scenario C: Do not trigger for a mechanical edit
+1. Use `define-referents` from commit `45bb765ca110bd3e0b4ab2294b7ed030a4ada55d` as the immutable baseline and the working-tree Skill as the candidate.
+2. Run each condition in a disposable directory containing only the selected target Skill, its required reference, any declared adjacent Skill, and fixture files.
+3. Give the executor only the visible user turns and fixture. Keep assertion statements, additional requirements, and expected conclusions hidden.
+4. Use a separate Codex grader with the transcript, assigned assertions, fixture hashes, and additional requirement.
+5. A failed critical assertion fails the case. A partial result without a critical failure is partial.
+6. Keep prompts, responses, JSONL, grader output, and disposable fixtures under `/tmp`; do not commit raw traces.
+7. Run each affected case once per condition. Repeat only when variation, an unexpected result, or failure impact could change the design decision.
 
-The user asks to normalize Markdown list spacing while retaining all established terms and headings.
+## Trigger execution protocol
 
-Requirements checklist:
-1. [critical] Do not create a referent table
-2. Do not delay the mechanical edit for terminology approval
-
-### Scenario D: Response-only two-stage submission
-
-The user asks for a proposed public boolean name in chat and supplies no output path.
-
-Requirements checklist:
-1. [critical] Return only a standalone referent table in the first response
-2. Do not create a file
-3. Wait for confirmation before proposing the final identifier or related prose
-
-### Scenario E: Correct an approved row
-
-After seeing the table, the user points out that one row describes an event but labels it as a state.
-
-Requirements checklist:
-1. [critical] Rewrite the row and wait for confirmation again
-2. Do not preserve the incorrect row and compensate with explanatory prose
-3. Do not overwrite user-authored text
+Present each case as a Skill-selection task with only installed names and descriptions. Require the selector to open every selected `SKILL.md` so loading is observable. Count only an observed target file read; record an unavailable observation as `not exposed`.
 
 ## Failure Pattern Ledger
 
-- `candidate term filled before referent and role`
-- `multiple semantic roles collapsed into one row`
-- `reasoning sequence compressed into a working label`
-- `target body drafted before table approval`
-- `incorrect row patched with explanatory prose`
-- `mechanical edit triggers unnecessary referent table`
+- `candidate term or definition appears in Grounding`
+- `distinct referents collapsed under one label`
+- `missing meaning invented to finish a table`
+- `low-impact naming stopped for universal confirmation`
+- `material public meaning selected silently`
+- `context-specific role forced into a closed taxonomy`
+- `table split only because it exceeds six rows`
+- `target-document authorization treated as sidecar authorization`
+- `semantic preflight drafts or edits downstream content`
+- `corrected grounding retains stale naming`
+- `ordinary clarification, design, investigation, implementation, or mechanical writing routed to define-referents`
 
-## Iter 1 — Blank-slate behavior check (2026-07-21)
+## Current revision
 
-### Changes
+Evaluated on 2026-07-28 with Codex CLI 0.145.0, `gpt-5.6-sol`, high reasoning, and a read-only sandbox.
 
-- Initial independently authored Skill based on the referents-before-labels workflow.
+- The matched baseline/candidate evidence covers nine behavior cases and 46 assigned requirements.
+- The candidate passed all 46 requirements and all nine cases after correcting one grader requirement that contradicted the confirmed need for two public facts. The baseline passed no case, with 21 passed, four partial, and 21 failed requirements.
+- The candidate made Grounding-then-Naming observable, distinguished conditional confirmation from low-impact completion, supported context-specific roles and semantic table splitting, preserved missing information and corrections, and left design, incident, and implementation ownership downstream.
+- All ten trigger, non-trigger, continuation, near-miss, and coexistence cases passed for both conditions. The redesign preserved the already precise routing while changing loaded-time behavior.
+- Claude and other clients were not executed.
 
-### Execution results
+See [`results.json`](results.json) for candidate hashes, the case-by-requirement matrix, observed Skill loads, grader-correction provenance, and unverified items.
 
-Each scenario ran in a fresh subagent context that received only the Skill path and the user-style scenario. The requirement checklist was withheld from the executor and applied afterward by the parent.
+### Next validation question
 
-| Scenario | Result | Observation |
-| --- | --- | --- |
-| A | Pass | Split the numeric value, start condition, and event into three rows, then returned only the table. |
-| B | Pass | Preserved test → record results → isolate cause → choose countermeasure and kept the cause unknown. |
-| C | Pass | Performed only the requested Markdown spacing edit without creating a referent table. |
-| D | Pass | Returned a standalone one-row table in chat without creating a file or presenting follow-on prose. |
-| E | Pass | Replaced the incorrect `state` role with `event` in the row and returned only the corrected table. |
-
-All five critical requirements passed. No target body or final identifier was generated before the confirmation boundary.
-
-### Structured reflection
-
-- The role split and two-stage submission contract were reproduced without exposing the checklist to executors.
-- Scenario B kept records, means, and purpose distinct instead of compressing the sequence into one working label.
-- Scenario C confirmed that the mechanical-edit exclusion prevents unnecessary terminology approval.
-- The table output cannot reveal the executor's token-by-token field completion order; the independently understandable concrete-referent columns are the observable proxy for the referent-before-label constraint.
-
-### Failure pattern ledger update
-
-None of the listed failure patterns appeared in Iter 1. Keep the ledger unchanged for regression checks.
-
-### Next fix proposal
-
-- Make no Skill-body change from Iter 1. Re-run these scenarios after any change to the workflow, table contract, or submission boundary.
+- Does the redesigned Skill preserve its semantic guardrail while allowing the originating workflow to continue without an unnecessary user-confirmation turn?

@@ -1,0 +1,332 @@
+{
+  "schema_version": 2,
+  "skill": "define-referents",
+  "evaluated_on": "2026-07-28",
+  "environment": {
+    "client": "Codex CLI 0.145.0",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high",
+    "sandbox": "read-only"
+  },
+  "baseline": {
+    "commit": "45bb765ca110bd3e0b4ab2294b7ed030a4ada55d",
+    "files": {
+      "SKILL.md": "sha256:36fe14587916a1197e231e3a906520e4db5bda5c696208e7c6401684b59e3d57",
+      "SKILL-ja.md": "sha256:1828b2a69a6976b65cd45a3a8b0aee59077db2fa463ee4ff13b64977b86bf5e4",
+      "references/referents-before-labels.md": "sha256:2b0a09fb8d8b5306bf77c0ae343c1d329e2254de7ac0b306b18ab3a92e691c02"
+    }
+  },
+  "candidate": {
+    "files": {
+      "SKILL.md": "sha256:daf3adb6d5c152005876748d70b712c0edde5df1ef6f2dc91d59637e7804d586",
+      "SKILL-ja.md": "sha256:ac2636d2d64b5d10fa34e94621c8450dc24e8b54effb8c6ed708309386bed33f",
+      "references/referents-before-labels.md": "sha256:2d92f95900d6820cafb2100f7000b504f668c9b13dcd4c8acbaffd7ea4b24595",
+      "evals/evals.json": "sha256:cb7829d452cd95cb0a534a4fed459afe99fb79c8d237d1b8902fb58ffe469c94",
+      "evals/triggers.json": "sha256:7b232e1f7f54364c58d6d76f0bc0c178985c6aa098047368d9113022eb286bbc"
+    }
+  },
+  "execution": {
+    "driver": "Temporary define-referents-only Python orchestration script; not retained as repository source.",
+    "invocation": "codex exec --ephemeral --json --ignore-user-config --ignore-rules --skip-git-repo-check --sandbox read-only --model gpt-5.6-sol -c 'model_reasoning_effort=\"high\"' -C <disposable-fixture> -o <output> -",
+    "behavior_configuration": "Each executor received only the selected baseline or candidate define-referents Skill, its matching bundled reference, visible conversation, declared fixture files, and an adjacent Skill only for the named coexistence cases. A separate Codex grader received hidden assigned assertions, additional requirements, fixture hashes, command traces, and the executor response.",
+    "trigger_protocol": "Select from installed names and descriptions, open every selected SKILL.md with a shell command, and count only an observed Skill file read.",
+    "isolation": "Every invocation used an isolated HOME while retaining the existing CODEX_HOME for authentication, preventing globally installed personal Skills from being discovered.",
+    "verdict_rule": "Grade only assertions assigned to the case. A failed critical assertion fails the case; a partial result with no critical failure makes the case partial.",
+    "raw_artifacts": "Disposable fixtures, prompts, responses, JSONL, grader output, and command traces were retained only under temporary directories outside the repository.",
+    "usage": {
+      "turns": "not aggregated",
+      "tokens": "not aggregated",
+      "duration": "not exposed"
+    }
+  },
+  "evaluation_revisions": [
+    {
+      "coverage": "A two-case smoke run verified the temporary runner, matched baseline/candidate setup, two-phase grading, and low-impact no-confirmation behavior before the full suite."
+    },
+    {
+      "candidate_skill": "sha256:daf3adb6d5c152005876748d70b712c0edde5df1ef6f2dc91d59637e7804d586",
+      "coverage": "The full matched run covered nine behavior cases and ten routing cases. The candidate passed 45 of 46 assigned requirements and eight cases; public-contract-alternatives was partial because its hidden requirement incorrectly required reopening the already confirmed need for two distinct facts."
+    },
+    {
+      "change": "Reworded only the public-contract-alternatives grader requirement so it asks for the remaining contract decision without contradicting the executor input or embedding a required one-field-versus-two-field conclusion.",
+      "coverage": "Reran public-contract-alternatives under matched baseline/candidate conditions. The candidate passed all five assigned requirements; the baseline still failed the same three requirements. Evidence for the other eight behavior cases and all ten routing cases is reused from the full run because the Skill source, reference, prompts, descriptions, and their assertions were unchanged."
+    }
+  ],
+  "behavior": {
+    "baseline_counts": {
+      "requirements": {
+        "pass": 21,
+        "partial": 4,
+        "fail": 21,
+        "total": 46
+      },
+      "cases": {
+        "pass": 0,
+        "partial": 0,
+        "fail": 9,
+        "total": 9
+      }
+    },
+    "candidate_counts": {
+      "requirements": {
+        "pass": 46,
+        "partial": 0,
+        "fail": 0,
+        "total": 46
+      },
+      "cases": {
+        "pass": 9,
+        "partial": 0,
+        "fail": 0,
+        "total": 9
+      }
+    },
+    "cases": [
+      {
+        "id": "threshold-condition-event",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "fail", "evidence": "The single table mixed grounding with candidate terms and first-use definitions."},
+            "preserve-distinct-referents": {"verdict": "pass", "evidence": "The value, reached-limit predicate, and start event were separate and retained the supplied order."},
+            "state-contract": {"verdict": "fail", "evidence": "No semantic state was declared for the unresolved mapping."},
+            "precise-naming-mapping": {"verdict": "fail", "evidence": "There were no Grounding IDs, status values, or separate Naming mappings."},
+            "originating-workflow-ownership": {"verdict": "pass", "evidence": "The response did not draft the design."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "No target artifact changed."}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "pass", "evidence": "A label-free R1–R3 Grounding table preceded the separate Naming table."},
+            "preserve-distinct-referents": {"verdict": "pass", "evidence": "The numeric threshold, predicate, and event remained separate with measure–compare–begin order."},
+            "state-contract": {"verdict": "pass", "evidence": "The response used a state consistent with the remaining mapping choice."},
+            "precise-naming-mapping": {"verdict": "pass", "evidence": "Every naming alternative mapped to a Grounding ID with status and a conditional definition."},
+            "originating-workflow-ownership": {"verdict": "pass", "evidence": "Only the semantic handoff was returned."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "No target artifact changed."}
+          }
+        }
+      },
+      {
+        "id": "underspecified-public-boolean",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "state-contract": {"verdict": "fail", "evidence": "It supplied no Decision required state despite the unresolved public meaning."},
+            "missing-input-no-invention": {"verdict": "fail", "evidence": "It presented candidate definitions as a completed table and invented successful completion semantics."},
+            "preserve-uncertainty": {"verdict": "fail", "evidence": "It converted unknown cancellation and failure semantics into a named completion concept."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "No target artifact changed."}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "state-contract": {"verdict": "pass", "evidence": "Decision required correctly represented the unresolved user-owned public meaning."},
+            "missing-input-no-invention": {"verdict": "pass", "evidence": "It organized the four alternatives without selecting one and asked a focused contract question."},
+            "preserve-uncertainty": {"verdict": "pass", "evidence": "Unknown completion, cancellation, and failure semantics remained explicit."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "No target artifact changed."}
+          }
+        }
+      },
+      {
+        "id": "low-impact-local-identifier",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "fail", "evidence": "The only table contained the candidate and definition."},
+            "state-contract": {"verdict": "fail", "evidence": "No Ready state was reported."},
+            "low-impact-no-universal-gate": {"verdict": "pass", "evidence": "It proposed the local identifier without requesting confirmation."},
+            "precise-naming-mapping": {"verdict": "partial", "evidence": "The term had a definition but no Grounding ID or status."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "No code changed."}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "pass", "evidence": "A label-free Grounding table preceded the Naming table."},
+            "state-contract": {"verdict": "pass", "evidence": "Ready matched the complete low-impact grounding."},
+            "low-impact-no-universal-gate": {"verdict": "pass", "evidence": "It proposed `isWaitingForRetryBackoff` in the same response without confirmation."},
+            "precise-naming-mapping": {"verdict": "pass", "evidence": "The proposed term mapped to R1 with status and a precise interval definition."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "No code changed."}
+          }
+        }
+      },
+      {
+        "id": "public-contract-alternatives",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "fail", "evidence": "The single table mixed referents, candidate names, and definitions."},
+            "preserve-distinct-referents": {"verdict": "pass", "evidence": "Caller intent and current chunk-emission state were separate."},
+            "state-contract": {"verdict": "fail", "evidence": "No Decision required state was reported."},
+            "material-decision-state": {"verdict": "fail", "evidence": "It did not ask which referent, if either, should retain the ambiguous public name."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "No target artifact changed."}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "pass", "evidence": "The R1/R2 Grounding table preceded candidate names and definitions."},
+            "preserve-distinct-referents": {"verdict": "pass", "evidence": "Request intent and runtime state remained separate across the response lifecycle."},
+            "state-contract": {"verdict": "pass", "evidence": "Decision required matched the unresolved public-name allocation."},
+            "material-decision-state": {"verdict": "pass", "evidence": "It asked whether `streaming` should name R1, R2, or neither and selected none."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "No target artifact changed."}
+          }
+        }
+      },
+      {
+        "id": "contextual-roles-coherent-flow",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "fail", "evidence": "Established terms and definitions appeared in the first table."},
+            "preserve-distinct-referents": {"verdict": "pass", "evidence": "The seven authentication-flow referents remained distinct."},
+            "context-specific-role": {"verdict": "fail", "evidence": "Actor, surface, component, interface, and policy were forced into `means`."},
+            "semantic-table-splitting": {"verdict": "fail", "evidence": "The coherent seven-row flow was split at the old six-row limit."},
+            "precise-naming-mapping": {"verdict": "fail", "evidence": "There were no Grounding IDs and established-term placeholders were not definitions."},
+            "originating-workflow-ownership": {"verdict": "pass", "evidence": "It did not draft the architecture document."}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "pass", "evidence": "The label-free R1–R7 Grounding table appeared before established terms."},
+            "preserve-distinct-referents": {"verdict": "pass", "evidence": "All seven referents and their flow relationships remained distinct."},
+            "context-specific-role": {"verdict": "pass", "evidence": "It used actor, interaction surface, component, interface, rule, and artifact roles."},
+            "semantic-table-splitting": {"verdict": "pass", "evidence": "All seven related rows stayed in one coherent Grounding table."},
+            "precise-naming-mapping": {"verdict": "pass", "evidence": "Every established term mapped to R1–R7 with a concrete definition."},
+            "originating-workflow-ownership": {"verdict": "pass", "evidence": "Only the requested handoff was returned."}
+          }
+        }
+      },
+      {
+        "id": "design-handoff-no-sidecar",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "fail", "evidence": "The first table included candidate names and definitions."},
+            "preserve-distinct-referents": {"verdict": "pass", "evidence": "Duration, exceeded-duration condition, and purge event remained separate."},
+            "no-implicit-sidecar": {"verdict": "pass", "evidence": "It created no extra file."},
+            "originating-workflow-ownership": {"verdict": "pass", "evidence": "It did not draft the design."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "The authorized target fixture stayed unchanged."}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "pass", "evidence": "The R1–R3 Grounding table preceded the Naming table."},
+            "preserve-distinct-referents": {"verdict": "pass", "evidence": "Duration, predicate, and event remained separate while unconfirmed causality stayed explicit."},
+            "no-implicit-sidecar": {"verdict": "pass", "evidence": "It created no referent-table sidecar and stated that target authorization did not permit one."},
+            "originating-workflow-ownership": {"verdict": "pass", "evidence": "It left design decisions and drafting to design-changes."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "The target fixture stayed unchanged."}
+          }
+        }
+      },
+      {
+        "id": "incident-unknown-cause",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "fail", "evidence": "The first table already contained event labels and definitions."},
+            "state-contract": {"verdict": "fail", "evidence": "No state described the unavailable cause, component, or time-window evidence."},
+            "preserve-uncertainty": {"verdict": "pass", "evidence": "Disconnect and reconnect were confirmed while cause and component remained unknown."},
+            "originating-workflow-ownership": {"verdict": "partial", "evidence": "It avoided writing the report but did not provide a clear stateful handoff."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "No target artifact changed."}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "pass", "evidence": "It produced only label-free Grounding and omitted Naming because evidence was incomplete."},
+            "state-contract": {"verdict": "pass", "evidence": "Blocked applied only to naming while investigation remained able to continue."},
+            "preserve-uncertainty": {"verdict": "pass", "evidence": "Cause, component, time boundary, and reset mechanism remained unknown."},
+            "originating-workflow-ownership": {"verdict": "pass", "evidence": "Evidence gathering and cause isolation remained with investigate-incident."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "No target artifact changed."}
+          }
+        }
+      },
+      {
+        "id": "corrected-grounding-row",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "fail", "evidence": "Both responses used a combined grounding-and-naming table."},
+            "state-contract": {"verdict": "fail", "evidence": "Neither response reported Ready."},
+            "correction-invalidates-naming": {"verdict": "pass", "evidence": "The second response replaced the event-oriented proposal rather than preserving it."},
+            "precise-naming-mapping": {"verdict": "partial", "evidence": "Definitions existed but no IDs or term status connected naming to grounding."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "No code changed."}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "pass", "evidence": "Both turns placed a label-free Grounding table before Naming."},
+            "state-contract": {"verdict": "pass", "evidence": "Ready matched the settled evidence in both turns."},
+            "correction-invalidates-naming": {"verdict": "pass", "evidence": "The second turn invalidated the event row and regenerated the interval-state proposal."},
+            "precise-naming-mapping": {"verdict": "pass", "evidence": "The regenerated term mapped to R1 with status and interval boundaries."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "No code changed."}
+          }
+        }
+      },
+      {
+        "id": "implementation-handoff-no-edit",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "fail", "evidence": "The first table already contained candidate identifiers and definitions."},
+            "preserve-distinct-referents": {"verdict": "pass", "evidence": "Validation success and worker availability remained distinct."},
+            "originating-workflow-ownership": {"verdict": "pass", "evidence": "It did not implement the change."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "The code fixture stayed unchanged."},
+            "precise-naming-mapping": {"verdict": "partial", "evidence": "Definitions existed but had no Grounding IDs or status."}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "grounding-precedes-naming": {"verdict": "pass", "evidence": "A label-free two-row Grounding table preceded the identifier proposals."},
+            "preserve-distinct-referents": {"verdict": "pass", "evidence": "Request validation and worker availability remained distinct."},
+            "originating-workflow-ownership": {"verdict": "pass", "evidence": "Editing and verification remained with implement-changes."},
+            "no-target-mutation": {"verdict": "pass", "evidence": "The code fixture stayed unchanged."},
+            "precise-naming-mapping": {"verdict": "pass", "evidence": "Both proposed identifiers mapped to distinct Grounding IDs with definitions."}
+          }
+        }
+      }
+    ]
+  },
+  "triggers": {
+    "protocol": "One matched baseline/candidate observation per case; all selected Skill loads were observed through SKILL.md reads.",
+    "baseline_counts": {
+      "pass": 10,
+      "fail": 0,
+      "unstable": 0,
+      "not_exposed": 0,
+      "not_executed": 0,
+      "total": 10
+    },
+    "candidate_counts": {
+      "pass": 10,
+      "fail": 0,
+      "unstable": 0,
+      "not_exposed": 0,
+      "not_executed": 0,
+      "total": 10
+    },
+    "cases": [
+      {"id": "ambiguous-compression-term", "expected": "should_trigger", "baseline": {"verdict": "pass", "observed_loads": ["define-referents"]}, "candidate": {"verdict": "pass", "observed_loads": ["define-referents"]}},
+      {"id": "explicit-referent-table", "expected": "should_trigger", "baseline": {"verdict": "pass", "observed_loads": ["define-referents"]}, "candidate": {"verdict": "pass", "observed_loads": ["define-referents"]}},
+      {"id": "ambiguous-public-boolean", "expected": "should_trigger", "baseline": {"verdict": "pass", "observed_loads": ["define-referents"]}, "candidate": {"verdict": "pass", "observed_loads": ["define-referents"]}},
+      {"id": "referent-decision-continuation", "expected": "should_trigger", "baseline": {"verdict": "pass", "observed_loads": ["define-referents"]}, "candidate": {"verdict": "pass", "observed_loads": ["define-referents"]}},
+      {"id": "overall-request-ambiguity", "expected": "should_not_trigger", "baseline": {"verdict": "pass", "observed_loads": ["clarify-request"]}, "candidate": {"verdict": "pass", "observed_loads": ["clarify-request"]}},
+      {"id": "understood-change-design", "expected": "should_not_trigger", "baseline": {"verdict": "pass", "observed_loads": ["design-changes"]}, "candidate": {"verdict": "pass", "observed_loads": ["design-changes"]}},
+      {"id": "approved-established-name-implementation", "expected": "should_not_trigger", "baseline": {"verdict": "pass", "observed_loads": ["implement-changes"]}, "candidate": {"verdict": "pass", "observed_loads": ["implement-changes"]}},
+      {"id": "incident-with-established-terms", "expected": "should_not_trigger", "baseline": {"verdict": "pass", "observed_loads": ["investigate-incident"]}, "candidate": {"verdict": "pass", "observed_loads": ["investigate-incident"]}},
+      {"id": "mechanical-markdown-edit", "expected": "should_not_trigger", "baseline": {"verdict": "pass", "observed_loads": ["format-markdown"]}, "candidate": {"verdict": "pass", "observed_loads": ["format-markdown"]}},
+      {"id": "ordinary-japanese-wording", "expected": "should_not_trigger", "baseline": {"verdict": "pass", "observed_loads": ["japanese-tech-writing"]}, "candidate": {"verdict": "pass", "observed_loads": ["japanese-tech-writing"]}}
+    ]
+  },
+  "unverified": [
+    "Claude Code and other compatible clients were not executed.",
+    "Real-session implicit activation and long-running handoff behavior were not observed.",
+    "The evaluation does not establish domain-specific naming quality outside the represented cases."
+  ]
+}

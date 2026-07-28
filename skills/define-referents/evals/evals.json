@@ -1,0 +1,271 @@
+{
+  "skill": "define-referents",
+  "version": 1,
+  "baseline": {
+    "commit": "45bb765ca110bd3e0b4ab2294b7ed030a4ada55d",
+    "skill_sha256": "36fe14587916a1197e231e3a906520e4db5bda5c696208e7c6401684b59e3d57",
+    "raw_artifact_policy": "Keep prompts, responses, JSONL, grader output, and disposable fixtures outside the source repository."
+  },
+  "execution": {
+    "client": "Codex CLI",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high",
+    "sandbox": "read-only",
+    "executor_input_fields": [
+      "turns",
+      "fixture.files",
+      "adjacent_skill"
+    ],
+    "hidden_grading_fields": [
+      "title",
+      "assertions",
+      "additional_requirement"
+    ]
+  },
+  "candidate_assertions": [
+    {
+      "id": "grounding-precedes-naming",
+      "critical": true,
+      "statement": "Produces a label-free Grounding table before any Naming table; no candidate term, first-use definition, or wording that presupposes the candidate appears in Grounding."
+    },
+    {
+      "id": "preserve-distinct-referents",
+      "critical": true,
+      "statement": "Keeps materially distinct referents or roles in separate Grounding rows and preserves their supplied sequence or relationship."
+    },
+    {
+      "id": "state-contract",
+      "critical": true,
+      "statement": "Uses Ready only when grounding and naming constraints are settled, Decision required only for an unresolved material semantic choice, and Blocked when material grounding evidence or information is unavailable."
+    },
+    {
+      "id": "missing-input-no-invention",
+      "critical": true,
+      "statement": "Does not invent an underspecified referent, purpose, role, relationship, or naming authority; asks a focused question or reports Blocked and omits the Naming table when grounding is materially incomplete."
+    },
+    {
+      "id": "low-impact-no-universal-gate",
+      "critical": true,
+      "statement": "Completes a grounded, low-impact, local, reversible naming request in the same turn without requiring user confirmation."
+    },
+    {
+      "id": "material-decision-state",
+      "critical": true,
+      "statement": "For competing alternatives that change a public contract or domain boundary, presents the grounded semantic difference, uses Decision required, and asks the decision-relevant question without silently selecting one."
+    },
+    {
+      "id": "context-specific-role",
+      "critical": true,
+      "statement": "Uses precise context-specific semantic roles when the referents are actors, components, interfaces, policies, artifacts, or other concepts outside the common process-role examples."
+    },
+    {
+      "id": "semantic-table-splitting",
+      "critical": false,
+      "statement": "Keeps one coherent relationship reviewable even when it has more than six Grounding rows, and splits only at a real purpose or reasoning-stage boundary."
+    },
+    {
+      "id": "no-implicit-sidecar",
+      "critical": true,
+      "statement": "Does not create a separate referent-table file when only the target document was authorized."
+    },
+    {
+      "id": "originating-workflow-ownership",
+      "critical": true,
+      "statement": "Returns a referent-and-naming handoff and does not replace the originating design, investigation, writing, or implementation workflow."
+    },
+    {
+      "id": "preserve-uncertainty",
+      "critical": true,
+      "statement": "Keeps unknown causes, inferred relationships, assumptions, and confirmed evidence distinguishable and does not turn an unknown into a named component."
+    },
+    {
+      "id": "correction-invalidates-naming",
+      "critical": true,
+      "statement": "When a Grounding row is corrected, invalidates and regenerates its dependent Naming proposal instead of retaining the stale term or compensating with prose."
+    },
+    {
+      "id": "no-target-mutation",
+      "critical": true,
+      "statement": "Does not create or edit the target document, report, configuration, or code as part of semantic preflight."
+    },
+    {
+      "id": "precise-naming-mapping",
+      "critical": false,
+      "statement": "Maps every Naming row to a Grounding ID, marks the term status, and supplies a precise first-use definition for each proposed new term or uses concrete wording when no precise term is available."
+    }
+  ],
+  "assertion_policy": "Grade only assertions assigned to the case. A failed critical assertion fails that case; a partial result with no critical failure makes the case partial. Grade every turn when the assertion concerns correction or state changes.",
+  "cases": [
+    {
+      "id": "threshold-condition-event",
+      "title": "One phrase covers a threshold, condition, and event",
+      "turns": [
+        "Before any design work, perform only the semantic preflight for the proposed term `compression point`. The evidence distinguishes: the numeric history-size limit of 250K tokens; the predicate that observed history size has reached that limit; and the transition in which automatic summarization begins. The order is measure history size, compare it with the limit, then begin summarization. Do not draft the design."
+      ],
+      "assertions": [
+        "grounding-precedes-naming",
+        "preserve-distinct-referents",
+        "state-contract",
+        "precise-naming-mapping",
+        "originating-workflow-ownership",
+        "no-target-mutation"
+      ],
+      "fixture": {
+        "files": {}
+      },
+      "additional_requirement": "The threshold value, start condition, and summarization event must occupy separate Grounding rows. A candidate term must not appear until after that complete table."
+    },
+    {
+      "id": "underspecified-public-boolean",
+      "title": "A public boolean has no defined referent",
+      "turns": [
+        "Propose a public SDK boolean name for `streaming`. I have not decided whether the boolean means that the caller requested streaming, that the server accepted the request, that bytes are currently streaming, or that streaming completed. Do not inspect another repository and do not choose the meaning for me."
+      ],
+      "assertions": [
+        "state-contract",
+        "missing-input-no-invention",
+        "preserve-uncertainty",
+        "no-target-mutation"
+      ],
+      "fixture": {
+        "files": {}
+      },
+      "additional_requirement": "The executor may organize the unresolved alternatives, but it must not present a settled Naming table or select a boolean meaning."
+    },
+    {
+      "id": "low-impact-local-identifier",
+      "title": "A grounded local identifier needs no approval turn",
+      "turns": [
+        "Perform the semantic preflight and propose a local variable name in one response. The boolean is true only while a private retry loop is waiting for its configured backoff delay before the next attempt. It is not persisted, exported, logged, or part of any public contract. Do not edit code."
+      ],
+      "assertions": [
+        "grounding-precedes-naming",
+        "state-contract",
+        "low-impact-no-universal-gate",
+        "precise-naming-mapping",
+        "no-target-mutation"
+      ],
+      "fixture": {
+        "files": {}
+      },
+      "additional_requirement": "The expected state is Ready in the first response. The executor must not stop merely to request confirmation."
+    },
+    {
+      "id": "public-contract-alternatives",
+      "title": "Competing public meanings require a user decision",
+      "turns": [
+        "Perform semantic preflight for a new public SDK boolean currently called `streaming`. Existing consumers need two different facts: whether the caller requested a streamed response, and whether the response is currently emitting chunks. Choosing one meaning for the single public field would make the other interpretation false and a later change would be breaking. Do not select the contract for me."
+      ],
+      "assertions": [
+        "grounding-precedes-naming",
+        "preserve-distinct-referents",
+        "state-contract",
+        "material-decision-state",
+        "no-target-mutation"
+      ],
+      "fixture": {
+        "files": {}
+      },
+      "additional_requirement": "The response must use Decision required, show the two grounded meanings, and ask the remaining decision-relevant contract question without silently selecting which referent, if either, retains the ambiguous public name. Because the user states that existing consumers require both facts, the executor may conclude that distinct fields are necessary rather than reopening that confirmed requirement."
+    },
+    {
+      "id": "contextual-roles-coherent-flow",
+      "title": "A coherent flow uses context-specific roles and more than six rows",
+      "turns": [
+        "Create a referent-and-naming handoff for this single authentication flow. Keep its relationships reviewable together: a customer is the actor; the sign-in page is the interaction surface; the auth service is the component that validates requests; the `/sessions` endpoint is the inbound interface; the access policy is the authorization rule; the session record is the persisted artifact; and the audit entry is the evidence artifact produced after the decision. These are established terms. Do not draft an architecture document."
+      ],
+      "assertions": [
+        "grounding-precedes-naming",
+        "preserve-distinct-referents",
+        "context-specific-role",
+        "semantic-table-splitting",
+        "precise-naming-mapping",
+        "originating-workflow-ownership"
+      ],
+      "fixture": {
+        "files": {}
+      },
+      "additional_requirement": "The seven related referents should remain one coherent Grounding table unless a real semantic boundary is identified. Roles such as actor, interface, component, rule, and artifact must not be forced into means or record."
+    },
+    {
+      "id": "design-handoff-no-sidecar",
+      "title": "Target-document authorization does not authorize a sidecar or downstream design",
+      "adjacent_skill": "design-changes",
+      "turns": [
+        "I authorize a future design document at `docs/retention.md`, but no other file. Before design begins, perform semantic preflight for `retention point`, which currently mixes the configured retention duration, the condition that a record has exceeded it, and the purge event. Return the handoff only; do not draft or edit the design."
+      ],
+      "assertions": [
+        "grounding-precedes-naming",
+        "preserve-distinct-referents",
+        "no-implicit-sidecar",
+        "originating-workflow-ownership",
+        "no-target-mutation"
+      ],
+      "fixture": {
+        "files": {
+          "docs/retention.md": "# Existing placeholder\n"
+        }
+      },
+      "additional_requirement": "The fixture must remain unchanged, no referent-table file may be created, and the response must leave design responsibility with design-changes."
+    },
+    {
+      "id": "incident-unknown-cause",
+      "title": "Semantic preflight preserves an unknown incident cause",
+      "adjacent_skill": "investigate-incident",
+      "turns": [
+        "Before the incident investigation continues, perform semantic preflight for the working label `broker reset window`. Logs confirm a disconnect event and a later reconnect event. The cause, affected component, and whether any timed window exists are unknown. Return terminology constraints to the investigation; do not write the incident report or identify a cause."
+      ],
+      "assertions": [
+        "grounding-precedes-naming",
+        "state-contract",
+        "preserve-uncertainty",
+        "originating-workflow-ownership",
+        "no-target-mutation"
+      ],
+      "fixture": {
+        "files": {}
+      },
+      "additional_requirement": "The label must not turn the unknown cause or hypothetical window into a confirmed component or mechanism. The handoff must leave evidence gathering to investigate-incident."
+    },
+    {
+      "id": "corrected-grounding-row",
+      "title": "A correction invalidates dependent naming",
+      "turns": [
+        "Perform semantic preflight for `sync active`. The evidence says the flag is true at the instant a synchronization job is accepted. It is local and reversible; do not edit code.",
+        "Correction: that was wrong. The flag remains true for the whole interval from job acceptance until the terminal result is stored, so the referent is an interval state rather than the acceptance event."
+      ],
+      "assertions": [
+        "grounding-precedes-naming",
+        "state-contract",
+        "correction-invalidates-naming",
+        "precise-naming-mapping",
+        "no-target-mutation"
+      ],
+      "fixture": {
+        "files": {}
+      },
+      "additional_requirement": "The second response must replace the event grounding and regenerate its candidate term for the interval state. It must not retain the stale event-oriented proposal and explain around it."
+    },
+    {
+      "id": "implementation-handoff-no-edit",
+      "title": "Naming preflight does not become implementation",
+      "adjacent_skill": "implement-changes",
+      "turns": [
+        "An approved code change will replace the ambiguous local boolean `ready` with distinct identifiers for `the request passed validation` and `the worker is idle and may accept work`. Before implementation, produce only the referent-and-naming handoff. Do not inspect or edit code and do not run tests."
+      ],
+      "assertions": [
+        "grounding-precedes-naming",
+        "preserve-distinct-referents",
+        "originating-workflow-ownership",
+        "no-target-mutation",
+        "precise-naming-mapping"
+      ],
+      "fixture": {
+        "files": {
+          "src/worker.txt": "ready = false\n"
+        }
+      },
+      "additional_requirement": "The fixture must remain unchanged. The response may constrain the future identifiers but must leave editing and verification to implement-changes."
+    }
+  ]
+}

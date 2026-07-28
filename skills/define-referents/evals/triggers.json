@@ -1,0 +1,101 @@
+{
+  "skill": "define-referents",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Present each prompt and supplied conversation context as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case once per condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every case. Mixed observed results are unstable, not a pass."
+  },
+  "coexistence_skills": [
+    "clarify-request",
+    "design-changes",
+    "investigate-incident",
+    "implement-changes",
+    "japanese-tech-writing",
+    "format-markdown"
+  ],
+  "cases": [
+    {
+      "id": "ambiguous-compression-term",
+      "expected": "should_trigger",
+      "expected_handler": "define-referents",
+      "category": "core",
+      "prompt": "Before designing this feature, separate what `compression point` refers to. The draft uses it for a numeric token limit, the condition that reaches the limit, and the event that starts summarization."
+    },
+    {
+      "id": "explicit-referent-table",
+      "expected": "should_trigger",
+      "expected_handler": "define-referents",
+      "category": "explicit",
+      "prompt": "Create a referent table and naming constraints for the new terms in this cause-isolation sequence before the investigation report continues."
+    },
+    {
+      "id": "ambiguous-public-boolean",
+      "expected": "should_trigger",
+      "expected_handler": "define-referents",
+      "category": "identifier",
+      "prompt": "Help determine whether the proposed public boolean `streaming` refers to a caller request, an accepted mode, an activity state, or a completion event before anyone names it."
+    },
+    {
+      "id": "referent-decision-continuation",
+      "expected": "should_trigger",
+      "expected_handler": "define-referents",
+      "category": "continuation",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "We need to distinguish whether `active` names a state or a transition before choosing the public field name."
+        },
+        {
+          "role": "assistant",
+          "content": "The unresolved semantic choice affects the public contract. Does the value remain true over an interval, or does it record a one-time transition?"
+        }
+      ],
+      "prompt": "It remains true from job acceptance until the terminal result is stored. Continue the referent and naming handoff."
+    },
+    {
+      "id": "overall-request-ambiguity",
+      "expected": "should_not_trigger",
+      "expected_handler": "clarify-request",
+      "category": "near_miss",
+      "prompt": "Improve onboarding. The affected users, current problem, success criteria, environment, scope, and acceptable risk are all unspecified. Help me clarify the request."
+    },
+    {
+      "id": "understood-change-design",
+      "expected": "should_not_trigger",
+      "expected_handler": "design-changes",
+      "category": "near_miss",
+      "prompt": "The terminology and intended behavior are established. Design the implementation approach, affected boundaries, risks, verification coverage, and stop conditions before editing."
+    },
+    {
+      "id": "approved-established-name-implementation",
+      "expected": "should_not_trigger",
+      "expected_handler": "implement-changes",
+      "category": "near_miss",
+      "prompt": "The change is approved and keeps all established identifiers. Implement the code and documentation changes and run the agreed checks."
+    },
+    {
+      "id": "incident-with-established-terms",
+      "expected": "should_not_trigger",
+      "expected_handler": "investigate-incident",
+      "category": "coexistence",
+      "prompt": "Investigate this production timeout using the established service, request, and timeout names. Organize evidence, hypotheses, unknowns, and next checks; do not change production."
+    },
+    {
+      "id": "mechanical-markdown-edit",
+      "expected": "should_not_trigger",
+      "expected_handler": "format-markdown",
+      "category": "exclusion",
+      "prompt": "Normalize Markdown list spacing without changing any words, headings, identifiers, or established terminology."
+    },
+    {
+      "id": "ordinary-japanese-wording",
+      "expected": "should_not_trigger",
+      "expected_handler": "japanese-tech-writing",
+      "category": "coexistence",
+      "prompt": "Polish this Japanese technical paragraph for clarity while preserving every defined term and its existing meaning."
+    }
+  ]
+}
