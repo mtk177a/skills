@@ -1,11 +1,11 @@
 lockfile_version: '1'
-generated_at: '2026-07-28T05:31:20.356849+00:00'
+generated_at: '2026-07-28T07:12:39.840451+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: mtk177a/skills
   name: audit-agent-guidance
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/audit-agent-guidance
   is_virtual: true
@@ -29,7 +29,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: break-failure-loop
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/break-failure-loop
   is_virtual: true
@@ -47,7 +47,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: calibrate-ai-learning
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/calibrate-ai-learning
   is_virtual: true
@@ -65,7 +65,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: clarify-request
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/clarify-request
   is_virtual: true
@@ -89,7 +89,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: cognitive-rhythm-writing
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/cognitive-rhythm-writing
   is_virtual: true
@@ -107,7 +107,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: define-referents
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/define-referents
   is_virtual: true
@@ -117,17 +117,23 @@ dependencies:
   - .agents/skills/define-referents/SKILL-ja.md
   - .agents/skills/define-referents/SKILL.md
   - .agents/skills/define-referents/evals/README.md
+  - .agents/skills/define-referents/evals/evals.json
+  - .agents/skills/define-referents/evals/results.json
+  - .agents/skills/define-referents/evals/triggers.json
   - .agents/skills/define-referents/references/referents-before-labels.md
   deployed_file_hashes:
-    .agents/skills/define-referents/SKILL-ja.md: sha256:1828b2a69a6976b65cd45a3a8b0aee59077db2fa463ee4ff13b64977b86bf5e4
-    .agents/skills/define-referents/SKILL.md: sha256:36fe14587916a1197e231e3a906520e4db5bda5c696208e7c6401684b59e3d57
-    .agents/skills/define-referents/evals/README.md: sha256:196cf2994460aea849aa8c105e9c369db20a97f9b6896a539b818bd65a0972da
-    .agents/skills/define-referents/references/referents-before-labels.md: sha256:2b0a09fb8d8b5306bf77c0ae343c1d329e2254de7ac0b306b18ab3a92e691c02
-  content_hash: sha256:aee034a7443cc4093c578965a99cf0cd0ffc290c2bbf79c2add427361c2d47e9
+    .agents/skills/define-referents/SKILL-ja.md: sha256:ac2636d2d64b5d10fa34e94621c8450dc24e8b54effb8c6ed708309386bed33f
+    .agents/skills/define-referents/SKILL.md: sha256:daf3adb6d5c152005876748d70b712c0edde5df1ef6f2dc91d59637e7804d586
+    .agents/skills/define-referents/evals/README.md: sha256:33d0451d006b46bb9aa0539f7fc905fb9146dd1c9d6f0161e75b58a2cf321d1c
+    .agents/skills/define-referents/evals/evals.json: sha256:cb7829d452cd95cb0a534a4fed459afe99fb79c8d237d1b8902fb58ffe469c94
+    .agents/skills/define-referents/evals/results.json: sha256:e36b418319717e2bd5d7f3c84d520de8739cc27b0d1a39c1b2f795b9942fe7af
+    .agents/skills/define-referents/evals/triggers.json: sha256:7b232e1f7f54364c58d6d76f0bc0c178985c6aa098047368d9113022eb286bbc
+    .agents/skills/define-referents/references/referents-before-labels.md: sha256:2d92f95900d6820cafb2100f7000b504f668c9b13dcd4c8acbaffd7ea4b24595
+  content_hash: sha256:3196b0b942822ad67fb86848f7cb4f0964aa3d3d6bc0ad6070be8a5dd9f6e3b8
 - repo_url: mtk177a/skills
   name: design-agent-instructions
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/design-agent-instructions
   is_virtual: true
@@ -149,7 +155,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: design-changes
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/design-changes
   is_virtual: true
@@ -171,7 +177,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: design-skill
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/design-skill
   is_virtual: true
@@ -197,7 +203,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: diversify-agent-search
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/diversify-agent-search
   is_virtual: true
@@ -215,7 +221,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: draft-commit
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/draft-commit
   is_virtual: true
@@ -235,7 +241,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: draft-issue
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/draft-issue
   is_virtual: true
@@ -253,7 +259,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: draft-review-comments
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/draft-review-comments
   is_virtual: true
@@ -277,7 +283,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: format-markdown
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/format-markdown
   is_virtual: true
@@ -295,7 +301,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: implement-changes
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/implement-changes
   is_virtual: true
@@ -321,7 +327,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: investigate-incident
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/investigate-incident
   is_virtual: true
@@ -339,7 +345,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: japanese-tech-writing
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/japanese-tech-writing
   is_virtual: true
@@ -357,7 +363,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: plan-risky-change
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/plan-risky-change
   is_virtual: true
@@ -375,7 +381,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: record-session-handoff
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/record-session-handoff
   is_virtual: true
@@ -393,7 +399,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: research-web-safely
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/research-web-safely
   is_virtual: true
@@ -411,7 +417,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: review-changes
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/review-changes
   is_virtual: true
@@ -435,7 +441,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: summarize-changes
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/summarize-changes
   is_virtual: true
@@ -453,7 +459,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: triage-agent-usage
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/triage-agent-usage
   is_virtual: true
@@ -471,7 +477,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: triage-review-feedback
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/triage-review-feedback
   is_virtual: true
@@ -495,7 +501,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: validate-fix
   host: github.com
-  resolved_commit: 405494a187381f60bccd56bd348e25390ead2c32
+  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
   version: unknown
   virtual_path: skills/validate-fix
   is_virtual: true
@@ -768,7 +774,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/define-referents
   active_owner: mtk177a/skills/skills/define-referents
-  content_hash: sha256:1828b2a69a6976b65cd45a3a8b0aee59077db2fa463ee4ff13b64977b86bf5e4
+  content_hash: sha256:ac2636d2d64b5d10fa34e94621c8450dc24e8b54effb8c6ed708309386bed33f
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/define-referents/SKILL.md
@@ -777,7 +783,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/define-referents
   active_owner: mtk177a/skills/skills/define-referents
-  content_hash: sha256:36fe14587916a1197e231e3a906520e4db5bda5c696208e7c6401684b59e3d57
+  content_hash: sha256:daf3adb6d5c152005876748d70b712c0edde5df1ef6f2dc91d59637e7804d586
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/define-referents/evals/README.md
@@ -786,7 +792,34 @@ deployments:
   owners:
   - mtk177a/skills/skills/define-referents
   active_owner: mtk177a/skills/skills/define-referents
-  content_hash: sha256:196cf2994460aea849aa8c105e9c369db20a97f9b6896a539b818bd65a0972da
+  content_hash: sha256:33d0451d006b46bb9aa0539f7fc905fb9146dd1c9d6f0161e75b58a2cf321d1c
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/define-referents/evals/evals.json
+  runtime: null
+  scope: project
+  owners:
+  - mtk177a/skills/skills/define-referents
+  active_owner: mtk177a/skills/skills/define-referents
+  content_hash: sha256:cb7829d452cd95cb0a534a4fed459afe99fb79c8d237d1b8902fb58ffe469c94
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/define-referents/evals/results.json
+  runtime: null
+  scope: project
+  owners:
+  - mtk177a/skills/skills/define-referents
+  active_owner: mtk177a/skills/skills/define-referents
+  content_hash: sha256:e36b418319717e2bd5d7f3c84d520de8739cc27b0d1a39c1b2f795b9942fe7af
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/define-referents/evals/triggers.json
+  runtime: null
+  scope: project
+  owners:
+  - mtk177a/skills/skills/define-referents
+  active_owner: mtk177a/skills/skills/define-referents
+  content_hash: sha256:7b232e1f7f54364c58d6d76f0bc0c178985c6aa098047368d9113022eb286bbc
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/define-referents/references/referents-before-labels.md
@@ -795,7 +828,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/define-referents
   active_owner: mtk177a/skills/skills/define-referents
-  content_hash: sha256:2b0a09fb8d8b5306bf77c0ae343c1d329e2254de7ac0b306b18ab3a92e691c02
+  content_hash: sha256:2d92f95900d6820cafb2100f7000b504f668c9b13dcd4c8acbaffd7ea4b24595
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/design-agent-instructions
