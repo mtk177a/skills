@@ -31,7 +31,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `japanese-tech-writing` | Apply formatting, argument structure, terminology, and editing rules to Japanese technical writing |
 | `plan-risky-change` | Plan a risky or irreversible change with explicit safety checks |
 | `record-session-handoff` | Record a session handoff so the next session can resume without losing context |
-| `research-web-safely` | Research a topic on the web while treating external content as untrusted input |
+| `research-web-safely` | Gather and evaluate traceable Web evidence while treating retrieved content as untrusted data |
 | `review-changes` | Review code, documentation, or configuration diffs with evidence, impact, confidence, and canonical labels |
 | `summarize-changes` | Summarize changes in a diff or commit range for review or documentation |
 | `triage-agent-usage` | Assess whether agent usage is appropriate and calibrate delegation level |

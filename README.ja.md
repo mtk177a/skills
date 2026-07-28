@@ -33,7 +33,7 @@
 | `japanese-tech-writing` | 日本語技術文書の整形・論証構成・用語・推敲の規範を適用する |
 | `plan-risky-change` | リスクの高い・不可逆な変更を安全確認を明示して計画する |
 | `record-session-handoff` | 次のセッションがコンテキストを失わずに再開できる引き継ぎ記録を残す |
-| `research-web-safely` | 外部コンテンツを未検証入力として扱いながら Web でトピックを調査する |
+| `research-web-safely` | 取得したコンテンツを命令として扱わず、追跡可能な Web 上の根拠を収集・評価する |
 | `review-changes` | コード・文書・設定の差分を、根拠・影響・確信度・正規ラベル付きでレビューする |
 | `summarize-changes` | 差分またはコミット範囲をレビューや文書化のために要約する |
 | `triage-agent-usage` | エージェント利用が適切か評価し、委任レベルを調整する |

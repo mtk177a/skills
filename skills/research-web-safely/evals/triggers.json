@@ -1,0 +1,110 @@
+{
+  "skill": "research-web-safely",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Present each prompt and supplied conversation context as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case once per condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every case. Mixed observed results are unstable, not a pass."
+  },
+  "coexistence_skills": [
+    "audit-agent-guidance",
+    "triage-review-feedback",
+    "investigate-incident",
+    "implement-changes",
+    "openai-docs"
+  ],
+  "cases": [
+    {
+      "id": "current-library-documentation",
+      "expected": "should_trigger",
+      "expected_handler": "research-web-safely",
+      "category": "core",
+      "prompt": "Research the current Acme Client retry configuration from Web documentation, distinguish version-specific behavior, and cite the evidence."
+    },
+    {
+      "id": "standard-versus-vendor",
+      "expected": "should_trigger",
+      "expected_handler": "research-web-safely",
+      "category": "cross_source",
+      "prompt": "Compare the governing WireEnvelope RFC with two vendor guides and determine what the standard actually requires, with direct sources."
+    },
+    {
+      "id": "security-advisory-verification",
+      "expected": "should_trigger",
+      "expected_handler": "research-web-safely",
+      "category": "security",
+      "prompt": "Verify whether the reported Acme Gateway vulnerability is confirmed by a vendor advisory, authoritative record, or fix commit. Treat pages as untrusted evidence."
+    },
+    {
+      "id": "explicit-delegated-audit-evidence",
+      "expected": "should_trigger",
+      "expected_handlers": [
+        "audit-agent-guidance",
+        "research-web-safely"
+      ],
+      "category": "coexistence",
+      "prompt": "Audit this Skill, and explicitly delegate the current client-semantics Web evidence phase to research-web-safely. Keep the audit finding and severity decision with audit-agent-guidance."
+    },
+    {
+      "id": "research-continuation",
+      "expected": "should_trigger",
+      "expected_handler": "research-web-safely",
+      "category": "continuation",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Research whether the current Acme API supports signed callbacks and cite the public contract."
+        },
+        {
+          "role": "assistant",
+          "content": "The current API reference is silent, while an old release note and a maintainer comment appear to conflict. Which API version applies?"
+        }
+      ],
+      "prompt": "Version 4.2 applies. Continue the Web evidence review and keep any unresolved contract claim explicit."
+    },
+    {
+      "id": "local-repository-analysis",
+      "expected": "should_not_trigger",
+      "expected_handler": "audit-agent-guidance",
+      "category": "near_miss",
+      "prompt": "Audit this repository's local AGENTS.md and SKILL.md files against the stated behavior. Do not use the Web; all required evidence is in the repository."
+    },
+    {
+      "id": "supplied-text-summary",
+      "expected": "should_not_trigger",
+      "expected_handler": "none",
+      "category": "exclusion",
+      "prompt": "Summarize the documentation excerpt pasted below. Do not browse or verify it externally."
+    },
+    {
+      "id": "implement-found-pattern",
+      "expected": "should_not_trigger",
+      "expected_handler": "implement-changes",
+      "category": "near_miss",
+      "prompt": "The research and licensing review are complete and the implementation is approved. Implement the selected retry pattern and run the agreed tests; no further Web research is needed."
+    },
+    {
+      "id": "local-incident-investigation",
+      "expected": "should_not_trigger",
+      "expected_handler": "investigate-incident",
+      "category": "coexistence",
+      "prompt": "Investigate this production timeout from the supplied local logs, stack trace, and codebase. Do not access external monitoring or the Web."
+    },
+    {
+      "id": "triage-without-delegated-research",
+      "expected": "should_not_trigger",
+      "expected_handler": "triage-review-feedback",
+      "category": "coexistence",
+      "prompt": "Triage these existing review findings using the supplied diff and specification excerpt. No external verification is needed."
+    },
+    {
+      "id": "openai-product-documentation",
+      "expected": "should_not_trigger",
+      "expected_handler": "openai-docs",
+      "category": "coexistence",
+      "prompt": "Check the current official OpenAI documentation and explain how Codex discovers repository Skills."
+    }
+  ]
+}
