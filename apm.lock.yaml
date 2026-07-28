@@ -1,11 +1,11 @@
 lockfile_version: '1'
-generated_at: '2026-07-28T07:12:39.840451+00:00'
+generated_at: '2026-07-28T10:22:49.880921+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: mtk177a/skills
   name: audit-agent-guidance
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/audit-agent-guidance
   is_virtual: true
@@ -29,7 +29,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: break-failure-loop
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/break-failure-loop
   is_virtual: true
@@ -47,7 +47,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: calibrate-ai-learning
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/calibrate-ai-learning
   is_virtual: true
@@ -65,7 +65,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: clarify-request
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/clarify-request
   is_virtual: true
@@ -89,7 +89,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: cognitive-rhythm-writing
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/cognitive-rhythm-writing
   is_virtual: true
@@ -107,7 +107,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: define-referents
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/define-referents
   is_virtual: true
@@ -133,7 +133,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: design-agent-instructions
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/design-agent-instructions
   is_virtual: true
@@ -155,7 +155,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: design-changes
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/design-changes
   is_virtual: true
@@ -177,7 +177,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: design-skill
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/design-skill
   is_virtual: true
@@ -203,7 +203,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: diversify-agent-search
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/diversify-agent-search
   is_virtual: true
@@ -221,7 +221,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: draft-commit
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/draft-commit
   is_virtual: true
@@ -231,17 +231,23 @@ dependencies:
   - .agents/skills/draft-commit/SKILL-ja.md
   - .agents/skills/draft-commit/SKILL.md
   - .agents/skills/draft-commit/evals/README.md
+  - .agents/skills/draft-commit/evals/evals.json
+  - .agents/skills/draft-commit/evals/results.json
+  - .agents/skills/draft-commit/evals/triggers.json
   - .agents/skills/draft-commit/references/commit-types.md
   deployed_file_hashes:
-    .agents/skills/draft-commit/SKILL-ja.md: sha256:766b79932b09c6d09638b5b86cc201a9fc7f9eb07c9366dadc113f1c4ae08db7
-    .agents/skills/draft-commit/SKILL.md: sha256:50bc4724997b03f564a72c28b603cd5fc8afd2819630c1dfca990e62e5bf69b6
-    .agents/skills/draft-commit/evals/README.md: sha256:45e3a574745148d4a96b7bd7b6757b67e1930523820ce19a429ff97b1909db2f
-    .agents/skills/draft-commit/references/commit-types.md: sha256:aac52036789cbc47f8a279419236e8c8127575e4ab0195534ae2e5cbb286bacc
-  content_hash: sha256:a506546755443ddbd234176a4098e4bcb9b987773dd4a093748a5879956dc4de
+    .agents/skills/draft-commit/SKILL-ja.md: sha256:435d68975ff6f139f276bcf28b94d114f8cf842126d265cad5da2cf8e64fe13c
+    .agents/skills/draft-commit/SKILL.md: sha256:b4f4dcec846b4e0502028caf226f66ef210e6dc3a073c1f8988679136888b298
+    .agents/skills/draft-commit/evals/README.md: sha256:8a1856ff31978293fd5ea65c6823cfc900d50c816f89e53c938b581d63c7bf9c
+    .agents/skills/draft-commit/evals/evals.json: sha256:173be0ed01fc370582f4b4fce7efe0e7ea2ee8f7ef13e9d6b2cb9ec2aa850acf
+    .agents/skills/draft-commit/evals/results.json: sha256:b3909bf8f2f44e00788a6097b4ecb71d9c19a19015eafe59f11a6a06c66373aa
+    .agents/skills/draft-commit/evals/triggers.json: sha256:1d1daf093fbadca9fd37673d61afdcf24551671727bcaa69e54e8c156aeebe12
+    .agents/skills/draft-commit/references/commit-types.md: sha256:f9bed58cf98341cf803be7452acc2cfdc40a20d2d79b4b77f787cc4ce4c29ecc
+  content_hash: sha256:bcb582630e97c3a677aca3d76f3568a81512330a51bf473595ec669ad982955c
 - repo_url: mtk177a/skills
   name: draft-issue
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/draft-issue
   is_virtual: true
@@ -259,7 +265,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: draft-review-comments
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/draft-review-comments
   is_virtual: true
@@ -283,7 +289,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: format-markdown
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/format-markdown
   is_virtual: true
@@ -301,7 +307,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: implement-changes
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/implement-changes
   is_virtual: true
@@ -327,7 +333,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: investigate-incident
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/investigate-incident
   is_virtual: true
@@ -345,7 +351,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: japanese-tech-writing
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/japanese-tech-writing
   is_virtual: true
@@ -363,7 +369,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: plan-risky-change
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/plan-risky-change
   is_virtual: true
@@ -381,7 +387,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: record-session-handoff
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/record-session-handoff
   is_virtual: true
@@ -399,7 +405,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: research-web-safely
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/research-web-safely
   is_virtual: true
@@ -409,15 +415,21 @@ dependencies:
   - .agents/skills/research-web-safely/SKILL-ja.md
   - .agents/skills/research-web-safely/SKILL.md
   - .agents/skills/research-web-safely/evals/README.md
+  - .agents/skills/research-web-safely/evals/evals.json
+  - .agents/skills/research-web-safely/evals/results.json
+  - .agents/skills/research-web-safely/evals/triggers.json
   deployed_file_hashes:
-    .agents/skills/research-web-safely/SKILL-ja.md: sha256:9b578176c05663768660ebb66e60425f804a010dc958b28bcd5f305e522a312e
-    .agents/skills/research-web-safely/SKILL.md: sha256:139b5bcd7aa9b80be16f4b5ac1b8b3575089ace05547c67e05a9bb5e9de4d8ea
-    .agents/skills/research-web-safely/evals/README.md: sha256:0b22b1dacf5eda703aa8e0ebfa774a9a7a40e954ea20b8b30c6cef4d4873686e
-  content_hash: sha256:ce8cb498164995dc929d65b017c9f108e1cc91f44eed72410b4f9ee649a375d9
+    .agents/skills/research-web-safely/SKILL-ja.md: sha256:7dd0bdc1d9ca3cb6d84a550e4d6ab5236aa09bb570a609e6ee899edf277f743a
+    .agents/skills/research-web-safely/SKILL.md: sha256:8beba68afed183bee767abe5de36137adcad04b24ccea5c633cbdb0e636ca940
+    .agents/skills/research-web-safely/evals/README.md: sha256:69b51ac13a1a1afa42e3995c29d3250eca6c849b24ad933e0ef9b1ba10575f91
+    .agents/skills/research-web-safely/evals/evals.json: sha256:4357aa8b276d3f974f8b1d668a1a9b52db45e9f6b9822400191d1a87ef324e78
+    .agents/skills/research-web-safely/evals/results.json: sha256:485d8d35c6e631fc44c513d62f462469782dc211c9f731c38c508a518ef7c099
+    .agents/skills/research-web-safely/evals/triggers.json: sha256:1d893c2464e7a9639c60717884ecc570d48b7afa96ee22966adfd5dafe168a0d
+  content_hash: sha256:8ebb46cfe5b409703e3e59c0155c5369637298935fbf5b0e980e27b8391440bf
 - repo_url: mtk177a/skills
   name: review-changes
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/review-changes
   is_virtual: true
@@ -441,7 +453,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: summarize-changes
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/summarize-changes
   is_virtual: true
@@ -459,7 +471,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: triage-agent-usage
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/triage-agent-usage
   is_virtual: true
@@ -477,7 +489,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: triage-review-feedback
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/triage-review-feedback
   is_virtual: true
@@ -501,7 +513,7 @@ dependencies:
 - repo_url: mtk177a/skills
   name: validate-fix
   host: github.com
-  resolved_commit: 1135561be93ef994f7f0170dc644baa04c4909f2
+  resolved_commit: 61ee3d33a58a52801c92212c0bb172c7a974ef06
   version: unknown
   virtual_path: skills/validate-fix
   is_virtual: true
@@ -1062,7 +1074,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/draft-commit
   active_owner: mtk177a/skills/skills/draft-commit
-  content_hash: sha256:766b79932b09c6d09638b5b86cc201a9fc7f9eb07c9366dadc113f1c4ae08db7
+  content_hash: sha256:435d68975ff6f139f276bcf28b94d114f8cf842126d265cad5da2cf8e64fe13c
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/draft-commit/SKILL.md
@@ -1071,7 +1083,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/draft-commit
   active_owner: mtk177a/skills/skills/draft-commit
-  content_hash: sha256:50bc4724997b03f564a72c28b603cd5fc8afd2819630c1dfca990e62e5bf69b6
+  content_hash: sha256:b4f4dcec846b4e0502028caf226f66ef210e6dc3a073c1f8988679136888b298
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/draft-commit/evals/README.md
@@ -1080,7 +1092,34 @@ deployments:
   owners:
   - mtk177a/skills/skills/draft-commit
   active_owner: mtk177a/skills/skills/draft-commit
-  content_hash: sha256:45e3a574745148d4a96b7bd7b6757b67e1930523820ce19a429ff97b1909db2f
+  content_hash: sha256:8a1856ff31978293fd5ea65c6823cfc900d50c816f89e53c938b581d63c7bf9c
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/draft-commit/evals/evals.json
+  runtime: null
+  scope: project
+  owners:
+  - mtk177a/skills/skills/draft-commit
+  active_owner: mtk177a/skills/skills/draft-commit
+  content_hash: sha256:173be0ed01fc370582f4b4fce7efe0e7ea2ee8f7ef13e9d6b2cb9ec2aa850acf
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/draft-commit/evals/results.json
+  runtime: null
+  scope: project
+  owners:
+  - mtk177a/skills/skills/draft-commit
+  active_owner: mtk177a/skills/skills/draft-commit
+  content_hash: sha256:b3909bf8f2f44e00788a6097b4ecb71d9c19a19015eafe59f11a6a06c66373aa
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/draft-commit/evals/triggers.json
+  runtime: null
+  scope: project
+  owners:
+  - mtk177a/skills/skills/draft-commit
+  active_owner: mtk177a/skills/skills/draft-commit
+  content_hash: sha256:1d1daf093fbadca9fd37673d61afdcf24551671727bcaa69e54e8c156aeebe12
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/draft-commit/references/commit-types.md
@@ -1089,7 +1128,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/draft-commit
   active_owner: mtk177a/skills/skills/draft-commit
-  content_hash: sha256:aac52036789cbc47f8a279419236e8c8127575e4ab0195534ae2e5cbb286bacc
+  content_hash: sha256:f9bed58cf98341cf803be7452acc2cfdc40a20d2d79b4b77f787cc4ce4c29ecc
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/draft-issue
@@ -1458,7 +1497,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/research-web-safely
   active_owner: mtk177a/skills/skills/research-web-safely
-  content_hash: sha256:9b578176c05663768660ebb66e60425f804a010dc958b28bcd5f305e522a312e
+  content_hash: sha256:7dd0bdc1d9ca3cb6d84a550e4d6ab5236aa09bb570a609e6ee899edf277f743a
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/research-web-safely/SKILL.md
@@ -1467,7 +1506,7 @@ deployments:
   owners:
   - mtk177a/skills/skills/research-web-safely
   active_owner: mtk177a/skills/skills/research-web-safely
-  content_hash: sha256:139b5bcd7aa9b80be16f4b5ac1b8b3575089ace05547c67e05a9bb5e9de4d8ea
+  content_hash: sha256:8beba68afed183bee767abe5de36137adcad04b24ccea5c633cbdb0e636ca940
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/research-web-safely/evals/README.md
@@ -1476,7 +1515,34 @@ deployments:
   owners:
   - mtk177a/skills/skills/research-web-safely
   active_owner: mtk177a/skills/skills/research-web-safely
-  content_hash: sha256:0b22b1dacf5eda703aa8e0ebfa774a9a7a40e954ea20b8b30c6cef4d4873686e
+  content_hash: sha256:69b51ac13a1a1afa42e3995c29d3250eca6c849b24ad933e0ef9b1ba10575f91
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/research-web-safely/evals/evals.json
+  runtime: null
+  scope: project
+  owners:
+  - mtk177a/skills/skills/research-web-safely
+  active_owner: mtk177a/skills/skills/research-web-safely
+  content_hash: sha256:4357aa8b276d3f974f8b1d668a1a9b52db45e9f6b9822400191d1a87ef324e78
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/research-web-safely/evals/results.json
+  runtime: null
+  scope: project
+  owners:
+  - mtk177a/skills/skills/research-web-safely
+  active_owner: mtk177a/skills/skills/research-web-safely
+  content_hash: sha256:485d8d35c6e631fc44c513d62f462469782dc211c9f731c38c508a518ef7c099
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/research-web-safely/evals/triggers.json
+  runtime: null
+  scope: project
+  owners:
+  - mtk177a/skills/skills/research-web-safely
+  active_owner: mtk177a/skills/skills/research-web-safely
+  content_hash: sha256:1d893c2464e7a9639c60717884ecc570d48b7afa96ee22966adfd5dafe168a0d
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/review-changes
