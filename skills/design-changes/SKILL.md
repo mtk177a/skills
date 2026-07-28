@@ -22,7 +22,7 @@ Gather what is available:
 - observed failures, traces, prior attempts, or design decisions
 - dependency, migration, compatibility, security, and rollout constraints
 
-Distinguish confirmed evidence, inference, assumptions, unknowns, and planned verification. If the request is not understood well enough to define success and non-goals, route it to request scoping before designing the change.
+Distinguish confirmed evidence, inference, assumptions, unknowns, and planned verification. If the request is not understood well enough to define success and non-goals, route it to `clarify-request` before designing the change.
 
 ## Workflow
 
@@ -60,7 +60,7 @@ Include alternative designs, module maps, migration details, rollback, or user e
 
 ## Boundaries
 
-- Use `scope-request` when the objective or success criteria are still undefined, `design-skill` for Agent Skill responsibility and trigger design, and `implement-changes` only after this handoff is accepted.
+- Use `clarify-request` when the objective or success criteria are still undefined, `design-skill` for Agent Skill responsibility and trigger design, and `implement-changes` only after this handoff is accepted.
 - Pair this Skill with `plan-risky-change` for destructive, security-sensitive, migration, dependency, or other high-risk work that needs explicit controls. Use `diversify-agent-search` only when design work is stuck in one design neighborhood.
 - When that high-risk boundary applies, name `plan-risky-change` in the implementation handoff rather than merely describing additional approval or rollback work.
 - Keep the workflow read-only. Do not add dependencies, make destructive changes, or start implementation.

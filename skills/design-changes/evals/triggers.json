@@ -22,6 +22,14 @@
       "prompt": "Design a readability refactor for this long request handler before editing it. Identify entry points, processing stages, behavior-preserving change units, risks, and verification."
     },
     {
+      "id": "implementation-scope-handoff",
+      "expected": "should_trigger",
+      "category": "retired_skill_handoff",
+      "expected_baseline_skill": "scope-implementation",
+      "expected_candidate_skill": "design-changes",
+      "prompt": "Before editing, turn this approved change into a narrow implementation handoff. Identify the initial areas to inspect, the allowed change boundary and explicit non-targets, reviewable work units, completion criteria, verification coverage, and stop conditions. Do not implement it."
+    },
+    {
       "id": "undefined-request",
       "expected": "should_not_trigger",
       "category": "near_miss",

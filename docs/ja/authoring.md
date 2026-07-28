@@ -85,7 +85,7 @@ Skills の見出しを統一する必要はありません。一方で、blank-s
 
 例:
 
-- `scope-request`
+- `clarify-request`
 - `design-changes`
 - `implement-changes`
 - `review-changes`

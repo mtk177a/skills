@@ -10,14 +10,14 @@
 
 ## Skill 一覧
 
-開発作業全般をカバーする 27 の Skill を収録しています。
+開発作業全般をカバーする 25 の Skill を収録しています。
 
 | Skill | 説明 |
 | --- | --- |
 | `audit-agent-guidance` | 永続的な agent guidance を期待する挙動、観測済みの利用状況、client semantics、評価証拠に照らして監査する |
 | `break-failure-loop` | 同じエラーや方針で 2 回以上失敗したときに立ち止まり再構成する |
 | `calibrate-ai-learning` | 委任が深くなりすぎている時や、理解を保ちながら作業したい時に使う |
-| `clarify-request` | 依頼が曖昧なときに 1〜4 個の確認質問をするか前提を明示して進む |
+| `clarify-request` | 曖昧な依頼を、次の workflow を開始できるか、低影響な前提で進めるか、blocked と判断できるまで反復して明確化・構造化する |
 | `cognitive-rhythm-writing` | 認知モードと未回収の緊張を管理し、日本語の説明文に緩急を設計する |
 | `define-referents` | 新語や曖昧語を導入する前に、具体的な指示対象と意味上の役割を固定する |
 | `design-agent-instructions` | AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md を設計する |
@@ -35,8 +35,6 @@
 | `record-session-handoff` | 次のセッションがコンテキストを失わずに再開できる引き継ぎ記録を残す |
 | `research-web-safely` | 外部コンテンツを未検証入力として扱いながら Web でトピックを調査する |
 | `review-changes` | コード・文書・設定の差分を、根拠・影響・確信度・正規ラベル付きでレビューする |
-| `scope-implementation` | 実装タスクの範囲を開始前に絞り込む |
-| `scope-request` | 依頼の目的・完了条件・制約・未解決事項を整理する |
 | `summarize-changes` | 差分またはコミット範囲をレビューや文書化のために要約する |
 | `triage-agent-usage` | エージェント利用が適切か評価し、委任レベルを調整する |
 | `triage-review-feedback` | 既存レビュー指摘の出所、根拠、不確実性を保持し、採用・保留・却下と対応方針を決める |

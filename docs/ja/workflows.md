@@ -6,13 +6,15 @@
 
 ## 基本ワークフロー
 
-`scope-request` → `design-changes` → `implement-changes` → `review-changes` → `validate-fix`
+`clarify-request` → 必要に応じて `design-changes` → `implement-changes` → `review-changes` → `validate-fix`
 
-- `scope-request`: 目的、完了基準、制約、前提、未解決事項を明確にする
+- `clarify-request`: 次の workflow を開始できるか blocked と判断できるまで、目的、完了条件、制約、前提、権限、未解決事項を反復して明確にする
 - `design-changes`: 変更内容、対象外のもの、リスク、テスト戦略、停止条件を定義する
 - `implement-changes`: 承認済みの変更を小さな単位で適用し、TDD または適切な別の検証方法を選び、根拠のある引き継ぎを残す
 - `review-changes`: コード・文書・設定の effective diff をレビューし、根拠、影響、確信度、実行した確認、正規ラベルを報告する
 - `validate-fix`: 特定の完了済み修正を適切な read-only evidence で検証し、対象ごとの状態、未確認範囲、残留リスクを報告する
+
+十分に明確かつ承認済みの低影響な変更で、実装方針、scope、risk 判断、verification strategy を捏造せず直接実装できる場合は `design-changes` を省略します。
 
 ## レビューワークフロー
 

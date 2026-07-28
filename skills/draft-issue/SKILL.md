@@ -1,6 +1,6 @@
 ---
 name: draft-issue
-description: Turn a clarified request (from scope-request) into an Issue draft and filing steps. (issue, ticket, backlog, jira, redmine)
+description: Turn a decision-ready bug report, improvement, or feature request into an Issue draft and filing steps. Use after the request is sufficiently clear or when drafting can expose remaining gaps; not for clarifying an ambiguous request on its own, implementing the work, or posting an Issue without confirmation. (issue, ticket, backlog, jira, redmine)
 license: MIT
 ---
 
@@ -8,11 +8,11 @@ license: MIT
 
 ## Purpose
 
-- Provide steps and a draft for filing a clarified request (from `scope-request`) as a trackable Issue (GitHub / Jira / Redmine / Backlog / etc.).
+- Provide steps and a draft for filing a decision-ready request as a trackable Issue (GitHub / Jira / Redmine / Backlog / etc.).
 
 ## When to use
 
-- When you want to turn the output of `scope-request` into an Issue
+- When you want to turn a sufficiently clear bug report, improvement, or feature request into an Issue
 - When you want to prepare a bug report or feature request template
 
 ## Input (optional)
@@ -25,7 +25,7 @@ license: MIT
 ## Steps
 
 1. Confirm the target project / tracker and issue type.
-2. If the core of the Issue is unclear, apply `clarify-request` to make the problem, expected outcome, and use case explicit.
+2. If the core of the Issue is unclear, apply `clarify-request` until the request is decision-ready or blocked; do not fabricate the problem, expected outcome, or use case.
 3. Do a quick duplicate check against existing Issues (by title / keywords).
 4. Check whether an Issue template exists; comply with it if one does.
 5. Draft the title and body.
@@ -86,4 +86,4 @@ license: MIT
 
 ## Notes (optional)
 
-- When the request is vague, use minimal clarifying questions to fix the intent.
+- When the request is vague, continue the `clarify-request` cycle until the Issue can be drafted without inventing material details or the request is blocked.

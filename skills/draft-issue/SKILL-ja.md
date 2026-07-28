@@ -1,6 +1,6 @@
 ---
 name: draft-issue
-description: scope-request で明確化した課題を、Issue の起票案と起票手順に落とし込みたいときに使う。 (issue, ticket, backlog, jira, redmine)
+description: decision-ready な不具合報告、改善、機能要望を Issue の起票案と起票手順に落とす。依頼が十分に明確なとき、または draft によって残る不足を確認できるときに使い、曖昧な依頼の明確化だけ、実装、確認なしの Issue 投稿には使わない。 (issue, ticket, backlog, jira, redmine)
 license: MIT
 ---
 
@@ -10,11 +10,11 @@ license: MIT
 
 ## 目的
 
-- scope-request で明確化した課題を、追跡可能な Issue (GitHub/Jira/Redmine/Backlog 等) として起票するための手順とドラフトを提供する。
+- decision-ready な依頼を、追跡可能な Issue (GitHub/Jira/Redmine/Backlog 等) として起票するための手順とドラフトを提供する。
 
 ## 使う場面
 
-- scope-request 結果を Issue に落とし込みたいとき
+- 十分に明確な不具合報告、改善、機能要望を Issue に落とし込みたいとき
 - バグ報告や機能要望のテンプレを整えたいとき
 
 ## 入力 (任意)
@@ -27,7 +27,7 @@ license: MIT
 ## 手順
 
 1. 対象プロジェクト/トラッカーと Issue 種別を確認する
-2. Issue の本質が曖昧なら `clarify-request` を実施し、問題/期待する成果/ユースケースを明確にする
+2. Issue の本質が曖昧なら、依頼が decision-ready または blocked になるまで `clarify-request` を適用し、問題、期待する成果、ユースケースを捏造しない
 3. 既存 Issue の重複を簡易チェックする（タイトル/キーワード）
 4. Issue テンプレの有無を確認し、あれば準拠する
 5. タイトルと本文のドラフトを作成する
@@ -88,4 +88,4 @@ license: MIT
 
 ## 注意点 (任意)
 
-- 依頼が曖昧な場合は、最小限の確認質問で意図を固める。
+- 依頼が曖昧な場合は、重要な詳細を捏造せず Issue を作成できるか blocked になるまで `clarify-request` cycle を継続する。

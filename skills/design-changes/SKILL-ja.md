@@ -24,7 +24,7 @@ license: MIT
 - 観測済み failure、trace、過去の試行、design decision
 - dependency、migration、compatibility、security、rollout の制約
 
-確認済み evidence、推論、前提、不明点、計画した verification を区別する。成功条件と non-goals を定義できるほど request が理解されていない場合は、変更設計の前に request scoping へ回す。
+確認済み evidence、推論、前提、不明点、計画した verification を区別する。成功条件と non-goals を定義できるほど request が理解されていない場合は、変更設計の前に `clarify-request` へ回す。
 
 ## Workflow
 
@@ -62,7 +62,7 @@ license: MIT
 
 ## 境界
 
-- objective または成功条件が未定義なら `scope-request`、Agent Skill の責務と trigger 設計には `design-skill`、この handoff の採用後の実装には `implement-changes` を使う。
+- objective または成功条件が未定義なら `clarify-request`、Agent Skill の責務と trigger 設計には `design-skill`、この handoff の採用後の実装には `implement-changes` を使う。
 - 明示 control が必要な destructive、security-sensitive、migration、dependency、その他の高リスク作業では `plan-risky-change` と組み合わせる。設計が同じ近傍で停滞した場合だけ `diversify-agent-search` を使う。
 - high-risk boundary が該当する場合、追加 approval または rollback work を説明するだけでなく、implementation handoff で `plan-risky-change` を明記する。
 - workflow を read-only に保つ。dependency を追加せず、破壊的変更を行わず、実装を始めない。

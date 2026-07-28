@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "skill": "design-changes",
-  "evaluated_on": "2026-07-24",
+  "evaluated_on": "2026-07-28",
   "environment": {
     "client": "Codex CLI 0.145.0",
     "model": "gpt-5.6-sol",
@@ -12,7 +12,9 @@
   },
   "candidate": {
     "files": {
-      "SKILL.md": "sha256:9961cebd1303592754a960a73be677afa21c737d20d409fdfc2808fa84b9809d"
+      "SKILL.md": "sha256:239281c64d4d7689be575607c2377e110535a50942a847c5961a4b9c035916e1",
+      "SKILL-ja.md": "sha256:4563364dfe5f2d4426745a34b37dfc8c17507308fded52ac27eecba7e8be6577",
+      "evals/triggers.json": "sha256:8bc72bef266d0f568ecf77196e6b4ed13456bdb0a1b95a1cf6c2c3a741b2b3af"
     }
   },
   "execution": {
@@ -22,6 +24,24 @@
     "verdict_rule": "Grade every assigned requirement. A failed critical requirement fails its case. A target Skill load counts only when its local SKILL.md open is observable.",
     "raw_artifacts": "Temporary and not committed."
   },
+  "evaluation_revisions": [
+    {
+      "candidate_skill": "sha256:9961cebd1303592754a960a73be677afa21c737d20d409fdfc2808fa84b9809d",
+      "coverage": "Full matched behavior and trigger evaluation recorded on 2026-07-24."
+    },
+    {
+      "baseline_commit": "33c9d95641d816ba3957e5a6045141e3d451b753",
+      "candidate_skill": "sha256:239281c64d4d7689be575607c2377e110535a50942a847c5961a4b9c035916e1",
+      "change": "Replaced the retired request-scoping handoff references with clarify-request.",
+      "coverage": "Reran undefined-request in coexistence. The executor observably loaded only clarify-request; design-changes, design-skill, implement-changes, and plan-risky-change were not loaded. Prior behavior evidence and the other five trigger cases are reused because their evaluated instructions and descriptions are unchanged."
+    },
+    {
+      "baseline_commit": "33c9d95641d816ba3957e5a6045141e3d451b753",
+      "candidate_skill": "sha256:239281c64d4d7689be575607c2377e110535a50942a847c5961a4b9c035916e1",
+      "change": "Added a routing regression for the retired scope-implementation responsibility.",
+      "coverage": "Ran implementation-scope-handoff in matched catalogs. The baseline observably loaded scope-implementation; after its retirement, the candidate observably loaded only design-changes. Existing behavior evidence is reused because the design-changes instructions are unchanged and small-feature already checks targets, non-targets, reviewable scope, verification, and stop conditions."
+    }
+  ],
   "behavior": {
     "baseline_counts": {
       "pass": 14,
@@ -157,10 +177,25 @@
         "candidate": "pass"
       },
       {
+        "id": "implementation-scope-handoff",
+        "expected": "should_trigger",
+        "baseline": "pass",
+        "candidate": "pass",
+        "baseline_observed_loads": [
+          "scope-implementation"
+        ],
+        "latest_observed_loads": [
+          "design-changes"
+        ]
+      },
+      {
         "id": "undefined-request",
         "expected": "should_not_trigger",
         "baseline": "pass",
-        "candidate": "pass"
+        "candidate": "pass",
+        "latest_observed_loads": [
+          "clarify-request"
+        ]
       },
       {
         "id": "agent-skill-design",

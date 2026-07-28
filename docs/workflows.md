@@ -4,13 +4,15 @@ A minimal reference for how the core Skills connect into common workflows.
 
 ## Basic workflow
 
-`scope-request` → `design-changes` → `implement-changes` → `review-changes` → `validate-fix`
+`clarify-request` → optional `design-changes` → `implement-changes` → `review-changes` → `validate-fix`
 
-- `scope-request`: Clarify purpose, completion criteria, constraints, assumptions, and open questions
+- `clarify-request`: Iteratively clarify purpose, completion criteria, constraints, assumptions, authority, and open questions until the next workflow can start or the request is blocked
 - `design-changes`: Define what changes, what is out of scope, risks, test strategy, and stop conditions
 - `implement-changes`: Apply approved changes in small units, choose TDD or another suitable verification method, and leave an evidence-based handoff
 - `review-changes`: Review the effective code, documentation, or configuration diff and report evidence, impact, confidence, executed checks, and canonical labels
 - `validate-fix`: Verify a specific completed fix with appropriate read-only evidence and report per-target status, unconfirmed scope, and residual risk
+
+Skip `design-changes` when a sufficiently clear and authorized low-impact change can proceed directly to implementation without inventing an approach, scope, risk decision, or verification strategy.
 
 ## Review workflow
 

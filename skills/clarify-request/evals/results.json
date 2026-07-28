@@ -1,0 +1,333 @@
+{
+  "schema_version": 2,
+  "skill": "clarify-request",
+  "evaluated_on": "2026-07-28",
+  "environment": {
+    "client": "Codex CLI 0.145.0",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high",
+    "sandbox": "read-only"
+  },
+  "baseline": {
+    "commit": "33c9d95641d816ba3957e5a6045141e3d451b753",
+    "files": {
+      "clarify-request/SKILL.md": "sha256:c8484ad27ab703ef6a5cd141012788ace45a57e1b11790c80554ae8c57e985e9",
+      "clarify-request/SKILL-ja.md": "sha256:5bccef65aaad2dcb9a63bfbe74ef37b1e8b4cb86074862e1091271fdd9bfb5e5",
+      "scope-request/SKILL.md": "sha256:eefd458b4d08a74c32fa172c0ae9e89dde46761a2c67fe94b748d6d23d733580",
+      "scope-request/SKILL-ja.md": "sha256:ac07afa9c8d8b7f234d205d1d8a7251aaa7c45210bef79de9fa467d24d851242"
+    }
+  },
+  "candidate": {
+    "files": {
+      "SKILL.md": "sha256:6526917b934ed6df184abccf7c4daadfa89da821e09492a2976640df03c874ef",
+      "SKILL-ja.md": "sha256:e899c6f7d639e7c4e81231a1ac2e38a7212d921db1aa875e901eb929a80e78ae",
+      "evals/evals.json": "sha256:c588f00dc733156955dbbcd4b1b4a9f23ca21430d7ba09f236244b0fb1aba3ed",
+      "evals/triggers.json": "sha256:5d4c1293d8633c79b173b30fa9fcfd39792422b36895dc7a503314752da5065d"
+    }
+  },
+  "execution": {
+    "driver": "Temporary clarify-request-only Python orchestration script; not retained as repository source.",
+    "invocation": "codex exec --ephemeral --json --ignore-user-config --ignore-rules --skip-git-repo-check --sandbox read-only --model gpt-5.6-sol -c 'model_reasoning_effort=\"high\"' -C <disposable-fixture> -o <output> -",
+    "behavior_configuration": "The executor received only the selected baseline or candidate Skill, the visible conversation accumulated through the current turn, and declared fixture files. A separate Codex grader received hidden assigned assertions, additional requirements, fixture hashes, command traces, and the executor response.",
+    "trigger_protocol": "Select from installed names and descriptions, open every selected SKILL.md with a shell command, and count only an observed Skill file read.",
+    "isolation": "Each invocation used an isolated HOME while retaining the existing CODEX_HOME for authentication, preventing globally installed personal Skills from being discovered.",
+    "verdict_rule": "Grade only assertions assigned to the case. A failed critical assertion fails the case; a partial result with no critical failure makes the case partial.",
+    "raw_artifacts": "Disposable fixtures, prompts, responses, JSONL, grader output, and command traces were retained only in temporary directories outside the repository.",
+    "usage": {
+      "turns": "not aggregated",
+      "tokens": "not aggregated",
+      "duration": "not exposed"
+    }
+  },
+  "evaluation_revisions": [
+    {
+      "candidate_skill": "sha256:16596a12f7a789150a0e71d3494351294009e345cdfb9a9aa894dba694dd5eb3",
+      "coverage": "Full matched baseline/candidate behavior run over seven cases. The candidate passed 40/41 requirements and six cases; separate-owner-goals was partial because it called existing but undisclosed owner and date values undecided."
+    },
+    {
+      "candidate_skill": "sha256:440f5fffdd0bc8b863b24bbf39542b4a0cf7b27270bcc5cd54871dfd1ca1ebf8",
+      "change": "Required the clarification state to distinguish unspecified or unknown values from decisions that have not been made.",
+      "coverage": "Reran separate-owner-goals under matched baseline/candidate conditions; the final candidate passed every assigned assertion. Evidence for the other six cases is reused from the immediately preceding full run because this additive distinction targets the only observed failure and does not alter their inputs, routing, readiness boundaries, authority handling, or assigned conclusions."
+    },
+    {
+      "coverage": "Trigger and near-miss evidence was retained from the earlier matched routing run because the final name, description, adjacent Skill descriptions, and triggers.json are unchanged by the later body-only revisions."
+    },
+    {
+      "candidate_skill": "sha256:6526917b934ed6df184abccf7c4daadfa89da821e09492a2976640df03c874ef",
+      "change": "Required structured handoffs to preserve material user-supplied background and replaced moving-HEAD baseline wording with the immutable baseline commit already used by the recorded run.",
+      "coverage": "Reran structured-request-handoff under matched baseline/candidate conditions with the added background assertion. The candidate passed all six assigned requirements; the baseline passed one, was partial on two, and failed three. Evidence for the other six behavior cases and all trigger cases is reused because the change affects only structured handoff reporting, the baseline wording correction does not alter executor input, and the descriptions and trigger catalog are unchanged."
+    }
+  ],
+  "behavior": {
+    "baseline_counts": {
+      "requirements": {
+        "pass": 26,
+        "partial": 7,
+        "fail": 9,
+        "total": 42
+      },
+      "cases": {
+        "pass": 3,
+        "partial": 0,
+        "fail": 4,
+        "total": 7
+      }
+    },
+    "candidate_counts": {
+      "requirements": {
+        "pass": 42,
+        "partial": 0,
+        "fail": 0,
+        "total": 42
+      },
+      "cases": {
+        "pass": 7,
+        "partial": 0,
+        "fail": 0,
+        "total": 7
+      }
+    },
+    "cases": [
+      {
+        "id": "low-impact-repository-convention",
+        "baseline": {
+          "case": "pass",
+          "assertions": {
+            "decision-ready-relative-to-next-workflow": {"verdict": "pass", "evidence": "リポジトリ表記が明確になった時点で、文書修正を実装へ渡せると判断した。"},
+            "preserve-clarification-state": {"verdict": "pass", "evidence": "確認済み規約と将来の変更を区別し、未解決事項や前提を捏造しなかった。"},
+            "low-impact-assumption": {"verdict": "pass", "evidence": "README の evidence から `optimize` に解決し、不要な前提を置かなかった。"},
+            "safe-read-only-discovery": {"verdict": "pass", "evidence": "既存表記を読み取り、fixture の前後 hash は一致した。"},
+            "material-questions-only": {"verdict": "pass", "evidence": "evidence で選択が解決したため質問しなかった。"},
+            "stay-out-of-downstream-work": {"verdict": "pass", "evidence": "ユーザー指定の対象と置換範囲だけを保持し、編集・実装・レビューを行わなかった。"}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "decision-ready-relative-to-next-workflow": {"verdict": "pass", "evidence": "実装 handoff に必要な対象、変更、根拠、完了境界が揃ったと判断した。"},
+            "preserve-clarification-state": {"verdict": "pass", "evidence": "`optimize` を README で確認済みとし、追加前提や架空の不足を作らなかった。"},
+            "low-impact-assumption": {"verdict": "pass", "evidence": "リポジトリ evidence で解決済みのため、作業用前提を置かず block もしなかった。"},
+            "safe-read-only-discovery": {"verdict": "pass", "evidence": "README を読み取って表記を特定し、fixture の前後 hash は一致した。"},
+            "material-questions-only": {"verdict": "pass", "evidence": "ユーザーへ不要な表記選択を求めなかった。"},
+            "stay-out-of-downstream-work": {"verdict": "pass", "evidence": "狭い変更対象を引き継ぐだけに留め、方式選択、編集、実装、レビューを行わなかった。"}
+          }
+        }
+      },
+      {
+        "id": "discoverable-repository-fact",
+        "baseline": {
+          "case": "pass",
+          "assertions": {
+            "decision-ready-relative-to-next-workflow": {"verdict": "pass", "evidence": "対象、正しい command、変更内容、完了条件を整理し、実装へ渡せると判断した。"},
+            "preserve-clarification-state": {"verdict": "pass", "evidence": "README の現状と AGENTS.md の指示を確認済み事実として扱った。"},
+            "safe-read-only-discovery": {"verdict": "pass", "evidence": "AGENTS.md から `tool check-docs` を特定し、fixture は不変だった。"},
+            "adaptive-structured-handoff": {"verdict": "pass", "evidence": "対象、変更、根拠、完了条件、非対象を空欄や捏造なしでまとめた。"},
+            "stay-out-of-downstream-work": {"verdict": "pass", "evidence": "確認済み command を引き継いだだけで、編集や command 実行をしなかった。"}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "decision-ready-relative-to-next-workflow": {"verdict": "pass", "evidence": "目的、対象、正しい値、完了条件、検証制約を揃え、実装へ渡せると判断した。"},
+            "preserve-clarification-state": {"verdict": "pass", "evidence": "誤記と authoritative command を確認済み evidence とし、編集権限は別だと区別した。"},
+            "safe-read-only-discovery": {"verdict": "pass", "evidence": "AGENTS.md と README.md の読み取りで事実を解決し、fixture は不変だった。"},
+            "adaptive-structured-handoff": {"verdict": "pass", "evidence": "目的、根拠、完了条件、非対象、検証制約、現状、次の行動を捏造なしで整理した。"},
+            "stay-out-of-downstream-work": {"verdict": "pass", "evidence": "対象と検証制約を保持したが、編集や検証実行には進まなかった。"}
+          }
+        }
+      },
+      {
+        "id": "structured-request-handoff",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "decision-ready-relative-to-next-workflow": {"verdict": "fail", "evidence": "設計へ渡せる依頼に対し、ファイル名、最大件数、snapshot 整合性など後続設計の詳細を事前条件にした。"},
+            "preserve-clarification-state": {"verdict": "partial", "evidence": "推測の多くは前提や未解決事項として区別したが、既存認可動作や詳細な受け入れ test 条件など未提示内容を完了条件へ昇格させた。"},
+            "adaptive-structured-handoff": {"verdict": "fail", "evidence": "目的、背景、範囲、制約、非対象、次の行動は構造化したが、空結果、認可モデル、具体的 test、追加 non-goals など多数の未確認事項を作り足した。"},
+            "preserve-material-background": {"verdict": "pass", "evidence": "月末照合でページごとに請求書行を転記し、複数ページの結果で漏れが生じる背景と目的を保持した。"},
+            "material-questions-only": {"verdict": "partial", "evidence": "件数上限など影響し得る事項に加え、ファイル名、ロケール、BOM など設計調査で扱える事項まで事前確認にした。"},
+            "stay-out-of-downstream-work": {"verdict": "fail", "evidence": "具体的な受け入れ test 戦略、同期 export 契約、fixture、実装、製品別検証まで後続作業として選択した。"}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "decision-ready-relative-to-next-workflow": {"verdict": "pass", "evidence": "設計開始可能と判断し、既存実装の未知を設計工程の入力として残した。"},
+            "preserve-clarification-state": {"verdict": "pass", "evidence": "確認済み要件と、API や性能など設計時に確認する技術情報を分離し、沈黙を要件へ変換しなかった。"},
+            "adaptive-structured-handoff": {"verdict": "pass", "evidence": "目的、対象ユーザー、全 filter 結果、列と順序、完了条件、非対象、制約、次の行動を捏造なしで構造化した。"},
+            "preserve-material-background": {"verdict": "pass", "evidence": "月次照合、複数ページにまたがる filter 結果、転記漏れという問題と解消目的を保持した。"},
+            "material-questions-only": {"verdict": "pass", "evidence": "追加回答を要求せず、技術的な未知を設計調査へ渡した。"},
+            "stay-out-of-downstream-work": {"verdict": "pass", "evidence": "API、権限制御、CSV 処理は調査対象に留め、具体的な file、方式、検証を選ばず、編集・実装・レビューも行わなかった。"}
+          }
+        }
+      },
+      {
+        "id": "iterative-provider-clarification",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "decision-ready-relative-to-next-workflow": {"verdict": "fail", "evidence": "turn 3 後も現行環境や詳細検証など設計で扱う入力を clarification blocker にした。"},
+            "preserve-clarification-state": {"verdict": "partial", "evidence": "turn 3 で確認済みの国内限定条件を選択肢付きで再質問した。"},
+            "iterate-after-user-answer": {"verdict": "partial", "evidence": "反復はしたが、turn 3 で設計への readiness を正しく再評価できなかった。"},
+            "preserve-answers-without-repetition": {"verdict": "partial", "evidence": "回答済みの国内限定と運用 access 条件を再度質問した。"},
+            "blocking-gap-stop": {"verdict": "pass", "evidence": "質問中も実装、設定変更、本番切替へ進まなかった。"},
+            "authorization-not-assumed": {"verdict": "pass", "evidence": "recommendation を実装権限や外部変更の承認へ変換しなかった。"},
+            "material-questions-only": {"verdict": "fail", "evidence": "turn 3 後も provider 実現性や検証指標など設計工程の事項を質問した。"},
+            "adaptive-structured-handoff": {"verdict": "fail", "evidence": "設計向けの材料が揃っても self-contained handoff を作らず質問を続けた。"},
+            "stay-out-of-downstream-work": {"verdict": "fail", "evidence": "段階移行、並行稼働、session 受理方式など下流方式を先に選択した。"}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "decision-ready-relative-to-next-workflow": {"verdict": "pass", "evidence": "turn 2 は重要事項を追質問し、turn 3 は現行状態を設計入力として Ready とした。"},
+            "preserve-clarification-state": {"verdict": "pass", "evidence": "確認済み事項と未選定 provider・未知の現行情報を分けて保持した。"},
+            "iterate-after-user-answer": {"verdict": "pass", "evidence": "各回答後に全状態を再評価し、材料が揃った turn 3 で質問を終了した。"},
+            "preserve-answers-without-repetition": {"verdict": "pass", "evidence": "回答済み内容を保持し、turn 2 は未回答の成功境界と選定条件だけへ絞った。"},
+            "blocking-gap-stop": {"verdict": "pass", "evidence": "実装、設定変更、移行、本番切替、契約、通知を対象外として維持した。"},
+            "authorization-not-assumed": {"verdict": "pass", "evidence": "設計調査を実装、本番変更、購入、顧客通知の承認として扱わなかった。"},
+            "material-questions-only": {"verdict": "pass", "evidence": "質問を成功境界、data 維持、session、選定責任、権限範囲へ限定した。"},
+            "adaptive-structured-handoff": {"verdict": "pass", "evidence": "turn 3 で目的、要件、設計範囲、完了条件、対象外、権限、open input を再掲した。"},
+            "stay-out-of-downstream-work": {"verdict": "pass", "evidence": "特定 file、provider、移行方式、検証方式を選ばず、編集・実装・レビューもしなかった。"}
+          }
+        }
+      },
+      {
+        "id": "contradictory-release-scope",
+        "baseline": {
+          "case": "pass",
+          "assertions": {
+            "preserve-clarification-state": {"verdict": "pass", "evidence": "未確定、recommendation、矛盾、確定を区別し、turn 3 の撤回後だけ確定した。"},
+            "iterate-after-user-answer": {"verdict": "pass", "evidence": "turn 2 で矛盾と日時を追質問し、turn 3 で解消後は再確認しなかった。"},
+            "preserve-answers-without-repetition": {"verdict": "pass", "evidence": "Enterprise 条件を保持し、矛盾と未回答日時だけへ質問を狭めた。"},
+            "contradiction-reconciliation": {"verdict": "pass", "evidence": "Enterprise のみと全有料 plan が両立しないことを明示した。"},
+            "stay-out-of-downstream-work": {"verdict": "pass", "evidence": "audience と時刻だけを整理し、rollout control を別工程へ残した。"}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "preserve-clarification-state": {"verdict": "pass", "evidence": "未確定、矛盾、対象外、撤回済み条件、確定境界を明確に分けた。"},
+            "iterate-after-user-answer": {"verdict": "pass", "evidence": "turn 2 は矛盾と日時を追質問し、turn 3 は訂正を再確認せず Ready とした。"},
+            "preserve-answers-without-repetition": {"verdict": "pass", "evidence": "回答済み Enterprise 条件を保持し、残る矛盾と日時だけを質問した。"},
+            "contradiction-reconciliation": {"verdict": "pass", "evidence": "両立しない条件を明示し、turn 3 の全有料 plan 条件撤回を反映した。"},
+            "stay-out-of-downstream-work": {"verdict": "pass", "evidence": "ユーザー指定の audience と timing だけを引き継ぎ、rollout 設計は次工程へ残した。"}
+          }
+        }
+      },
+      {
+        "id": "unavailable-destructive-authority",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "preserve-clarification-state": {"verdict": "partial", "evidence": "target ID と承認は保持したが、turn 2 で削除範囲の未解決状態を落とした。"},
+            "iterate-after-user-answer": {"verdict": "pass", "evidence": "回答不能を踏まえて削除保留を維持し、管理者への引き継ぎへ焦点を移した。"},
+            "blocking-gap-stop": {"verdict": "pass", "evidence": "target と承認が不明なため削除せず、推測で tenant を選ばなかった。"},
+            "authorization-not-assumed": {"verdict": "pass", "evidence": "`proceed` や古そうな tenant を選ぶ指示を承認として扱わなかった。"},
+            "blocked-without-looping": {"verdict": "partial", "evidence": "解除条件は示したが、Blocked、全不足、scope 不変を一体として報告しなかった。"},
+            "stay-out-of-downstream-work": {"verdict": "fail", "evidence": "依頼されていない実 tenant・依存 resource・保持方針の調査手順を提案した。"}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "preserve-clarification-state": {"verdict": "pass", "evidence": "target ID、承認、削除範囲を未解決のまま分け、推測を確定事項にしなかった。"},
+            "iterate-after-user-answer": {"verdict": "pass", "evidence": "回答不能を再評価し、同じ質問を繰り返さず Blocked とした。"},
+            "blocking-gap-stop": {"verdict": "pass", "evidence": "対象、権限、破壊範囲が未解決のため削除と対象選択を停止した。"},
+            "authorization-not-assumed": {"verdict": "pass", "evidence": "一般的な実行指示や推測 target を破壊的操作の承認に使わなかった。"},
+            "blocked-without-looping": {"verdict": "pass", "evidence": "不足する3事項、未変更範囲、権限者への引き継ぎという解除条件を示した。"},
+            "stay-out-of-downstream-work": {"verdict": "pass", "evidence": "実 tenant の調査・選択、削除手順、検証戦略を選ばなかった。"}
+          }
+        }
+      },
+      {
+        "id": "separate-owner-goals",
+        "baseline": {
+          "case": "fail",
+          "assertions": {
+            "decision-ready-relative-to-next-workflow": {"verdict": "pass", "evidence": "3件を別作業とし、owner・date・priority・境界が不足しているため追加確認が必要とした。"},
+            "preserve-clarification-state": {"verdict": "pass", "evidence": "既知の別 owner・別 date・priority 未決定と、未提示の具体値を区別した。"},
+            "material-questions-only": {"verdict": "pass", "evidence": "owner、date、目的、priority、依存関係など分割と順序に関係する事項を質問した。"},
+            "coherent-multi-goal-handling": {"verdict": "pass", "evidence": "異なる owner と release date を根拠に3 workstream へ分離した。"},
+            "stay-out-of-downstream-work": {"verdict": "fail", "evidence": "未提示の test、rollback、cutover、UI・文書境界を具体化し、下流設計へ踏み込んだ。"}
+          }
+        },
+        "candidate": {
+          "case": "pass",
+          "assertions": {
+            "decision-ready-relative-to-next-workflow": {"verdict": "pass", "evidence": "実行可能な個別 handoff に必要な owner、date、completion、priority が不足していると判断した。"},
+            "preserve-clarification-state": {"verdict": "pass", "evidence": "owner と date は存在するが未共有、priority は未決定、変更内容は未指定と区別した。"},
+            "material-questions-only": {"verdict": "pass", "evidence": "各項目の owner・date・completion と未決定の priority だけを確認した。"},
+            "coherent-multi-goal-handling": {"verdict": "pass", "evidence": "別 owner・別 date を根拠に3件を独立項目とし、priority を明示的に確認した。"},
+            "stay-out-of-downstream-work": {"verdict": "pass", "evidence": "file、実装方式、検証戦略を選ばず、具体的範囲を質問として未指定のまま保持した。"}
+          }
+        }
+      }
+    ]
+  },
+  "triggers": {
+    "protocol": "One matched baseline/candidate observation per case; all loads were observed through SKILL.md reads.",
+    "candidate_counts": {
+      "pass": 7,
+      "fail": 0,
+      "unstable": 0,
+      "not_exposed": 0,
+      "not_executed": 0,
+      "total": 7
+    },
+    "cases": [
+      {
+        "id": "ambiguous-change-request",
+        "expected": "should_trigger",
+        "baseline": {"verdict": "pass", "observed_loads": ["clarify-request"]},
+        "candidate": {"verdict": "pass", "observed_loads": ["clarify-request"]}
+      },
+      {
+        "id": "explicit-request-organization",
+        "expected": "should_trigger",
+        "baseline": {"verdict": "pass", "observed_loads": ["scope-request"]},
+        "candidate": {"verdict": "pass", "observed_loads": ["clarify-request"]}
+      },
+      {
+        "id": "clarification-continuation",
+        "expected": "should_trigger",
+        "baseline": {"verdict": "fail", "observed_loads": ["scope-request"]},
+        "candidate": {"verdict": "pass", "observed_loads": ["clarify-request"]}
+      },
+      {
+        "id": "understood-change-design",
+        "expected": "should_not_trigger",
+        "baseline": {"verdict": "pass", "observed_loads": ["design-changes"]},
+        "candidate": {"verdict": "pass", "observed_loads": ["design-changes"]}
+      },
+      {
+        "id": "approved-implementation",
+        "expected": "should_not_trigger",
+        "baseline": {"verdict": "pass", "observed_loads": ["implement-changes"]},
+        "candidate": {"verdict": "pass", "observed_loads": ["implement-changes"]}
+      },
+      {
+        "id": "issue-drafting",
+        "expected": "should_not_trigger",
+        "baseline": {"verdict": "pass", "observed_loads": ["draft-issue"]},
+        "candidate": {"verdict": "pass", "observed_loads": ["draft-issue"]}
+      },
+      {
+        "id": "diff-review",
+        "expected": "should_not_trigger",
+        "baseline": {"verdict": "pass", "observed_loads": ["review-changes"]},
+        "candidate": {"verdict": "pass", "observed_loads": ["review-changes"]}
+      }
+    ]
+  },
+  "deterministic_checks": {
+    "fixture_integrity": "All behavior fixture hashes were unchanged before and after executor runs.",
+    "json_references": "All assigned assertion IDs and trigger case IDs resolve in the current catalogs."
+  },
+  "unverified": [
+    "Claude and other clients were not executed.",
+    "Models and reasoning settings other than gpt-5.6-sol with high reasoning were not executed.",
+    "Production repositories, external systems, destructive actions, and network effects were not exercised.",
+    "Conversation histories longer than the selected multi-turn cases remain unverified."
+  ]
+}

@@ -8,14 +8,14 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 
 ## Skills
 
-27 Skills covering common development workflows:
+25 Skills covering common development workflows:
 
 | Skill | Description |
 | --- | --- |
 | `audit-agent-guidance` | Audit durable agent guidance against intended behavior, observed usage, client semantics, and evaluation evidence |
 | `break-failure-loop` | Stop and reframe when an agent has failed twice with the same error or approach |
 | `calibrate-ai-learning` | Use when delegation is getting too deep or you want to maintain understanding while working |
-| `clarify-request` | Use when a request is ambiguous — ask 1–4 clarifying questions or state assumptions |
+| `clarify-request` | Iteratively clarify or structure an ambiguous request until the next workflow can start, proceed under low-impact assumptions, or report a blocker |
 | `cognitive-rhythm-writing` | Design pacing in explanatory Japanese writing by managing cognitive rhythm and unresolved tension |
 | `define-referents` | Fix concrete referents and semantic roles before introducing new or ambiguous terms |
 | `design-agent-instructions` | Design AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md instruction sets |
@@ -33,8 +33,6 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `record-session-handoff` | Record a session handoff so the next session can resume without losing context |
 | `research-web-safely` | Research a topic on the web while treating external content as untrusted input |
 | `review-changes` | Review code, documentation, or configuration diffs with evidence, impact, confidence, and canonical labels |
-| `scope-implementation` | Narrow the scope of an implementation task before starting |
-| `scope-request` | Clarify purpose, completion criteria, constraints, and open questions for a request |
 | `summarize-changes` | Summarize changes in a diff or commit range for review or documentation |
 | `triage-agent-usage` | Assess whether agent usage is appropriate and calibrate delegation level |
 | `triage-review-feedback` | Evaluate existing review findings and decide accept, defer, or reject while preserving their provenance, evidence, and uncertainty |

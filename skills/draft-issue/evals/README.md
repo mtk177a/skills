@@ -43,4 +43,15 @@ Requirements checklist:
 
 ## Open items
 
-- Balance between asking for more info vs. producing a usable draft has not been tested
+- The balance between asking for more information and producing a partial draft has been tested only for one highly underspecified bug report.
+
+## Iter 1 — 2026-07-28
+
+- Client: Codex CLI 0.145.0
+- Model / reasoning: `gpt-5.6-sol` / high
+- Candidate `SKILL.md`: `sha256:86d67d201c71dca806204909509e1dbf844f893fd8a430b822671c613f48a826`
+- Targeted scenario: Scenario C only, after replacing the retired `scope-request` dependency with an iterative `clarify-request` handoff
+- Observable loads: `draft-issue`, then `clarify-request`
+- Result: pass; the response kept the Issue unposted, asked for the repository, issue type, export target, reproduction, expected and actual behavior, and environment, and did not invent error codes, file paths, line references, or reproduction details
+- Unverified: Scenarios A and B were not rerun because their drafting contract was unchanged; duplicate and template checks against a real tracker were not executed; Claude and other clients were not executed
+- Next validation question: After several clarification turns, does `draft-issue` resume with a self-contained draft without dropping earlier confirmed details?

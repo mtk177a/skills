@@ -83,7 +83,7 @@ This repository uses `action + object` kebab-case as the default pattern.
 
 Examples:
 
-- `scope-request`
+- `clarify-request`
 - `design-changes`
 - `implement-changes`
 - `review-changes`
