@@ -1,0 +1,76 @@
+{
+  "skill": "format-markdown",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Present each prompt as a Skill-selection task using only the named coexistence catalog. Require every selected Skill to be opened so loading is observable; do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each case once, then repeat only when variation, an unexpected result, or failure impact could change the decision.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed per case. Mixed observations are unstable."
+  },
+  "coexistence_skills": [
+    "format-markdown",
+    "japanese-tech-writing",
+    "implement-changes",
+    "design-changes",
+    "review-changes"
+  ],
+  "cases": [
+    {
+      "id": "direct-markdown-format",
+      "expected": "should_trigger",
+      "expected_handler": "format-markdown",
+      "category": "core",
+      "prompt": "Format this Markdown document for consistent blank lines, lists, code fences, and links without changing its wording."
+    },
+    {
+      "id": "commonmark-normalization",
+      "expected": "should_trigger",
+      "expected_handler": "format-markdown",
+      "category": "explicit_scope",
+      "prompt": "Normalize this file against the format-markdown CommonMark workflow and show the resulting diff."
+    },
+    {
+      "id": "japanese-technical-rewrite",
+      "expected": "should_not_trigger",
+      "expected_handler": "japanese-tech-writing",
+      "category": "near_miss",
+      "prompt": "Rewrite this Japanese technical explanation for clarity, paragraph flow, terminology consistency, and concision."
+    },
+    {
+      "id": "review-document-accuracy",
+      "expected": "should_not_trigger",
+      "expected_handler": "review-changes",
+      "category": "near_miss",
+      "prompt": "Review this documentation diff for factual accuracy, compatibility problems, missing verification, and misleading claims."
+    },
+    {
+      "id": "implement-approved-doc-change",
+      "expected": "should_not_trigger",
+      "expected_handler": "implement-changes",
+      "category": "coexistence",
+      "prompt": "The documentation wording and structure are approved. Implement the specified Markdown and configuration edits and run the agreed checks."
+    },
+    {
+      "id": "design-markdown-toolchain",
+      "expected": "should_not_trigger",
+      "expected_handler": "design-changes",
+      "category": "boundary",
+      "prompt": "Design a repository-wide Markdown lint and formatting toolchain, including dependencies, configuration, CI scope, risks, and verification."
+    },
+    {
+      "id": "source-code-format",
+      "expected": "should_not_trigger",
+      "expected_handler": null,
+      "category": "exclusion",
+      "prompt": "Run the repository's configured formatter on the changed Go source files."
+    },
+    {
+      "id": "japanese-spacing-only",
+      "expected": "should_not_trigger",
+      "expected_handler": null,
+      "category": "unclaimed_requirement",
+      "prompt": "In this Japanese paragraph, insert half-width spaces where Japanese text touches English words, while preserving URLs and identifiers."
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "skill": "format-markdown",
+  "version": 1,
+  "conditions": {
+    "no_skill": "Blank-slate Codex with no format-markdown Skill available.",
+    "current_skill": "The same Codex environment with the current format-markdown SKILL.md loaded before execution.",
+    "static_tools": "Pinned Prettier, textlint, and markdownlint-cli2 operating on an identical fixture without an agent."
+  },
+  "assertions": [
+    {
+      "id": "target-edited",
+      "critical": true,
+      "statement": "When the request authorizes an edit and the condition supports that responsibility, the target file is changed rather than only described."
+    },
+    {
+      "id": "format-only-content-preserved",
+      "critical": true,
+      "statement": "A format-only request preserves wording, order, link destinations, code, commands, identifiers, and meaning."
+    },
+    {
+      "id": "no-hard-wrap",
+      "critical": true,
+      "statement": "Does not introduce prose hard wrapping based on an implicit line-length limit."
+    },
+    {
+      "id": "surface-normalized",
+      "critical": false,
+      "statement": "Normalizes the requested blank-line, list, fence, table, and final-newline inconsistencies that are safe under the supplied profile."
+    },
+    {
+      "id": "japanese-ascii-spacing",
+      "critical": false,
+      "statement": "Adds half-width spaces at the requested Japanese/alphabetic or Japanese/numeric boundaries without changing protected token internals."
+    },
+    {
+      "id": "protected-syntax-preserved",
+      "critical": true,
+      "statement": "Preserves frontmatter, URLs, link destinations, inline code, fenced code, commands, and identifier contents."
+    },
+    {
+      "id": "ambiguity-not-invented",
+      "critical": true,
+      "statement": "Does not silently choose a heading relationship, section meaning, punctuation policy, or other unstated semantic decision."
+    },
+    {
+      "id": "observable-ambiguity",
+      "critical": false,
+      "statement": "Makes a material unresolved structural decision or unsupported static responsibility visible instead of reporting complete success."
+    },
+    {
+      "id": "explicit-authority-respected",
+      "critical": true,
+      "statement": "Performs an explicitly authorized wording change when the supplied fact is sufficient, and does not reject it merely because formatting is also requested."
+    },
+    {
+      "id": "review-does-not-edit",
+      "critical": true,
+      "statement": "A review-only request reports structural readability observations without modifying the fixture."
+    },
+    {
+      "id": "commonmark-not-style-authority",
+      "critical": false,
+      "statement": "Does not present CommonMark as the source of universal recommended, context-dependent, or discouraged writing styles."
+    }
+  ],
+  "cases": [
+    {
+      "id": "deterministic-surface-normalization",
+      "category": "deterministic",
+      "prompt": "Normalize document.md using the supplied Markdown profile. Preserve every word, heading, link destination, code token, item order, and existing prose line break. Do not hard-wrap prose. Apply only safe source-format changes and edit the file.",
+      "fixture": {
+        "document.md": "# Release notes\n\n\nParagraph with a deliberately long source line that must remain on one physical line even when it exceeds eighty characters because this profile uses editor soft wrapping.\n\n* Added API\n- Fixed parser\n\n```sh\necho \"$RELEASE_ID\"\n```\n\n|Name|State|\n|---|---|\n|API|Ready|"
+      },
+      "assertions": [
+        "target-edited",
+        "format-only-content-preserved",
+        "no-hard-wrap",
+        "surface-normalized",
+        "protected-syntax-preserved",
+        "commonmark-not-style-authority"
+      ],
+      "static_scope": "full"
+    },
+    {
+      "id": "japanese-ascii-boundaries",
+      "category": "deterministic_with_exclusions",
+      "prompt": "Edit document.md. Add a half-width space where Japanese text touches an alphabetic word or number. Do not add or remove characters inside URLs, Markdown link destinations, inline code, commands, or identifiers. Do not invent a punctuation conversion rule, rewrite prose, or hard-wrap lines.",
+      "fixture": {
+        "document.md": "---\ntitle: DMS入力準備\n---\n\n# DMS入力準備完了条件\n\nAthenaでSQLを実行し、結果をRDSへ保存する。\nURLはhttps://example.com/request_log?id=10を使い、[API仕様](https://example.com/api_v2)と`requestID`、`--dry-run`は変更しない。\n設計判断の状態はAccepted."
+      },
+      "assertions": [
+        "target-edited",
+        "format-only-content-preserved",
+        "no-hard-wrap",
+        "japanese-ascii-spacing",
+        "protected-syntax-preserved",
+        "ambiguity-not-invented"
+      ],
+      "static_scope": "plain-text boundaries are applicable; styled-node boundary spacing and punctuation policy are recorded separately when unsupported"
+    },
+    {
+      "id": "ambiguous-heading-relation",
+      "category": "judgment_boundary",
+      "prompt": "Inspect document.md for Markdown structure problems. Preserve meaning. If repairing a heading level requires deciding an unstated parent-child relationship, do not guess; leave the file unchanged and report the unresolved decision.",
+      "fixture": {
+        "document.md": "# Deployment\n\n### Rollback\n\nRestore the previous image.\n\n## Verification\n\nCheck the health endpoint.\n"
+      },
+      "assertions": [
+        "ambiguity-not-invented",
+        "observable-ambiguity",
+        "commonmark-not-style-authority"
+      ],
+      "static_scope": "detection_only"
+    },
+    {
+      "id": "authorized-format-and-wording",
+      "category": "mixed_authority",
+      "prompt": "Edit document.md. Normalize its Markdown and rewrite the text under `## Retry behavior` so it states the supplied fact clearly: the client retries once only after HTTP 503, and never retries other responses. Do not add any behavior not present in that fact.",
+      "fixture": {
+        "document.md": "# Client\n\n\n## Retry behavior\n\nIt handles retry situations.\n"
+      },
+      "assertions": [
+        "target-edited",
+        "explicit-authority-respected",
+        "ambiguity-not-invented",
+        "no-hard-wrap"
+      ],
+      "static_scope": "formatting_only"
+    },
+    {
+      "id": "markdown-structure-review-only",
+      "category": "judgment",
+      "prompt": "Review the Markdown structure of document.md for source and rendered readability. Do not edit it. Distinguish mechanical formatting observations from changes that would reorganize or rewrite the content.",
+      "fixture": {
+        "document.md": "# Operations\n\n## Details\n\nThe deployment procedure appears here.\n\n## Before you begin\n\nRequired credentials appear here.\n"
+      },
+      "assertions": [
+        "review-does-not-edit",
+        "observable-ambiguity",
+        "commonmark-not-style-authority"
+      ],
+      "static_scope": "not_applicable"
+    }
+  ],
+  "verdict_policy": {
+    "critical_failure": "Any failed critical assertion fails the applicable condition for that case.",
+    "partial": "A condition is partial when it satisfies all critical assertions but misses at least one applicable non-critical assertion.",
+    "not_applicable": "A responsibility outside a static tool's declared scope is recorded as not_applicable and is not counted as pass.",
+    "render_equivalence": "For format-only fixtures, compare rendered structure before and after with the recorded parser. A changed render hash overrides a prose grader's content-preservation pass.",
+    "comparison": "Do not collapse the matrix into one score. Compare deterministic coverage, judgment coverage, critical regressions, and routing separately."
+  }
+}
