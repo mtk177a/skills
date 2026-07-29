@@ -1,0 +1,103 @@
+{
+  "skill": "summarize-changes",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Present each prompt and supplied conversation context as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case once per condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every case. Mixed observed results are unstable, not a pass."
+  },
+  "coexistence_skills": [
+    "draft-commit",
+    "review-changes",
+    "record-session-handoff",
+    "implement-changes",
+    "validate-fix"
+  ],
+  "cases": [
+    {
+      "id": "pr-description",
+      "expected": "should_trigger",
+      "expected_handler": "summarize-changes",
+      "category": "core",
+      "prompt": "Write a PR description for the current diff with impact, tests, remaining risks, and unconfirmed items."
+    },
+    {
+      "id": "public-release-notes",
+      "expected": "should_trigger",
+      "expected_handler": "summarize-changes",
+      "category": "core",
+      "prompt": "Turn the changes from v3.1.0 to v3.2.0 into public release notes for customers."
+    },
+    {
+      "id": "operational-release-handoff",
+      "expected": "should_trigger",
+      "expected_handler": "summarize-changes",
+      "category": "core",
+      "prompt": "Prepare an operational release handoff for main...release, preserving deployment dependencies, verification status, rollback notes, remaining work, and unknowns."
+    },
+    {
+      "id": "shareable-summary",
+      "expected": "should_trigger",
+      "expected_handler": "summarize-changes",
+      "category": "core",
+      "prompt": "Give the support team a concise summary of this supplied diff, including user impact and anything still unverified."
+    },
+    {
+      "id": "commit-and-pr-description",
+      "expected": "should_trigger",
+      "expected_handlers": [
+        "draft-commit",
+        "summarize-changes"
+      ],
+      "category": "coexistence",
+      "prompt": "Draft atomic commit messages for the current changes and also prepare a reviewer-facing PR description."
+    },
+    {
+      "id": "review-and-summary",
+      "expected": "should_trigger",
+      "expected_handlers": [
+        "review-changes",
+        "summarize-changes"
+      ],
+      "category": "coexistence",
+      "prompt": "Review the PR range for correctness and security findings, then separately provide a descriptive change summary for the release manager."
+    },
+    {
+      "id": "review-only",
+      "expected": "should_not_trigger",
+      "expected_handler": "review-changes",
+      "category": "near_miss",
+      "prompt": "Review the current diff for correctness, security, compatibility, and missing tests. Do not write a PR summary."
+    },
+    {
+      "id": "commit-only",
+      "expected": "should_not_trigger",
+      "expected_handler": "draft-commit",
+      "category": "near_miss",
+      "prompt": "Draft an atomic Conventional Commit message for the staged changes. I do not need a PR description."
+    },
+    {
+      "id": "session-handoff-only",
+      "expected": "should_not_trigger",
+      "expected_handler": "record-session-handoff",
+      "category": "near_miss",
+      "prompt": "Record the decisions, open questions, and first next step so another AI session can continue this work."
+    },
+    {
+      "id": "implementation-only",
+      "expected": "should_not_trigger",
+      "expected_handler": "implement-changes",
+      "category": "near_miss",
+      "prompt": "Implement the approved retry configuration change and run the relevant checks. Do not draft release notes."
+    },
+    {
+      "id": "validate-fix-only",
+      "expected": "should_not_trigger",
+      "expected_handler": "validate-fix",
+      "category": "near_miss",
+      "prompt": "Verify whether the completed retry-loop fix resolves finding F-12. Do not summarize unrelated changes."
+    }
+  ]
+}
