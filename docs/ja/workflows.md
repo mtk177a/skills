@@ -34,14 +34,16 @@
 
 ## 停滞からの回復ワークフロー
 
-`break-failure-loop` → `diversify-agent-search` → `design-changes` → `implement-changes`
+`元の workflow` → `break-failure-loop` → 診断後に復帰 / blocked / 任意の `diversify-agent-search` → `design-changes` → `implement-changes`
 
-- `break-failure-loop`: 同じ仮説での反復を止め、根拠を整理する
-- `diversify-agent-search`: 利用可能な場合、候補アーカイブ、多様性軸、ケース別評価で探索を広げる
+- `break-failure-loop`: 判断に有用な新しい証拠を得られない同じ仮説による同等試行を一時停止し、試行記録を再構成して、診断、blocked、探索拡張の回復状態を選ぶ
+- 診断後に復帰: 提案した確認によって証拠または仮説が更新されてから、元の workflow を再開する
+- blocked: 不足している入力、権限、安全上の判断が得られるまで、反復している分岐を停止したままにする
+- `diversify-agent-search`: 現在の設計アンカーが尽き、局所的な識別確認では足りない場合、候補アーカイブ、多様性軸、ケース別評価で探索を広げる
 - `design-changes`: 選んだ分岐を実装可能な計画に落とす
 - `implement-changes`: 分岐と停止条件が明確になってから実装を再開する
 
-各 Skill は単独でも動く必要があります。`diversify-agent-search` は探索設計を深める companion であり、他 Skill の必須依存ではありません。
+全ての後続手順を機械的に実行してはいけません。`break-failure-loop` は元の workflow へ直接戻る場合も、blocked のまま止まる場合もあります。各 Skill は単独でも動く必要があり、`diversify-agent-search` は構造的候補探索のための任意の引き継ぎであって、必須依存ではありません。
 
 ## Durable guidance の workflow
 

@@ -1,6 +1,6 @@
 ---
 name: diversify-agent-search
-description: Use when agent, workflow, prompt, or code improvement is stuck in the same design neighborhood - widen the search with multiple candidates, an archive, diversity axes, and case-level evaluation.
+description: Use when a stalled agent, workflow, prompt, or code improvement needs broad structural candidate search because the current design anchor is exhausted or local distinguishing checks are insufficient. Widen the search with multiple candidates, an archive, diversity axes, and case-level evaluation; not for only pausing and reconstructing repeated attempts when one diagnostic or missing input can resolve the loop.
 license: MIT
 ---
 

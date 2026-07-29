@@ -13,7 +13,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | Skill | Description |
 | --- | --- |
 | `audit-agent-guidance` | Audit durable agent guidance against intended behavior, observed usage, client semantics, and evaluation evidence |
-| `break-failure-loop` | Stop and reframe when an agent has failed twice with the same error or approach |
+| `break-failure-loop` | Pause equivalent same-hypothesis attempts without new evidence and select a diagnostic, blocker, or diversification handoff |
 | `calibrate-ai-learning` | Use when delegation is getting too deep or you want to maintain understanding while working |
 | `clarify-request` | Iteratively clarify or structure an ambiguous request until the next workflow can start, proceed under low-impact assumptions, or report a blocker |
 | `cognitive-rhythm-writing` | Design pacing in explanatory Japanese writing by managing cognitive rhythm and unresolved tension |
@@ -21,7 +21,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `design-agent-instructions` | Design AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md instruction sets |
 | `design-changes` | Design change scope, impact, risk, and verification approach before implementing |
 | `design-skill` | Decide whether and how to create, merge, split, or substantially rescope a Skill before implementation |
-| `diversify-agent-search` | Widen stuck agent or workflow improvement with multiple candidates, diversity axes, and case-level evaluation |
+| `diversify-agent-search` | Expand an exhausted design anchor into structurally different candidates with diversity axes and case-level evaluation |
 | `draft-commit` | Draft atomic commit plans and Conventional Commits messages while preserving Git staging boundaries |
 | `draft-issue` | Turn a clarified request into an issue draft and filing steps |
 | `draft-review-comments` | Draft unposted PR comments from organized findings and decisions without changing their meaning |

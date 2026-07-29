@@ -1,6 +1,6 @@
 ---
 name: diversify-agent-search
-description: agent / workflow / prompt / code の改善が同じ設計近傍に停滞したとき、複数候補・候補アーカイブ・多様性軸・ケース別評価で探索を広げるために使う。
+description: agent / workflow / prompt / code の改善が停滞し、現在の設計アンカーが尽きたか、局所的な識別確認では足りないため、広範な構造的候補探索が必要な場合に使う。複数候補、候補アーカイブ、多様性軸、ケース別評価で探索を広げる。1 つの診断または不足情報によって loop を解消でき、反復試行の一時停止と再構成だけが必要な場合には使わない。
 license: MIT
 ---
 

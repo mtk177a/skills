@@ -1,0 +1,88 @@
+{
+  "skill": "break-failure-loop",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Present each prompt as a Skill-selection task using only the installed names and descriptions declared for the condition. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case once per condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every case. Mixed observed results are unstable, not a pass."
+  },
+  "coexistence_skills": [
+    "implement-changes",
+    "investigate-incident",
+    "diversify-agent-search",
+    "design-changes"
+  ],
+  "cases": [
+    {
+      "id": "equivalent-edits-no-new-evidence",
+      "expected": "should_trigger",
+      "expected_handler": "break-failure-loop",
+      "category": "core",
+      "prompt": "Two handler guard edits based on the same nil-input hypothesis failed with the same stack and taught us nothing new. Pause before another edit and reconstruct what we actually know."
+    },
+    {
+      "id": "explicit-stagnation-reframe",
+      "expected": "should_trigger",
+      "expected_handler": "break-failure-loop",
+      "category": "core",
+      "prompt": "We keep applying local retry patches under the same theory and the result is unchanged. Do not modify anything; organize the attempts and identify the next decision point."
+    },
+    {
+      "id": "first-failure",
+      "expected": "should_not_trigger",
+      "expected_handler": "implement-changes",
+      "category": "near_miss",
+      "prompt": "The focused authentication test failed for the first time after my approved change. Inspect the failure and continue the implementation workflow."
+    },
+    {
+      "id": "repeated-red-observation",
+      "expected": "should_not_trigger",
+      "expected_handler": "implement-changes",
+      "category": "near_miss",
+      "prompt": "I ran the same focused test twice only to establish and confirm the intended Red. No implementation attempt has been made yet. Continue with the first minimal implementation."
+    },
+    {
+      "id": "new-evidence-from-different-hypotheses",
+      "expected": "should_not_trigger",
+      "expected_handler": "design-changes",
+      "category": "near_miss",
+      "prompt": "The first change ruled out a nil-input cause, and the second trace identified malformed token parsing. The hypothesis and evidence changed each time; design the next implementation unit."
+    },
+    {
+      "id": "initial-production-incident",
+      "expected": "should_not_trigger",
+      "expected_handler": "investigate-incident",
+      "category": "near_miss",
+      "prompt": "A production API started returning 500 after deployment. Here is the first stack trace; investigate the failure path and root-cause candidates."
+    },
+    {
+      "id": "broad-structural-search",
+      "expected": "should_not_trigger",
+      "expected_handler": "diversify-agent-search",
+      "category": "near_miss",
+      "prompt": "The current design anchor is exhausted. Build a candidate archive with multiple structurally different processing orders, state models, and tool boundaries, then compare them by evaluation case."
+    },
+    {
+      "id": "reframe-then-diversify",
+      "expected": "should_trigger",
+      "expected_handlers": [
+        "break-failure-loop",
+        "diversify-agent-search"
+      ],
+      "category": "coexistence",
+      "prompt": "First pause and reconstruct the repeated same-anchor attempts and evidence. If that shows no local distinguishing check remains, then widen the search into structurally different candidates."
+    },
+    {
+      "id": "stalled-incident-investigation",
+      "expected": "should_trigger",
+      "expected_handlers": [
+        "investigate-incident",
+        "break-failure-loop"
+      ],
+      "category": "coexistence",
+      "prompt": "Produce both parts of this request. First stop and reconstruct the production incident investigation's repeated cache-timeout branch: two equivalent checks under the same cause hypothesis returned the same evidence. Then continue the incident investigation by organizing the remaining failure paths, root-cause candidates, and next branch from the supplied stack and log."
+    }
+  ]
+}

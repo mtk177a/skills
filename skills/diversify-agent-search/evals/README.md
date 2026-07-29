@@ -1,59 +1,68 @@
 # diversify-agent-search evals
 
-## Iter 0 - Static check
+## Purpose
 
-- description and body are internally consistent on diversifying stuck agent / workflow improvement
-- output format includes candidate archive, diversity axes, evaluation matrix, and protected evaluation assets
-- the Skill is self-contained and does not require another Skill, subagent, or multi-agent workflow
-- at least one `[critical]` assertion is identified: proposing at least three structurally different candidates
+Verify that `diversify-agent-search` owns broad structural candidate search only after the current design anchor is exhausted or local distinguishing checks are insufficient, while leaving repeated-attempt reconstruction and one-check recovery to `break-failure-loop`.
 
-## Scenarios
+## Assets
 
-### Scenario A: Prompt tuning is stuck in local edits
+- `triggers.json`: focused trigger, near-miss, and coexistence routing cases for the revised description
+- this README: existing behavior scenarios, routing protocol, and summarized result
 
-An agent workflow has been improved by adding prompt text and output normalization twice, but the same evaluation failures remain. The executor must widen the search beyond more prompt wording changes.
+## Static check
 
-Requirements checklist:
-1. [critical] Propose at least three structurally different candidates
-2. Identify the current design anchor
-3. Treat prompt wording variants alone as insufficient diversity
-4. Select one next parent or branch with a reason
+- `description` requires broad structural candidate search, not stagnation alone.
+- A single diagnostic or missing input that can resolve a repeated-attempt loop remains outside this Skill.
+- The body continues to require candidate archives, diversity axes, case-level evaluation, and protected evaluation assets.
+- The Skill remains self-contained and does not require another Skill, agent, subagent, or multi-agent workflow.
+- No behavior instructions, scripts, dependencies, or permissions changed in this revision.
 
-### Scenario B: Average score hides case-level weakness
+## Coverage map
 
-Two candidates have similar average scores, but one handles short cases well while the other handles long ambiguous cases better. The executor must avoid choosing only by average score.
+| Responsibility or boundary | Plausible failure | Scenario or check | Grading |
+| --- | --- | --- | --- |
+| Exhausted-anchor routing | Fails to trigger when structurally different candidates are explicitly needed | `exhausted-anchor-candidate-search` | Observable Skill load |
+| Case-level candidate search | Treats an average-score comparison as local diagnosis | `case-level-candidate-search` | Observable Skill load |
+| Recovery boundary | Activates when one diagnostic or missing input can resolve the loop | `reconstruct-only`, `missing-input-only` | Observable Skill load |
+| Coexistence | Suppresses `break-failure-loop` or fails to join after its Diversify decision | `reframe-then-diversify` | Observable Skill loads |
+| First failure | Activates before any design anchor is exhausted | `first-implementation-failure` | Observable Skill load |
 
-Requirements checklist:
-1. [critical] Include a case-level evaluation matrix
-2. Preserve both candidates in the archive if each has a distinct strength
-3. State the diversity axis that explains the behavior difference
+## Existing behavior scenarios
 
-### Scenario C: Evaluation assets are at risk
+The behavior body was not changed in this revision. Its prior scenarios remain unexecuted:
 
-The current candidate would pass if the grader or expected outputs were relaxed. The executor must protect evaluation assets and ask before any evaluation changes.
+- prompt tuning stuck in local edits should produce structurally different candidates
+- average score should not hide case-level strengths and weaknesses
+- protected evaluation assets should not be relaxed to make a candidate pass
+- the Skill should remain useful without companion Skills
 
-Requirements checklist:
-1. [critical] Mark evaluation cases, expected outputs, graders, or scoring rules as protected assets
-2. Do not recommend changing evaluation assets to make the candidate pass
-3. Ask first if evaluation changes are genuinely needed
+These scenarios require a separate behavior revision or evidence need before execution. They are not counted as passing.
 
-### Scenario D: Companion Skill is unavailable
+## Trigger execution protocol
 
-Only this Skill is installed. The executor must still produce useful stagnation evidence, alternative candidates, and stop conditions without referring to another Skill as mandatory.
-
-Requirements checklist:
-1. [critical] Complete the output without requiring another Skill
-2. Mention companion handoff only as optional or not applicable
-3. Include budget and stop conditions
+Present each case as a Skill-selection task using the names and descriptions for the selected baseline or candidate condition. Require the selector to open every selected `SKILL.md` so loading is observable. Count only observed file reads and record unavailable observations as `not exposed`.
 
 ## Failure Pattern Ledger
 
-- `single candidate polished again`
-- `prompt wording variants treated as diversity`
-- `average score hides case weakness`
-- `evaluation assets edited to pass`
-- `companion skill treated as required dependency`
+- `stagnation alone treated as structural-search authority`
+- `one-check recovery expanded into a candidate portfolio`
+- `exhausted anchor missed despite explicit candidate-search request`
+- `break-failure-loop suppressed in a compound recovery request`
+- `first implementation failure treated as design-search stagnation`
 
-## Iter N - not yet executed
+## Current revision
 
-Scenarios have not been executed. Execution results will be recorded here once run.
+Routing was evaluated on 2026-07-29 with Codex CLI 0.145.0, `gpt-5.6-sol`, high reasoning, and a read-only sandbox.
+
+- Both baseline and candidate passed all six focused trigger, near-miss, and coexistence cases.
+- The candidate continued to load for exhausted-anchor and case-level candidate search.
+- It did not load for one-diagnostic recovery, missing-input recovery, or a first implementation failure.
+- The compound recovery request observably loaded both `break-failure-loop` and `diversify-agent-search`.
+- The unchanged behavior scenarios were not executed and are not counted as passing.
+- Claude Code, other clients and models, and repeated-run stability were not evaluated.
+
+See [`results.json`](results.json) for candidate hashes, observable loads, and unverified items.
+
+### Next validation question
+
+- Does the narrower description preserve explicit structural-search activation while avoiding activation during diagnostic recovery?

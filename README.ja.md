@@ -15,7 +15,7 @@
 | Skill | 説明 |
 | --- | --- |
 | `audit-agent-guidance` | 永続的な agent guidance を期待する挙動、観測済みの利用状況、client semantics、評価証拠に照らして監査する |
-| `break-failure-loop` | 同じエラーや方針で 2 回以上失敗したときに立ち止まり再構成する |
+| `break-failure-loop` | 新しい証拠がない同じ仮説による同等試行を停止し、診断、blocked、または探索拡張への引き継ぎを選ぶ |
 | `calibrate-ai-learning` | 委任が深くなりすぎている時や、理解を保ちながら作業したい時に使う |
 | `clarify-request` | 曖昧な依頼を、次の workflow を開始できるか、低影響な前提で進めるか、blocked と判断できるまで反復して明確化・構造化する |
 | `cognitive-rhythm-writing` | 認知モードと未回収の緊張を管理し、日本語の説明文に緩急を設計する |
@@ -23,7 +23,7 @@
 | `design-agent-instructions` | AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md を設計する |
 | `design-changes` | 実装前に変更方針・影響範囲・リスク・確認方針を設計する |
 | `design-skill` | Skill を新規作成・統合・分割・大幅な責務変更のどれで設計するか、実装前に判断する |
-| `diversify-agent-search` | 停滞した agent / workflow 改善を、複数候補・多様性軸・ケース別評価で広げる |
+| `diversify-agent-search` | 行き詰まった設計アンカーを、構造的に異なる複数候補、多様性軸、ケース別評価で広げる |
 | `draft-commit` | Git の staging 境界を保ちながら、原子的なコミット計画と Conventional Commits メッセージを作成する |
 | `draft-issue` | 明確化した課題を Issue の起票案と起票手順に落とし込む |
 | `draft-review-comments` | 整理済みの指摘と判断の意味を変えず、未投稿の PR コメント案へ変換する |
