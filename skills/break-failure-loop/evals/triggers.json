@@ -11,7 +11,7 @@
   "coexistence_skills": [
     "implement-changes",
     "investigate-incident",
-    "diversify-agent-search",
+    "explore-decision-space",
     "design-changes"
   ],
   "cases": [
@@ -60,7 +60,7 @@
     {
       "id": "broad-structural-search",
       "expected": "should_not_trigger",
-      "expected_handler": "diversify-agent-search",
+      "expected_handler": "explore-decision-space",
       "category": "near_miss",
       "prompt": "The current design anchor is exhausted. Build a candidate archive with multiple structurally different processing orders, state models, and tool boundaries, then compare them by evaluation case."
     },
@@ -69,7 +69,7 @@
       "expected": "should_trigger",
       "expected_handlers": [
         "break-failure-loop",
-        "diversify-agent-search"
+        "explore-decision-space"
       ],
       "category": "coexistence",
       "prompt": "First pause and reconstruct the repeated same-anchor attempts and evidence. If that shows no local distinguishing check remains, then widen the search into structurally different candidates."

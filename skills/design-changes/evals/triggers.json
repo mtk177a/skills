@@ -30,6 +30,13 @@
       "prompt": "Before editing, turn this approved change into a narrow implementation handoff. Identify the initial areas to inspect, the allowed change boundary and explicit non-targets, reviewable work units, completion criteria, verification coverage, and stop conditions. Do not implement it."
     },
     {
+      "id": "unsettled-decision-space",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "expected_handler": "explore-decision-space",
+      "prompt": "Before implementation planning, expand materially different problem frames because the problem is still unsettled, then identify what evidence would distinguish them."
+    },
+    {
       "id": "undefined-request",
       "expected": "should_not_trigger",
       "category": "near_miss",

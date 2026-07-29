@@ -22,6 +22,7 @@ Structured output cases remain optional. Add `evals.json` only if repeated execu
 - [x] Planned checks are separated from observed evidence.
 - [x] Verification depth follows material risk and uncertainty rather than a universal count.
 - [x] The workflow remains read-only and routes high-risk controls to `plan-risky-change`.
+- [x] Consequential work with an unsettled problem frame or solution set routes to `explore-decision-space` before implementation design.
 
 ## Coverage map
 
@@ -34,6 +35,7 @@ Structured output cases remain optional. Add `evals.json` only if repeated execu
 | Adaptive reporting | Emits empty alternatives, migration, rollback, or explanation sections | A–C | Output inspection |
 | Read-only design | Edits target files or starts implementation | A–C in writable disposable fixtures | File hashes and Requirement 3 |
 | Routing boundary | Collides with request clarification, Skill design, or implementation | `triggers.json` | Observable Skill loads |
+| Decision-space boundary | Plans implementation before a consequential problem frame or option set is ready | `unsettled-decision-space` | Observable Skill loads |
 | Retired implementation-scoping handoff | A former `scope-implementation` request has no successor or routes directly to editing | `implementation-scope-handoff` | Observable Skill loads |
 
 ## Behavioral scenarios
@@ -98,16 +100,17 @@ Requirements checklist:
 - `retired implementation-scoping request does not route to design-changes`
 - `readability plan split by local diff instead of reader understanding`
 
-## Current revision — 2026-07-28
+## Current revision — 2026-07-29
 
 - Client: Codex CLI 0.145.0
 - Model / reasoning: `gpt-5.6-sol` / high
-- Full-run baseline: commit `42ebd18cb2406d1cfcbeb34cd289fd620c8e4f9b`; targeted-routing baseline: commit `33c9d95641d816ba3957e5a6045141e3d451b753`; candidate `SKILL.md`: `sha256:239281c64d4d7689be575607c2377e110535a50942a847c5961a4b9c035916e1`; `triggers.json`: `sha256:8bc72bef266d0f568ecf77196e6b4ed13456bdb0a1b95a1cf6c2c3a741b2b3af`
+- Full-run baseline: commit `42ebd18cb2406d1cfcbeb34cd289fd620c8e4f9b`; targeted-routing baseline: commit `33c9d95641d816ba3957e5a6045141e3d451b753`; candidate `SKILL.md`: `sha256:e1bf4fc8e0250219ad2345bbf6bac87b731b4248a05538119a1eb6c180b465b3`; `triggers.json`: `sha256:a01f0eea4beface155d5346184ceeadbaac2e59853cd823c6d156cb0d309a262`
 - Behavioral scenarios: A, B, and C
 - Candidate grading: 15 / 15 requirements passed; baseline: 14 passed and 1 partial
 - Trigger selection: all seven retained cases matched the expected routing, including coexistence with `plan-risky-change`
 - Targeted routing regression: after replacing the retired `scope-request` boundary with `clarify-request`, `undefined-request` observably loaded only `clarify-request`; `design-changes`, `design-skill`, `implement-changes`, and `plan-risky-change` were not loaded
 - Retired-Skill routing regression: `implementation-scope-handoff` observably loaded `scope-implementation` in the baseline catalog and only `design-changes` after retirement
+- Decision-space routing regression: `unsettled-decision-space` observably loaded only `explore-decision-space`, while `application-change-design` continued to load only `design-changes`
 - Improvements: adaptive reporting retained all implementation decisions without empty sections, and the auth case explicitly handed high-risk controls to `plan-risky-change`
 - Writable fixture hashes: unchanged in baseline and candidate
 - Regressions: none in the selected cases

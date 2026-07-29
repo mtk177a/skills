@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "skill": "explore-decision-space",
+  "assertions": [
+    {
+      "id": "layer-order",
+      "critical": true,
+      "requirement": "Identifies whether problem space, solution space, both, or neither is unsettled; when both are unsettled, expands problem frames before solution options."
+    },
+    {
+      "id": "material-diversity",
+      "critical": true,
+      "requirement": "Produces materially different frames or options along explicit decision-relevant axes without satisfying a fixed candidate count."
+    },
+    {
+      "id": "evidence-integrity",
+      "critical": true,
+      "requirement": "Separates observed or supplied evidence, assumptions, inferences, predictions, and unknowns without fabricating requirements or results."
+    },
+    {
+      "id": "no-forced-winner",
+      "critical": true,
+      "requirement": "Selects a frame or option only when evidence, constraints, or an authorized user preference supports it; otherwise identifies the next distinguishing evidence or decision."
+    },
+    {
+      "id": "decision-handoff",
+      "critical": false,
+      "requirement": "Returns a useful completion state and a precise next evidence, user-decision, or adjacent-workflow handoff."
+    },
+    {
+      "id": "boundary",
+      "critical": true,
+      "requirement": "Does not apply decision-space exploration to clarification, terminology definition, repeated-failure diagnosis, implementation planning, implementation, or automated optimization. It may hand off to and, when separately applicable, use an installed adjacent Skill without representing that work as decision-space exploration."
+    },
+    {
+      "id": "read-only",
+      "critical": true,
+      "requirement": "Does not modify files, run proposed experiments, change evaluation assets, implement an option, or perform an external write."
+    }
+  ],
+  "cases": [
+    {
+      "id": "problem-frame-fixation",
+      "prompt": "We are about to rebuild the onboarding flow because completion is low. The team has anchored on shortening the form, but we only know that 41% of invited users finish account setup and support receives both access and terminology questions. Before choosing a fix, widen what problem we may actually be solving and tell me what would distinguish the frames.",
+      "assertions": [
+        "layer-order",
+        "material-diversity",
+        "evidence-integrity",
+        "no-forced-winner",
+        "decision-handoff",
+        "read-only"
+      ]
+    },
+    {
+      "id": "solution-anchor-fixation",
+      "prompt": "The problem is fixed: batch imports exceed the approved 15-minute completion objective because one process parses, validates, enriches, and writes every row serially. We have only discussed adding more workers. Explore structurally different solution approaches, compare their conditions and trade-offs, and narrow only if the evidence supports it. Do not edit the repository.",
+      "assertions": [
+        "layer-order",
+        "material-diversity",
+        "evidence-integrity",
+        "no-forced-winner",
+        "decision-handoff",
+        "read-only"
+      ]
+    },
+    {
+      "id": "both-layers-unsettled",
+      "prompt": "We plan to replace our search engine because users say search is bad, and the current proposal is to add embeddings. We have query logs, zero-result rates, click-through rates, and interviews mentioning stale content, vocabulary mismatch, and unclear filters, but no analysis tying them together. Expand the decision space and tell us what can responsibly be selected now.",
+      "assertions": [
+        "layer-order",
+        "material-diversity",
+        "evidence-integrity",
+        "no-forced-winner",
+        "decision-handoff",
+        "read-only"
+      ]
+    },
+    {
+      "id": "diversify-handoff",
+      "prompt": "A prior recovery review established that three prompt-only edits tested the same assumption, no local diagnostic can distinguish another wording change, and the exhausted anchor is 'all validation remains in one LLM prompt'. Continue from that handoff by widening the structural decision space. The only observed results are that case A improved, case B regressed, and cases C and D were not run.",
+      "assertions": [
+        "layer-order",
+        "material-diversity",
+        "evidence-integrity",
+        "no-forced-winner",
+        "decision-handoff",
+        "boundary",
+        "read-only"
+      ]
+    },
+    {
+      "id": "clarification-near-miss",
+      "prompt": "Improve the service. I have not said which service, what outcome matters, what environment is in scope, or whether you may change production. Organize what you need before work can start.",
+      "assertions": [
+        "boundary",
+        "evidence-integrity",
+        "decision-handoff",
+        "read-only"
+      ]
+    },
+    {
+      "id": "selected-approach-near-miss",
+      "prompt": "We have selected transactional outbox after comparing polling, CDC, and direct publish. Design the implementation scope, migration sequence, risks, and verification for the existing Go service. Do not implement it yet.",
+      "assertions": [
+        "boundary",
+        "decision-handoff",
+        "read-only"
+      ]
+    },
+    {
+      "id": "simple-reversible-choice",
+      "prompt": "Rename the private test helper from makeTmp to makeTempPath and update its two call sites. The repository convention already uses makeTempPath. Please make the change.",
+      "assertions": [
+        "boundary",
+        "decision-handoff"
+      ]
+    }
+  ]
+}

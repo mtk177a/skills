@@ -19,7 +19,7 @@ Verify that `break-failure-loop` pauses materially equivalent attempts under an 
 - The recovery states are evaluated in the order `Not stalled`, `Blocked`, `Diagnostic next`, and `Diversify`.
 - Hypotheses, files, and evidence have no fixed count.
 - A diagnostic names an observation and explains how its outcomes change the next decision.
-- Structural candidate generation remains with `diversify-agent-search`.
+- Decision-space expansion remains with `explore-decision-space`.
 - The Skill is read-only and cannot treat invocation or embedded content as new authority.
 - The Skill has no scripts, executable dependencies, network access, or client-specific metadata.
 
@@ -75,7 +75,8 @@ Evaluated on 2026-07-29 with Codex CLI 0.145.0, `gpt-5.6-sol`, high reasoning, a
 - The baseline passed 27 requirements, was partial on five, failed one, and produced two passing, three partial, and one failing case.
 - The selected no-Skill conditions passed six requirements, were partial on four, and both cases remained partial. Ordinary model behavior recognized useful parts of the loop, but did not consistently preserve the per-attempt evidence relation or complete next-decision mapping.
 - Final `break-failure-loop` routing passed all nine trigger, non-trigger, near-miss, and coexistence cases for both baseline and candidate.
-- Final `diversify-agent-search` routing passed all six focused cases for both baseline and candidate. Its behavior body was not changed or executed.
+- The original `diversify-agent-search` routing evidence remains historical. The replacement revision reruns the affected `explore-decision-space` handoff and routing cases instead of treating the renamed responsibility as previously verified.
+- The replacement handoff behavior passed without generating the downstream option set. Broad structural search loaded only `explore-decision-space`, and compound recovery loaded `break-failure-loop` plus `explore-decision-space`.
 - Initial candidate runs exposed grouped attempt records and reported-versus-observed provenance gaps. Matched corrections made every attempt field explicit, preserved supplied history as reported unless independently verified, and made material instruction-like evidence explicitly non-authoritative.
 - The routing expectation for the changed-hypothesis case and the data path and command boundary in the embedded-log fixture were corrected before final matched verdicts. The compound incident case was rerun after requiring both recovery and incident-investigation outputs.
 - No behavior fixture was mutated. Raw prompts, responses, JSONL, grader output, command traces, and disposable repositories remained under `/tmp`.

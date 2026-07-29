@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "skill": "design-changes",
-  "evaluated_on": "2026-07-28",
+  "evaluated_on": "2026-07-29",
   "environment": {
     "client": "Codex CLI 0.145.0",
     "model": "gpt-5.6-sol",
@@ -12,9 +12,9 @@
   },
   "candidate": {
     "files": {
-      "SKILL.md": "sha256:239281c64d4d7689be575607c2377e110535a50942a847c5961a4b9c035916e1",
-      "SKILL-ja.md": "sha256:4563364dfe5f2d4426745a34b37dfc8c17507308fded52ac27eecba7e8be6577",
-      "evals/triggers.json": "sha256:8bc72bef266d0f568ecf77196e6b4ed13456bdb0a1b95a1cf6c2c3a741b2b3af"
+      "SKILL.md": "sha256:e1bf4fc8e0250219ad2345bbf6bac87b731b4248a05538119a1eb6c180b465b3",
+      "SKILL-ja.md": "sha256:32a085b0e399998b6a7362a2dc354c2f431b4b5f334de61b2ce5ff96aff1b891",
+      "evals/triggers.json": "sha256:a01f0eea4beface155d5346184ceeadbaac2e59853cd823c6d156cb0d309a262"
     }
   },
   "execution": {
@@ -40,6 +40,11 @@
       "candidate_skill": "sha256:239281c64d4d7689be575607c2377e110535a50942a847c5961a4b9c035916e1",
       "change": "Added a routing regression for the retired scope-implementation responsibility.",
       "coverage": "Ran implementation-scope-handoff in matched catalogs. The baseline observably loaded scope-implementation; after its retirement, the candidate observably loaded only design-changes. Existing behavior evidence is reused because the design-changes instructions are unchanged and small-feature already checks targets, non-targets, reviewable scope, verification, and stop conditions."
+    },
+    {
+      "candidate_skill": "sha256:e1bf4fc8e0250219ad2345bbf6bac87b731b4248a05538119a1eb6c180b465b3",
+      "change": "Replaced the retired structural-search boundary with the proactive explore-decision-space boundary.",
+      "coverage": "Added the negative boundary to both description and body, then ran unsettled-decision-space and application-change-design routing. The former observably loaded only explore-decision-space; the latter continued to load only design-changes. Prior behavior evidence is reused because the change affects the adjacent handoff boundary rather than the implementation-design contract."
     }
   ],
   "behavior": {
@@ -186,6 +191,14 @@
         ],
         "latest_observed_loads": [
           "design-changes"
+        ]
+      },
+      {
+        "id": "unsettled-decision-space",
+        "expected": "should_not_trigger",
+        "candidate": "pass",
+        "latest_observed_loads": [
+          "explore-decision-space"
         ]
       },
       {

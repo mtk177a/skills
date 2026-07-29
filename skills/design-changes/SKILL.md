@@ -1,6 +1,6 @@
 ---
 name: design-changes
-description: Designs an implementation-ready change approach, affected and excluded scope, risks, decision points, and verification coverage before code or configuration is changed. Use after the request is understood and before implementation when impact or trade-offs need organizing; not for clarifying an undefined request, designing an Agent Skill, implementing changes, or handling high-risk approval and rollback planning on its own.
+description: Designs an implementation-ready change approach, affected and excluded scope, risks, decision points, and verification coverage before code or configuration is changed. Use after the request and approach are understood and before implementation when impact or trade-offs need organizing; not for clarifying an undefined request, expanding unsettled problem frames or solution options, designing an Agent Skill, implementing changes, or handling high-risk approval and rollback planning on its own.
 license: MIT
 ---
 
@@ -61,7 +61,7 @@ Include alternative designs, module maps, migration details, rollback, or user e
 ## Boundaries
 
 - Use `clarify-request` when the objective or success criteria are still undefined, `design-skill` for Agent Skill responsibility and trigger design, and `implement-changes` only after this handoff is accepted.
-- Pair this Skill with `plan-risky-change` for destructive, security-sensitive, migration, dependency, or other high-risk work that needs explicit controls. Use `diversify-agent-search` only when design work is stuck in one design neighborhood.
+- Pair this Skill with `plan-risky-change` for destructive, security-sensitive, migration, dependency, or other high-risk work that needs explicit controls. Use `explore-decision-space` before this Skill when a consequential decision still needs materially different problem frames or solution options; do not use it after an approach is adequately selected.
 - When that high-risk boundary applies, name `plan-risky-change` in the implementation handoff rather than merely describing additional approval or rollback work.
 - Keep the workflow read-only. Do not add dependencies, make destructive changes, or start implementation.
 - Do not force fixed headings, empty checklist sections, a minimum number of alternatives, or a minimum number of tests.

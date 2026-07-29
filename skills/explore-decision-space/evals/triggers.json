@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "skill": "explore-decision-space",
+  "run_policy": {
+    "protocol": "Present each prompt as a Skill-selection task using only the installed names and descriptions declared for the condition. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case once per condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
+    "verdict_rule": "The observed loaded Skill set must equal the expected set. Record pass, fail, unstable, not exposed, or not executed for every case."
+  },
+  "coexistence_skills": [
+    "clarify-request",
+    "define-referents",
+    "break-failure-loop",
+    "design-changes",
+    "implement-changes"
+  ],
+  "cases": [
+    {
+      "id": "problem-space-trigger",
+      "category": "core",
+      "prompt": "Before we decide that the weak onboarding metric means the form is too long, expand materially different problem frames and identify evidence that would distinguish them.",
+      "expected_handler": "explore-decision-space"
+    },
+    {
+      "id": "solution-space-trigger",
+      "category": "core",
+      "prompt": "The problem and constraints are agreed, but the team is anchored on one mechanism. Explore structurally different solution options before we choose an implementation.",
+      "expected_handler": "explore-decision-space"
+    },
+    {
+      "id": "failure-loop-handoff",
+      "category": "coexistence",
+      "prompt": "The recovery analysis established that the design anchor is exhausted and no local distinguishing check remains. Expand structurally different branches without repeating the diagnosis.",
+      "expected_handler": "explore-decision-space"
+    },
+    {
+      "id": "clarification-near-miss",
+      "category": "near_miss",
+      "prompt": "The requested outcome, target service, environment, and authority are missing. Clarify the request until another workflow can start.",
+      "expected_handler": "clarify-request"
+    },
+    {
+      "id": "terminology-near-miss",
+      "category": "near_miss",
+      "prompt": "Before the design continues, define whether 'workspace' means the tenant record, checked-out directory, or UI container and constrain the name.",
+      "expected_handler": "define-referents"
+    },
+    {
+      "id": "design-near-miss",
+      "category": "near_miss",
+      "prompt": "The transactional outbox approach is selected. Produce an implementation-ready change plan with risks and verification.",
+      "expected_handler": "design-changes"
+    },
+    {
+      "id": "implementation-near-miss",
+      "category": "near_miss",
+      "prompt": "The change is approved and scoped. Implement it and run the focused tests.",
+      "expected_handler": "implement-changes"
+    }
+  ]
+}

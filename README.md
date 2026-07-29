@@ -21,7 +21,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `design-agent-instructions` | Design AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md instruction sets |
 | `design-changes` | Design change scope, impact, risk, and verification approach before implementing |
 | `design-skill` | Decide whether and how to create, merge, split, or substantially rescope a Skill before implementation |
-| `diversify-agent-search` | Expand an exhausted design anchor into structurally different candidates with diversity axes and case-level evaluation |
+| `explore-decision-space` | Expand problem frames or solution options before a consequential decision converges prematurely |
 | `draft-commit` | Draft atomic commit plans and Conventional Commits messages while preserving Git staging boundaries |
 | `draft-issue` | Turn a clarified request into an issue draft and filing steps |
 | `draft-review-comments` | Draft unposted PR comments from organized findings and decisions without changing their meaning |

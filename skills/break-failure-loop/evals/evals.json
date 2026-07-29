@@ -188,7 +188,7 @@
         "candidate"
       ],
       "coexistence_skills": [
-        "diversify-agent-search"
+        "explore-decision-space"
       ],
       "turns": [
         "Do not modify the prompt or evaluation assets. We added a longer instruction, then a regex cleanup, then output normalization. The same long ambiguous cases still fail because the workflow sends one truncated final string to the evaluator, and the per-stage evidence is unavailable. Existing traces show no remaining local observation that distinguishes another wording or cleanup variant. Give me the recovery handoff."

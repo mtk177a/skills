@@ -1,6 +1,6 @@
 ---
 name: design-changes
-description: code または configuration を変更する前に、実装可能な変更方針、対象・対象外の scope、risk、decision point、verification coverage を設計する。request が理解済みで、実装前に impact または trade-off を整理するときに使う。未定義 request の明確化、Agent Skill の設計、変更の実装、高リスクな approval / rollback planning の単独処理には使わない。
+description: code または configuration を変更する前に、実装可能な変更方針、対象・対象外の scope、risk、decision point、verification coverage を設計する。request と採用方針が理解済みで、実装前に impact または trade-off を整理するときに使う。未定義 request の明確化、未確定な問題フレームまたは解決案の探索、Agent Skill の設計、変更の実装、高リスクな approval / rollback planning の単独処理には使わない。
 license: MIT
 ---
 
@@ -63,7 +63,7 @@ license: MIT
 ## 境界
 
 - objective または成功条件が未定義なら `clarify-request`、Agent Skill の責務と trigger 設計には `design-skill`、この handoff の採用後の実装には `implement-changes` を使う。
-- 明示 control が必要な destructive、security-sensitive、migration、dependency、その他の高リスク作業では `plan-risky-change` と組み合わせる。設計が同じ近傍で停滞した場合だけ `diversify-agent-search` を使う。
+- 明示 control が必要な destructive、security-sensitive、migration、dependency、その他の高リスク作業では `plan-risky-change` と組み合わせる。重要な意思決定で実質的に異なる問題フレームまたは解決案がまだ必要な場合は、この Skill の前に `explore-decision-space` を使い、案が十分に選択済みなら使わない。
 - high-risk boundary が該当する場合、追加 approval または rollback work を説明するだけでなく、implementation handoff で `plan-risky-change` を明記する。
 - workflow を read-only に保つ。dependency を追加せず、破壊的変更を行わず、実装を始めない。
 - 固定見出し、空の checklist section、alternative の最小件数、test の最小件数を強制しない。

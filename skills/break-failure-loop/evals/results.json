@@ -18,11 +18,11 @@
   },
   "candidate": {
     "files": {
-      "SKILL.md": "sha256:22dc3360d8bafffb31c0cd12634d5539da65c3d8a261482c27e35bc79ef92b9c",
-      "SKILL-ja.md": "sha256:93f469988f6202b6709ead498c9d3a891389bbe2bc64327db584904a4ade539e",
-      "evals/evals.json": "sha256:ec98a15736bee875bbd3d402cc340311c98b9cfd555a5b54d1f486dac8da0295",
-      "evals/triggers.json": "sha256:9b412d7e5e57af5bb7d349748daa5b064862cd48b3d0dfbdd476d7a6afb38343",
-      "../diversify-agent-search/SKILL.md": "sha256:b1a7bc79be33784806f09c8139ab171b40a390c7ffb2e9be43ff81b5ff2ab039"
+      "SKILL.md": "sha256:149207d2435bf9bc3a3a537d921b99ffdbc5ac06e03d149c8368200899d4dff5",
+      "SKILL-ja.md": "sha256:fae8981875c789f85ca227c70317f5d52215a94c72fcfaffa79be5d15aa38bec",
+      "evals/evals.json": "sha256:7f1a6ebcff9127425f5fcfa4802a30163f494fcc0dcf05e295622660dab88c8f",
+      "evals/triggers.json": "sha256:f492ce1c4e3a5adeb31a64409676901f7ba1d812f7f071caf3b098c3d526f870",
+      "../explore-decision-space/SKILL.md": "sha256:ff674c337a5fd6d3c11581e2077c91e4dfcafa425c4e9a6921ee7306db85a273"
     }
   },
   "execution": {
@@ -57,6 +57,10 @@
     {
       "change": "Corrected the new-evidence expected handler to design-changes and made the compound incident prompt request both recovery and investigation outputs.",
       "coverage": "Reused observable routing only where the prompt and descriptions were unchanged and reran the corrected incident case under matched baseline/candidate conditions. Both final routing conditions passed."
+    },
+    {
+      "change": "Replaced the retired diversify-agent-search handoff with explore-decision-space and clarified that already-established anchor exhaustion does not require another recovery diagnosis.",
+      "coverage": "Reran exhausted-prompt-anchor behavior, broad-structural-search routing, and compound recovery routing. Behavior stopped at a passing Diversify handoff without generating the downstream portfolio. After the description correction, broad structural search loaded only explore-decision-space and compound recovery loaded break-failure-loop plus explore-decision-space."
     }
   ],
   "behavior": {
@@ -810,11 +814,43 @@
     "behavior_fixtures_unchanged": true,
     "raw_artifacts_committed": false
   },
+  "replacement_handoff": {
+    "behavior": {
+      "id": "exhausted-prompt-anchor",
+      "verdict": "pass",
+      "fixture_unchanged": true,
+      "evidence": "The response returned Diversify, preserved the exhausted single-final-string anchor and protected evaluation asset, and stopped before downstream option generation."
+    },
+    "routing": [
+      {
+        "id": "broad-structural-search",
+        "expected": [
+          "explore-decision-space"
+        ],
+        "observed": [
+          "explore-decision-space"
+        ],
+        "verdict": "pass"
+      },
+      {
+        "id": "reframe-then-diversify",
+        "expected": [
+          "break-failure-loop",
+          "explore-decision-space"
+        ],
+        "observed": [
+          "break-failure-loop",
+          "explore-decision-space"
+        ],
+        "verdict": "pass"
+      }
+    ]
+  },
   "unverified": [
     "Claude Code and other clients",
     "other models and reasoning settings",
     "statistical repeated-run stability",
     "real production, external-service, destructive, and writable workflows",
-    "diversify-agent-search behavior scenarios outside the changed routing boundary"
+    "implicit invocation frequency of the replacement handoff in normal long-running sessions"
   ]
 }

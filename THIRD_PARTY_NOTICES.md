@@ -28,9 +28,9 @@ No text has been copied verbatim from any of the above sources.
 
 ---
 
-## skills/diversify-agent-search/SKILL.md
+## skills/explore-decision-space/SKILL.md
 
-Original guidance inspired by public writing and research on self-improving agents, prompt evolution, quality-diversity search, and feedback incorporation:
+Original guidance inspired by public writing and research on search diversity, self-improving agents, prompt evolution, quality-diversity search, and feedback incorporation:
 
 - LayerX Zenn article: <https://zenn.dev/layerx/articles/b36ceffe6b5e20>
 - GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning: <https://arxiv.org/abs/2507.19457>
