@@ -13,8 +13,7 @@
     "design-changes",
     "investigate-incident",
     "implement-changes",
-    "japanese-tech-writing",
-    "format-markdown"
+    "japanese-tech-writing"
   ],
   "cases": [
     {
@@ -86,7 +85,7 @@
     {
       "id": "mechanical-markdown-edit",
       "expected": "should_not_trigger",
-      "expected_handler": "format-markdown",
+      "expected_handler": null,
       "category": "exclusion",
       "prompt": "Normalize Markdown list spacing without changing any words, headings, identifiers, or established terminology."
     },

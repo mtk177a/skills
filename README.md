@@ -8,7 +8,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 
 ## Skills
 
-25 Skills covering common development workflows:
+24 Skills covering common development workflows:
 
 | Skill | Description |
 | --- | --- |
@@ -25,7 +25,6 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `draft-commit` | Draft atomic commit plans and Conventional Commits messages while preserving Git staging boundaries |
 | `draft-issue` | Turn a clarified request into an issue draft and filing steps |
 | `draft-review-comments` | Draft unposted PR comments from organized findings and decisions without changing their meaning |
-| `format-markdown` | Format Markdown according to CommonMark conventions |
 | `implement-changes` | Implement approved changes in small units with TDD or another appropriate verification method |
 | `investigate-incident` | Investigate an incident: gather facts, form hypotheses, isolate the cause |
 | `japanese-tech-writing` | Apply formatting, argument structure, terminology, and editing rules to Japanese technical writing |

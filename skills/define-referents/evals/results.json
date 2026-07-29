@@ -22,7 +22,7 @@
       "SKILL-ja.md": "sha256:ac2636d2d64b5d10fa34e94621c8450dc24e8b54effb8c6ed708309386bed33f",
       "references/referents-before-labels.md": "sha256:2d92f95900d6820cafb2100f7000b504f668c9b13dcd4c8acbaffd7ea4b24595",
       "evals/evals.json": "sha256:cb7829d452cd95cb0a534a4fed459afe99fb79c8d237d1b8902fb58ffe469c94",
-      "evals/triggers.json": "sha256:7b232e1f7f54364c58d6d76f0bc0c178985c6aa098047368d9113022eb286bbc"
+      "evals/triggers.json": "sha256:40d9dd9f80354f9c044711461217139dd5c58cda6a115ce48efa7dfd0550b7be"
     }
   },
   "execution": {
@@ -50,6 +50,10 @@
     {
       "change": "Reworded only the public-contract-alternatives grader requirement so it asks for the remaining contract decision without contradicting the executor input or embedding a required one-field-versus-two-field conclusion.",
       "coverage": "Reran public-contract-alternatives under matched baseline/candidate conditions. The candidate passed all five assigned requirements; the baseline still failed the same three requirements. Evidence for the other eight behavior cases and all ten routing cases is reused from the full run because the Skill source, reference, prompts, descriptions, and their assertions were unchanged."
+    },
+    {
+      "change": "Removed format-markdown from the current coexistence catalog after that public Skill was retired and changed mechanical-markdown-edit to an unhandled exclusion.",
+      "coverage": "The affected routing case was not rerun. Its previous baseline result is retained as historical evidence, while the current candidate result is marked not_executed."
     }
   ],
   "behavior": {
@@ -304,11 +308,11 @@
       "total": 10
     },
     "candidate_counts": {
-      "pass": 10,
+      "pass": 9,
       "fail": 0,
       "unstable": 0,
       "not_exposed": 0,
-      "not_executed": 0,
+      "not_executed": 1,
       "total": 10
     },
     "cases": [
@@ -320,13 +324,14 @@
       {"id": "understood-change-design", "expected": "should_not_trigger", "baseline": {"verdict": "pass", "observed_loads": ["design-changes"]}, "candidate": {"verdict": "pass", "observed_loads": ["design-changes"]}},
       {"id": "approved-established-name-implementation", "expected": "should_not_trigger", "baseline": {"verdict": "pass", "observed_loads": ["implement-changes"]}, "candidate": {"verdict": "pass", "observed_loads": ["implement-changes"]}},
       {"id": "incident-with-established-terms", "expected": "should_not_trigger", "baseline": {"verdict": "pass", "observed_loads": ["investigate-incident"]}, "candidate": {"verdict": "pass", "observed_loads": ["investigate-incident"]}},
-      {"id": "mechanical-markdown-edit", "expected": "should_not_trigger", "baseline": {"verdict": "pass", "observed_loads": ["format-markdown"]}, "candidate": {"verdict": "pass", "observed_loads": ["format-markdown"]}},
+      {"id": "mechanical-markdown-edit", "expected": "should_not_trigger", "baseline": {"verdict": "pass", "observed_loads": ["format-markdown"]}, "candidate": {"verdict": "not_executed", "observed_loads": [], "evidence": "format-markdown was retired from the current coexistence catalog; the unhandled exclusion has not been rerun."}},
       {"id": "ordinary-japanese-wording", "expected": "should_not_trigger", "baseline": {"verdict": "pass", "observed_loads": ["japanese-tech-writing"]}, "candidate": {"verdict": "pass", "observed_loads": ["japanese-tech-writing"]}}
     ]
   },
   "unverified": [
     "Claude Code and other compatible clients were not executed.",
     "Real-session implicit activation and long-running handoff behavior were not observed.",
+    "The current mechanical-markdown-edit routing exclusion was not executed after format-markdown was retired.",
     "The evaluation does not establish domain-specific naming quality outside the represented cases."
   ]
 }
