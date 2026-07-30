@@ -1,6 +1,6 @@
 ---
 name: break-failure-loop
-description: Pauses and reframes a stalled agent workflow when materially equivalent attempts under an unchanged hypothesis or design anchor have failed without decision-relevant new evidence. Use to reconstruct attempts, evidence, and unknowns and select one discriminating next checkpoint or a blocked or diversification handoff, including when an ongoing implementation or incident investigation has entered that loop; not for a first failure, repeated observations without new attempts, initial incident investigation, broad candidate generation after anchor exhaustion is already established, or executing another change.
+description: Pauses and reframes a stalled agent workflow when materially equivalent attempts under an unchanged hypothesis or design anchor have failed without decision-relevant new evidence. Use to reconstruct attempts, evidence, and unknowns and select one discriminating next checkpoint or a blocked or diversification handoff, including when an ongoing implementation or failure investigation has entered that loop; not for a first failure, repeated observations without new attempts, initial failure investigation, broad candidate generation after anchor exhaustion is already established, or executing another change.
 license: MIT
 ---
 
@@ -73,7 +73,7 @@ Adapt the presentation to the situation and omit empty sections. Include:
 ## Handoffs and boundaries
 
 - `implement-changes` owns implementation and the actual stop before another equivalent edit. Use this Skill to reconstruct the stalled state when a separate recovery handoff adds value.
-- `investigate-incident` owns ordinary production incident investigation. Use this Skill only when that investigation itself is repeating an unchanged branch without new evidence.
+- `investigate-failure` owns ordinary investigation of unexplained technical failures across environments. Use this Skill only when that investigation itself is repeating an unchanged branch without new evidence.
 - `explore-decision-space` owns solution-space expansion after the `Diversify` boundary is reached and can also be used proactively before a consequential decision converges prematurely.
 - `design-changes` can turn a selected structural branch into an implementation-ready plan.
 - Keep the Skill read-only. Read existing evidence within current authority, but do not edit files, execute the proposed checkpoint, revert or discard changes, or perform external writes.

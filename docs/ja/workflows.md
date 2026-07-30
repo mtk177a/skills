@@ -16,6 +16,18 @@
 
 十分に明確かつ承認済みの低影響な変更で、実装方針、scope、risk 判断、verification strategy を捏造せず直接実装できる場合は `design-changes` を省略します。
 
+## Failure investigation workflow
+
+`investigate-failure` → 必要に応じて `break-failure-loop` → `design-changes` または条件付きで `implement-changes` → `validate-fix`
+
+- `investigate-failure`: local、development、staging、production の各環境で expected behavior と observed behavior を分離し、failure path を追跡し、安全な診断で原因仮説を検証して、支持された原因または次に evidence を変える checkpoint を返す
+- `break-failure-loop`: 変わらない仮説のもとで実質的に同じ確認が decision-relevant evidence なしに反復する場合だけ、調査を一時停止する
+- `design-changes`: 診断は支持されているが、修正方針、影響 scope、risk、verification が未確定な場合に修正を設計する
+- `implement-changes`: 診断、承認済み objective、影響 scope、expected outcome、安全 control、verification がすでに十分に定義されている場合だけ、直接 handoff を受け取る
+- `validate-fix`: 完了した修正を元の failure と expected behavior に照らして検証する
+
+Failure investigation は active な production incident を支援できますが、incident command、severity、stakeholder communication、containment、mitigation、closure、postmortem、security forensics は担当しません。診断によって incident owner または承認済み stabilization runbook を遅らせてはいけません。
+
 ## レビューワークフロー
 
 `review-changes` → 必要に応じて `triage-review-feedback` または `draft-review-comments` → `implement-changes` → `validate-fix`

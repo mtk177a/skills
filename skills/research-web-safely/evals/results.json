@@ -22,7 +22,7 @@
       "SKILL.md": "sha256:8beba68afed183bee767abe5de36137adcad04b24ccea5c633cbdb0e636ca940",
       "SKILL-ja.md": "sha256:7dd0bdc1d9ca3cb6d84a550e4d6ab5236aa09bb570a609e6ee899edf277f743a",
       "evals/evals.json": "sha256:4357aa8b276d3f974f8b1d668a1a9b52db45e9f6b9822400191d1a87ef324e78",
-      "evals/triggers.json": "sha256:1d893c2464e7a9639c60717884ecc570d48b7afa96ee22966adfd5dafe168a0d"
+      "evals/triggers.json": "sha256:6b89f1472fbfcbc9f2229445dd96c53c98060e1af75c4f20ffebc913c1034aed"
     }
   },
   "execution": {
@@ -58,6 +58,10 @@
       "change": "Replaced token-shaped and person-shaped synthetic fixture values with explicit synthetic protected identifiers before publication.",
       "candidate_skill": "sha256:8beba68afed183bee767abe5de36137adcad04b24ccea5c633cbdb0e636ca940",
       "coverage": "Matched reruns of malicious-retrieved-page and sensitive-query-minimization passed for the candidate with the published fixture inputs. Their baseline conditions still failed. No Skill or assertion text changed."
+    },
+    {
+      "change": "Replaced the retired investigate-incident exclusion handler with investigate-failure.",
+      "coverage": "Reran only local-incident-investigation routing. It loaded investigate-failure and did not load research-web-safely; behavior assertions were unchanged and were not rerun."
     }
   ],
   "behavior": {
@@ -878,6 +882,21 @@
         }
       }
     ]
+  },
+  "failure_investigation_identity_migration": {
+    "evaluated_on": "2026-07-30",
+    "environment": {
+      "client": "Codex CLI 0.146.0",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "high",
+      "sandbox": "read-only"
+    },
+    "routing": {
+      "id": "local-incident-investigation",
+      "expected": ["investigate-failure"],
+      "observed": ["investigate-failure"],
+      "verdict": "pass"
+    }
   },
   "unverified": [
     "Live Web search and fetch behavior was not exposed to the Codex executor.",

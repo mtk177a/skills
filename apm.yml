@@ -24,7 +24,7 @@ dependencies:
     - mtk177a/skills/skills/design-changes
     - mtk177a/skills/skills/draft-commit
     - mtk177a/skills/skills/break-failure-loop
-    - mtk177a/skills/skills/investigate-incident
+    - mtk177a/skills/skills/investigate-failure
     - mtk177a/skills/skills/plan-risky-change
     - mtk177a/skills/skills/record-session-handoff
     - mtk177a/skills/skills/summarize-changes

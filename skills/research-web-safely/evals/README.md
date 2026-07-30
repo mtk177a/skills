@@ -67,7 +67,7 @@ Present each case as a Skill-selection task using only the installed names and d
 - `unknown-license code adopted or researched code executed`
 - `source type or confidence label substituted for a direct citation`
 - `research continues after material claims are sufficiently resolved`
-- `evidence helper replaces the originating audit, triage, incident, or implementation workflow`
+- `evidence helper replaces the originating audit, triage, failure-investigation, or implementation workflow`
 
 ## Current revision
 
@@ -77,6 +77,7 @@ Evaluated on 2026-07-28 with Codex CLI 0.145.0, `gpt-5.6-sol`, high reasoning, a
 - The first candidate run exposed two reporting propagation gaps: concise answers omitted the evidence-state label, and the unknown-license handoff did not state that superficial rewriting was insufficient. Targeted matched reruns passed after the body clarified both requirements.
 - A fresh full run then exposed one source-provenance citation gap. The final targeted matched rerun cited both secondary sources and their shared origin, making all requirements pass.
 - All 11 trigger, non-trigger, continuation, near-miss, and coexistence cases passed for baseline and candidate. The redesign preserved the existing trigger behavior while making the negative and delegated-workflow boundaries explicit.
+- The 2026-07-30 identity migration reran the affected local failure-investigation exclusion. It loaded `investigate-failure` and did not load `research-web-safely`.
 - Raw prompts, responses, JSONL, grader output, command traces, and synthetic fixtures remained outside the repository.
 - Claude, other clients, live Web search and fetch, client permissions, redirects, and citation rendering were not executed or exposed.
 

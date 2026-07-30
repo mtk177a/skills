@@ -18,10 +18,10 @@
   },
   "candidate": {
     "files": {
-      "SKILL.md": "sha256:149207d2435bf9bc3a3a537d921b99ffdbc5ac06e03d149c8368200899d4dff5",
-      "SKILL-ja.md": "sha256:fae8981875c789f85ca227c70317f5d52215a94c72fcfaffa79be5d15aa38bec",
+      "SKILL.md": "sha256:6d6142ba393e0a6c8f77a2a3ccda3114cf60aaeef091e9b1f934118be3531971",
+      "SKILL-ja.md": "sha256:27312a9b44fd058b5153db8e3d507945bd4ca5b1e02f4c7846152cd069a9698c",
       "evals/evals.json": "sha256:7f1a6ebcff9127425f5fcfa4802a30163f494fcc0dcf05e295622660dab88c8f",
-      "evals/triggers.json": "sha256:f492ce1c4e3a5adeb31a64409676901f7ba1d812f7f071caf3b098c3d526f870",
+      "evals/triggers.json": "sha256:af2ed716531dcf8bb7e004890ec556375ed9a30f554e69b174f3d2e3dc124ef9",
       "../explore-decision-space/SKILL.md": "sha256:ff674c337a5fd6d3c11581e2077c91e4dfcafa425c4e9a6921ee7306db85a273"
     }
   },
@@ -61,6 +61,10 @@
     {
       "change": "Replaced the retired diversify-agent-search handoff with explore-decision-space and clarified that already-established anchor exhaustion does not require another recovery diagnosis.",
       "coverage": "Reran exhausted-prompt-anchor behavior, broad-structural-search routing, and compound recovery routing. Behavior stopped at a passing Diversify handoff without generating the downstream portfolio. After the description correction, broad structural search loaded only explore-decision-space and compound recovery loaded break-failure-loop plus explore-decision-space."
+    },
+    {
+      "change": "Replaced investigate-incident references with the environment-independent investigate-failure identity.",
+      "coverage": "Behavior assertions were unchanged and were not rerun. The affected initial local failure, initial production failure, and compound stalled-investigation routing cases passed with observable investigate-failure loads; the compound case also loaded break-failure-loop."
     }
   ],
   "behavior": {
@@ -844,6 +848,21 @@
         ],
         "verdict": "pass"
       }
+    ]
+  },
+  "failure_investigation_identity_migration": {
+    "evaluated_on": "2026-07-30",
+    "environment": {
+      "client": "Codex CLI 0.146.0",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "high",
+      "sandbox": "read-only"
+    },
+    "behavior_rerun": false,
+    "routing": [
+      {"id": "initial-local-failure", "expected": ["investigate-failure"], "observed": ["investigate-failure"], "verdict": "pass"},
+      {"id": "initial-production-incident", "expected": ["investigate-failure"], "observed": ["investigate-failure"], "verdict": "pass"},
+      {"id": "stalled-incident-investigation", "expected": ["break-failure-loop", "investigate-failure"], "observed": ["break-failure-loop", "investigate-failure"], "verdict": "pass"}
     ]
   },
   "unverified": [

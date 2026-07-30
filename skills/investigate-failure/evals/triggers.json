@@ -1,0 +1,115 @@
+{
+  "skill": "investigate-failure",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Present each prompt and supplied conversation context as a Skill-selection task using only the installed names and descriptions declared for the condition. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case once per condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every case. Mixed observed results are unstable, not a pass."
+  },
+  "coexistence_skills": [
+    "break-failure-loop",
+    "design-changes",
+    "implement-changes",
+    "research-web-safely",
+    "review-changes",
+    "validate-fix"
+  ],
+  "cases": [
+    {
+      "id": "local-unexplained-test",
+      "expected": "should_trigger",
+      "expected_handler": "investigate-failure",
+      "category": "core",
+      "prompt": "A local integration test has started timing out and the cause is unknown. Investigate expected versus observed behavior, trace the failure path, and run safe diagnostics without editing."
+    },
+    {
+      "id": "staging-regression",
+      "expected": "should_trigger",
+      "expected_handler": "investigate-failure",
+      "category": "core",
+      "prompt": "The staging checkout flow regressed after several unrelated changes, but we do not know which component or condition is causal. Investigate it before proposing a fix."
+    },
+    {
+      "id": "production-degradation",
+      "expected": "should_trigger",
+      "expected_handler": "investigate-failure",
+      "category": "core",
+      "prompt": "Production latency is elevated and the cause is unknown. Use the supplied read-only metrics, logs, and code to investigate without taking over mitigation."
+    },
+    {
+      "id": "investigation-continuation",
+      "expected": "should_trigger",
+      "expected_handler": "investigate-failure",
+      "category": "continuation",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Investigate why the local parser rejects an optional empty field. Do not edit it."
+        },
+        {
+          "role": "assistant",
+          "content": "The current evidence leaves the input normalization and parser branch as separate hypotheses. I need the focused empty-field result to distinguish them."
+        }
+      ],
+      "prompt": "The empty value reaches the parser unchanged, and the parser selects its malformed-value branch. Continue the investigation from that evidence."
+    },
+    {
+      "id": "known-cause-implementation",
+      "expected": "should_not_trigger",
+      "expected_handler": "implement-changes",
+      "category": "near_miss",
+      "prompt": "The approved fix is to multiply RETRY_DELAY_SECONDS by 1000 in src/retry.mjs. Implement it and run the existing test."
+    },
+    {
+      "id": "diff-review",
+      "expected": "should_not_trigger",
+      "expected_handler": "review-changes",
+      "category": "near_miss",
+      "prompt": "Review this completed diff for correctness, safety, compatibility, and missing tests. Do not investigate an external runtime failure."
+    },
+    {
+      "id": "completed-fix-validation",
+      "expected": "should_not_trigger",
+      "expected_handler": "validate-fix",
+      "category": "near_miss",
+      "prompt": "The parser correction is complete. Verify whether it resolves finding PARSE-4 and report the per-target status."
+    },
+    {
+      "id": "incident-command",
+      "expected": "should_not_trigger",
+      "expected_handler": null,
+      "category": "exclusion",
+      "prompt": "Act as incident commander: assign severity, set the stakeholder update cadence, choose rollback versus traffic shift, and declare when the incident is closed."
+    },
+    {
+      "id": "postmortem-writing",
+      "expected": "should_not_trigger",
+      "expected_handler": null,
+      "category": "exclusion",
+      "prompt": "The outage is resolved and its contributing factors are confirmed. Draft the blameless postmortem, timeline, lessons, owners, and follow-up actions."
+    },
+    {
+      "id": "security-forensics",
+      "expected": "should_not_trigger",
+      "expected_handler": null,
+      "category": "exclusion",
+      "prompt": "Preserve chain of custody, acquire a forensic disk image, rotate compromised credentials, and contain the active attacker."
+    },
+    {
+      "id": "stalled-investigation",
+      "expected": "should_not_trigger",
+      "expected_handler": "break-failure-loop",
+      "category": "coexistence",
+      "prompt": "Keep the broader failure investigation organized, but first pause its repeated cache-key branch: two equivalent checks under the same malformed-key hypothesis produced the same evidence and a third equivalent check is proposed."
+    },
+    {
+      "id": "external-vendor-contract",
+      "expected": "should_not_trigger",
+      "expected_handler": "research-web-safely",
+      "category": "coexistence",
+      "prompt": "Research the current public vendor contract for retry headers, compare the official documentation and release notes, and cite the evidence. There is no observed system failure to diagnose."
+    }
+  ]
+}

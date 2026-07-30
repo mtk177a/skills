@@ -70,8 +70,9 @@ Evaluated on 2026-07-28 with Codex CLI 0.145.0, `gpt-5.6-sol`, high reasoning, a
 
 - The matched baseline/candidate evidence covers nine behavior cases and 46 assigned requirements.
 - The candidate passed all 46 requirements and all nine cases after correcting one grader requirement that contradicted the confirmed need for two public facts. The baseline passed no case, with 21 passed, four partial, and 21 failed requirements.
-- The candidate made Grounding-then-Naming observable, distinguished conditional confirmation from low-impact completion, supported context-specific roles and semantic table splitting, preserved missing information and corrections, and left design, incident, and implementation ownership downstream.
+- The candidate made Grounding-then-Naming observable, distinguished conditional confirmation from low-impact completion, supported context-specific roles and semantic table splitting, preserved missing information and corrections, and left design, failure investigation, and implementation ownership downstream.
 - Nine current trigger, non-trigger, continuation, near-miss, and coexistence results remain applicable. The mechanical Markdown exclusion was changed from routing to the retired `format-markdown` Skill into an unhandled exclusion and has not been rerun.
+- The 2026-07-30 identity migration reran the affected terminology handoff and routing case. Both passed while leaving evidence gathering and causal diagnosis with `investigate-failure`.
 - Claude and other clients were not executed.
 
 See [`results.json`](results.json) for candidate hashes, the case-by-requirement matrix, observed Skill loads, grader-correction provenance, and unverified items.

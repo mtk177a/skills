@@ -26,7 +26,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `draft-issue` | Turn a clarified request into an issue draft and filing steps |
 | `draft-review-comments` | Draft unposted PR comments from organized findings and decisions without changing their meaning |
 | `implement-changes` | Implement approved changes in small units with TDD or another appropriate verification method |
-| `investigate-incident` | Investigate an incident: gather facts, form hypotheses, isolate the cause |
+| `investigate-failure` | Investigate unexplained errors, failing tests, regressions, performance anomalies, and unexpected technical behavior across environments |
 | `japanese-tech-writing` | Apply formatting, argument structure, terminology, and editing rules to Japanese technical writing |
 | `plan-risky-change` | Plan a risky or irreversible change with explicit safety checks |
 | `record-session-handoff` | Record a session handoff so the next session can resume without losing context |

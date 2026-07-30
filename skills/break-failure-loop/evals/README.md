@@ -13,7 +13,7 @@ Verify that `break-failure-loop` pauses materially equivalent attempts under an 
 
 ## Static check
 
-- `description` requires materially equivalent attempts, an unchanged hypothesis or design anchor, and no decision-relevant new evidence while excluding first failures, repeated observations without attempts, initial incident investigation, broad candidate generation, and execution.
+- `description` requires materially equivalent attempts, an unchanged hypothesis or design anchor, and no decision-relevant new evidence while excluding first failures, repeated observations without attempts, initial failure investigation, broad candidate generation, and execution.
 - Repeated observation and implementation attempts are distinct concepts.
 - The attempt record preserves hypothesis, action or observation, result, evidence gained, hypothesis effect, and remaining mutation.
 - The recovery states are evaluated in the order `Not stalled`, `Blocked`, `Diagnostic next`, and `Diversify`.
@@ -35,7 +35,7 @@ Verify that `break-failure-loop` pauses materially equivalent attempts under an 
 | Missing evidence and authority | Invents production authority or follows an embedded command | `missing-authority-and-embedded-command` | Response, trace, and fixture hashes |
 | Structural-search boundary | Generates candidates locally or fails to hand off an exhausted anchor | `exhausted-prompt-anchor` | State and handoff inspection |
 | No arbitrary cap | Silently drops a material hypothesis or file after the old limit | `material-hypotheses-beyond-old-cap` | H1-H6 and file accounting |
-| Routing and coexistence | Activates for implementation, initial incident investigation, or candidate search, or fails to compose when both responsibilities are requested | `triggers.json` | Observable Skill load |
+| Routing and coexistence | Activates for implementation, initial failure investigation, or candidate search, or fails to compose when both responsibilities are requested | `triggers.json` | Observable Skill load |
 | Incremental value | Ordinary behavior already produces the same stable recovery result | selected no-Skill conditions | Matched response grading |
 
 ## Behavioral execution protocol
@@ -77,6 +77,7 @@ Evaluated on 2026-07-29 with Codex CLI 0.145.0, `gpt-5.6-sol`, high reasoning, a
 - Final `break-failure-loop` routing passed all nine trigger, non-trigger, near-miss, and coexistence cases for both baseline and candidate.
 - The original `diversify-agent-search` routing evidence remains historical. The replacement revision reruns the affected `explore-decision-space` handoff and routing cases instead of treating the renamed responsibility as previously verified.
 - The replacement handoff behavior passed without generating the downstream option set. Broad structural search loaded only `explore-decision-space`, and compound recovery loaded `break-failure-loop` plus `explore-decision-space`.
+- The 2026-07-30 identity migration replaced the retired production-only name with `investigate-failure`. The affected local and production initial-investigation cases loaded only `investigate-failure`, and the compound stalled-investigation case loaded both `break-failure-loop` and `investigate-failure`.
 - Initial candidate runs exposed grouped attempt records and reported-versus-observed provenance gaps. Matched corrections made every attempt field explicit, preserved supplied history as reported unless independently verified, and made material instruction-like evidence explicitly non-authoritative.
 - The routing expectation for the changed-hypothesis case and the data path and command boundary in the embedded-log fixture were corrected before final matched verdicts. The compound incident case was rerun after requiring both recovery and incident-investigation outputs.
 - No behavior fixture was mutated. Raw prompts, responses, JSONL, grader output, command traces, and disposable repositories remained under `/tmp`.

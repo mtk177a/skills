@@ -211,7 +211,7 @@
     {
       "id": "incident-unknown-cause",
       "title": "Semantic preflight preserves an unknown incident cause",
-      "adjacent_skill": "investigate-incident",
+      "adjacent_skill": "investigate-failure",
       "turns": [
         "Before the incident investigation continues, perform semantic preflight for the working label `broker reset window`. Logs confirm a disconnect event and a later reconnect event. The cause, affected component, and whether any timed window exists are unknown. Return terminology constraints to the investigation; do not write the incident report or identify a cause."
       ],
@@ -225,7 +225,7 @@
       "fixture": {
         "files": {}
       },
-      "additional_requirement": "The label must not turn the unknown cause or hypothetical window into a confirmed component or mechanism. The handoff must leave evidence gathering to investigate-incident."
+      "additional_requirement": "The label must not turn the unknown cause or hypothetical window into a confirmed component or mechanism. The handoff must leave evidence gathering and causal diagnosis to investigate-failure."
     },
     {
       "id": "corrected-grounding-row",

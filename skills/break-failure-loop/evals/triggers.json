@@ -10,7 +10,7 @@
   },
   "coexistence_skills": [
     "implement-changes",
-    "investigate-incident",
+    "investigate-failure",
     "explore-decision-space",
     "design-changes"
   ],
@@ -53,9 +53,16 @@
     {
       "id": "initial-production-incident",
       "expected": "should_not_trigger",
-      "expected_handler": "investigate-incident",
+      "expected_handler": "investigate-failure",
       "category": "near_miss",
       "prompt": "A production API started returning 500 after deployment. Here is the first stack trace; investigate the failure path and root-cause candidates."
+    },
+    {
+      "id": "initial-local-failure",
+      "expected": "should_not_trigger",
+      "expected_handler": "investigate-failure",
+      "category": "near_miss",
+      "prompt": "A local integration test has failed for the first time with an unexplained timeout. Investigate the expected and observed behavior, failure path, causal hypotheses, and safe diagnostics."
     },
     {
       "id": "broad-structural-search",
@@ -78,11 +85,11 @@
       "id": "stalled-incident-investigation",
       "expected": "should_trigger",
       "expected_handlers": [
-        "investigate-incident",
+        "investigate-failure",
         "break-failure-loop"
       ],
       "category": "coexistence",
-      "prompt": "Produce both parts of this request. First stop and reconstruct the production incident investigation's repeated cache-timeout branch: two equivalent checks under the same cause hypothesis returned the same evidence. Then continue the incident investigation by organizing the remaining failure paths, root-cause candidates, and next branch from the supplied stack and log."
+      "prompt": "Produce both parts of this request. First stop and reconstruct the production failure investigation's repeated cache-timeout branch: two equivalent checks under the same cause hypothesis returned the same evidence. Then continue the failure investigation by organizing the remaining failure paths, causal hypotheses, and next branch from the supplied stack and log."
     }
   ]
 }

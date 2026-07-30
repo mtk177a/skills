@@ -11,7 +11,7 @@
   "coexistence_skills": [
     "clarify-request",
     "design-changes",
-    "investigate-incident",
+    "investigate-failure",
     "implement-changes",
     "japanese-tech-writing"
   ],
@@ -78,7 +78,7 @@
     {
       "id": "incident-with-established-terms",
       "expected": "should_not_trigger",
-      "expected_handler": "investigate-incident",
+      "expected_handler": "investigate-failure",
       "category": "coexistence",
       "prompt": "Investigate this production timeout using the established service, request, and timeout names. Organize evidence, hypotheses, unknowns, and next checks; do not change production."
     },

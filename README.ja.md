@@ -28,7 +28,7 @@
 | `draft-issue` | 明確化した課題を Issue の起票案と起票手順に落とし込む |
 | `draft-review-comments` | 整理済みの指摘と判断の意味を変えず、未投稿の PR コメント案へ変換する |
 | `implement-changes` | 承認済みの変更を小さな単位で、TDD または適切な別の検証方法を使って実装する |
-| `investigate-incident` | インシデントを調査し、事実を集め、仮説を立て、原因を特定する |
+| `investigate-failure` | 環境を問わず、原因不明の error、failing test、regression、performance anomaly、予期しない技術的挙動を調査する |
 | `japanese-tech-writing` | 日本語技術文書の整形・論証構成・用語・推敲の規範を適用する |
 | `plan-risky-change` | リスクの高い・不可逆な変更を安全確認を明示して計画する |
 | `record-session-handoff` | 次のセッションがコンテキストを失わずに再開できる引き継ぎ記録を残す |

@@ -11,7 +11,7 @@
   "coexistence_skills": [
     "audit-agent-guidance",
     "triage-review-feedback",
-    "investigate-incident",
+    "investigate-failure",
     "implement-changes",
     "openai-docs"
   ],
@@ -88,7 +88,7 @@
     {
       "id": "local-incident-investigation",
       "expected": "should_not_trigger",
-      "expected_handler": "investigate-incident",
+      "expected_handler": "investigate-failure",
       "category": "coexistence",
       "prompt": "Investigate this production timeout from the supplied local logs, stack trace, and codebase. Do not access external monitoring or the Web."
     },

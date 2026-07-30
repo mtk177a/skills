@@ -21,8 +21,8 @@
       "SKILL.md": "sha256:daf3adb6d5c152005876748d70b712c0edde5df1ef6f2dc91d59637e7804d586",
       "SKILL-ja.md": "sha256:ac2636d2d64b5d10fa34e94621c8450dc24e8b54effb8c6ed708309386bed33f",
       "references/referents-before-labels.md": "sha256:2d92f95900d6820cafb2100f7000b504f668c9b13dcd4c8acbaffd7ea4b24595",
-      "evals/evals.json": "sha256:cb7829d452cd95cb0a534a4fed459afe99fb79c8d237d1b8902fb58ffe469c94",
-      "evals/triggers.json": "sha256:40d9dd9f80354f9c044711461217139dd5c58cda6a115ce48efa7dfd0550b7be"
+      "evals/evals.json": "sha256:49fe4b7bdb5d707fd2b5a7808d767e32cd54fcbd14fe1bd7991de736d65c1dba",
+      "evals/triggers.json": "sha256:af1c2b0070272703ac445502c5781c28f332fbc18eaaa9669272cf97336eab6c"
     }
   },
   "execution": {
@@ -54,6 +54,10 @@
     {
       "change": "Removed format-markdown from the current coexistence catalog after that public Skill was retired and changed mechanical-markdown-edit to an unhandled exclusion.",
       "coverage": "The affected routing case was not rerun. Its previous baseline result is retained as historical evidence, while the current candidate result is marked not_executed."
+    },
+    {
+      "change": "Replaced the retired investigate-incident handoff with investigate-failure.",
+      "coverage": "Reran only the affected incident-grounding-only behavior case and incident-with-established-terms routing case. Both passed; historical investigate-incident loads remain unchanged elsewhere in this result."
     }
   ],
   "behavior": {
@@ -327,6 +331,34 @@
       {"id": "mechanical-markdown-edit", "expected": "should_not_trigger", "baseline": {"verdict": "pass", "observed_loads": ["format-markdown"]}, "candidate": {"verdict": "not_executed", "observed_loads": [], "evidence": "format-markdown was retired from the current coexistence catalog; the unhandled exclusion has not been rerun."}},
       {"id": "ordinary-japanese-wording", "expected": "should_not_trigger", "baseline": {"verdict": "pass", "observed_loads": ["japanese-tech-writing"]}, "candidate": {"verdict": "pass", "observed_loads": ["japanese-tech-writing"]}}
     ]
+  },
+  "failure_investigation_identity_migration": {
+    "evaluated_on": "2026-07-30",
+    "environment": {
+      "client": "Codex CLI 0.146.0",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "high",
+      "sandbox": "read-only"
+    },
+    "behavior": {
+      "id": "incident-grounding-only",
+      "case": "pass",
+      "assertions": {
+        "grounding-precedes-naming": "pass",
+        "state-contract": "pass",
+        "originating-workflow-ownership": "pass",
+        "preserve-uncertainty": "pass",
+        "no-target-mutation": "pass"
+      },
+      "fixture_unchanged": true,
+      "evidence": "The response grounded observations before naming, kept cause and attribution unknown, rejected unsupported mechanism terms, and returned evidence gathering and causal diagnosis to investigate-failure."
+    },
+    "routing": {
+      "id": "incident-with-established-terms",
+      "expected": ["investigate-failure"],
+      "observed": ["investigate-failure"],
+      "verdict": "pass"
+    }
   },
   "unverified": [
     "Claude Code and other compatible clients were not executed.",

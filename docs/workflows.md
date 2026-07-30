@@ -14,6 +14,18 @@ A minimal reference for how the core Skills connect into common workflows.
 
 Skip `design-changes` when a sufficiently clear and authorized low-impact change can proceed directly to implementation without inventing an approach, scope, risk decision, or verification strategy.
 
+## Failure investigation workflow
+
+`investigate-failure` → optional `break-failure-loop` → `design-changes` or conditionally `implement-changes` → `validate-fix`
+
+- `investigate-failure`: Across local, development, staging, or production environments, separate expected from observed behavior, trace the failure path, test causal hypotheses with safe diagnostics, and return a supported cause or the next evidence-changing checkpoint
+- `break-failure-loop`: Pause the investigation only when materially equivalent checks under an unchanged hypothesis repeat without decision-relevant evidence
+- `design-changes`: Design the correction when the diagnosis is supported but the approach, affected scope, risk, or verification remains unsettled
+- `implement-changes`: Accept a direct handoff only when the diagnosis, authorized objective, affected scope, expected outcome, safety controls, and verification are already sufficiently defined
+- `validate-fix`: Verify the completed correction against the original failure and expected behavior
+
+Failure investigation may support an active production incident, but it does not own incident command, severity, stakeholder communication, containment, mitigation, closure, postmortem, or security forensics. Do not let diagnosis delay the incident owner or an approved stabilization runbook.
+
 ## Review workflow
 
 `review-changes` → optional `triage-review-feedback` or `draft-review-comments` → `implement-changes` → `validate-fix`
