@@ -1,80 +1,70 @@
 ---
 name: triage-agent-usage
-description: Before starting work, separate the right agent, tool, and model weight for the task.
+description: Selects an appropriate agent, tool, model capability, and work-unit size before work starts. Use when deciding between chat, completion, a coding agent, or heavier reasoning, or when operational delegation needs to be divided; not for calibrating learning or understanding during the work, choosing the substantive implementation design, or performing the task itself.
 license: MIT
 ---
 
 # Triage Agent Usage
 
-## Purpose
+## Objective
 
-- Before starting, determine which tool and what model weight should be used.
-- Prevent jumping into a heavy agent session immediately; secure sufficient capability while keeping usage costs low.
+- Select the lightest execution surface and model capability that can perform the task with acceptable correctness and rework risk.
+- Divide operational delegation into reviewable work units and pass only the context each unit needs.
+- Keep tool and capability selection separate from substantive task decisions and learning calibration.
 
-## When to use
+## Evidence
 
-- When you are about to ask AI to do work but are unsure which tool to start with
-- When you want to separate up front whether the task is implementation with repo reading, text organization, or incident investigation
-- When you want to judge whether there is a genuine reason to use a high-capability model
+Gather what is available:
 
-## Decision axes
+- the task type and expected outcome
+- whether repository, external-system, or execution access is required
+- affected scope, verification needs, uncertainty, reversibility, and cost of failure
+- available tools, models, profiles, permissions, and environment constraints
+- whether independent context, specialist analysis, or parallel work has a concrete benefit
 
-- Does the task require reading the repository?
-- Does it require changes across multiple files?
-- Does it require delegating implementation and test execution?
-- Is this an agent, workflow, prompt, or code improvement loop that may need candidate search?
-- Is there uncertainty that requires a high-capability model?
-- Is the cost of failure and rework high?
-- Is the priority learning or meeting a deadline?
-- Is this work where the person can review the output and explain the reasoning?
+Do not infer that a heavier agent is better merely because the task is important. Do not recommend a named tool or profile that is unavailable or whose capability is unverified.
 
-## Recommended heuristics
+## Selection workflow
 
-- Text organization, emails, design notes: standard chat (ChatGPT / Claude.ai)
-- IDE completion, simple single-function fixes: completion model
-- Small existing-pattern implementations: lightweight coding agent
-- Multi-file changes with test execution: Codex or Claude Code
-- Repeated agent / workflow / prompt improvement: treat as search design, not only another local edit
-- Unknown-cause incidents, security, billing, authorization: use a high-capability model explicitly
+1. Classify the operational work needed, such as text organization, repository implementation, investigation, review, or external-system interaction.
+2. Identify the capabilities required to read the evidence, act within the authorized scope, and verify the result.
+3. Start with the lightest available execution surface that satisfies those capabilities. Escalate model or agent weight when uncertainty, consequence, context volume, or verification complexity gives a concrete reason.
+4. Decide whether the work needs one session, independent context, specialist review, or parallel units. Do not introduce another agent by default.
+5. Divide delegated work by coherent outcome, ownership, and verification boundary. Avoid work units so broad that their evidence or changes cannot be reviewed.
+6. Minimize the context for each unit without omitting its objective, constraints, relevant evidence, authority, and completion check.
+7. State the recommendation and the reason for any heavier capability, additional agent, or broader context.
+8. Hand off the selected execution setup. Leave implementation design, investigation conclusions, and adoption decisions to the workflow that owns them.
 
-## Steps
+## Decision criteria
 
-1. Summarize the request in 1–2 lines and classify it as: implementation, investigation, or text organization.
-2. If the repo does not need to be read, first consider standard chat.
-3. If the repo needs to be read but changes are local and follow existing patterns, consider completion or a lightweight coding agent.
-4. If multi-file changes and test execution are needed, consider Codex or Claude Code.
-5. If unknown-cause incidents, security, billing, authorization, or destructive changes are involved, use a high-capability model explicitly.
-6. If the work is repeated agent, workflow, prompt, or code improvement, decide whether candidate search and case-level evaluation are needed before recommending another local edit.
-7. If learning is a strong priority, separate tasks to delegate to AI from decisions the person must make themselves.
-8. When choosing a heavier option, have the reason ready to state in one line.
-9. After selecting a tool, cut work units as small as possible and minimize the context to pass.
+Examples are heuristics, not a fixed tool mapping:
 
-## Output format
+- use ordinary chat when repository or execution access is unnecessary
+- use completion or a lightweight coding surface for small, established-pattern edits when its output can be reviewed locally
+- use a coding agent when repository discovery, multi-file changes, or test execution are required
+- use stronger reasoning when the task has important unresolved uncertainty, high-cost rework, security or authorization consequences, or ambiguous evidence
+- use independent or parallel agents only when context isolation, specialist judgment, or latency reduction outweighs coordination and review cost
 
-- Recommended tool: ...
-- Recommended model / profile: ...
-- Work units: ...
-- Minimum context to pass: ...
-- Search design needed?: ...
-- Things the person should decide first: ...
-- Prerequisites for understanding and review: ...
+If the user wants to preserve or recover understanding while the selected workflow proceeds, return an optional handoff to `calibrate-ai-learning`. Do not decide the teaching method, comprehension checkpoints, or user learning depth in this Skill.
+
+## Reporting contract
+
+Adapt the response to the decision. Include:
+
+- recommended execution surface or tool
+- required model capability or profile when a choice is material
+- reason for escalation beyond the lightest adequate option
+- work units and their ownership
+- minimum context, permissions, and verification expected for each unit
+- unverified availability or capability assumptions
+- optional learning-calibration handoff when the user requested it
+
+Do not force a named model, profile, multiple agents, or a fixed template when the available evidence does not require one.
 
 ## Boundaries
 
-### Always:
-
-- Consider whether the lightest option is sufficient first
-- Do not classify repeated self-improvement loops as simple local edits without checking for search design needs
-- State the reason for using a heavy agent session
-- Keep passed context to the minimum
-- When learning is a priority, separate what the person can explain from what to delegate to AI
-
-### Ask first:
-
-- When high-risk work is about to proceed with only a lightweight model or completion
-- When a high-capability model will be used but what to delegate is unclear
-
-### Never:
-
-- Default to proposing a heavy coding agent for work that does not require reading the repository
-- Leave the reason for model selection unclear when proceeding with high-rework-cost work
+- Do not perform the task, select its substantive implementation, or treat tool selection as authorization.
+- Do not make high-impact requirements, scope, risk tolerance, or adoption decisions for the user.
+- Do not recommend a heavy coding agent for work that does not need its repository or execution capabilities.
+- Do not use another agent or subagent by default; require a concrete context, specialization, verification, or latency benefit.
+- Keep learning and understanding calibration with `calibrate-ai-learning`, while remaining self-contained when that Skill is unavailable.

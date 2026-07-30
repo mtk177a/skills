@@ -1,6 +1,6 @@
 ---
 name: triage-agent-usage
-description: 作業前に、使うエージェント・ツール・モデルの重さを切り分けたいときに使う。
+description: 作業開始前に、適切な agent、tool、model capability、work-unit size を選ぶ。chat、completion、coding agent、より強い reasoning の選択、または運用上の委任分割を判断するときに使う。作業中の学習・理解の calibration、実質的な実装設計の選択、task 自体の実行には使わない。
 license: MIT
 ---
 
@@ -10,73 +10,63 @@ license: MIT
 
 ## 目的
 
-- 作業前に、どのツールとどの重さのモデルを使うべきかを切り分ける。
-- いきなり重い agent session を始めるのを防ぎ、利用量を抑えながら必要十分な性能を確保する。
+- 許容できる正しさと手戻りリスクで task を実行できる、最も軽い execution surface と model capability を選ぶ。
+- 運用上の委任を review 可能な work unit へ分け、各 unit に必要な context だけを渡す。
+- tool・capability 選択を、task の実質的な判断や learning calibration から分離する。
 
-## 使う場面
+## 証拠
 
-- これから AI に作業を依頼するが、どのツールから始めるべきか迷うとき
-- リポジトリを読む実装作業か、文章整理か、原因調査かを先に切り分けたいとき
-- 高性能モデルを使う理由が本当にあるかを判断したいとき
+利用可能な情報を集める。
 
-## 判定軸
+- task type と期待する outcome
+- repository、external system、execution への access が必要か
+- 影響範囲、verification needs、不確実性、可逆性、失敗コスト
+- 利用可能な tool、model、profile、permission、environment constraints
+- 独立した context、specialist analysis、parallel work に具体的な効果があるか
 
-- リポジトリを読む必要があるか
-- 複数ファイル変更が必要か
-- 実装とテスト実行まで任せる必要があるか
-- agent、workflow、prompt、code の改善ループで、候補探索が必要になっていないか
-- 高性能モデルが必要な不確実性があるか
-- 失敗時の手戻りが大きいか
-- 学習目的か、納期優先か
-- 本人がレビューし、判断理由を説明できる作業か
+task が重要という理由だけで、より重い agent が適切と推測しない。利用可能性や capability を確認できない tool・profile を利用可能なものとして推奨しない。
 
-## 推奨の目安
+## 選択 workflow
 
-- 文章整理、メール、設計メモ: 通常 ChatGPT / Claude.ai
-- IDE 補完、単純な関数修正: 補完モデル
-- 小さな既存パターン実装: 軽量 coding agent
-- 複数ファイル変更、テスト実行込み: Codex または Claude Code
-- agent / workflow / prompt 改善の反復: さらに局所編集する前に探索設計として扱う
-- 原因不明の障害、セキュリティ、課金、権限: 高性能モデルを明示して使う
+1. text organization、repository implementation、investigation、review、external-system interaction など、必要な operational work を分類する。
+2. 証拠を読み、承認済み scope 内で行動し、結果を検証するために必要な capability を特定する。
+3. 必要な capability を満たす最も軽い execution surface から検討する。不確実性、影響、context 量、verification complexity に具体的な理由がある場合に model または agent の重さを上げる。
+4. 1 session、独立 context、specialist review、parallel unit のどれが必要か判断する。別 agent を既定で導入しない。
+5. 委任する作業を、一貫した outcome、ownership、verification boundary で分ける。証拠や変更を review できないほど広い work unit を避ける。
+6. 各 unit の objective、constraints、relevant evidence、authority、completion check を失わない範囲で context を最小化する。
+7. 推奨と、より重い capability、追加 agent、広い context が必要な理由を示す。
+8. 選択した execution setup を引き継ぐ。実装設計、調査結論、採否判断は、それを所有する workflow に残す。
 
-## 手順
+## 判断基準
 
-1. 依頼を 1〜2 行で要約し、実装、調査、文章整理のどれかに分類する。
-2. リポジトリを読む必要がないなら、まず通常チャットを候補にする。
-3. リポジトリを読むが変更が局所的なら、補完または軽い coding agent を候補にする。
-4. 複数ファイル変更やテスト実行が必要なら、Codex または Claude Code を候補にする。
-5. 原因不明の障害、セキュリティ、課金、権限、破壊的変更が絡むなら、高性能モデルを明示して使う。
-6. agent、workflow、prompt、code の改善を繰り返している場合は、別の局所編集を勧める前に候補探索とケース別評価が必要か判断する。
-7. 学習目的が強い場合は、AI に任せる作業と本人が判断する作業を分ける。
-8. 重い選択肢を選ぶ場合は、その理由を 1 行で説明できる状態にする。
-9. ツール選定後、作業単位をできるだけ小さく切り、渡すコンテキストを最小化する。
+次は固定的な tool mapping ではなく heuristic として使う。
 
-## 出力フォーマット
+- repository や execution access が不要なら ordinary chat を使う
+- 小さく既存 pattern に沿う edit で、出力を局所 review できる場合は completion または lightweight coding surface を使う
+- repository discovery、multi-file change、test execution が必要なら coding agent を使う
+- 重要な未解決の不確実性、手戻りコスト、security・authorization 上の影響、曖昧な証拠がある場合は、より強い reasoning を使う
+- context isolation、specialist judgment、latency reduction が coordination・review cost を上回る場合だけ、独立または parallel agent を使う
 
-- 推奨ツール: ...
-- 推奨モデル / profile: ...
-- 作業単位: ...
-- 渡すべき最小コンテキスト: ...
-- 探索設計が必要か: ...
-- 先に人間が決めるべきこと: ...
-- 理解・レビューに必要な前提: ...
+選択した workflow を進めながら理解を保持または回復したい場合は、`calibrate-ai-learning` への任意 handoff を返す。この Skill で teaching method、comprehension checkpoint、ユーザーの learning depth を決めない。
+
+## Reporting contract
+
+判断に合わせて応答を調整する。次を含める。
+
+- 推奨する execution surface または tool
+- 選択が重要な場合の model capability または profile
+- 最も軽い適切な選択肢より強いものへ上げる理由
+- work unit と ownership
+- 各 unit に必要な最小 context、permission、期待する verification
+- 利用可能性または capability に関する未確認の前提
+- ユーザーが求めた場合の任意の learning-calibration handoff
+
+利用可能な証拠が要求しない場合は、特定の model、profile、複数 agent、固定 template を強制しない。
 
 ## 境界
 
-### Always:
-
-- まず最も軽い選択肢で足りるかを検討する
-- 自己改善ループの反復を、探索設計の必要性を確認せず単純な局所編集として扱わない
-- 重い agent session を使う理由を明示する
-- 渡すコンテキストは最小限に絞る
-- 学習目的がある場合は、本人が説明できる範囲と AI に委任する範囲を分ける
-
-### Ask first:
-
-- 高リスクな作業を軽量モデルや補完だけで進めようとしている場合
-- 高性能モデルを使うが、何を任せるかが曖昧な場合
-
-### Never:
-
-- リポジトリを読む必要がない作業に、重い coding agent を既定提案しない
-- 手戻りが大きい作業で、モデル選定の理由を曖昧にしたまま進めない
+- task を実行せず、実質的な実装方式を選ばず、tool 選択を authorization として扱わない。
+- 高影響な requirement、scope、risk tolerance、adoption decision をユーザーに代わって決めない。
+- repository または execution capability が不要な作業に heavy coding agent を推奨しない。
+- 別 agent または subagent を既定で使わず、context、specialization、verification、latency 上の具体的な効果を要求する。
+- 学習・理解の calibration は `calibrate-ai-learning` に残し、その Skill がない場合も自己完結させる。

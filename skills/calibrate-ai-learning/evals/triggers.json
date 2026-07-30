@@ -1,0 +1,71 @@
+{
+  "skill": "calibrate-ai-learning",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Present each prompt and any supplied conversation context as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case once per condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every case. Mixed observed results are unstable, not a pass."
+  },
+  "coexistence_skills": [
+    "triage-agent-usage",
+    "implement-changes",
+    "review-changes",
+    "clarify-request"
+  ],
+  "cases": [
+    {
+      "id": "explicit-learning-priority",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "I need to implement this unfamiliar cache invalidation change, but learning matters more than speed. Help me preserve enough understanding to review and maintain it while we work."
+    },
+    {
+      "id": "cannot-explain-ai-output",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "An AI produced this fix and the tests pass, but I cannot explain why the change works or decide whether the evidence is sufficient. Help me recover that understanding."
+    },
+    {
+      "id": "calibration-continuation",
+      "expected": "should_trigger",
+      "category": "continuation",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Help me understand the lock boundary in this AI-generated fix while we review it."
+        },
+        {
+          "role": "assistant",
+          "content": "The mutex protects the shared map. The next checkpoint is whether the callback may re-enter code that needs the same lock."
+        }
+      ],
+      "prompt": "I understand the map protection now, but I still cannot tell whether the callback may re-enter or how to verify that assumption."
+    },
+    {
+      "id": "tool-and-model-selection",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Choose whether this multi-file repository change should use ordinary chat, completion, a coding agent, or a higher-reasoning profile. Divide the work and minimize the context."
+    },
+    {
+      "id": "clear-authorized-implementation",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "The implementation approach, scope, authorization, and verification method are approved. Implement the change and run the relevant checks."
+    },
+    {
+      "id": "general-concept-teaching",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Explain the difference between optimistic and pessimistic concurrency control as a general concept. There is no active implementation or decision."
+    },
+    {
+      "id": "ambiguous-request",
+      "expected": "should_not_trigger",
+      "category": "coexistence",
+      "prompt": "Improve our production onboarding flow. The users, current problem, success criteria, environment, authority, and acceptable risk are unspecified. Help me clarify the request first."
+    }
+  ]
+}

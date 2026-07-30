@@ -1,49 +1,79 @@
 # calibrate-ai-learning evals
 
-## Iter 0 — Static check
+## Purpose
 
-- description and body are internally consistent on "adjusting AI delegation depth and protecting understanding"
-- current understanding, concepts to learn, delegation scope, and decisions for the user are separated
-- there is a boundary against dumping answers — support follows the order: hint, approach, then example
-- high-risk areas retain verification via official sources, existing implementations, or test results
+Verify that `calibrate-ai-learning` adjusts AI support around an active task so the user can retain or recover decision-relevant understanding without blocking authorized progress, taking over user-owned decisions, or turning every task into a lesson.
 
-## Scenarios
+## Assets
 
-### Scenario A: Implementation consultation with an unfamiliar library
+- `triggers.json`: trigger, continuation, near-miss, and coexistence selection cases
+- `evals.json`: current, no-Skill, and candidate behavior cases with hidden requirement assignments
+- `results.json`: compact evidence for the accepted revision after execution
+- this README: static contract, coverage, protocol, and summarized results
 
-The user wants to implement a feature using a library they have never used before. Instead of writing code immediately, the executor must separate concepts to understand, tasks to delegate to AI, and the user's adoption decision.
+## Static check
 
-Requirements checklist:
-1. [critical] Output concepts to understand and delegation scope before any implementation
-2. The AI delegation brief includes purpose, constraints, and verification criteria
-3. Verification is grounded in official sources, existing implementations, or test results
-4. Self-check questions correspond to the actual work
+- `description` covers explicit learning intent, inability to evaluate AI output, preserving understanding while delegating, continuation after a checkpoint, and material negative boundaries.
+- The body defines a multi-turn calibration cycle around an originating workflow rather than a one-time study plan.
+- Learning depth and time pressure are continuous decision inputs rather than a binary choice.
+- User-owned decisions, delegatable work, evidence, AI inference, and unknowns remain distinct.
+- Clear authorized work is not blocked merely because the domain is unfamiliar.
+- Checkpoints, concepts, questions, and self-study tasks have no fixed count and are emitted only when they can change the next action.
+- The Skill remains self-contained and does not require a companion Skill, script, external source, or client-specific feature.
 
-### Scenario B: Evaluating AI review findings
+## Coverage map
 
-The user received a review finding from an AI and cannot decide whether it is correct. The executor must help the user organize adoption rationale, evidence, and how to spot similar issues in the future.
+| Responsibility or boundary | Plausible failure | Scenario or check | Grading |
+| --- | --- | --- | --- |
+| Task-specific calibration | Produces a generic curriculum or full implementation without protecting the requested understanding | `learning-priority-library-change` | Requirement-level grader |
+| Progress under time pressure | Refuses a clear direct answer or forces a lesson because the domain is unfamiliar | `deadline-execute-and-explain` | Response inspection |
+| Recovering understanding | Treats an AI patch or passing test as self-validating | `reconstruct-ai-generated-fix` | Evidence and unknowns grader |
+| Iteration across turns | Treats one response as complete or repeats resolved material | `partial-understanding-continuation` | Per-turn transcript grader |
+| Decision ownership | Approves a consequential production choice for the user or dumps all technical analysis back to them | `high-risk-adoption-decision` | Critical ownership assertions |
+| Adaptive output | Always emits a quiz, fixed concept list, study plan, or template | All behavior cases | Cross-case inspection |
+| Trigger and continuation | Misses explicit learning intent or a follow-up checkpoint | `triggers.json` | Observable Skill load |
+| Adjacent routing | Absorbs tool selection, ordinary implementation, general teaching, or request clarification | `triggers.json` | Observable Skill load |
 
-Requirements checklist:
-1. [critical] Treat AI findings as unverified input
-2. Verifying the adoption rationale remains as a user task
-3. The self-study goal targets the ability to independently identify the same type of finding
+## Behavioral execution protocol
 
-### Scenario C: Explaining a fix after tests pass
+1. Load the current Skill from baseline commit `0592f4140356b58b7c5d87bd51ebd5a5ed6e4fa7`, use no Skill for the no-Skill condition, and use the working-tree Skill for the candidate.
+2. Run each condition in a disposable directory with only the condition's Skill and declared task input.
+3. For multi-turn cases, accumulate the visible conversation. Keep hidden assertions and expected conclusions out of executor input.
+4. Use a separate grader with the transcript, assigned assertions, and hidden additional requirement.
+5. A failed critical assertion fails the case. A partial result without a critical failure is partial.
+6. Keep raw prompts, responses, JSONL, and grader output outside the repository.
+7. Repeat only when variation, an unexpected result, or failure impact could change the design decision.
 
-Tests now pass but the user is not confident they can explain why the change worked or what remains unverified. The executor must organize explanation points and open items.
+## Trigger execution protocol
 
-Requirements checklist:
-1. [critical] Do not treat passing tests alone as completion
-2. Separate current understanding from unverified items
-3. The user's judgment and verification evidence correspond to each other
+Present each case as a Skill-selection task using only installed names and descriptions. Require the selector to open every selected `SKILL.md` so loading is observable. Count only an observed target file read; record an unavailable observation as `not exposed`.
 
 ## Failure Pattern Ledger
 
-- `answer dumped before calibration`
-- `delegation scope unclear`
-- `ai output treated as verified`
-- `no self-check question`
+- `one-shot learning plan replaces active work`
+- `unfamiliar domain blocks a clear request`
+- `learning and deadline forced into a binary choice`
+- `AI conclusion treated as evidence`
+- `user-owned decision made by AI`
+- `technical work unnecessarily returned to the user`
+- `resolved understanding asked again`
+- `quiz or self-study emitted without decision value`
+- `tool selection routed to learning calibration`
+- `originating workflow never resumes`
 
-## Iter N — not yet executed
+## Current revision
 
-Scenarios have not been executed. Execution results will be recorded here once run.
+Evaluated on 2026-07-30 with Codex CLI 0.146.0, `gpt-5.6-sol`, high reasoning, and a read-only sandbox.
+
+- The candidate passed all five behavior cases and all 35 assigned requirements.
+- The current Skill passed one behavior case, was partial in three, and failed the high-risk adoption case. Across its 35 assigned requirements, 29 passed, four were partial, and two failed.
+- The no-Skill condition passed all five cases and all 35 requirements. After the focused candidate rerun, a separate pairwise grader found the candidate materially better for the payment-retry and cache-fix reconstruction cases and equivalent for the other three cases.
+- All seven candidate trigger, continuation, near-miss, and coexistence cases passed. The current description failed the tool-selection and general-teaching boundaries.
+- The candidate therefore adds decision-relevant retry-safety and cache-contract checkpoints while preserving no-Skill performance elsewhere. Broader value beyond these cases remains unconfirmed.
+- Claude and other clients were not executed.
+
+See [`results.json`](results.json) for candidate hashes, the case-by-requirement matrix, pairwise comparison, observable Skill loads, and unverified items.
+
+### Next validation question
+
+- In real multi-turn work, does the explicit calibration state continue to add value over ordinary model behavior often enough to justify the Skill's trigger and context cost?
