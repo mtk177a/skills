@@ -10,7 +10,7 @@
 
 ## Skill 一覧
 
-開発作業全般をカバーする 24 の Skill を収録しています。
+開発作業全般をカバーする 25 の Skill を収録しています。
 
 | Skill | 説明 |
 | --- | --- |
@@ -27,6 +27,7 @@
 | `draft-commit` | Git の staging 境界を保ちながら、原子的なコミット計画と Conventional Commits メッセージを作成する |
 | `draft-issue` | 明確化した課題を Issue の起票案と起票手順に落とし込む |
 | `draft-review-comments` | 整理済みの指摘と判断の意味を変えず、未投稿の PR コメント案へ変換する |
+| `edit-for-readers` | 既存の草稿を読後目標に照らして編集し、重複を削って不足する文脈を特定する |
 | `implement-changes` | 承認済みの変更を小さな単位で、TDD または適切な別の検証方法を使って実装する |
 | `investigate-failure` | 環境を問わず、原因不明の error、failing test、regression、performance anomaly、予期しない技術的挙動を調査する |
 | `japanese-tech-writing` | 日本語技術文書の整形・論証構成・用語・推敲の規範を適用する |
