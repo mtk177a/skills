@@ -2,13 +2,13 @@
   "skill": "triage-agent-usage",
   "version": 1,
   "accepted_candidate": {
-    "baseline_commit": "0592f4140356b58b7c5d87bd51ebd5a5ed6e4fa7",
-    "baseline_skill_sha256": "b28256cabd0c32c4d3450c675f58f77938b4792922a5ff21bdb37e106640e03d",
+    "baseline_commit": "82722ad5cfe003c164bb6b3736fae3612d4612a2",
+    "baseline_skill_sha256": "c2f8fa962c23fec04f84a8ccffb517880f95d082da58f16d8db4b4c6e48db38d",
     "candidate_file_sha256": {
-      "skills/triage-agent-usage/SKILL.md": "c2f8fa962c23fec04f84a8ccffb517880f95d082da58f16d8db4b4c6e48db38d",
-      "skills/triage-agent-usage/SKILL-ja.md": "e0f5e695cfdc1ea7a72dc0cd955bb1a8fbfe4a72b58c0740e146e15e3918c028",
-      "skills/triage-agent-usage/evals/evals.json": "cd665bf7e5895735dbb784688b688fa55d51444ae618f9b30b91b484feaeaf26",
-      "skills/triage-agent-usage/evals/triggers.json": "9cc2bdda5fceb8f215b5a8d3f6b402b987ff3b2270c3f6b664e5bf14424055ba"
+      "skills/triage-agent-usage/SKILL.md": "00e9de6181ff0bd8e40242d711f29212b7c990eedebdda0c6e51c804d96a86fd",
+      "skills/triage-agent-usage/SKILL-ja.md": "f0307be703928c725869c40ffb56136abf56666c15d7b4231708e4a8340f703a",
+      "skills/triage-agent-usage/evals/evals.json": "72a328afe88ad8f999e670af1bb0ac25b036b82a6dcda1d3ca377aa08d596612",
+      "skills/triage-agent-usage/evals/triggers.json": "dca59dbad15f7b5b1d7c237d95a1ac75e20541b2e91f98bbce71a2487c748860"
     }
   },
   "execution": {
@@ -17,21 +17,23 @@
     "model": "gpt-5.6-sol",
     "reasoning_effort": "high",
     "sandbox": "read-only",
-    "behavior_command": "python3 /tmp/run-calibrate-triage-evals.py",
-    "trigger_command": "python3 /tmp/run-calibrate-triage-triggers.py",
-    "pairwise_command": "not applicable",
+    "behavior_command": "python3 /tmp/run-calibrate-learning-rename-behavior.py",
+    "trigger_command": "python3 /tmp/run-calibrate-learning-rename-triggers.py",
+    "pairwise_command": null,
     "raw_artifacts": "Temporary executor responses, JSONL, and grader output were kept outside the repository and are not retained here.",
+    "evidence_reuse": "The learning-goal handoff case was rerun for both conditions. The other three behavior grades are reused from the accepted baseline revision because their instructions and evaluated behavior are unchanged by the adjacent Skill rename.",
     "verdict_policy": "Grade only assertions assigned to the case. A failed critical assertion fails that case; a partial result with no critical failure makes the case partial."
   },
   "summary": {
     "behavior": {
-      "current": {
+      "previous_name": {
         "cases": {
-          "partial": 4
+          "pass": 3,
+          "fail": 1
         },
         "requirements": {
-          "partial": 6,
-          "pass": 23
+          "pass": 28,
+          "fail": 1
         }
       },
       "candidate": {
@@ -44,9 +46,8 @@
       }
     },
     "triggers": {
-      "current": {
-        "fail": 1,
-        "pass": 5
+      "previous_name": {
+        "pass": 6
       },
       "candidate": {
         "pass": 6
@@ -57,15 +58,15 @@
     {
       "id": "text-only-task",
       "case_verdicts": {
-        "current": "partial",
+        "previous_name": "pass",
         "candidate": "pass"
       },
       "requirements": [
         {
           "id": "capability-based-selection",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The response bases the choice on the absence of repository, coding, tool, and high-reasoning needs, while identifying required context and human verification."
+            "evidence": "The response bases the choice on the text-only nature of the work, lack of required repository/file/command/external access, limited context needs, straightforward uncertainty, and a proportionate human verification step."
           },
           "candidate": {
             "verdict": "pass",
@@ -74,9 +75,9 @@
         },
         {
           "id": "lightest-adequate-option",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It recommends standard chat with a lightweight general-purpose model and explains that coding agents, repository access, tools, and high-capability reasoning are unwarranted."
+            "evidence": "It selects a single ordinary chat session with a lightweight general-purpose text model and explains that heavier reasoning or a coding agent is unjustified for straightforward summarization."
           },
           "candidate": {
             "verdict": "pass",
@@ -85,9 +86,9 @@
         },
         {
           "id": "availability-not-invented",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It uses generic capability categories rather than claiming that a specific named product, model, profile, permission, or environment is available."
+            "evidence": "It names no specific product, model, profile, permission, or environment capability as available; the recommendation remains capability-level."
           },
           "candidate": {
             "verdict": "pass",
@@ -96,9 +97,9 @@
         },
         {
           "id": "context-minimized-safely",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The proposed context is limited to the notes, audience, tone, length, and must-include details, with a reviewer assigned to confirm accuracy."
+            "evidence": "It limits context to the supplied notes, audience, tone, and target length while retaining the information needed to produce and verify the eventual announcement."
           },
           "candidate": {
             "verdict": "pass",
@@ -107,9 +108,9 @@
         },
         {
           "id": "additional-agent-justified",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "No additional or parallel agent is proposed; the response expressly rules out a coding agent."
+            "evidence": "It explicitly recommends one model in one pass and rejects agents or specialist review because no concrete benefit warrants them."
           },
           "candidate": {
             "verdict": "pass",
@@ -118,9 +119,9 @@
         },
         {
           "id": "stay-out-of-task",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It outlines work units but does not draft the announcement or treat the recommendation as authorization to proceed."
+            "evidence": "It only chooses the execution setup and verification approach; it does not draft the announcement or make substantive content decisions."
           },
           "candidate": {
             "verdict": "pass",
@@ -129,9 +130,9 @@
         },
         {
           "id": "adaptive-reporting",
-          "current": {
-            "verdict": "partial",
-            "evidence": "The content is concise and decision-relevant and avoids naming a specific model, but it rigidly reproduces the full skill template instead of adapting the report to this simple text-only decision."
+          "previous_name": {
+            "verdict": "pass",
+            "evidence": "It concisely reports the relevant surface, capability level, permissions, work-unit size, context, and verification without forcing a named model or unnecessary operational detail."
           },
           "candidate": {
             "verdict": "pass",
@@ -143,15 +144,15 @@
     {
       "id": "high-risk-repository-change",
       "case_verdicts": {
-        "current": "partial",
+        "previous_name": "pass",
         "candidate": "pass"
       },
       "requirements": [
         {
           "id": "capability-based-selection",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The repository-capable agent is tied to repository/history access, multi-file editing, and test execution. Stronger reasoning is tied to authentication security risk and high rework cost, not mere importance."
+            "evidence": "Selects a repository-capable coding agent because the work requires repository/history inspection, multi-file writes, and test execution. It escalates reasoning based on authentication consequences, cross-file interactions, regression risk, and rollback verification—not importance alone."
           },
           "candidate": {
             "verdict": "pass",
@@ -160,9 +161,9 @@
         },
         {
           "id": "lightest-adequate-option",
-          "current": {
-            "verdict": "partial",
-            "evidence": "It gives a concrete escalation reason—security and rework risk—but recommends the “highest-capability” available profile without establishing that the absolute highest profile is the lightest adequate choice. A high-capability or stronger-reasoning profile would satisfy the stated requirement more precisely."
+          "previous_name": {
+            "verdict": "pass",
+            "evidence": "Explains concretely why ordinary chat or a lightweight completion surface is inadequate: neither can inspect, modify, and verify the repository. Stronger reasoning is separately justified by security and verification complexity."
           },
           "candidate": {
             "verdict": "pass",
@@ -171,9 +172,9 @@
         },
         {
           "id": "availability-not-invented",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It does not invent a profile name and conditions the recommendation on what is available. Shell, history, editing, and test access are presented as required setup capabilities; branch and commit authority is explicitly left for confirmation."
+            "evidence": "Explicitly declines to choose a named model profile until available profiles and capabilities are listed. Repository access, permissions, and testing are framed as requirements, not asserted existing capabilities."
           },
           "candidate": {
             "verdict": "pass",
@@ -182,9 +183,9 @@
         },
         {
           "id": "reviewable-work-units",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The units cover inspection, rollback setup, implementation, focused tests, regression tests, security/diff review, and atomic handoff. They preserve constraints, evidence, authority checks, and completion verification."
+            "evidence": "Divides the workflow into discovery/baseline, implementation, verification, and independent security/rollback review, each with ownership, required context or authority, and a completion check."
           },
           "candidate": {
             "verdict": "pass",
@@ -193,9 +194,9 @@
         },
         {
           "id": "context-minimized-safely",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The minimum context includes repository instructions, requirements, environments, tests, credential constraints, and rollback expectations while explicitly excluding secrets."
+            "evidence": "Scopes context by unit: discovery receives repository/history/build instructions, implementation receives write authority, verification receives test permission, and the reviewer receives the final diff, relevant history, test results, and baseline SHA."
           },
           "candidate": {
             "verdict": "pass",
@@ -204,9 +205,9 @@
         },
         {
           "id": "additional-agent-justified",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "No additional agent is introduced. The response cautions against parallel implementation unless ownership and integration boundaries are explicit."
+            "evidence": "The additional reviewer is sequential rather than parallel and has a concrete independent-verification purpose for authentication boundaries, configuration, compatibility, and rollback."
           },
           "candidate": {
             "verdict": "pass",
@@ -215,9 +216,9 @@
         },
         {
           "id": "stay-out-of-task",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The response only chooses an execution setup and triages work. It neither chooses an authentication provider nor specifies the migration design, and it asks for confirmation of branch/commit authority."
+            "evidence": "Does not inspect or change the repository, choose a provider, or design the migration. It also distinguishes required repository permissions from deployment, provider-administration, and provider-selection authority."
           },
           "candidate": {
             "verdict": "pass",
@@ -226,9 +227,9 @@
         },
         {
           "id": "adaptive-reporting",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The report stays focused on tool capabilities, reasoning weight, work units, context, verification, rollback, authority, and uncertainty. It avoids inventing or requiring a named model profile."
+            "evidence": "Reports only setup-relevant surface, capability, work units, access, verification, rollback, and availability constraints. It avoids forcing a named model profile."
           },
           "candidate": {
             "verdict": "pass",
@@ -240,15 +241,15 @@
     {
       "id": "small-established-pattern-change",
       "case_verdicts": {
-        "current": "partial",
+        "previous_name": "pass",
         "candidate": "pass"
       },
       "requirements": [
         {
           "id": "capability-based-selection",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The response ties the recommendation to repository and shell access, the existing-pattern context, low risk, single-file scope, and focused-test verification—not to perceived importance."
+            "evidence": "The response ties the coding surface to repository reading and test execution, and selects standard reasoning based on the established pattern, narrow scope, reversibility, focused verification, and low risk."
           },
           "candidate": {
             "verdict": "pass",
@@ -257,9 +258,9 @@
         },
         {
           "id": "lightest-adequate-option",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It recommends a lightweight coding agent and concretely explains that completion is insufficient for repository reading and test execution, while a heavyweight agent is unnecessary."
+            "evidence": "It recommends a single lightweight coding agent and concretely explains why ordinary chat or completion is insufficient: repository access and test execution are required."
           },
           "candidate": {
             "verdict": "pass",
@@ -268,9 +269,9 @@
         },
         {
           "id": "availability-not-invented",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It recommends generic capability categories rather than claiming that a specific named tool, model, profile, permission, or configured environment is available."
+            "evidence": "It names no specific tool, model, or profile and explicitly says none should be named unless repository and execution capabilities are confirmed. The listed access is framed as required setup, not verified availability."
           },
           "candidate": {
             "verdict": "pass",
@@ -279,9 +280,9 @@
         },
         {
           "id": "context-minimized-safely",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The proposed context is limited to behavior, repository location, target and analogous implementation, and test command—enough to execute and verify the focused change."
+            "evidence": "The handoff context is limited to the requested behavior, one-file constraint, relevant pattern location if known, and focused test command, while retaining scoped access and verification needs."
           },
           "candidate": {
             "verdict": "pass",
@@ -290,9 +291,9 @@
         },
         {
           "id": "additional-agent-justified",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "No parallel, specialist, or additional agent is introduced, consistent with the hidden requirement."
+            "evidence": "It recommends one agent and explicitly rejects subagents because the change is established-pattern, reversible, focused, and low risk, matching the additional requirement."
           },
           "candidate": {
             "verdict": "pass",
@@ -301,9 +302,9 @@
         },
         {
           "id": "stay-out-of-task",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The response only selects and scopes an AI setup. It neither edits the repository nor chooses the substantive code design; the work-unit description is prospective."
+            "evidence": "The response only recommends a prospective setup and work-unit boundary. It neither edits the repository nor chooses a substantive implementation design."
           },
           "candidate": {
             "verdict": "pass",
@@ -312,9 +313,9 @@
         },
         {
           "id": "adaptive-reporting",
-          "current": {
-            "verdict": "partial",
-            "evidence": "The content is decision-relevant and avoids a named model, but it follows the skill’s full fixed output template and includes some fields beyond what this straightforward selection needed."
+          "previous_name": {
+            "verdict": "pass",
+            "evidence": "It reports only the execution surface, reasoning level, access, work unit, context, verification, and availability caveat, without forcing a named model or profile."
           },
           "candidate": {
             "verdict": "pass",
@@ -326,85 +327,85 @@
     {
       "id": "learning-goal-with-tool-selection",
       "case_verdicts": {
-        "current": "partial",
+        "previous_name": "fail",
         "candidate": "pass"
       },
       "requirements": [
         {
           "id": "capability-based-selection",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The response selects a coding agent because the task requires repository inspection, multi-file edits, and test execution. It also considers risk and consequence by noting that no high-risk domain warrants the heaviest profile, and identifies the task as bounded rather than a search loop."
+            "evidence": "Selects a coding agent because repository inspection, multi-file editing, and test execution are required. It ties stronger reasoning to architectural ambiguity, security impact, and costly failure rather than importance alone."
           },
           "candidate": {
             "verdict": "pass",
-            "evidence": "Selects a coding agent because repository inspection, multi-file edits, and test execution are required. It keeps a standard model initially and ties escalation to ambiguous architecture, high-cost design choices, or specialist boundaries—not importance."
+            "evidence": "Selects a repository-capable coding agent because repository inspection, coordinated multi-file edits, and test execution are required. It ties stronger reasoning to architectural ambiguity, security implications, or costly migration choices—not importance alone."
           }
         },
         {
           "id": "lightest-adequate-option",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It recommends a balanced profile instead of the heaviest option and gives a concrete escalation reason: repository inspection, multi-file changes, and tests require an agent session."
+            "evidence": "Recommends one coding agent with a standard reasoning profile and gives concrete conditions for escalation or adding specialist review."
           },
           "candidate": {
             "verdict": "pass",
-            "evidence": "Explains why chat or lightweight completion is insufficient, chooses one standard coding agent, avoids a default reviewer, and makes stronger reasoning or specialist review conditional on concrete discoveries."
+            "evidence": "Chooses one coding agent with standard reasoning, explicitly rules out chat/lightweight completion on capability grounds, and gives concrete escalation triggers for stronger reasoning or specialists."
           }
         },
         {
           "id": "reviewable-work-units",
-          "current": {
-            "verdict": "partial",
-            "evidence": "The six units form coherent implementation and verification stages, ending with tests and a maintenance handoff. However, individual units do not consistently carry explicit constraints, evidence requirements, authority boundaries, or completion checks."
+          "previous_name": {
+            "verdict": "pass",
+            "evidence": "Divides the work into discovery, implementation, and verification, each with an owner, scoped context, and completion check. Global permissions and the lack of implied implementation authority are also stated."
           },
           "candidate": {
             "verdict": "pass",
-            "evidence": "Defines four coherent outcomes—discovery, implementation, verification, and handoff—with one-agent ownership, scoped access, expected evidence, and explicit completion checks."
+            "evidence": "Defines three coherent, sequential units—discovery, implementation, and verification—with one owner, scoped deliverables, evidence outputs, and verification expectations. Global scope constraints and permissions apply across the units."
           }
         },
         {
           "id": "context-minimized-safely",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The minimum context is limited to requirements, repository root, acceptance criteria, supported versions, and test commands, while repository conventions are intentionally left for the agent to discover."
+            "evidence": "Provides focused minimum context for each unit and keeps one agent/session so discovery findings and constraints remain available across unit boundaries."
           },
           "candidate": {
             "verdict": "pass",
-            "evidence": "Scopes each unit to relevant artifacts and retains one session only to carry necessary repository context across this coherent feature. The handoff is limited to changed behavior, key files, decisions, and maintenance considerations."
+            "evidence": "Limits required context to acceptance criteria, repository instructions, working-tree state, scope constraints, and relevant in-repository documentation. It preserves continuity in one session and identifies necessary permissions without adding unrelated external access."
           }
         },
         {
           "id": "stay-out-of-task",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The response only chooses the operational setup and outlines work units. It neither implements the feature nor chooses a substantive architecture, and it reserves costly architectural decisions for the person."
+            "evidence": "Only selects the execution setup. It makes no substantive implementation decision, performs no repository work, and explicitly says the setup does not imply implementation authority."
           },
           "candidate": {
             "verdict": "pass",
-            "evidence": "Chooses only the execution setup and boundaries. It neither implements the feature nor selects a substantive design, and its access descriptions are recommendations rather than acts of authorization."
+            "evidence": "Recommends only the operational setup and boundaries. It neither inspects the repository nor chooses a substantive framework architecture or implementation design, and it states permissions as requirements rather than assuming authorization."
           }
         },
         {
           "id": "learning-boundary",
-          "current": {
-            "verdict": "partial",
-            "evidence": "It correctly avoids designing a curriculum, quiz, teaching depth, or comprehension checkpoints and defers teaching choices to a separate learning workflow. However, it does not explicitly offer the required optional calibrate-ai-learning handoff."
+          "previous_name": {
+            "verdict": "fail",
+            "evidence": "The binding handoff name is `calibrate-learning-support`, but the response uses `calibrate-ai-learning`. It also describes the handoff as a requirement rather than optional. Although it appropriately leaves learning-method and checkpoint design to another workflow, the required optional handoff was not returned."
           },
           "candidate": {
             "verdict": "pass",
-            "evidence": "Hands implementation context to calibrate-ai-learning and explicitly leaves teaching method and comprehension checkpoints to that workflow. It creates no curriculum, quiz, learning depth, or checkpoints."
+            "evidence": "Provides an optional calibrate-learning-support handoff using discovery, diff, and test evidence. It leaves selection of the learning method and checkpoints to that workflow and creates no curriculum, quiz, or checkpoints itself."
           }
         },
         {
           "id": "adaptive-reporting",
-          "current": {
-            "verdict": "partial",
-            "evidence": "The content is largely limited to decision-relevant setup, context, work units, verification, and review information. However, it follows the skill’s fixed output template closely instead of adapting the report freely, although it recommends only a generic balanced profile rather than forcing a specific named model."
+          "previous_name": {
+            "verdict": "pass",
+            "evidence": "Reports only relevant execution capabilities, escalation triggers, work units, context, permissions, verification, and uncertainty without forcing a named model or multiple agents."
           },
           "candidate": {
             "verdict": "pass",
-            "evidence": "Reports the necessary surface, capability, work units, access, verification, context-continuity rationale, and escalation conditions. It does not force a named model or unnecessary multi-agent structure."
+            "evidence": "Reports decision-relevant execution surface, reasoning level, work units, ownership, context, permissions, verification, escalation conditions, and the unverified availability of the learning workflow without forcing a named model or rigid template."
           }
         }
       ]
@@ -414,7 +415,7 @@
     {
       "id": "approved-implementation",
       "expected": "should_not_trigger",
-      "current": {
+      "previous_name": {
         "verdict": "pass",
         "observed_loads": [
           "implement-changes"
@@ -430,11 +431,10 @@
     {
       "id": "diff-review",
       "expected": "should_not_trigger",
-      "current": {
-        "verdict": "fail",
+      "previous_name": {
+        "verdict": "pass",
         "observed_loads": [
-          "review-changes",
-          "triage-agent-usage"
+          "review-changes"
         ]
       },
       "candidate": {
@@ -447,7 +447,7 @@
     {
       "id": "explicit-tool-selection",
       "expected": "should_trigger",
-      "current": {
+      "previous_name": {
         "verdict": "pass",
         "observed_loads": [
           "triage-agent-usage"
@@ -463,7 +463,7 @@
     {
       "id": "learning-calibration",
       "expected": "should_not_trigger",
-      "current": {
+      "previous_name": {
         "verdict": "pass",
         "observed_loads": [
           "calibrate-ai-learning"
@@ -472,14 +472,14 @@
       "candidate": {
         "verdict": "pass",
         "observed_loads": [
-          "calibrate-ai-learning"
+          "calibrate-learning-support"
         ]
       }
     },
     {
       "id": "operational-delegation-split",
       "expected": "should_trigger",
-      "current": {
+      "previous_name": {
         "verdict": "pass",
         "observed_loads": [
           "triage-agent-usage"
@@ -495,7 +495,7 @@
     {
       "id": "substantive-change-design",
       "expected": "should_not_trigger",
-      "current": {
+      "previous_name": {
         "verdict": "pass",
         "observed_loads": [
           "design-changes"
@@ -511,6 +511,7 @@
   ],
   "unverified": [
     "Claude and clients other than Codex CLI were not executed.",
+    "Three unchanged behavior cases reuse evidence from the accepted baseline revision rather than a fresh execution.",
     "The observed results do not establish behavior for untested models, reasoning settings, repositories, or longer conversations."
   ]
 }

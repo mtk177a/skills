@@ -1,10 +1,10 @@
 ---
-name: calibrate-ai-learning
-description: Adjusts how AI assists so a user can retain or recover task-specific understanding, decision ownership, and verification while work continues. Use when the user explicitly prioritizes learning, says they cannot explain or evaluate AI-produced work, asks to preserve understanding while delegating, or continues after an understanding checkpoint; not for ordinary tool or model selection, general teaching unrelated to an active task, or blocking a clear request merely because the domain is unfamiliar.
+name: calibrate-learning-support
+description: Adjusts AI learning support around an active task so a user can retain or recover task-specific understanding, decision ownership, and verification while work continues. Use when the user explicitly prioritizes learning, says they cannot explain or evaluate AI-produced work, asks to preserve understanding while delegating, or continues after an understanding checkpoint; not for ordinary tool or model selection, general teaching unrelated to an active task, or blocking a clear request merely because the domain is unfamiliar.
 license: MIT
 ---
 
-# Calibrate AI Learning
+# Calibrate Learning Support
 
 ## Objective
 

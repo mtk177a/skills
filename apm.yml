@@ -8,7 +8,7 @@ targets:
 dependencies:
   apm:
     - mtk177a/skills/skills/triage-agent-usage
-    - mtk177a/skills/skills/calibrate-ai-learning
+    - mtk177a/skills/skills/calibrate-learning-support
     - mtk177a/skills/skills/implement-changes
     - mtk177a/skills/skills/clarify-request
     - mtk177a/skills/skills/define-referents

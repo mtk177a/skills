@@ -47,7 +47,7 @@ task が重要という理由だけで、より重い agent が適切と推測�
 - 重要な未解決の不確実性、手戻りコスト、security・authorization 上の影響、曖昧な証拠がある場合は、より強い reasoning を使う
 - context isolation、specialist judgment、latency reduction が coordination・review cost を上回る場合だけ、独立または parallel agent を使う
 
-選択した workflow を進めながら理解を保持または回復したい場合は、`calibrate-ai-learning` への任意 handoff を返す。この Skill で teaching method、comprehension checkpoint、ユーザーの learning depth を決めない。
+選択した workflow を進めながら理解を保持または回復したい場合は、`calibrate-learning-support` への任意 handoff を返す。この Skill で teaching method、comprehension checkpoint、ユーザーの learning depth を決めない。
 
 ## Reporting contract
 
@@ -69,4 +69,4 @@ task が重要という理由だけで、より重い agent が適切と推測�
 - 高影響な requirement、scope、risk tolerance、adoption decision をユーザーに代わって決めない。
 - repository または execution capability が不要な作業に heavy coding agent を推奨しない。
 - 別 agent または subagent を既定で使わず、context、specialization、verification、latency 上の具体的な効果を要求する。
-- 学習・理解の calibration は `calibrate-ai-learning` に残し、その Skill がない場合も自己完結させる。
+- 学習・理解の calibration は `calibrate-learning-support` に残し、その Skill がない場合も自己完結させる。

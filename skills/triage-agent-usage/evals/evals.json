@@ -2,9 +2,9 @@
   "skill": "triage-agent-usage",
   "version": 1,
   "baseline": {
-    "commit": "0592f4140356b58b7c5d87bd51ebd5a5ed6e4fa7",
+    "commit": "82722ad5cfe003c164bb6b3736fae3612d4612a2",
     "conditions": {
-      "current": "Use triage-agent-usage from baseline.commit.",
+      "previous_name": "Use triage-agent-usage from baseline.commit with calibrate-ai-learning as the adjacent learning workflow.",
       "candidate": "Use the working-tree triage-agent-usage."
     },
     "raw_artifact_policy": "Keep prompts, responses, JSONL, grader output, and temporary Skill directories outside the source repository."
@@ -62,7 +62,7 @@
     {
       "id": "learning-boundary",
       "critical": true,
-      "statement": "When learning intent is material, limits itself to an optional calibrate-ai-learning handoff and does not design teaching depth, comprehension questions, or user learning checkpoints."
+      "statement": "When learning intent is material, limits itself to an optional calibrate-learning-support handoff and does not design teaching depth, comprehension questions, or user learning checkpoints."
     },
     {
       "id": "adaptive-reporting",
@@ -139,7 +139,7 @@
         "learning-boundary",
         "adaptive-reporting"
       ],
-      "additional_requirement": "Select the operational setup and return an optional calibrate-ai-learning handoff. Do not create a curriculum, quiz, or comprehension checkpoints inside triage-agent-usage."
+      "additional_requirement": "Select the operational setup and return an optional calibrate-learning-support handoff. Do not create a curriculum, quiz, or comprehension checkpoints inside triage-agent-usage."
     }
   ]
 }

@@ -1,12 +1,12 @@
 ---
-name: calibrate-ai-learning
-description: 作業を進めながら、ユーザーが task 固有の理解、decision ownership、verification を保持または回復できるよう、AI の支援方法を調整する。ユーザーが学習を明示的に優先する場合、AI 生成物を説明・評価できないと述べた場合、理解を保ちながら委任したい場合、または理解確認後も calibration を継続する場合に使う。通常の tool・model 選択、実作業と無関係な一般教育、未知領域という理由だけで明確な依頼を止める用途には使わない。
+name: calibrate-learning-support
+description: active task に対する AI の learning support を調整し、作業を進めながらユーザーが task 固有の理解、decision ownership、verification を保持または回復できるようにする。ユーザーが学習を明示的に優先する場合、AI 生成物を説明・評価できないと述べた場合、理解を保ちながら委任したい場合、または理解確認後も calibration を継続する場合に使う。通常の tool・model 選択、実作業と無関係な一般教育、未知領域という理由だけで明確な依頼を止める用途には使わない。
 license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。
 
-# Calibrate AI Learning
+# Calibrate Learning Support
 
 ## 目的
 

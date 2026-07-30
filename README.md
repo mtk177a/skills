@@ -14,7 +14,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | --- | --- |
 | `audit-agent-guidance` | Audit durable agent guidance against intended behavior, observed usage, client semantics, and evaluation evidence |
 | `break-failure-loop` | Pause equivalent same-hypothesis attempts without new evidence and select a diagnostic, blocker, or diversification handoff |
-| `calibrate-ai-learning` | Adjust AI support so task-specific understanding, decision ownership, and verification are preserved while work continues |
+| `calibrate-learning-support` | Adjust AI learning support so task-specific understanding, decision ownership, and verification are preserved while work continues |
 | `clarify-request` | Iteratively clarify or structure an ambiguous request until the next workflow can start, proceed under low-impact assumptions, or report a blocker |
 | `cognitive-rhythm-writing` | Design pacing in explanatory Japanese writing by managing cognitive rhythm and unresolved tension |
 | `define-referents` | Ground ambiguous terms in concrete referents and return naming constraints to the originating workflow |

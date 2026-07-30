@@ -1,5 +1,5 @@
 {
-  "skill": "calibrate-ai-learning",
+  "skill": "calibrate-learning-support",
   "version": 1,
   "run_policy": {
     "protocol": "Present each prompt and any supplied conversation context as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",

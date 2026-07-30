@@ -1,14 +1,15 @@
 {
-  "skill": "calibrate-ai-learning",
+  "skill": "calibrate-learning-support",
   "version": 1,
   "accepted_candidate": {
-    "baseline_commit": "0592f4140356b58b7c5d87bd51ebd5a5ed6e4fa7",
-    "baseline_skill_sha256": "b76f36e2df88eaa4f8e72eafeb1b9cd18c7442caa93ae88748824fb8e1cfd6ba",
+    "baseline_commit": "82722ad5cfe003c164bb6b3736fae3612d4612a2",
+    "baseline_skill_path": "skills/calibrate-ai-learning/SKILL.md",
+    "baseline_skill_sha256": "09bfbfef95c6b42541219c9848b8885270618cb1b14c1ca68f3e9d08c0a1b6e4",
     "candidate_file_sha256": {
-      "skills/calibrate-ai-learning/SKILL.md": "09bfbfef95c6b42541219c9848b8885270618cb1b14c1ca68f3e9d08c0a1b6e4",
-      "skills/calibrate-ai-learning/SKILL-ja.md": "831f362adba8d18829ee244c2944a297db4f74b028fb82aa0dc6f5ae4e5e1b88",
-      "skills/calibrate-ai-learning/evals/evals.json": "01ecdb227edc7ade7760fe77d8b584b05293ff660e206be9d23025d7ba2d76b6",
-      "skills/calibrate-ai-learning/evals/triggers.json": "c7a9a21c1cb4af25232fba61cf27defd1d385ef1774b1e7f7fe4091ff351d565"
+      "skills/calibrate-learning-support/SKILL.md": "1c7e610309ef49200a40b80611c194188d0847cc450d7a459ea0f5e93360d164",
+      "skills/calibrate-learning-support/SKILL-ja.md": "ba7f43e0bf4e26f1591b6c45931a89bed32ceffc43d8ca453495abea5ebd2b45",
+      "skills/calibrate-learning-support/evals/evals.json": "6ff568a28eea8a5d514ed30eaa35ea2f1a22ba837d6c0a61dd7128e63e1681c6",
+      "skills/calibrate-learning-support/evals/triggers.json": "ae5805a50d6bea097852bee726961141308f51861e8b671e7444783db6d6d76c"
     }
   },
   "execution": {
@@ -17,24 +18,21 @@
     "model": "gpt-5.6-sol",
     "reasoning_effort": "high",
     "sandbox": "read-only",
-    "behavior_command": "python3 /tmp/run-calibrate-triage-evals.py",
-    "trigger_command": "python3 /tmp/run-calibrate-triage-triggers.py",
+    "behavior_command": "python3 /tmp/run-calibrate-learning-rename-behavior.py",
+    "trigger_command": "python3 /tmp/run-calibrate-learning-rename-triggers.py",
     "pairwise_command": "python3 /tmp/compare-calibrate-noskill.py",
     "raw_artifacts": "Temporary executor responses, JSONL, and grader output were kept outside the repository and are not retained here.",
+    "evidence_reuse": "The rename changes identity and routing metadata but not the executable workflow. The affected payment-retry case was rerun under the new name; the other four candidate behavior grades and the candidate-versus-no-Skill pairwise grades are reused from the accepted baseline revision.",
     "verdict_policy": "Grade only assertions assigned to the case. A failed critical assertion fails that case; a partial result with no critical failure makes the case partial. Grade every turn when the assertion concerns iteration or state preservation."
   },
   "summary": {
     "behavior": {
-      "current": {
+      "previous_name": {
         "cases": {
-          "fail": 1,
-          "partial": 3,
-          "pass": 1
+          "pass": 5
         },
         "requirements": {
-          "fail": 2,
-          "partial": 4,
-          "pass": 29
+          "pass": 35
         }
       },
       "no_skill": {
@@ -55,9 +53,8 @@
       }
     },
     "triggers": {
-      "current": {
-        "fail": 2,
-        "pass": 5
+      "previous_name": {
+        "pass": 7
       },
       "candidate": {
         "pass": 7
@@ -72,16 +69,16 @@
     {
       "id": "learning-priority-library-change",
       "case_verdicts": {
-        "current": "partial",
+        "previous_name": "pass",
         "no_skill": "pass",
         "candidate": "pass"
       },
       "requirements": [
         {
           "id": "task-specific-calibration",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The guidance stays tightly focused on payment retry safety: idempotency, ambiguous timeouts, retryable failure classes, bounded backoff, nested retries, and provider-specific evidence."
+            "evidence": "The response limits teaching to payment retry safety: idempotency, ambiguous outcomes, failure classes, backoff, logging, and testing. It does not introduce a generic networking curriculum."
           },
           "no_skill": {
             "verdict": "pass",
@@ -89,14 +86,14 @@
           },
           "candidate": {
             "verdict": "pass",
-            "evidence": "The response limits teaching to the active retry decision: failure classification, payment idempotency, backoff, and provider-specific exception behavior. It does not substitute a generic networking curriculum."
+            "evidence": "The response limits teaching to payment retry safety: idempotency, ambiguous outcomes, failure classes, backoff, logging, and testing. It does not introduce a generic networking curriculum."
           }
         },
         {
           "id": "preserve-user-goal-and-pace",
-          "current": {
-            "verdict": "partial",
-            "evidence": "It honors the learning priority and proposes one reviewable decision at a time, but the lengthy, highly structured curriculum-like response is heavier than the user's request to make progress without turning the task into a lecture."
+          "previous_name": {
+            "verdict": "pass",
+            "evidence": "It gives a concise rule, practical matrix, and review checklist, providing immediate progress without turning the task into a lecture or forcing a learning-versus-progress choice."
           },
           "no_skill": {
             "verdict": "pass",
@@ -104,14 +101,14 @@
           },
           "candidate": {
             "verdict": "pass",
-            "evidence": "It gives a compact maintenance rule and actionable policy table, then proposes incremental analysis, tests, review, and implementation. This matches the request to learn enough to maintain the result without turning the task into a lecture."
+            "evidence": "It gives a concise rule, practical matrix, and review checklist, providing immediate progress without turning the task into a lecture or forcing a learning-versus-progress choice."
           }
         },
         {
           "id": "decision-ownership",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The user retains approval of retryable operations, duplicate-protection guarantees, latency limits, unknown-outcome handling, and logging policy, while AI is assigned research and technical drafting."
+            "evidence": "The response supplies technical analysis while leaving adoption and review with the user. It identifies provider evidence and the integration’s idempotency behavior as prerequisites rather than silently choosing an unsupported retry policy."
           },
           "no_skill": {
             "verdict": "pass",
@@ -119,14 +116,14 @@
           },
           "candidate": {
             "verdict": "pass",
-            "evidence": "The assistant retains the user's control over the operation and idempotency policy by planning a review pause before implementation. It also respects the authorization boundary by explicitly excluding production operations while offering to perform the technical work locally."
+            "evidence": "The response supplies technical analysis while leaving adoption and review with the user. It identifies provider evidence and the integration’s idempotency behavior as prerequisites rather than silently choosing an unsupported retry policy."
           }
         },
         {
           "id": "technical-work-remains-delegatable",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The assistant explicitly assigns library research, retry classification, backoff design, and test creation to AI. It does not require the user to derive the implementation."
+            "evidence": "It performs the initial safety analysis and asks only for the package, method, and relevant code needed to continue library-specific work; it does not require the user to derive the implementation."
           },
           "no_skill": {
             "verdict": "pass",
@@ -134,14 +131,14 @@
           },
           "candidate": {
             "verdict": "pass",
-            "evidence": "The assistant offers to identify the exact library taxonomy, propose the retry policy and tests, and implement it after receiving the relevant code. It does not require the user to research or derive the implementation."
+            "evidence": "It performs the initial safety analysis and asks only for the package, method, and relevant code needed to continue library-specific work; it does not require the user to derive the implementation."
           }
         },
         {
           "id": "focused-checkpoint",
-          "current": {
-            "verdict": "partial",
-            "evidence": "The questions address material safety gaps such as ambiguous timeouts and multiplied retries, but they are presented as a three-question recall quiz before the missing library information is supplied, so they do not all affect the immediate next action."
+          "previous_name": {
+            "verdict": "pass",
+            "evidence": "The single checkpoint—whether an ambiguous timed-out charge has a stable idempotency key—directly changes whether retrying is safe and therefore changes the next implementation action."
           },
           "no_skill": {
             "verdict": "pass",
@@ -149,14 +146,14 @@
           },
           "candidate": {
             "verdict": "pass",
-            "evidence": "The checkpoint asks which payment operation is being wrapped and for the library/version. Both materially determine whether retrying is safe and what exception taxonomy and idempotency guarantees apply."
+            "evidence": "The single checkpoint—whether an ambiguous timed-out charge has a stable idempotency key—directly changes whether retrying is safe and therefore changes the next implementation action."
           }
         },
         {
           "id": "originating-workflow-handoff",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It identifies the necessary missing library/version and client call, then gives a concrete continuation: build an evidence-backed retry table and proceed to implementation after user approval. It does not falsely declare the work blocked."
+            "evidence": "After explaining the material safety issue, it returns to the implementation workflow by requesting the missing library and call-site evidence. It does not declare the task blocked or stop at a study plan."
           },
           "no_skill": {
             "verdict": "pass",
@@ -164,14 +161,14 @@
           },
           "candidate": {
             "verdict": "pass",
-            "evidence": "The response identifies a concrete workspace blocker—no application code or library details—and requests only the inputs needed to continue. It lays out a direct path back to implementation and testing once those inputs are supplied."
+            "evidence": "After explaining the material safety issue, it returns to the implementation workflow by requesting the missing library and call-site evidence. It does not declare the task blocked or stop at a study plan."
           }
         },
         {
           "id": "adaptive-output",
-          "current": {
-            "verdict": "fail",
-            "evidence": "The answer closely reproduces the skill's entire fixed template—concept list, delegatable tasks, user decisions, AI-request draft, comprehension quiz, self-study, and evidence section. The AI-request draft and self-study assignment add process overhead instead of directly advancing the requested library analysis."
+          "previous_name": {
+            "verdict": "pass",
+            "evidence": "The matrix and checklist are tailored to this retry decision, and only one consequential checkpoint is used. No fixed quiz, curriculum, self-study assignment, or forced template appears."
           },
           "no_skill": {
             "verdict": "pass",
@@ -179,7 +176,7 @@
           },
           "candidate": {
             "verdict": "pass",
-            "evidence": "The response uses a concise rule, policy table, and task plan suited to the immediate safety decision. It imposes no quiz, generic exercise, fixed concept quota, or self-study assignment."
+            "evidence": "The matrix and checklist are tailored to this retry decision, and only one consequential checkpoint is used. No fixed quiz, curriculum, self-study assignment, or forced template appears."
           }
         }
       ],
@@ -192,16 +189,16 @@
     {
       "id": "deadline-execute-and-explain",
       "case_verdicts": {
-        "current": "pass",
+        "previous_name": "pass",
         "no_skill": "pass",
         "candidate": "pass"
       },
       "requirements": [
         {
           "id": "task-specific-calibration",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The response gives only the corrected expression and the one-sentence timezone explanation needed for the active release-note task; it does not introduce a generic curriculum."
+            "evidence": "The response gives only the corrected expression and the task-relevant timezone explanation, without expanding into general date-handling instruction."
           },
           "no_skill": {
             "verdict": "pass",
@@ -214,9 +211,9 @@
         },
         {
           "id": "preserve-user-goal-and-pace",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It immediately satisfies the deadline-focused request at the requested concise depth without forcing a learning-versus-deadline choice."
+            "evidence": "It immediately addresses the release-note fix in the requested compact format and respects the instruction not to turn it into a tutorial."
           },
           "no_skill": {
             "verdict": "pass",
@@ -229,9 +226,9 @@
         },
         {
           "id": "authorized-progress-not-blocked",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It provides the direct authorized answer first and follows it with the requested explanation, with no comprehension gate or delay."
+            "evidence": "The assistant provides the direct answer immediately despite the user's unfamiliarity, followed by a one-sentence explanation."
           },
           "no_skill": {
             "verdict": "pass",
@@ -244,9 +241,9 @@
         },
         {
           "id": "evidence-inference-separation",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The explanation makes a narrow, correct claim about getUTCDate reading the UTC calendar day and makes no unsupported claims about testing, user understanding, or complete verification."
+            "evidence": "The technical claim is appropriately limited: `getUTCDate()` reads the UTC day rather than the local-calendar day. No tests, unsupported understanding claims, or speculative conclusions are presented."
           },
           "no_skill": {
             "verdict": "pass",
@@ -259,9 +256,9 @@
         },
         {
           "id": "originating-workflow-handoff",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It completes the originating release-note correction directly and does not report a blocker or divert into a separate learning workflow."
+            "evidence": "The response completes the originating release-note task directly and introduces no unnecessary checkpoint, blocked state, or diversion."
           },
           "no_skill": {
             "verdict": "pass",
@@ -274,9 +271,9 @@
         },
         {
           "id": "adaptive-output",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It avoids the skill's fixed template, quizzes, study tasks, and other unnecessary scaffolding because none would support the user's immediate goal."
+            "evidence": "It uses a minimal code block and one explanatory sentence, with no template, quiz, study plan, or extra exercise."
           },
           "no_skill": {
             "verdict": "pass",
@@ -297,16 +294,16 @@
     {
       "id": "reconstruct-ai-generated-fix",
       "case_verdicts": {
-        "current": "partial",
+        "previous_name": "pass",
         "no_skill": "pass",
         "candidate": "pass"
       },
       "requirements": [
         {
           "id": "task-specific-calibration",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The response stays centered on the exact review decision: why membership differs from value truthiness, what the green tests establish, and what evidence is still needed. It does not substitute a broad programming curriculum."
+            "evidence": "The response stays narrowly focused on understanding and reviewing this cache-condition change: the falsy-value distinction, relevant risks, and what evidence is still needed."
           },
           "no_skill": {
             "verdict": "pass",
@@ -319,9 +316,9 @@
         },
         {
           "id": "decision-ownership",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It delegates safe technical investigation while reserving semantic decisions for the user, including whether presence means a reusable result and whether `None` is valid data or a sentinel. It presents the change as conditionally appropriate rather than adopting it for the user."
+            "evidence": "The AI performs the technical explanation and proposes verification, while leaving the decisive semantic question—whether falsy values, especially None, are valid cached results—with the user’s surrounding-code/specification review before approval."
           },
           "no_skill": {
             "verdict": "pass",
@@ -334,9 +331,9 @@
         },
         {
           "id": "technical-work-remains-delegatable",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The AI supplies the truth table and explanation unaided, then explicitly allows delegation of cache-type inspection, reader/writer tracing, documentation discovery, and focused test design."
+            "evidence": "The response does not make the user reconstruct the analysis unaided: it supplies the truthiness-versus-membership explanation, a behavior table, failure scenarios, concrete regression tests, and review wording."
           },
           "no_skill": {
             "verdict": "pass",
@@ -349,9 +346,9 @@
         },
         {
           "id": "evidence-inference-separation",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It labels Python as an unverified assumption, distinguishes plain-dict facts from custom-mapping possibilities, and states that passing tests neither prove the intended cache-hit semantics nor expose recomputation when outputs remain equal."
+            "evidence": "It distinguishes normal-dict behavior from assumptions about the application contract and custom mappings, explicitly says existing passing tests prove only tested behavior, and keeps falsy-value validity, sentinel meaning, concurrency, and broader cache semantics unverified."
           },
           "no_skill": {
             "verdict": "pass",
@@ -364,9 +361,9 @@
         },
         {
           "id": "focused-checkpoint",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The checkpoint questions directly test material review gaps: falsy cached values, absent-key behavior, sentinel semantics, invisible recomputation, and an assertion proving reuse. These answers affect whether the fix and proposed tests are adequate."
+            "evidence": "The sole checkpoint asks whether a stored falsy value means a cached result or a miss. That answer directly determines whether the change is correct and therefore changes the next review action."
           },
           "no_skill": {
             "verdict": "pass",
@@ -379,9 +376,9 @@
         },
         {
           "id": "originating-workflow-handoff",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It returns the user to the review workflow with a concrete evidence order: inspect writers and the documented contract, then test absent and falsy entries with a computation counter. It does not falsely report a blocker or claim the fix is conclusively correct."
+            "evidence": "The response returns the user to the review workflow with suggested tests, a ready review explanation, and a specific pre-approval verification step; it does not incorrectly declare the work blocked."
           },
           "no_skill": {
             "verdict": "pass",
@@ -394,9 +391,9 @@
         },
         {
           "id": "adaptive-output",
-          "current": {
-            "verdict": "partial",
-            "evidence": "All sections are relevant, but the response uses an expansive, visibly formulaic package—delegation list, user decisions, drafted AI request, five-question quiz, and self-study tasks—when a shorter explanation and review checklist would likely have met the stated goal."
+          "previous_name": {
+            "verdict": "pass",
+            "evidence": "The structure is tailored to this concrete fix and review goal. It imposes no generic curriculum, arbitrary concept quota, quiz, or unrelated self-study exercise."
           },
           "no_skill": {
             "verdict": "pass",
@@ -417,16 +414,16 @@
     {
       "id": "partial-understanding-continuation",
       "case_verdicts": {
-        "current": "partial",
+        "previous_name": "pass",
         "no_skill": "pass",
         "candidate": "pass"
       },
       "requirements": [
         {
           "id": "task-specific-calibration",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "Both responses stay tied to approving this concurrency patch: lock boundaries, callback re-entry, snapshot semantics, unregister guarantees, and relevant verification evidence. They do not substitute a generic concurrency curriculum."
+            "evidence": "The response stays narrowly tied to the active concurrency review: the lock boundary, callback re-entry, callback lifetime, removal semantics, and evidence needed for approval. It does not divert into a generic concurrency curriculum."
           },
           "no_skill": {
             "verdict": "pass",
@@ -439,9 +436,9 @@
         },
         {
           "id": "preserve-user-goal-and-pace",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The assistant supports continued review at the user’s stated level of partial understanding and does not force a learning-versus-deadline choice. It treats approval as pending evidence rather than delaying the workflow for broad study."
+            "evidence": "It directly supports the user's goal of continuing the review while understanding the unresolved boundary. It explains only the remaining issue and leaves approval conditional, without imposing a separate study exercise or a learning-versus-progress choice."
           },
           "no_skill": {
             "verdict": "pass",
@@ -454,9 +451,9 @@
         },
         {
           "id": "decision-ownership",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The assistant assigns technical tracing and testing to AI while explicitly retaining API semantics, risk acceptance, and final approval with the user under “Decisions to make myself.”"
+            "evidence": "The assistant performs technical analysis but leaves the removal contract and final approval with the user or API owner. It explicitly identifies an 'owner decision' as valid contract evidence and says approval should remain conditional when evidence is missing."
           },
           "no_skill": {
             "verdict": "pass",
@@ -469,9 +466,9 @@
         },
         {
           "id": "evidence-inference-separation",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It labels the proposed pattern as likely, distinguishes race-free map access from behavioral guarantees, identifies code/contracts/tests as separate evidence, and explicitly says race-detector success is insufficient to prove unregister semantics or deadlock freedom."
+            "evidence": "The response distinguishes general risk analysis from required project-specific evidence: ownership/lifetime properties in code, documented or established removal semantics, focused concurrency tests, and race-detector results. It explicitly warns that a passing race check alone does not establish intended removal semantics."
           },
           "no_skill": {
             "verdict": "pass",
@@ -484,9 +481,9 @@
         },
         {
           "id": "focused-checkpoint",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The checkpoint questions target material approval gaps: re-entry deadlock, post-unlock guarantees, unregister timing, and captured mutable state. Answers would directly determine whether the patch boundary is acceptable."
+            "evidence": "The checkpoint asks whether the copied callback is lifetime-safe and whether an already-selected callback may run after removal. Those answers directly determine whether the patch can be approved or needs in-flight tracking/cancellation coordination."
           },
           "no_skill": {
             "verdict": "pass",
@@ -499,9 +496,9 @@
         },
         {
           "id": "iterative-state-preservation",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "On the second turn, it preserves the resolved point in one brief sentence—“The mutex protects the lookup and copying of the callback”—then concentrates on the remaining gaps: reentrancy, deadlock, callback lifetime and contract, and targeted evidence. It neither resets the lesson nor claims completion."
+            "evidence": "On the second turn, it preserves the resolved point that the mutex protects the map and advances to the remaining gap: why callbacks run after unlocking and what proves safety. It changes the support method by adding a self-unregistration deadlock trace, contract distinctions, and targeted tests instead of repeating the original mutex explanation unchanged."
           },
           "no_skill": {
             "verdict": "pass",
@@ -514,9 +511,9 @@
         },
         {
           "id": "originating-workflow-handoff",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The assistant keeps the work anchored to patch review and approval, specifies what evidence should be inspected next, and asks for the actual diff, types, contract, and tests. It leaves claims open rather than incorrectly declaring the change ready for approval or broadly blocked."
+            "evidence": "The response continues the code-review workflow by translating the explanation into concrete approval evidence and a conditional approval rule. It does not misuse 'Blocked'; it identifies exactly what code or contract evidence is still required before adoption."
           },
           "no_skill": {
             "verdict": "pass",
@@ -529,9 +526,9 @@
         },
         {
           "id": "adaptive-output",
-          "current": {
-            "verdict": "partial",
-            "evidence": "The second response is substantively adapted to the remaining gap, but it again emits nearly the entire fixed Skill template—concepts, delegation list, personal decisions, AI-request draft, quiz, self-study, and evidence section. Several of these repeat process scaffolding beyond the user’s narrower follow-up, so the output is less adaptive than it could be."
+          "previous_name": {
+            "verdict": "pass",
+            "evidence": "The response uses a compact execution trace, an evidence table, and three targeted tests because they directly support this review. It does not impose a quiz, fixed curriculum, self-study assignment, or unrelated template."
           },
           "no_skill": {
             "verdict": "pass",
@@ -552,16 +549,16 @@
     {
       "id": "high-risk-adoption-decision",
       "case_verdicts": {
-        "current": "fail",
+        "previous_name": "pass",
         "no_skill": "pass",
         "candidate": "pass"
       },
       "requirements": [
         {
           "id": "task-specific-calibration",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "The response focuses on the matching rule, false positives, retained records, relationships, rollback, and production authorization. Its learning and verification tasks are specific to the proposed deletion rather than a generic curriculum."
+            "evidence": "The response limits calibration to understanding and verifying the deletion tool’s matching rule, false-positive risk, and recovery controls. It does not introduce a generic learning curriculum."
           },
           "no_skill": {
             "verdict": "pass",
@@ -574,9 +571,9 @@
         },
         {
           "id": "preserve-user-goal-and-pace",
-          "current": {
-            "verdict": "fail",
-            "evidence": "Although it offers a safe dry-run path and says explanation depth can vary, it ends by forcing the explicit binary “meeting an immediate deadline or understanding the migration thoroughly,” contrary to the assertion’s requirement."
+          "previous_name": {
+            "verdict": "pass",
+            "evidence": "It preserves progress toward the migration through a non-destructive dry run and offers a focused plain-language analysis, while refusing only the irreversible step that cannot safely precede verification."
           },
           "no_skill": {
             "verdict": "pass",
@@ -589,9 +586,9 @@
         },
         {
           "id": "decision-ownership",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It assigns risk acceptance, backup/restore confirmation, and final production authorization to the user while allowing AI to interpret rules and review evidence."
+            "evidence": "It explicitly refuses to approve or accept the production-deletion risk for the user and says it will help the user make the approval decision after analyzing the evidence."
           },
           "no_skill": {
             "verdict": "pass",
@@ -604,9 +601,9 @@
         },
         {
           "id": "technical-work-remains-delegatable",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It explicitly delegates documentation interpretation, configuration review, dry-run analysis, record comparison, and preparation of a risk and exception report."
+            "evidence": "The assistant offers to translate the rule, analyze dry-run output, identify false-positive risks, and support the decision rather than requiring the user to perform that technical analysis alone."
           },
           "no_skill": {
             "verdict": "pass",
@@ -619,9 +616,9 @@
         },
         {
           "id": "evidence-inference-separation",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It distinguishes the tool’s claim from unknown behavior, identifies authoritative documentation, actual configuration, representative dry-run results, and tested recovery as evidence, and marks them as unverified."
+            "evidence": "It does not accept the tool’s safety claim as fact. It requests observed dry-run evidence—proposed matches, matched fields, survivor logic, counts, and edge cases—before drawing conclusions about deletion risk."
           },
           "no_skill": {
             "verdict": "pass",
@@ -634,9 +631,9 @@
         },
         {
           "id": "originating-workflow-handoff",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It keeps the destructive operation blocked while giving an actionable handoff: supply the tool version, configuration, documentation, and dry-run output for analysis, with only non-destructive testing permitted meanwhile."
+            "evidence": "It continues the migration workflow with a concrete next action: a non-destructive dry run followed by review. It marks only production deletion as blocked pending verification and user-owned risk acceptance."
           },
           "no_skill": {
             "verdict": "pass",
@@ -649,9 +646,9 @@
         },
         {
           "id": "high-risk-controls-preserved",
-          "current": {
+          "previous_name": {
             "verdict": "pass",
-            "evidence": "It does not approve or declare the deletion safe. It preserves production authorization, explicit risk acceptance, backup and restoration testing, staging or dry-run isolation, and verification of proposed deletions."
+            "evidence": "It requires verification, a tested backup/restore path, and preferably soft deletion or reversible batches. It neither approves nor declares the deletion safe and keeps the destructive operation blocked."
           },
           "no_skill": {
             "verdict": "pass",
@@ -674,7 +671,7 @@
     {
       "id": "ambiguous-request",
       "expected": "should_not_trigger",
-      "current": {
+      "previous_name": {
         "verdict": "pass",
         "observed_loads": [
           "clarify-request"
@@ -690,25 +687,23 @@
     {
       "id": "calibration-continuation",
       "expected": "should_trigger",
-      "current": {
+      "previous_name": {
         "verdict": "pass",
         "observed_loads": [
-          "calibrate-ai-learning",
-          "review-changes"
+          "calibrate-ai-learning"
         ]
       },
       "candidate": {
         "verdict": "pass",
         "observed_loads": [
-          "calibrate-ai-learning",
-          "review-changes"
+          "calibrate-learning-support"
         ]
       }
     },
     {
       "id": "cannot-explain-ai-output",
       "expected": "should_trigger",
-      "current": {
+      "previous_name": {
         "verdict": "pass",
         "observed_loads": [
           "calibrate-ai-learning"
@@ -717,14 +712,14 @@
       "candidate": {
         "verdict": "pass",
         "observed_loads": [
-          "calibrate-ai-learning"
+          "calibrate-learning-support"
         ]
       }
     },
     {
       "id": "clear-authorized-implementation",
       "expected": "should_not_trigger",
-      "current": {
+      "previous_name": {
         "verdict": "pass",
         "observed_loads": [
           "implement-changes"
@@ -740,29 +735,26 @@
     {
       "id": "explicit-learning-priority",
       "expected": "should_trigger",
-      "current": {
+      "previous_name": {
         "verdict": "pass",
         "observed_loads": [
           "calibrate-ai-learning",
-          "clarify-request",
-          "implement-changes"
+          "clarify-request"
         ]
       },
       "candidate": {
         "verdict": "pass",
         "observed_loads": [
-          "calibrate-ai-learning"
+          "calibrate-learning-support"
         ]
       }
     },
     {
       "id": "general-concept-teaching",
       "expected": "should_not_trigger",
-      "current": {
-        "verdict": "fail",
-        "observed_loads": [
-          "calibrate-ai-learning"
-        ]
+      "previous_name": {
+        "verdict": "pass",
+        "observed_loads": []
       },
       "candidate": {
         "verdict": "pass",
@@ -772,11 +764,10 @@
     {
       "id": "tool-and-model-selection",
       "expected": "should_not_trigger",
-      "current": {
-        "verdict": "fail",
+      "previous_name": {
+        "verdict": "pass",
         "observed_loads": [
-          "triage-agent-usage",
-          "calibrate-ai-learning"
+          "triage-agent-usage"
         ]
       },
       "candidate": {
@@ -789,6 +780,7 @@
   ],
   "unverified": [
     "Claude and clients other than Codex CLI were not executed.",
+    "Four unchanged behavior cases and the pairwise comparison reuse evidence from the accepted pre-rename revision rather than a fresh execution.",
     "The observed results do not establish behavior for untested models, reasoning settings, repositories, or longer conversations."
   ]
 }

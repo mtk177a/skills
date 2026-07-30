@@ -45,7 +45,7 @@ Examples are heuristics, not a fixed tool mapping:
 - use stronger reasoning when the task has important unresolved uncertainty, high-cost rework, security or authorization consequences, or ambiguous evidence
 - use independent or parallel agents only when context isolation, specialist judgment, or latency reduction outweighs coordination and review cost
 
-If the user wants to preserve or recover understanding while the selected workflow proceeds, return an optional handoff to `calibrate-ai-learning`. Do not decide the teaching method, comprehension checkpoints, or user learning depth in this Skill.
+If the user wants to preserve or recover understanding while the selected workflow proceeds, return an optional handoff to `calibrate-learning-support`. Do not decide the teaching method, comprehension checkpoints, or user learning depth in this Skill.
 
 ## Reporting contract
 
@@ -67,4 +67,4 @@ Do not force a named model, profile, multiple agents, or a fixed template when t
 - Do not make high-impact requirements, scope, risk tolerance, or adoption decisions for the user.
 - Do not recommend a heavy coding agent for work that does not need its repository or execution capabilities.
 - Do not use another agent or subagent by default; require a concrete context, specialization, verification, or latency benefit.
-- Keep learning and understanding calibration with `calibrate-ai-learning`, while remaining self-contained when that Skill is unavailable.
+- Keep learning and understanding calibration with `calibrate-learning-support`, while remaining self-contained when that Skill is unavailable.

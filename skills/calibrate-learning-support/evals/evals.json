@@ -1,12 +1,12 @@
 {
-  "skill": "calibrate-ai-learning",
+  "skill": "calibrate-learning-support",
   "version": 1,
   "baseline": {
-    "commit": "0592f4140356b58b7c5d87bd51ebd5a5ed6e4fa7",
+    "commit": "82722ad5cfe003c164bb6b3736fae3612d4612a2",
     "conditions": {
-      "current": "Use calibrate-ai-learning from baseline.commit.",
-      "no_skill": "Run without calibrate-ai-learning or adjacent workflow Skills.",
-      "candidate": "Use the working-tree calibrate-ai-learning."
+      "previous_name": "Use calibrate-ai-learning from baseline.commit.",
+      "no_skill": "Run without calibrate-ai-learning, calibrate-learning-support, or adjacent workflow Skills.",
+      "candidate": "Use the working-tree calibrate-learning-support."
     },
     "raw_artifact_policy": "Keep prompts, responses, JSONL, grader output, and temporary Skill directories outside the source repository."
   },

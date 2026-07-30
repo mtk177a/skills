@@ -1,13 +1,13 @@
-# calibrate-ai-learning evals
+# calibrate-learning-support evals
 
 ## Purpose
 
-Verify that `calibrate-ai-learning` adjusts AI support around an active task so the user can retain or recover decision-relevant understanding without blocking authorized progress, taking over user-owned decisions, or turning every task into a lesson.
+Verify that `calibrate-learning-support` adjusts AI learning support around an active task so the user can retain or recover decision-relevant understanding without blocking authorized progress, taking over user-owned decisions, or turning every task into a lesson.
 
 ## Assets
 
 - `triggers.json`: trigger, continuation, near-miss, and coexistence selection cases
-- `evals.json`: current, no-Skill, and candidate behavior cases with hidden requirement assignments
+- `evals.json`: previous-name, no-Skill, and candidate behavior cases with hidden requirement assignments
 - `results.json`: compact evidence for the accepted revision after execution
 - this README: static contract, coverage, protocol, and summarized results
 
@@ -36,7 +36,7 @@ Verify that `calibrate-ai-learning` adjusts AI support around an active task so 
 
 ## Behavioral execution protocol
 
-1. Load the current Skill from baseline commit `0592f4140356b58b7c5d87bd51ebd5a5ed6e4fa7`, use no Skill for the no-Skill condition, and use the working-tree Skill for the candidate.
+1. Load `calibrate-ai-learning` from baseline commit `82722ad5cfe003c164bb6b3736fae3612d4612a2` for the previous-name condition, use no Skill for the no-Skill condition, and use the working-tree `calibrate-learning-support` for the candidate.
 2. Run each condition in a disposable directory with only the condition's Skill and declared task input.
 3. For multi-turn cases, accumulate the visible conversation. Keep hidden assertions and expected conclusions out of executor input.
 4. Use a separate grader with the transcript, assigned assertions, and hidden additional requirement.
@@ -65,11 +65,10 @@ Present each case as a Skill-selection task using only installed names and descr
 
 Evaluated on 2026-07-30 with Codex CLI 0.146.0, `gpt-5.6-sol`, high reasoning, and a read-only sandbox.
 
-- The candidate passed all five behavior cases and all 35 assigned requirements.
-- The current Skill passed one behavior case, was partial in three, and failed the high-risk adoption case. Across its 35 assigned requirements, 29 passed, four were partial, and two failed.
-- The no-Skill condition passed all five cases and all 35 requirements. After the focused candidate rerun, a separate pairwise grader found the candidate materially better for the payment-retry and cache-fix reconstruction cases and equivalent for the other three cases.
-- All seven candidate trigger, continuation, near-miss, and coexistence cases passed. The current description failed the tool-selection and general-teaching boundaries.
-- The candidate therefore adds decision-relevant retry-safety and cache-contract checkpoints while preserving no-Skill performance elsewhere. Broader value beyond these cases remains unconfirmed.
+- The renamed candidate passed all five behavior cases and all 35 assigned requirements. The payment-retry case was rerun under the new name; the other four behavior grades reuse evidence from the accepted pre-rename revision because the executable workflow is unchanged.
+- The previous-name and no-Skill conditions also passed all five cases and all 35 requirements. The previously recorded pairwise grader found the Skill materially better than no Skill for the payment-retry and cache-fix reconstruction cases and equivalent for the other three cases.
+- All seven trigger, continuation, near-miss, and coexistence cases passed under both names. The new name therefore preserves observed routing rather than demonstrating a higher selection rate.
+- `calibrate-learning-support` describes task-specific support and understanding recovery more directly than `calibrate-ai-learning`, without implying that the agent independently calibrates AI learning as a general system property.
 - Claude and other clients were not executed.
 
 See [`results.json`](results.json) for candidate hashes, the case-by-requirement matrix, pairwise comparison, observable Skill loads, and unverified items.
