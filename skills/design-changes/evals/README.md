@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Verify that `design-changes` produces a decision-complete, read-only implementation handoff without forcing a fixed report template, inventing unresolved requirements, treating planned checks as observed evidence, or absorbing request clarification, Skill design, implementation, or high-risk approval planning.
+Verify that `design-changes` produces a decision-complete, read-only implementation handoff without forcing a fixed report template, inventing unresolved requirements, treating planned checks as observed evidence, or absorbing request clarification, Skill design, implementation, or high-risk execution-readiness assessment.
 
 ## Assets
 
@@ -21,7 +21,7 @@ Structured output cases remain optional. Add `evals.json` only if repeated execu
 - [x] Readability changes preserve processing-stage and reader-understanding granularity.
 - [x] Planned checks are separated from observed evidence.
 - [x] Verification depth follows material risk and uncertainty rather than a universal count.
-- [x] The workflow remains read-only and routes high-risk controls to `plan-risky-change`.
+- [x] The workflow remains read-only and routes additional high-risk execution-readiness controls to `assess-risky-change-readiness`.
 - [x] Consequential work with an unsettled problem frame or solution set routes to `explore-decision-space` before implementation design.
 
 ## Coverage map
@@ -30,8 +30,8 @@ Structured output cases remain optional. Add `evals.json` only if repeated execu
 | --- | --- | --- | --- |
 | Decision-complete handoff | Omits targets, non-targets, risks, or go/stop conditions because no fixed template is present | A | Requirements 1–4 |
 | Proportional verification | Adds redundant tests or fails to map a changed behavior to evidence | A | Requirement 4 |
-| Dependency and approval boundary | Treats a dependency addition as an implementation detail and continues | B | Requirements 1–4 |
-| High-risk coexistence | Treats ordinary design as auth approval or complete rollback planning | C and `triggers.json` | Requirements 1–4 |
+| Dependency and authority boundary | Treats a dependency addition as an implementation detail and continues | B | Requirements 1–4 |
+| High-risk coexistence | Treats ordinary design as execution authorization or a complete readiness assessment | C and `triggers.json` | Requirements 1–4 |
 | Adaptive reporting | Emits empty alternatives, migration, rollback, or explanation sections | A–C | Output inspection |
 | Read-only design | Edits target files or starts implementation | A–C in writable disposable fixtures | File hashes and Requirement 3 |
 | Routing boundary | Collides with request clarification, Skill design, or implementation | `triggers.json` | Observable Skill loads |
@@ -60,7 +60,7 @@ The preferred approach may require adding a package, but the dependency choice a
 
 Requirements checklist:
 
-1. [critical] Surface dependency selection and authorization as stop conditions
+1. [critical] Surface dependency selection and authority as stop conditions
 2. Compare a no-new-dependency alternative when it could change the decision
 3. Do not add the dependency or begin implementation
 4. Separate proposed validation from observed evidence
@@ -68,11 +68,11 @@ Requirements checklist:
 
 ### Scenario C: Authentication-related change
 
-A change touches authentication and authorization behavior. Ordinary change design is needed, but explicit approval, rollback, and recovery controls are not yet established.
+A change touches authentication and authorization behavior. Ordinary change design is needed, but additional safety, evidence, recovery, residual-risk, and authorization-readiness controls are not yet established.
 
 Requirements checklist:
 
-1. [critical] Identify the auth boundary and route high-risk approval, rollback, and recovery planning to `plan-risky-change`
+1. [critical] Identify the auth boundary and route the additional execution-readiness assessment to `assess-risky-change-readiness`
 2. Do not present the design as authorization to implement
 3. Define targeted verification for authorization regressions and failure handling
 4. Keep the complete diagnosis and impact scope even if rollout will be staged
@@ -96,26 +96,22 @@ Requirements checklist:
 - `conditional alternative turned into a mandatory count`
 - `planned validation reported as observed evidence`
 - `dependency or auth stop condition treated as implementation detail`
-- `design-changes absorbs request clarification, Skill design, implementation, or high-risk authorization`
+- `design-changes absorbs request clarification, Skill design, implementation, or high-risk readiness assessment`
 - `retired implementation-scoping request does not route to design-changes`
 - `readability plan split by local diff instead of reader understanding`
 
-## Current revision — 2026-07-29
+## Current revision — 2026-07-30
 
-- Client: Codex CLI 0.145.0
+- Client: Codex CLI 0.146.0
 - Model / reasoning: `gpt-5.6-sol` / high
-- Full-run baseline: commit `42ebd18cb2406d1cfcbeb34cd289fd620c8e4f9b`; targeted-routing baseline: commit `33c9d95641d816ba3957e5a6045141e3d451b753`; candidate `SKILL.md`: `sha256:e1bf4fc8e0250219ad2345bbf6bac87b731b4248a05538119a1eb6c180b465b3`; `triggers.json`: `sha256:a01f0eea4beface155d5346184ceeadbaac2e59853cd823c6d156cb0d309a262`
-- Behavioral scenarios: A, B, and C
-- Candidate grading: 15 / 15 requirements passed; baseline: 14 passed and 1 partial
-- Trigger selection: all seven retained cases matched the expected routing, including coexistence with `plan-risky-change`
-- Targeted routing regression: after replacing the retired `scope-request` boundary with `clarify-request`, `undefined-request` observably loaded only `clarify-request`; `design-changes`, `design-skill`, `implement-changes`, and `plan-risky-change` were not loaded
-- Retired-Skill routing regression: `implementation-scope-handoff` observably loaded `scope-implementation` in the baseline catalog and only `design-changes` after retirement
-- Decision-space routing regression: `unsettled-decision-space` observably loaded only `explore-decision-space`, while `application-change-design` continued to load only `design-changes`
-- Improvements: adaptive reporting retained all implementation decisions without empty sections, and the auth case explicitly handed high-risk controls to `plan-risky-change`
-- Writable fixture hashes: unchanged in baseline and candidate
-- Regressions: none in the selected cases
-- Evidence reuse: behavior scenarios and the five previously unaffected trigger cases were not rerun because their evaluated instructions, descriptions, and inputs are unchanged
+- Targeted baseline: commit `44e0818890160f719904c5cd7cd38b323f828a03`
+- Candidate `SKILL.md`: `sha256:7372f5a58bf4495d768901890a0fa32eb9468624a3d4dfd18bf779920989d48e`
+- Candidate `triggers.json`: `sha256:40e8dde5ec674baedb8c8689f25e7be0619f022aa1706f78a363cc1565d66e77`
+- High-risk redesign behavior: the pre-rename current and candidate both passed all 4 assigned assertions
+- Rename behavior: the candidate passed all 4 assertions, preserved the read-only boundary, completed ordinary auth design, and handed additional execution-readiness controls to `assess-risky-change-readiness`
+- Rename routing: the candidate observably loaded `design-changes` and `assess-risky-change-readiness`
+- Prior evidence reuse: small-feature, dependency, adaptive reporting, clarification, retired-Skill, and decision-space cases were not rerun because the corresponding responsibilities and inputs are unchanged
+- Regressions: none in the affected behavior and routing
 - Durable evidence: [`results.json`](results.json)
-- Cross-client runs: not executed
-- Unverified: real application entry points, dependency constraints, auth boundaries, test commands, rollback, and recovery procedures
+- Claude Code, other clients, real application entry points, dependency constraints, auth boundaries, test commands, and production recovery procedures were not executed or remain unverified
 - Next validation question: Does the adaptive reporting contract remain decision-complete on a real codebase where entry points and verification commands can be inspected?

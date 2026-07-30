@@ -58,7 +58,7 @@
       "id": "high-risk-migration-coexistence",
       "expected": "should_trigger",
       "category": "coexistence",
-      "prompt": "Design the implementation impact and verification for an authentication data migration, and also establish the explicit approval, backup, rollback, and recovery controls required before execution."
+      "prompt": "Design the implementation impact and verification for an authentication data migration, and identify the additional safety, evidence, recovery, residual-risk, and authorization-readiness controls required before execution."
     }
   ]
 }

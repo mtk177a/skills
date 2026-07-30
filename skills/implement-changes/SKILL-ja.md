@@ -29,7 +29,7 @@ license: MIT
 ## 手順
 
 1. 編集前に、目的、承認、着手条件、対象範囲、対象外、停止条件を確認する。
-2. 高リスク変更では、具体的な対象範囲と必要な制御が承認済みかを確認する。未承認なら編集前に止まり、不足する承認、rollback、recovery、検証判断を特定する。利用可能なら `plan-risky-change` を任意の引き継ぎ先として使えるが、停止報告はこの Skill 単体で成立させる。
+2. 高リスク変更では、具体的な action、scope、必要な control、residual risk、execution authority が実装可能な状態かを確認する。不十分なら編集前に止まり、不足する target、evidence、control、recovery、risk acceptance、authorization decision を特定する。利用可能なら `assess-risky-change-readiness` を任意の readiness handoff として使えるが、停止報告はこの Skill 単体で成立させる。
 3. 関連実装と指示を確認する。変更を小さな作業単位へ分け、それぞれに期待結果と検証方法を割り当てる。
 4. 作業単位を一つ選ぶ。後述の基準から検証方式を決め、選択理由を記録する。
 5. TDD を使う作業単位では:

@@ -16,6 +16,18 @@
 
 十分に明確かつ承認済みの低影響な変更で、実装方針、scope、risk 判断、verification strategy を捏造せず直接実装できる場合は `design-changes` を省略します。
 
+## 高リスク readiness workflow
+
+`元の workflow` → 必要に応じて `design-changes` → `assess-risky-change-readiness` → authorized executor または `implement-changes`
+
+- `design-changes`: 通常の implementation approach、impact、risk、verification、stop condition を定義し、design を execution authorization として扱わない
+- `assess-risky-change-readiness`: material な operational、data、security、external-state、irreversibility、recovery risk が追加 control を必要とするか判断し、`Not applicable`、`Blocked`、`Ready for authorization`、`Ready for execution handoff` のいずれか一つを返す
+- authorized executor または `implement-changes`: 具体的な action、scope、control、residual risk、execution authority が実装可能な状態の場合だけ開始し、関連 Skill がなくても self-contained に動作する
+
+request が migration、dependency、security、production の category に触れることだけを理由に `assess-risky-change-readiness` を使いません。変更の reversibility、recoverability、blast radius、external-state effect、detectability、authority、uncertainty から、追加 readiness workflow が必要かを判断します。
+
+`Ready for authorization` は evidence と control が decision-ready であることを意味し、authorization が付与済みであることを意味しません。`Ready for execution handoff` は既存 authorization を記録しますが、変更を承認または実行しません。reversal が不可能または不適切な場合は、rollback を捏造せず、roll-forward、restore、compensation、containment、explicit accepted loss を使います。
+
 ## Failure investigation workflow
 
 `investigate-failure` → 必要に応じて `break-failure-loop` → `design-changes` または条件付きで `implement-changes` → `validate-fix`
@@ -83,9 +95,9 @@ Failure investigation は active な production incident を支援できます�
 
 ## 停止条件
 
-次の場合は停止し、承認または明確化を求めます:
+次の場合は停止し、不足する承認、明確化、readiness decision を求めます:
 
 - docs、Skill、AGENTS ファイルを編集するとき
 - 依存追加や大きな設計変更を行うとき
-- 破壊的または高リスクな変更を行うとき
+- 破壊的または高リスクな action に decision-ready な control、recovery treatment、risk acceptance、execution authority が不足するとき
 - 仕様が未解決で、進めるには推測が必要なとき

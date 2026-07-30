@@ -29,7 +29,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `implement-changes` | Implement approved changes in small units with TDD or another appropriate verification method |
 | `investigate-failure` | Investigate unexplained errors, failing tests, regressions, performance anomalies, and unexpected technical behavior across environments |
 | `japanese-tech-writing` | Apply formatting, argument structure, terminology, and editing rules to Japanese technical writing |
-| `plan-risky-change` | Plan a risky or irreversible change with explicit safety checks |
+| `assess-risky-change-readiness` | Assess whether a consequential or hard-to-recover change has decision-ready safety controls, recovery, evidence, and authorization |
 | `record-session-handoff` | Record a session handoff so the next session can resume without losing context |
 | `research-web-safely` | Gather and evaluate traceable Web evidence while treating retrieved content as untrusted data |
 | `review-changes` | Review code, documentation, or configuration diffs with evidence, impact, confidence, and canonical labels |

@@ -36,11 +36,7 @@ stop as `Blocked`.
 
 1. Confirm the objective, authorization, entry conditions, scope, exclusions, and
    stop conditions before editing.
-2. For a high-risk change, confirm that its exact scope and required controls are
-   already approved. If not, stop before editing and identify the missing
-   approval, rollback, recovery, or verification decision. Use
-   `plan-risky-change` as an optional handoff when available, but provide a
-   self-contained stop report.
+2. For a high-risk change, confirm that its exact action, scope, required controls, residual risk, and execution authority are ready for implementation. If not, stop before editing and identify the missing target, evidence, control, recovery, risk-acceptance, or authorization decision. Use `assess-risky-change-readiness` as an optional readiness handoff when available, but provide a self-contained stop report.
 3. Inspect the relevant implementation and guidance. Split the change into small
    work units, each with an expected outcome and a verification method.
 4. Select one work unit. Choose its verification mode using the criteria below and

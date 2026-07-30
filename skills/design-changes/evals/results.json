@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "skill": "design-changes",
-  "evaluated_on": "2026-07-29",
+  "evaluated_on": "2026-07-30",
   "environment": {
-    "client": "Codex CLI 0.145.0",
+    "client": "Codex CLI 0.146.0",
     "model": "gpt-5.6-sol",
     "reasoning_effort": "high"
   },
@@ -12,9 +12,9 @@
   },
   "candidate": {
     "files": {
-      "SKILL.md": "sha256:e1bf4fc8e0250219ad2345bbf6bac87b731b4248a05538119a1eb6c180b465b3",
-      "SKILL-ja.md": "sha256:32a085b0e399998b6a7362a2dc354c2f431b4b5f334de61b2ce5ff96aff1b891",
-      "evals/triggers.json": "sha256:a01f0eea4beface155d5346184ceeadbaac2e59853cd823c6d156cb0d309a262"
+      "SKILL.md": "sha256:7372f5a58bf4495d768901890a0fa32eb9468624a3d4dfd18bf779920989d48e",
+      "SKILL-ja.md": "sha256:99f6a2596c8dafbc48d2ab02ef31af1862c61ae60ef1270b3ef39403fdcefa74",
+      "evals/triggers.json": "sha256:40e8dde5ec674baedb8c8689f25e7be0619f022aa1706f78a363cc1565d66e77"
     }
   },
   "execution": {
@@ -45,6 +45,18 @@
       "candidate_skill": "sha256:e1bf4fc8e0250219ad2345bbf6bac87b731b4248a05538119a1eb6c180b465b3",
       "change": "Replaced the retired structural-search boundary with the proactive explore-decision-space boundary.",
       "coverage": "Added the negative boundary to both description and body, then ran unsettled-decision-space and application-change-design routing. The former observably loaded only explore-decision-space; the latter continued to load only design-changes. Prior behavior evidence is reused because the change affects the adjacent handoff boundary rather than the implementation-design contract."
+    },
+    {
+      "baseline_commit": "2f57393c818f1f9524b31025776721368ebdf6f5",
+      "candidate_skill": "sha256:db76af84fd1f3c4b278add72056c8a319e62e50ee4084d3c147307e301d4ba94",
+      "change": "Reframed the plan-risky-change boundary around risk-based execution readiness rather than universal approval and rollback planning.",
+      "coverage": "Reran auth-high-risk behavior with blinded current/candidate grading and high-risk-migration-coexistence routing. Prior unaffected behavior and routing evidence is reused."
+    },
+    {
+      "baseline_commit": "2f57393c818f1f9524b31025776721368ebdf6f5",
+      "candidate_skill": "sha256:7372f5a58bf4495d768901890a0fa32eb9468624a3d4dfd18bf779920989d48e",
+      "change": "Updated the high-risk readiness handoff to assess-risky-change-readiness.",
+      "coverage": "Reran auth-high-risk candidate behavior and high-risk-migration-coexistence candidate routing."
     }
   ],
   "behavior": {
@@ -235,5 +247,162 @@
     "Real application entry points, dependency constraints, auth boundaries, and test commands",
     "Rollback and recovery procedures",
     "Claude Code and other clients"
-  ]
+  ],
+  "targeted_high_risk_readiness": {
+    "behavior": {
+      "fingerprint": "bdb79b056907f2093997c8caaf035f2825cfd8c8b7b934b2b31503429d1ee6ea",
+      "skill": "design-changes",
+      "case": "auth-high-risk",
+      "duration_seconds": 31.88,
+      "blinded_order": {
+        "A": "current",
+        "B": "candidate"
+      },
+      "conditions": {
+        "current": {
+          "case_verdict": "pass",
+          "assertions": [
+            {
+              "id": "ordinary-design",
+              "verdict": "pass",
+              "evidence": "Provides a complete ordinary design: authorization facade, all requested boundaries, compatibility rules, reviewable units, paired risks and controls, planned verification, proceed conditions, and stop conditions. Execution-readiness controls are kept in a separate mandatory handoff."
+            },
+            {
+              "id": "readiness-handoff",
+              "verdict": "pass",
+              "evidence": "Explicitly hands the security-sensitive readiness work to `plan-risky-change` and identifies the missing production target, recoverability evidence, abort thresholds, recovery procedure and owner, residual-risk acceptance, and production authorization."
+            },
+            {
+              "id": "no-authorization",
+              "verdict": "pass",
+              "evidence": "Repeatedly states that the design does not authorize implementation, configuration, deployment, or production activity. Recovery includes both rollback and broader recovery procedures; rollback is not presented as the only treatment."
+            },
+            {
+              "id": "read-only",
+              "verdict": "pass",
+              "evidence": "The trace contains only file inspection, listing, and Git-status commands. No files were edited, implementation was not started, and the before/after hash maps show no recorded changes."
+            }
+          ],
+          "summary": "A fully satisfies the case. It preserves a detailed ordinary implementation design while clearly separating unresolved execution-readiness work and withholding authorization."
+        },
+        "candidate": {
+          "case_verdict": "pass",
+          "assertions": [
+            {
+              "id": "ordinary-design",
+              "verdict": "pass",
+              "evidence": "Defines intended behavior, non-goals, architecture, every requested boundary, migration units, compatibility, material risks and controls, planned verification, proceed gates, and stop conditions. The production-readiness assessment remains a distinct final section and handoff."
+            },
+            {
+              "id": "readiness-handoff",
+              "verdict": "pass",
+              "evidence": "Explicitly requires a separate `plan-risky-change` handoff and enumerates the absent production target, backup or recovery evidence, quantified abort thresholds, recovery ownership, tested recovery, residual-risk acceptance, and production authorization."
+            },
+            {
+              "id": "no-authorization",
+              "verdict": "pass",
+              "evidence": "Clearly states that the design is neither implementation nor production authorization and must not be treated as permission to implement or deploy. It also includes safe unavailability and versioned recovery artifacts alongside rollback, so rollback is not the sole recovery treatment."
+            },
+            {
+              "id": "read-only",
+              "verdict": "pass",
+              "evidence": "The trace shows only read-only inspection commands. There are no edit or implementation commands, and the empty before/after hash maps provide no indication of filesystem changes."
+            }
+          ],
+          "summary": "B fully satisfies the case. Its ordinary design is implementation-ready without absorbing the separately identified high-risk execution-readiness controls."
+        }
+      },
+      "comparative_summary": "Both outputs pass every critical assertion. Each supplies a complete read-only authorization-change design, explicitly withholds implementation authority, and makes a clear `plan-risky-change` handoff covering all unresolved readiness controls. A is somewhat more exhaustive about enforcement inventory and parity checks; B presents a slightly more concise staged migration model. Neither difference affects compliance."
+    },
+    "routing": {
+      "current": {
+        "fingerprint": "e8f6c5356caeb683adf6b05ad8098f29f90d86ab18f728682023a750cc62ab94",
+        "skill": "design-changes",
+        "case": "high-risk-migration-coexistence",
+        "condition": "current",
+        "expected": [
+          "design-changes",
+          "plan-risky-change"
+        ],
+        "observed": [
+          "design-changes",
+          "plan-risky-change"
+        ],
+        "verdict": "pass",
+        "duration_seconds": 17.37
+      },
+      "candidate": {
+        "fingerprint": "1ab1fab23e97e1d723c102c947baf122280053c094d8d71d323ebd466975f52b",
+        "skill": "design-changes",
+        "case": "high-risk-migration-coexistence",
+        "condition": "candidate",
+        "expected": [
+          "design-changes",
+          "plan-risky-change"
+        ],
+        "observed": [
+          "design-changes",
+          "plan-risky-change"
+        ],
+        "verdict": "pass",
+        "duration_seconds": 21.92
+      }
+    }
+  },
+  "rename_validation": {
+    "behavior": {
+      "fingerprint": "235cd6c01c6cf9d3eb21b7e0f36c3227350d555444235c72ad6205122403a4d8",
+      "skill": "design-changes",
+      "case": "auth-high-risk",
+      "duration_seconds": 18.47,
+      "blinded_order": {
+        "A": "candidate"
+      },
+      "conditions": {
+        "candidate": {
+          "case_verdict": "pass",
+          "assertions": [
+            {
+              "id": "ordinary-design",
+              "verdict": "pass",
+              "evidence": "Provides a complete ordinary implementation design: centralized authorization contract, affected authentication/identity/policy/enforcement/session/token/consumer boundaries, explicit non-targets, material risks and controls, planned verification, reviewable units, and proceed/stop conditions. It keeps production execution-readiness controls separate."
+            },
+            {
+              "id": "readiness-handoff",
+              "verdict": "pass",
+              "evidence": "Explicitly requires a separate `assess-risky-change-readiness` handoff and enumerates the unresolved production target, backup/recoverability evidence, abort criteria, recovery ownership, residual-risk acceptance, and production authorization."
+            },
+            {
+              "id": "no-authorization",
+              "verdict": "pass",
+              "evidence": "States that the design does not authorize implementation, staging, production access, or deployment and is not a substitute for approval. Recovery is not limited to rollback: it also calls for an approved operational recovery path, named recovery ownership, incident decision-making, and recovery procedures."
+            },
+            {
+              "id": "read-only",
+              "verdict": "pass",
+              "evidence": "The trace contains only file-reading and discovery commands (`sed`, `rg --files`, and `find`); before/after hashes are empty, and the response confirms that no files or external state were changed."
+            }
+          ],
+          "summary": "Output A fully satisfies all critical assertions and the additional requirement. It preserves a complete ordinary implementation design while clearly handing unresolved execution-readiness controls to `assess-risky-change-readiness`."
+        }
+      },
+      "comparative_summary": "Only output A was provided; it passes the case with no critical or partial deficiencies."
+    },
+    "routing": {
+      "fingerprint": "0db970639f5750498eec3a005b4ec3d8c55c306355d24ad62885caf0064e097a",
+      "skill": "design-changes",
+      "case": "high-risk-migration-coexistence",
+      "condition": "candidate",
+      "expected": [
+        "design-changes",
+        "assess-risky-change-readiness"
+      ],
+      "observed": [
+        "design-changes",
+        "assess-risky-change-readiness"
+      ],
+      "verdict": "pass",
+      "duration_seconds": 16.67
+    }
+  }
 }

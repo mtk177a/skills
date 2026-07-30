@@ -55,7 +55,7 @@
       "id": "unapproved-auth-coexistence",
       "expected": "should_not_trigger",
       "category": "coexistence",
-      "prompt": "Prepare to implement this authentication change, but do not edit until explicit approval, rollback, recovery, and verification controls are established. Stop and identify what is missing."
+      "prompt": "Prepare this authentication change for execution, but do not edit until its exact action, scope, safety controls, recovery treatment, residual risk, and execution authority are decision-ready. Assess what is missing."
     },
     {
       "id": "failure-analysis-near-miss",

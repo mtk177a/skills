@@ -14,6 +14,18 @@ A minimal reference for how the core Skills connect into common workflows.
 
 Skip `design-changes` when a sufficiently clear and authorized low-impact change can proceed directly to implementation without inventing an approach, scope, risk decision, or verification strategy.
 
+## High-risk readiness workflow
+
+`originating workflow` → optional `design-changes` → `assess-risky-change-readiness` → authorized executor or `implement-changes`
+
+- `design-changes`: Define the ordinary implementation approach, impact, risks, verification, and stop conditions without treating the design as execution authorization
+- `assess-risky-change-readiness`: Determine whether material operational, data, security, external-state, irreversibility, or recovery risks require additional controls, and return exactly one of `Not applicable`, `Blocked`, `Ready for authorization`, or `Ready for execution handoff`
+- authorized executor or `implement-changes`: Begin only when the exact action, scope, controls, residual risk, and execution authority are ready; remain self-contained when the companion Skill is unavailable
+
+Do not invoke `assess-risky-change-readiness` solely because a request mentions a migration, dependency, security, or production category. Use the change's reversibility, recoverability, blast radius, external-state effects, detectability, authority, and uncertainty to decide whether the additional readiness workflow applies.
+
+`Ready for authorization` means the evidence and controls are decision-ready, not that authorization has been granted. `Ready for execution handoff` records existing authorization but does not approve or execute the change. When reversal is impossible or unsuitable, use roll-forward, restore, compensation, containment, or explicit accepted loss rather than inventing a rollback.
+
 ## Failure investigation workflow
 
 `investigate-failure` → optional `break-failure-loop` → `design-changes` or conditionally `implement-changes` → `validate-fix`
@@ -79,9 +91,9 @@ Skip the audit when the diagnosis is already supported by evidence. Do not use d
 
 ## Stop conditions
 
-Stop and request approval or clarification when:
+Stop and request the missing approval, clarification, or readiness decision when:
 
 - Editing docs, Skills, or AGENTS files
 - Adding dependencies or making significant design changes
-- Performing destructive or high-risk changes
+- A destructive or high-risk action lacks decision-ready controls, recovery treatment, risk acceptance, or execution authority
 - Specifications are unresolved and proceeding would require guessing

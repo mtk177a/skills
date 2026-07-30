@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "skill": "assess-risky-change-readiness",
+  "run_policy": {
+    "protocol": "Present each prompt as a Skill-selection task using only the installed names and descriptions declared for the condition. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run the candidate on every affected case first. Run the matching current condition only where comparison is decision-relevant, and repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
+    "verdict_rule": "The observed loaded Skill set must equal the expected set. Record pass, fail, unstable, not exposed, or not executed for every case."
+  },
+  "coexistence_skills": [
+    "clarify-request",
+    "explore-decision-space",
+    "design-changes",
+    "implement-changes",
+    "review-changes",
+    "investigate-failure"
+  ],
+  "cases": [
+    {
+      "id": "explicit-invocation-trigger",
+      "category": "core",
+      "prompt": "Use $assess-risky-change-readiness to assess whether this consequential production change is ready to cross into execution. Do not execute it.",
+      "expected_handler": [
+        "assess-risky-change-readiness"
+      ]
+    },
+    {
+      "id": "direct-readiness-trigger",
+      "category": "core",
+      "prompt": "Before this irreversible production data correction runs, assess whether the target, safety controls, recovery strategy, evidence, residual risk, and authorization are ready for execution.",
+      "expected_handler": [
+        "assess-risky-change-readiness"
+      ]
+    },
+    {
+      "id": "design-handoff-trigger",
+      "category": "coexistence",
+      "prompt": "The implementation design is complete, but it identified unresolved backup evidence, abort thresholds, recovery ownership, and production authorization. Prepare the high-risk execution-readiness handoff.",
+      "expected_handler": [
+        "assess-risky-change-readiness"
+      ]
+    },
+    {
+      "id": "clarification-near-miss",
+      "category": "near_miss",
+      "prompt": "Improve the service. I have not identified the service, objective, environment, success criteria, or whether any change is authorized. Clarify the request until another workflow can start.",
+      "expected_handler": [
+        "clarify-request"
+      ]
+    },
+    {
+      "id": "decision-space-near-miss",
+      "category": "near_miss",
+      "prompt": "We know the production migration is consequential, but rollback, shadow writes, dual reads, and offline conversion are still competing architectures. Expand the structurally different safety and rollout strategies before we select one.",
+      "expected_handler": [
+        "explore-decision-space"
+      ]
+    },
+    {
+      "id": "ordinary-design-near-miss",
+      "category": "near_miss",
+      "prompt": "The feature behavior is agreed. Design the code and configuration changes, affected consumers, risks, verification, and stop conditions before implementation.",
+      "expected_handler": [
+        "design-changes"
+      ]
+    },
+    {
+      "id": "authorized-implementation-near-miss",
+      "category": "near_miss",
+      "prompt": "The exact authentication edit, scope, safety controls, residual risk, and execution authority are approved and complete. Implement the change and run its focused and regression tests.",
+      "expected_handler": [
+        "implement-changes"
+      ]
+    },
+    {
+      "id": "completed-diff-review-near-miss",
+      "category": "near_miss",
+      "prompt": "Review the completed authorization diff for correctness, security, compatibility, and missing verification. Do not edit it.",
+      "expected_handler": [
+        "review-changes"
+      ]
+    },
+    {
+      "id": "failure-investigation-near-miss",
+      "category": "near_miss",
+      "prompt": "The staging migration failed with an unknown constraint error. Establish observed versus expected behavior and investigate the cause before proposing a change.",
+      "expected_handler": [
+        "investigate-failure"
+      ]
+    },
+    {
+      "id": "routine-change-near-miss",
+      "category": "near_miss",
+      "prompt": "The test-only helper rename is approved, local, reversible as a normal diff, and has no external state. Implement it and run the focused tests.",
+      "expected_handler": [
+        "implement-changes"
+      ]
+    }
+  ]
+}
