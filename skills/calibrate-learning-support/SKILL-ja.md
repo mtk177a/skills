@@ -88,5 +88,5 @@ license: MIT
 - AI が安全に実行して説明できる技術作業を、ユーザーに再発見させることを強制しない。
 - quiz、ユーザーの自信、または test の成功だけを、理解や正しさの証明にしない。
 - 元の workflow が求める高リスク制御を維持する。説明と証拠は、authorization、rollback、recovery、sandbox、deterministic verification の代替にならない。
-- agent、tool、model、capability、work unit の選択には `triage-agent-usage` を使う。この Skill は、選択された workflow 内の学習と理解の calibration を所有する。
+- ユーザーが task に使う chat、agent、model、tool-enabled surface、または定義済みの agent topology を明示的に尋ねた場合は `choose-ai-execution-setup` を使う。この Skill は、選択された workflow 内の学習と理解の calibration を所有する。
 - 隣接 Skill がない場合も自己完結させる。次の行動の ownership を明確にできる場合だけ handoff 名を示す。

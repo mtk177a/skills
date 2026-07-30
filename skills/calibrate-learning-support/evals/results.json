@@ -6,10 +6,10 @@
     "baseline_skill_path": "skills/calibrate-ai-learning/SKILL.md",
     "baseline_skill_sha256": "09bfbfef95c6b42541219c9848b8885270618cb1b14c1ca68f3e9d08c0a1b6e4",
     "candidate_file_sha256": {
-      "skills/calibrate-learning-support/SKILL.md": "1c7e610309ef49200a40b80611c194188d0847cc450d7a459ea0f5e93360d164",
-      "skills/calibrate-learning-support/SKILL-ja.md": "ba7f43e0bf4e26f1591b6c45931a89bed32ceffc43d8ca453495abea5ebd2b45",
+      "skills/calibrate-learning-support/SKILL.md": "e45bdcd58dab369786d1e2d6045c9c098f244daaa1ed1426bd2e84d0ff362488",
+      "skills/calibrate-learning-support/SKILL-ja.md": "9a6a7acabbdd856f1362c3adcf6d7762919cd02e0cc94a9ac98590b67a516163",
       "skills/calibrate-learning-support/evals/evals.json": "6ff568a28eea8a5d514ed30eaa35ea2f1a22ba837d6c0a61dd7128e63e1681c6",
-      "skills/calibrate-learning-support/evals/triggers.json": "ae5805a50d6bea097852bee726961141308f51861e8b671e7444783db6d6d76c"
+      "skills/calibrate-learning-support/evals/triggers.json": "c8af76a057f68de2581da48b58d22dac65a4aa01bdca43770f6491dfb871b10c"
     }
   },
   "execution": {
@@ -18,11 +18,12 @@
     "model": "gpt-5.6-sol",
     "reasoning_effort": "high",
     "sandbox": "read-only",
-    "behavior_command": "python3 /tmp/run-calibrate-learning-rename-behavior.py",
-    "trigger_command": "python3 /tmp/run-calibrate-learning-rename-triggers.py",
-    "pairwise_command": "python3 /tmp/compare-calibrate-noskill.py",
+    "normalized_behavior_command": "python3 <temporary-behavior-runner>",
+    "normalized_trigger_command": "python3 <temporary-trigger-runner>",
+    "normalized_affected_trigger_command": "python3 <temporary-eval-runner> --run-root <temporary-run-root> --phase routing-candidate --cases calibrate-tool-and-model-selection",
+    "normalized_pairwise_command": "python3 <temporary-pairwise-runner>",
     "raw_artifacts": "Temporary executor responses, JSONL, and grader output were kept outside the repository and are not retained here.",
-    "evidence_reuse": "The rename changes identity and routing metadata but not the executable workflow. The affected payment-retry case was rerun under the new name; the other four candidate behavior grades and the candidate-versus-no-Skill pairwise grades are reused from the accepted baseline revision.",
+    "evidence_reuse": "The choose-ai-execution-setup handoff replaces the adjacent Skill name and narrows its ownership but does not change the calibration workflow or behavior-case requirements. The exact tool-and-model-selection routing case was rerun with both Skills installed; the five behavior grades, pairwise grades, and six unchanged trigger cases reuse the accepted evidence.",
     "verdict_policy": "Grade only assertions assigned to the case. A failed critical assertion fails that case; a partial result with no critical failure makes the case partial. Grade every turn when the assertion concerns iteration or state preservation."
   },
   "summary": {
@@ -773,14 +774,15 @@
       "candidate": {
         "verdict": "pass",
         "observed_loads": [
-          "triage-agent-usage"
+          "choose-ai-execution-setup"
         ]
       }
     }
   ],
   "unverified": [
     "Claude and clients other than Codex CLI were not executed.",
-    "Four unchanged behavior cases and the pairwise comparison reuse evidence from the accepted pre-rename revision rather than a fresh execution.",
+    "The behavior and pairwise comparisons reuse accepted evidence because only the adjacent execution-setup handoff changed; the affected tool-and-model-selection routing case was rerun.",
+    "Six unchanged trigger cases reuse the accepted pre-handoff evidence.",
     "The observed results do not establish behavior for untested models, reasoning settings, repositories, or longer conversations."
   ]
 }

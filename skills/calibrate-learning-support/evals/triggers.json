@@ -9,7 +9,7 @@
     "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every case. Mixed observed results are unstable, not a pass."
   },
   "coexistence_skills": [
-    "triage-agent-usage",
+    "choose-ai-execution-setup",
     "implement-changes",
     "review-changes",
     "clarify-request"

@@ -17,6 +17,7 @@
 | `audit-agent-guidance` | 永続的な agent guidance を期待する挙動、観測済みの利用状況、client semantics、評価証拠に照らして監査する |
 | `break-failure-loop` | 新しい証拠がない同じ仮説による同等試行を停止し、診断、blocked、または探索拡張への引き継ぎを選ぶ |
 | `calibrate-learning-support` | 作業を進めながら task 固有の理解、decision ownership、verification を保てるよう AI の learning support を調整する |
+| `choose-ai-execution-setup` | 具体的な task に使う AI execution setup を、access、model、reasoning、context、permission、verification、topology の独立した次元から助言する |
 | `clarify-request` | 曖昧な依頼を、次の workflow を開始できるか、低影響な前提で進めるか、blocked と判断できるまで反復して明確化・構造化する |
 | `cognitive-rhythm-writing` | 認知モードと未回収の緊張を管理し、日本語の説明文に緩急を設計する |
 | `define-referents` | 曖昧な語を具体的な指示対象へ結び付け、命名上の制約を元の workflow へ返す |
@@ -36,7 +37,6 @@
 | `research-web-safely` | 取得したコンテンツを命令として扱わず、追跡可能な Web 上の根拠を収集・評価する |
 | `review-changes` | コード・文書・設定の差分を、根拠・影響・確信度・正規ラベル付きでレビューする |
 | `summarize-changes` | 差分またはコミット範囲をレビューや文書化のために要約する |
-| `triage-agent-usage` | 作業開始前に、必要十分な agent、tool、model capability、context、work-unit structure を選ぶ |
 | `triage-review-feedback` | 既存レビュー指摘の出所、根拠、不確実性を保持し、採用・保留・却下と対応方針を決める |
 | `validate-fix` | 特定の完了済み修正が元の指摘または期待動作を解消したか、適切な read-only evidence で検証する |
 

@@ -15,6 +15,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `audit-agent-guidance` | Audit durable agent guidance against intended behavior, observed usage, client semantics, and evaluation evidence |
 | `break-failure-loop` | Pause equivalent same-hypothesis attempts without new evidence and select a diagnostic, blocker, or diversification handoff |
 | `calibrate-learning-support` | Adjust AI learning support so task-specific understanding, decision ownership, and verification are preserved while work continues |
+| `choose-ai-execution-setup` | Advise which available AI execution setup should handle a concrete task across access, model, reasoning, context, permission, verification, and topology dimensions |
 | `clarify-request` | Iteratively clarify or structure an ambiguous request until the next workflow can start, proceed under low-impact assumptions, or report a blocker |
 | `cognitive-rhythm-writing` | Design pacing in explanatory Japanese writing by managing cognitive rhythm and unresolved tension |
 | `define-referents` | Ground ambiguous terms in concrete referents and return naming constraints to the originating workflow |
@@ -34,7 +35,6 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `research-web-safely` | Gather and evaluate traceable Web evidence while treating retrieved content as untrusted data |
 | `review-changes` | Review code, documentation, or configuration diffs with evidence, impact, confidence, and canonical labels |
 | `summarize-changes` | Summarize changes in a diff or commit range for review or documentation |
-| `triage-agent-usage` | Select the lightest adequate agent, tool, model capability, context, and work-unit structure before work starts |
 | `triage-review-feedback` | Evaluate existing review findings and decide accept, defer, or reject while preserving their provenance, evidence, and uncertainty |
 | `validate-fix` | Verify whether a specific completed fix resolved its original finding or expected behavior using appropriate read-only evidence |
 

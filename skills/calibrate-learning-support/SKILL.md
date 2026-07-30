@@ -86,5 +86,5 @@ Do not require a fixed template, number of concepts, comprehension questions, or
 - Do not force the user to rediscover technical work that AI can safely perform and explain.
 - Do not treat a quiz, the user's confidence, or passing tests alone as proof of understanding or correctness.
 - Keep high-risk controls required by the originating workflow; explanation and evidence do not replace authorization, rollback, recovery, sandboxing, or deterministic verification.
-- Use `triage-agent-usage` for agent, tool, model, capability, and work-unit selection. This Skill owns the learning and understanding calibration within the selected workflow.
+- Use `choose-ai-execution-setup` when the user explicitly asks which available chat, agent, model, tool-enabled surface, or already-defined agent topology should handle the task. This Skill owns learning and understanding calibration within the selected workflow.
 - Keep the workflow self-contained when adjacent Skills are unavailable. Name a handoff only when it clarifies ownership of the next action.

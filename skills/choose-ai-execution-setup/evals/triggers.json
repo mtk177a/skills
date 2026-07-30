@@ -1,0 +1,59 @@
+{
+  "skill": "choose-ai-execution-setup",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Present each prompt as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case once per condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every case. Mixed observed results are unstable, not a pass."
+  },
+  "coexistence_skills": [
+    "calibrate-learning-support",
+    "implement-changes",
+    "design-changes",
+    "review-changes"
+  ],
+  "cases": [
+    {
+      "id": "explicit-setup-selection",
+      "expected_handler": ["choose-ai-execution-setup"],
+      "prompt": "For this concrete task, advise whether I should use ordinary chat, a coding agent, or another available tool-enabled setup, including the required model capability and verification."
+    },
+    {
+      "id": "missing-setup-inputs",
+      "expected_handler": ["choose-ai-execution-setup"],
+      "prompt": "I want you to choose an AI execution setup, but I have not yet described the task or the available chats, models, agents, and tools."
+    },
+    {
+      "id": "predefined-topology-choice",
+      "expected_handler": ["choose-ai-execution-setup"],
+      "prompt": "The work units and their ownership are already defined. Decide whether one session, sequential handoffs, or parallel agents are appropriate given their shared state and integration needs."
+    },
+    {
+      "id": "approved-implementation",
+      "expected_handler": ["implement-changes"],
+      "prompt": "The execution setup, implementation approach, scope, authorization, and verification method are approved. Implement the change and run the checks."
+    },
+    {
+      "id": "implementation-design",
+      "expected_handler": ["design-changes"],
+      "prompt": "The request is understood. Design the implementation approach, affected boundaries, work units, risks, and verification coverage before editing."
+    },
+    {
+      "id": "learning-calibration",
+      "expected_handler": ["calibrate-learning-support"],
+      "prompt": "The agent, model, and tools are already selected. I cannot explain the generated patch, so adjust how we work until I can evaluate its reasoning and evidence."
+    },
+    {
+      "id": "diff-review",
+      "expected_handler": ["review-changes"],
+      "prompt": "Review this effective diff for correctness, safety, compatibility, verification, maintainability, and performance problems."
+    },
+    {
+      "id": "client-setting-change",
+      "expected_handler": ["implement-changes"],
+      "prompt": "Change the persistent default model in my AI client's configuration file. The desired model is already selected."
+    }
+  ]
+}

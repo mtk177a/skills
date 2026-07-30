@@ -68,6 +68,7 @@ Evaluated on 2026-07-30 with Codex CLI 0.146.0, `gpt-5.6-sol`, high reasoning, a
 - The renamed candidate passed all five behavior cases and all 35 assigned requirements. The payment-retry case was rerun under the new name; the other four behavior grades reuse evidence from the accepted pre-rename revision because the executable workflow is unchanged.
 - The previous-name and no-Skill conditions also passed all five cases and all 35 requirements. The previously recorded pairwise grader found the Skill materially better than no Skill for the payment-retry and cache-fix reconstruction cases and equivalent for the other three cases.
 - All seven trigger, continuation, near-miss, and coexistence cases passed under both names. The new name therefore preserves observed routing rather than demonstrating a higher selection rate.
+- After the adjacent execution-setup Skill was replaced, the exact `tool-and-model-selection` case loaded `choose-ai-execution-setup` without loading `calibrate-learning-support`. The other six trigger cases reuse accepted evidence because their inputs and relevant metadata are unchanged.
 - `calibrate-learning-support` describes task-specific support and understanding recovery more directly than `calibrate-ai-learning`, without implying that the agent independently calibrates AI learning as a general system property.
 - Claude and other clients were not executed.
 

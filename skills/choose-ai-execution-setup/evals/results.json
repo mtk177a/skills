@@ -1,0 +1,1044 @@
+{
+  "skill": "choose-ai-execution-setup",
+  "version": 1,
+  "accepted_candidate": {
+    "baseline_commit": "c464b605b1cfbb47d53fa7143aa5789d1b60387e",
+    "baseline_skill_path": "skills/triage-agent-usage/SKILL.md",
+    "baseline_skill_sha256": "00e9de6181ff0bd8e40242d711f29212b7c990eedebdda0c6e51c804d96a86fd",
+    "candidate_file_sha256": {
+      "skills/choose-ai-execution-setup/SKILL.md": "36b5984e96a2733529b4432afe490e5d08f21886bc4e977bbe352e02de6c8ef6",
+      "skills/choose-ai-execution-setup/SKILL-ja.md": "13143c3e20b3758833a0eb3472c45e84c70ff5931c3decbac716da499600c6ee",
+      "skills/choose-ai-execution-setup/evals/evals.json": "3bd7e16b412a200e46402527cbaa6e0dac99d3b7d9d6b24192f06e463009d416",
+      "skills/choose-ai-execution-setup/evals/triggers.json": "d9170dda0afdf3aaf9c016baf59607cbb017b193d915d9849c08da5a9e5eaa45"
+    }
+  },
+  "execution": {
+    "date": "2026-07-30",
+    "client": "codex-cli 0.146.0",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high",
+    "sandbox": "read-only",
+    "normalized_behavior_commands": [
+      "python3 <temporary-eval-runner> --phase candidate",
+      "python3 <temporary-eval-runner> --run-root <temporary-run-root> --phase comparison",
+      "python3 <temporary-eval-runner> --run-root <temporary-run-root> --phase grade"
+    ],
+    "normalized_trigger_commands": [
+      "python3 <temporary-eval-runner> --run-root <temporary-run-root> --phase routing-candidate",
+      "python3 <temporary-eval-runner> --run-root <temporary-run-root> --phase routing-comparison"
+    ],
+    "raw_artifacts": "Temporary prompts, responses, JSONL, grader output, and run durations were kept outside the repository and are not retained here.",
+    "evidence_reuse": "The final instruction added only the rule that an integrating parent is not a worker without confirmed capability and availability. parallel-independent-units was rerun after that change. Other candidate behavior grades are reused from the immediately preceding candidate because their assigned requirements do not involve that parent-worker boundary. Trigger results are reused after body-only refinements because the description and adjacent Skill metadata were unchanged.",
+    "verdict_policy": "Grade only assertions assigned to the case. A failed critical assertion fails that condition; a partial result with no critical failure makes the condition partial."
+  },
+  "summary": {
+    "behavior": {
+      "current": {
+        "cases": {
+          "fail": 5,
+          "partial": 2
+        },
+        "requirements": {
+          "partial": 8,
+          "pass": 26,
+          "fail": 7
+        }
+      },
+      "no_skill": {
+        "cases": {
+          "fail": 7
+        },
+        "requirements": {
+          "fail": 11,
+          "pass": 20,
+          "partial": 10
+        }
+      },
+      "candidate": {
+        "cases": {
+          "pass": 7
+        },
+        "requirements": {
+          "pass": 41
+        }
+      }
+    },
+    "triggers": {
+      "current": {
+        "pass": 8
+      },
+      "no_skill": {
+        "pass": 7,
+        "fail": 1
+      },
+      "candidate": {
+        "pass": 8
+      }
+    },
+    "candidate_comparison": {
+      "better_than_current": 7,
+      "better_than_no_skill": 7,
+      "equivalent": 0
+    }
+  },
+  "cases": [
+    {
+      "id": "confirmed-text-options",
+      "case_verdicts": {
+        "current": "fail",
+        "no_skill": "fail",
+        "candidate": "pass"
+      },
+      "requirements": [
+        {
+          "id": "independent-dimensions",
+          "current": {
+            "verdict": "partial",
+            "evidence": "It addresses tools/permissions, context, verification, and single-session topology, but does not separately derive model capability and gives little reasoning for the selected effort."
+          },
+          "no_skill": {
+            "verdict": "fail",
+            "evidence": "It reduces the analysis to text transformation versus repository/command tools and does not separately address capability, effort, context, permissions, verification, or topology."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It separately evaluates access/tools, model capability, reasoning effort, context, permissions, verification, and topology."
+          }
+        },
+        {
+          "id": "availability-grounded",
+          "current": {
+            "verdict": "pass",
+            "evidence": "It selects confirmed Chat A and rejects confirmed Coding Agent B based on the stated lack of repository, command, or external-system needs."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "It selects confirmed Chat A and compares it only with confirmed Coding Agent B."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It uses only the two confirmed choices, selects Chat A, and treats model capability as non-differentiating rather than inventing another setup."
+          }
+        },
+        {
+          "id": "actionable-handoff",
+          "current": {
+            "verdict": "fail",
+            "evidence": "It provides a recommendation but does not identify a completion state, decision-critical unknowns, or the actor responsible for supplying prerequisites and performing the draft."
+          },
+          "no_skill": {
+            "verdict": "fail",
+            "evidence": "It gives no completion state, prerequisites, unknowns, responsible next actor, or drafting handoff."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It states a valid recommendation-ready completion state, says no gating prerequisite or decision-critical unknown remains, and assigns the next action to the user."
+          }
+        },
+        {
+          "id": "authority-boundary",
+          "current": {
+            "verdict": "pass",
+            "evidence": "It only recommends a setup and does not draft the announcement, alter settings, or exercise permissions."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "It recommends a setup without drafting the announcement or making any external change."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It does not draft, change settings, grant access, or treat the recommendation as authorization to execute."
+          }
+        },
+        {
+          "id": "cost-constraint",
+          "current": {
+            "verdict": "partial",
+            "evidence": "It invents no cost or privacy constraints and makes no universal ranking, but it does not explicitly establish that none were stated."
+          },
+          "no_skill": {
+            "verdict": "partial",
+            "evidence": "It invents no constraints or universal ranking, but does not explicitly account for the absence of stated cost, latency, token, or privacy constraints."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It accurately notes that no cost, latency, token, or privacy constraints were specified and invents no ranking from them."
+          }
+        },
+        {
+          "id": "material-value",
+          "current": {
+            "verdict": "pass",
+            "evidence": "It gives a concrete, decision-ready recommendation with relevant context, verification, and topology guidance."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "Despite being terse, it makes a concrete choice and gives a task-specific reason that Coding Agent B's tools are unnecessary."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It gives a complete setup decision, explains why Coding Agent B's tools add no value here, and provides a concrete next step."
+          }
+        }
+      ]
+    },
+    {
+      "id": "missing-availability",
+      "case_verdicts": {
+        "current": "fail",
+        "no_skill": "fail",
+        "candidate": "pass"
+      },
+      "requirements": [
+        {
+          "id": "availability-grounded",
+          "current": {
+            "verdict": "fail",
+            "evidence": "Although it identifies the missing capability inventory, it recommends “ordinary chat” as the next surface even though no chat or surface availability was confirmed."
+          },
+          "no_skill": {
+            "verdict": "fail",
+            "evidence": "It correctly notes missing information, but then fabricates an unconfirmed default setup: a general-purpose model, single chat, no tools, and read-only permissions."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It explicitly marks every relevant capability and constraint as unconfirmed and refuses to invent any named setup."
+          }
+        },
+        {
+          "id": "actionable-handoff",
+          "current": {
+            "verdict": "partial",
+            "evidence": "It gives decision-critical prerequisites and implicitly makes the user responsible for supplying them, but does not explicitly return the required “Insufficient evidence” state."
+          },
+          "no_skill": {
+            "verdict": "partial",
+            "evidence": "It lists useful prerequisites and implicitly assigns the user to provide them, but does not return the required “Insufficient evidence” completion state."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It returns “Insufficient evidence,” identifies the decision-critical missing inputs, names the user as the next actor, and states what can happen once those inputs are supplied."
+          }
+        },
+        {
+          "id": "authority-boundary",
+          "current": {
+            "verdict": "pass",
+            "evidence": "It limits itself to discovery and does not execute work, change settings, grant permissions, or treat selection as authorization."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "It does not execute the task, alter settings, grant permissions, or claim authorization."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It expressly limits the next step to making a recommendation and says it will not execute the task."
+          }
+        },
+        {
+          "id": "material-value",
+          "current": {
+            "verdict": "pass",
+            "evidence": "Its stop condition and intake checklist identify the concrete information needed for a later decision-ready recommendation."
+          },
+          "no_skill": {
+            "verdict": "partial",
+            "evidence": "The requested input list is somewhat actionable, but the unsupported default recommendation conflicts with the required stop condition and makes the handoff unsafe."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It supplies a precise stop condition and a decision-ready intake covering task, access, available choices, risk, verification, and operational constraints."
+          }
+        }
+      ]
+    },
+    {
+      "id": "routine-high-impact",
+      "case_verdicts": {
+        "current": "partial",
+        "no_skill": "fail",
+        "candidate": "pass"
+      },
+      "requirements": [
+        {
+          "id": "independent-dimensions",
+          "current": {
+            "verdict": "partial",
+            "evidence": "It covers access/tools, context, authorized scope, verification evidence, and a bounded topology, but does not independently distinguish model capability from reasoning effort."
+          },
+          "no_skill": {
+            "verdict": "fail",
+            "evidence": "The response compares repository/check access with conceptual reasoning, but does not independently derive model capability, reasoning effort, context, permissions, or topology."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It separately evaluates access/tools, model capability, reasoning effort, context, permissions, verification, and topology."
+          }
+        },
+        {
+          "id": "availability-grounded",
+          "current": {
+            "verdict": "pass",
+            "evidence": "It recommends only the available Setup A and relies solely on capabilities stated in the case."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "It recommends only the confirmed Setup A and accurately limits Setup B to conceptual advice or review."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It maps the work only to Setups A and B, accurately states their confirmed capabilities, and marks A's model capability as unconfirmed."
+          }
+        },
+        {
+          "id": "actionable-handoff",
+          "current": {
+            "verdict": "partial",
+            "evidence": "It assigns the bounded work to Setup A and names required inputs and outputs, but does not explicitly resolve or identify remaining unknowns or name the human actor initiating the next step."
+          },
+          "no_skill": {
+            "verdict": "partial",
+            "evidence": "It identifies Setup A as the responsible setup, but does not state prerequisites, decision-critical unknowns, expected evidence handoff, or a clear next-step actor."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It supplies a valid recommendation-ready state, states that no gating prerequisite or decision-critical unknown remains, and assigns the next step to the responsible operator using Setup A."
+          }
+        },
+        {
+          "id": "authority-boundary",
+          "current": {
+            "verdict": "pass",
+            "evidence": "It clearly keeps production rollout authority separate and outside the preparation task."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "It only recommends a setup and neither performs nor authorizes the production rollout."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It explicitly limits Setup A to preparation and checks and says not to execute the rollout."
+          }
+        },
+        {
+          "id": "material-value",
+          "current": {
+            "verdict": "pass",
+            "evidence": "It provides the correct recommendation plus concrete verification artifacts for the handoff."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "It gives the correct decision-ready recommendation and explains why deterministic verification is gating."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It recommends Setup A based on gating access and verification capabilities and supplies an operationally clear handoff."
+          }
+        }
+      ]
+    },
+    {
+      "id": "parallel-independent-units",
+      "case_verdicts": {
+        "current": "fail",
+        "no_skill": "fail",
+        "candidate": "pass"
+      },
+      "requirements": [
+        {
+          "id": "independent-dimensions",
+          "current": {
+            "verdict": "fail",
+            "evidence": "Although context, permissions, verification, and topology are covered, model capability, reasoning effort, coding capability, and implied agent weight are collapsed into a light-to-strong scale rather than derived independently."
+          },
+          "no_skill": {
+            "verdict": "fail",
+            "evidence": "Focuses almost entirely on topology; it does not separately derive access/tools, model capability, reasoning effort, context, permissions, and verification."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Separately addresses access/tools, model capability, reasoning effort, context, permissions, verification, and topology without treating them as a single capability scale."
+          }
+        },
+        {
+          "id": "availability-grounded",
+          "current": {
+            "verdict": "fail",
+            "evidence": "Recommends “lightweight investigation-capable agents,” a capability class not confirmed by the case; only two identical read-only agents are confirmed."
+          },
+          "no_skill": {
+            "verdict": "partial",
+            "evidence": "Uses the confirmed parent and two agents without inventing named agents, but fails to identify whether those agents can access the three distinct evidence sources."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Uses only the confirmed parent and two identical agents, while explicitly marking evidence-source access as unconfirmed rather than inventing a setup."
+          }
+        },
+        {
+          "id": "actionable-handoff",
+          "current": {
+            "verdict": "fail",
+            "evidence": "Identifies the access unknown and says to confirm it before dispatch, but supplies no valid completion state and does not identify who owns that confirmation."
+          },
+          "no_skill": {
+            "verdict": "fail",
+            "evidence": "Assigns dispatch and integration actions to the parent but provides no completion state, prerequisites, or availability unknowns that must be resolved before execution."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Provides a supported conditional recommendation, names the access prerequisite, and assigns confirmation and dispatch to the parent/session operator."
+          }
+        },
+        {
+          "id": "topology-from-units",
+          "current": {
+            "verdict": "pass",
+            "evidence": "Preserves all three investigations as separate predefined work units and schedules the remaining unit when a worker becomes free."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "Schedules the three already-defined investigations without redesigning or subdividing them."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Queues the three already-defined investigations unchanged and introduces no new implementation-unit design."
+          }
+        },
+        {
+          "id": "parallel-safety",
+          "current": {
+            "verdict": "pass",
+            "evidence": "Uses separate contexts, read-only permissions, owners, checklists, a common report format, no shared intermediate state, and parent integration while optimizing latency."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "Cites independence and read-only operation, requires checklist-backed standardized results, integrates through the parent, and bounds concurrency to two for latency benefit."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Grounds parallelism in independence, read-only operation, explicit briefs and checklists, structured evidence returns, parent integration, and latency benefits exceeding the small coordination cost."
+          }
+        },
+        {
+          "id": "cost-constraint",
+          "current": {
+            "verdict": "pass",
+            "evidence": "Uses the stated latency concern and does not invent token, privacy, or monetary constraints."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "Uses the stated latency objective and two-agent capacity without asserting unstated cost, token, or privacy constraints."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Optimizes for the stated latency constraint and worker capacity without inventing cost, token, or privacy requirements."
+          }
+        },
+        {
+          "id": "authority-boundary",
+          "current": {
+            "verdict": "pass",
+            "evidence": "Only recommends a topology and confirmation step; it does not execute investigations, grant access, or change settings."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "Describes a proposed execution topology without actually executing work, modifying settings, or granting permissions."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Makes a recommendation only, states that no investigation was executed, and does not alter access or settings."
+          }
+        },
+        {
+          "id": "material-value",
+          "current": {
+            "verdict": "pass",
+            "evidence": "Provides a concrete worker-pool schedule, report contract, integration owner, and pre-dispatch access check."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "Provides a concrete two-agent queue, capacity-triggered assignment of the third unit, and parent synthesis flow."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Gives a decision-ready two-worker queue, third-unit scheduling rule, verification format, and access stop condition."
+          }
+        }
+      ]
+    },
+    {
+      "id": "shared-write-conflict",
+      "case_verdicts": {
+        "current": "fail",
+        "no_skill": "fail",
+        "candidate": "pass"
+      },
+      "requirements": [
+        {
+          "id": "independent-dimensions",
+          "current": {
+            "verdict": "fail",
+            "evidence": "It addresses topology, context, verification, and model capability, but does not separately derive access/tools, reasoning effort, and permissions."
+          },
+          "no_skill": {
+            "verdict": "fail",
+            "evidence": "It discusses only topology and a limited review arrangement, omitting separate derivations for tools/access, model capability, reasoning effort, context, permissions, and verification."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It separately analyzes topology, context, access/tools, model capability, reasoning effort, permissions, verification, and cost/latency."
+          }
+        },
+        {
+          "id": "availability-grounded",
+          "current": {
+            "verdict": "pass",
+            "evidence": "It uses only the confirmed parent and two coding agents, avoids inventing a named model, and describes capability needs generically."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "It confines the recommendation to the two confirmed coding agents and introduces no unsupported named model or setup."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It does not invent a named model or unavailable setup; it explicitly marks model capability as unconfirmed and states repository/tool access as requirements."
+          }
+        },
+        {
+          "id": "actionable-handoff",
+          "current": {
+            "verdict": "pass",
+            "evidence": "It recommends a concrete single-writer arrangement, identifies the schema decision as a prerequisite and stop condition, and assigns responsibilities to the parent and both agents."
+          },
+          "no_skill": {
+            "verdict": "fail",
+            "evidence": "Although it gives an assignment, it does not state a completion state, identify prerequisites or unresolved schema-decision status, or explicitly name the actor responsible for making the assignment."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It declares a recommendation-ready state, identifies prerequisites and the noncritical model unknown, and names the parent as the next actor with an exact assignment."
+          }
+        },
+        {
+          "id": "topology-from-units",
+          "current": {
+            "verdict": "pass",
+            "evidence": "It bases the topology on the two defined changes and does not design or implement the migration."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "It selects a topology for the already-defined changes without designing or implementing the migration."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It chooses topology from the two supplied work units and avoids designing or implementing their migration content."
+          }
+        },
+        {
+          "id": "parallel-safety",
+          "current": {
+            "verdict": "pass",
+            "evidence": "It rejects concurrent editing because of shared-file ownership, shared schema state, rework risk, and nondeterministic integration, while retaining sequential verification."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "It correctly rejects concurrent writes because the work shares a migration file and schema decision and the parent cannot reliably reconcile conflicts."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It rejects parallel implementation based on file contention, evolving shared context, absent deterministic merging, integration risk, and coordination cost; it provides exclusive ownership and unified checks."
+          }
+        },
+        {
+          "id": "authority-boundary",
+          "current": {
+            "verdict": "pass",
+            "evidence": "It only recommends assignments and checks; it does not execute work, modify settings, or grant permissions."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "It remains a recommendation and does not execute changes, grant permissions, or alter settings."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It explicitly distinguishes required permissions from authorization and performs no implementation or configuration change."
+          }
+        },
+        {
+          "id": "material-value",
+          "current": {
+            "verdict": "pass",
+            "evidence": "It gives a decision-ready single-owner topology plus a clear pause condition if the schema decision remains unsettled."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "It gives the central actionable decision: one sequential writer, with the second agent idle or limited to later read-only review."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "It provides a complete, decision-ready setup: one continuous writer, a read-only subsequent reviewer, unified validation, and corrections routed to the owner."
+          }
+        }
+      ]
+    },
+    {
+      "id": "undefined-work-units",
+      "case_verdicts": {
+        "current": "fail",
+        "no_skill": "fail",
+        "candidate": "pass"
+      },
+      "requirements": [
+        {
+          "id": "actionable-handoff",
+          "current": {
+            "verdict": "fail",
+            "evidence": "Identifies unknowns, prerequisites, and a planning actor, but does not return the explicitly required “Insufficient evidence” completion state."
+          },
+          "no_skill": {
+            "verdict": "fail",
+            "evidence": "Does not return the required “Insufficient evidence” completion state or identify an actor responsible for designing the boundaries and work units."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Explicitly returns “Completion state: Insufficient evidence,” identifies missing design, access, verification, and constraint information, and assigns boundary/work-unit definition to the feature’s design owner."
+          }
+        },
+        {
+          "id": "topology-from-units",
+          "current": {
+            "verdict": "pass",
+            "evidence": "Uses one agent only for planning and defers implementation topology until affected boundaries and separately verifiable work units have been designed."
+          },
+          "no_skill": {
+            "verdict": "partial",
+            "evidence": "Correctly postpones parallelization until boundaries exist, but does not explicitly return implementation-unit design to an owning workflow or actor."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Declines to select an implementation topology before work units exist. The single agent is limited to the design step, after which topology is reassessed from defined units."
+          }
+        },
+        {
+          "id": "parallel-safety",
+          "current": {
+            "verdict": "partial",
+            "evidence": "Requires independent and separately verifiable units and considers coordination, integration, and latency, but does not explicitly require conflict-free mutable state/files, ownership, checks, and an integration owner."
+          },
+          "no_skill": {
+            "verdict": "partial",
+            "evidence": "Mentions conflict and duplication risk, but omits explicit ownership, verification checks, integration responsibility, and coordination-cost justification."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Conditions parallelism on explicit ownership, independent files/state, verification checks, integration responsibility, and coordination savings exceeding cost."
+          }
+        },
+        {
+          "id": "authority-boundary",
+          "current": {
+            "verdict": "pass",
+            "evidence": "Restricts the next step to read-only planning and expressly excludes implementation."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "Does not implement the feature, change settings, grant permissions, or claim broader authorization."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Makes no changes or permission grants and clearly separates the setup decision from unknown implementation permissions."
+          }
+        },
+        {
+          "id": "material-value",
+          "current": {
+            "verdict": "pass",
+            "evidence": "Gives a concrete planning setup, required context, permission boundary, verification targets, and a clear reassessment gate."
+          },
+          "no_skill": {
+            "verdict": "partial",
+            "evidence": "Provides a useful stop condition, but the handoff lacks prerequisites, a responsible actor, and concrete reassessment criteria."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Provides a concrete stop condition, specifies what must be designed, names the responsible actor, and defines the evidence required for reassessment."
+          }
+        }
+      ]
+    },
+    {
+      "id": "learning-coexistence",
+      "case_verdicts": {
+        "current": "partial",
+        "no_skill": "fail",
+        "candidate": "pass"
+      },
+      "requirements": [
+        {
+          "id": "independent-dimensions",
+          "current": {
+            "verdict": "partial",
+            "evidence": "Covers context, permissions, verification, reasoning, and topology, but combines access/tools and general capability in one profile and does not independently derive model capability."
+          },
+          "no_skill": {
+            "verdict": "fail",
+            "evidence": "Does not independently derive model capability, reasoning effort, context, permissions, or topology; it compresses the setup into a short generic recommendation."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Separately addresses access/tools, model capability, reasoning effort, context, permissions, verification/review, and single-agent topology."
+          }
+        },
+        {
+          "id": "availability-grounded",
+          "current": {
+            "verdict": "pass",
+            "evidence": "Uses the confirmed repository-capable coding agent and does not require an unavailable named model, tool, or topology."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "Recommends only the confirmed repository-capable coding agent with confirmed code and test access."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Recommends only the confirmed repository-capable agent and explicitly declines to invent a model tier or special reasoning setting."
+          }
+        },
+        {
+          "id": "actionable-handoff",
+          "current": {
+            "verdict": "partial",
+            "evidence": "Provides prerequisites, assigns end-to-end ownership to the agent, and notes reassessment triggers, but does not clearly state a completion state or enumerate current decision-critical unknowns."
+          },
+          "no_skill": {
+            "verdict": "fail",
+            "evidence": "Identifies the coding agent and desired output evidence, but supplies no explicit completion state, setup prerequisites, or decision-critical unknowns."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Declares “Recommendation ready,” identifies the feature specification as the remaining input, states that no decision-critical unknown remains, and assigns execution to the repository-capable agent."
+          }
+        },
+        {
+          "id": "authority-boundary",
+          "current": {
+            "verdict": "pass",
+            "evidence": "Only recommends a setup and expressly reserves external-system actions for separate authorization."
+          },
+          "no_skill": {
+            "verdict": "pass",
+            "evidence": "Recommends an agent and handoff requirements without executing work, changing settings, or granting permissions."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Makes a setup recommendation without executing work and explicitly says it does not authorize commits, pushes, deployments, or external changes."
+          }
+        },
+        {
+          "id": "learning-boundary",
+          "current": {
+            "verdict": "pass",
+            "evidence": "Defines learning calibration as an optional follow-on workflow and deliberately leaves the teaching method undecided."
+          },
+          "no_skill": {
+            "verdict": "partial",
+            "evidence": "Correctly separates the learning approach, but does not provide the requested separate optional learning-calibration handoff."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Keeps learning design out of scope while providing a separate optional learning-calibration handoff after implementation."
+          }
+        },
+        {
+          "id": "material-value",
+          "current": {
+            "verdict": "pass",
+            "evidence": "Gives an actionable setup with work ownership, minimum context, permission limits, verification sequence, completion evidence, and escalation conditions."
+          },
+          "no_skill": {
+            "verdict": "partial",
+            "evidence": "The agent choice and evidence list are useful, but the setup remains too underspecified to satisfy the contract’s decision-ready dimensional analysis."
+          },
+          "candidate": {
+            "verdict": "pass",
+            "evidence": "Provides a decision-ready single-session setup, required context, validation expectations, permission limits, topology rationale, and next actor."
+          }
+        }
+      ]
+    }
+  ],
+  "triggers": [
+    {
+      "id": "explicit-setup-selection",
+      "expected_handler": [
+        "choose-ai-execution-setup"
+      ],
+      "current": {
+        "verdict": "pass",
+        "expected_loads": [
+          "triage-agent-usage"
+        ],
+        "observed_loads": [
+          "triage-agent-usage"
+        ]
+      },
+      "no_skill": {
+        "verdict": "pass",
+        "expected_loads": [],
+        "observed_loads": []
+      },
+      "candidate": {
+        "verdict": "pass",
+        "expected_loads": [
+          "choose-ai-execution-setup"
+        ],
+        "observed_loads": [
+          "choose-ai-execution-setup"
+        ]
+      }
+    },
+    {
+      "id": "missing-setup-inputs",
+      "expected_handler": [
+        "choose-ai-execution-setup"
+      ],
+      "current": {
+        "verdict": "pass",
+        "expected_loads": [
+          "triage-agent-usage"
+        ],
+        "observed_loads": [
+          "triage-agent-usage"
+        ]
+      },
+      "no_skill": {
+        "verdict": "pass",
+        "expected_loads": [],
+        "observed_loads": []
+      },
+      "candidate": {
+        "verdict": "pass",
+        "expected_loads": [
+          "choose-ai-execution-setup"
+        ],
+        "observed_loads": [
+          "choose-ai-execution-setup"
+        ]
+      }
+    },
+    {
+      "id": "predefined-topology-choice",
+      "expected_handler": [
+        "choose-ai-execution-setup"
+      ],
+      "current": {
+        "verdict": "pass",
+        "expected_loads": [
+          "triage-agent-usage"
+        ],
+        "observed_loads": [
+          "triage-agent-usage"
+        ]
+      },
+      "no_skill": {
+        "verdict": "fail",
+        "expected_loads": [],
+        "observed_loads": [
+          "design-changes"
+        ]
+      },
+      "candidate": {
+        "verdict": "pass",
+        "expected_loads": [
+          "choose-ai-execution-setup"
+        ],
+        "observed_loads": [
+          "choose-ai-execution-setup"
+        ]
+      }
+    },
+    {
+      "id": "approved-implementation",
+      "expected_handler": [
+        "implement-changes"
+      ],
+      "current": {
+        "verdict": "pass",
+        "expected_loads": [
+          "implement-changes"
+        ],
+        "observed_loads": [
+          "implement-changes"
+        ]
+      },
+      "no_skill": {
+        "verdict": "pass",
+        "expected_loads": [
+          "implement-changes"
+        ],
+        "observed_loads": [
+          "implement-changes"
+        ]
+      },
+      "candidate": {
+        "verdict": "pass",
+        "expected_loads": [
+          "implement-changes"
+        ],
+        "observed_loads": [
+          "implement-changes"
+        ]
+      }
+    },
+    {
+      "id": "implementation-design",
+      "expected_handler": [
+        "design-changes"
+      ],
+      "current": {
+        "verdict": "pass",
+        "expected_loads": [
+          "design-changes"
+        ],
+        "observed_loads": [
+          "design-changes"
+        ]
+      },
+      "no_skill": {
+        "verdict": "pass",
+        "expected_loads": [
+          "design-changes"
+        ],
+        "observed_loads": [
+          "design-changes"
+        ]
+      },
+      "candidate": {
+        "verdict": "pass",
+        "expected_loads": [
+          "design-changes"
+        ],
+        "observed_loads": [
+          "design-changes"
+        ]
+      }
+    },
+    {
+      "id": "learning-calibration",
+      "expected_handler": [
+        "calibrate-learning-support"
+      ],
+      "current": {
+        "verdict": "pass",
+        "expected_loads": [
+          "calibrate-learning-support"
+        ],
+        "observed_loads": [
+          "calibrate-learning-support"
+        ]
+      },
+      "no_skill": {
+        "verdict": "pass",
+        "expected_loads": [
+          "calibrate-learning-support"
+        ],
+        "observed_loads": [
+          "calibrate-learning-support"
+        ]
+      },
+      "candidate": {
+        "verdict": "pass",
+        "expected_loads": [
+          "calibrate-learning-support"
+        ],
+        "observed_loads": [
+          "calibrate-learning-support"
+        ]
+      }
+    },
+    {
+      "id": "diff-review",
+      "expected_handler": [
+        "review-changes"
+      ],
+      "current": {
+        "verdict": "pass",
+        "expected_loads": [
+          "review-changes"
+        ],
+        "observed_loads": [
+          "review-changes"
+        ]
+      },
+      "no_skill": {
+        "verdict": "pass",
+        "expected_loads": [
+          "review-changes"
+        ],
+        "observed_loads": [
+          "review-changes"
+        ]
+      },
+      "candidate": {
+        "verdict": "pass",
+        "expected_loads": [
+          "review-changes"
+        ],
+        "observed_loads": [
+          "review-changes"
+        ]
+      }
+    },
+    {
+      "id": "client-setting-change",
+      "expected_handler": [
+        "implement-changes"
+      ],
+      "current": {
+        "verdict": "pass",
+        "expected_loads": [
+          "implement-changes"
+        ],
+        "observed_loads": [
+          "implement-changes"
+        ]
+      },
+      "no_skill": {
+        "verdict": "pass",
+        "expected_loads": [
+          "implement-changes"
+        ],
+        "observed_loads": [
+          "implement-changes"
+        ]
+      },
+      "candidate": {
+        "verdict": "pass",
+        "expected_loads": [
+          "implement-changes"
+        ],
+        "observed_loads": [
+          "implement-changes"
+        ]
+      }
+    }
+  ],
+  "adjacent_checks": [
+    {
+      "id": "calibrate-learning-support-tool-and-model-selection",
+      "expected_loads": [
+        "choose-ai-execution-setup"
+      ],
+      "observed_loads": [
+        "choose-ai-execution-setup"
+      ],
+      "verdict": "pass"
+    }
+  ],
+  "unverified": [
+    "Claude and clients other than Codex CLI were not executed.",
+    "The observed results do not establish behavior for untested models, reasoning settings, repositories, or longer conversations.",
+    "No real-use trace was available for the new identity; the next validation question remains actual user invocation and convergence."
+  ]
+}
