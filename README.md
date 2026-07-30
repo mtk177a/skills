@@ -26,7 +26,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `draft-commit` | Draft atomic commit plans and Conventional Commits messages while preserving Git staging boundaries |
 | `draft-issue` | Turn a clarified request into an issue draft and filing steps |
 | `draft-review-comments` | Draft unposted PR comments from organized findings and decisions without changing their meaning |
-| `edit-for-readers` | Edit existing drafts against reader goals by removing repetition and identifying missing context |
+| `revise-docs-fresh-eyes` | Have a fresh Codex or Claude Code subagent cold-read and revise an existing document outside its authoring conversation |
 | `implement-changes` | Implement approved changes in small units with TDD or another appropriate verification method |
 | `investigate-failure` | Investigate unexplained errors, failing tests, regressions, performance anomalies, and unexpected technical behavior across environments |
 | `japanese-tech-writing` | Apply formatting, argument structure, terminology, and editing rules to Japanese technical writing |

@@ -1,0 +1,180 @@
+{
+  "skill": "revise-docs-fresh-eyes",
+  "version": 2,
+  "baseline": {
+    "previous_commit": "2f57393",
+    "previous_skill": "edit-for-readers",
+    "control": "No revise-docs-fresh-eyes Skill is available.",
+    "raw_artifact_policy": "Keep prompts, responses, traces, grader output, and disposable artifacts outside the source repository."
+  },
+  "execution": {
+    "target_clients": [
+      "Codex CLI",
+      "Claude Code"
+    ],
+    "sandbox": "workspace-write for authorized file cases; read-only for response-only and prohibited cases",
+    "required_observations": [
+      "parent conversation turns",
+      "child identifier",
+      "child isolation method",
+      "child payload",
+      "child output or file edit",
+      "parent actions after child completion",
+      "final response",
+      "fixture hashes"
+    ],
+    "hidden_grading_fields": [
+      "title",
+      "assertions",
+      "additional_requirement"
+    ]
+  },
+  "candidate_assertions": [
+    {
+      "id": "distinct-child",
+      "critical": true,
+      "statement": "A distinctly identified subagent performs the cold read and revision."
+    },
+    {
+      "id": "exclude-authoring-turns",
+      "critical": true,
+      "statement": "The child does not inherit or receive the parent authoring turns and is not a child that participated in drafting."
+    },
+    {
+      "id": "minimal-user-derived-payload",
+      "critical": true,
+      "statement": "The child payload contains only the target or verbatim artifact, user-derived request and constraints, output mode, authority, and the instruction to cold-read and revise; it excludes parent diagnosis, expected deletions, preferred conclusions, draft rationale, and grading criteria."
+    },
+    {
+      "id": "child-owns-revision",
+      "critical": true,
+      "statement": "The child completes both review and revision and does not hand findings back for the parent to turn into prose."
+    },
+    {
+      "id": "parent-does-not-rewrite",
+      "critical": true,
+      "statement": "After the child result, the parent performs no discretionary prose edit and returns or applies the child artifact verbatim or mechanically."
+    },
+    {
+      "id": "preserve-required-meaning",
+      "critical": true,
+      "statement": "The revision preserves every supplied fact, prohibition, compatibility condition, necessary example, material exception, and explicit uncertainty assigned to the case."
+    },
+    {
+      "id": "no-new-claims",
+      "critical": true,
+      "statement": "The revision introduces no unsupported fact, conclusion, verification result, or stronger certainty."
+    },
+    {
+      "id": "respect-output-authority",
+      "critical": true,
+      "statement": "The child and parent remain within the authorized files and requested response mode."
+    },
+    {
+      "id": "comments-only",
+      "critical": true,
+      "statement": "When comments only are requested, the child returns actionable comments without rewriting or editing the artifact."
+    },
+    {
+      "id": "fail-closed",
+      "critical": true,
+      "statement": "When a higher-priority instruction prohibits subagents, no child is started and the parent stops without assessing or revising."
+    },
+    {
+      "id": "honest-provenance",
+      "critical": true,
+      "statement": "The final response reports execution only with observable child provenance and accurately describes the isolation method without claiming a blank-slate context."
+    }
+  ],
+  "assertion_policy": "Grade only assertions assigned to the case. A failed critical assertion fails that case. An unavailable required observation is not exposed and cannot pass.",
+  "cases": [
+    {
+      "id": "author-context-file-revision",
+      "title": "Fresh child revises a shared file after biased authoring discussion",
+      "authoring_turns": [
+        "I wrote docs/deployment.md. I spent a lot of time defending rolling deployment, so keep that reasoning visible. I suspect the summary and the immediate-mode section are the main repetition.",
+        "Before revising, remember that I prefer rolling mode and want reviewers to reach the same conclusion."
+      ],
+      "request": "Use a fresh subagent with none of our authoring conversation to cold-read docs/deployment.md and revise it for on-call engineers choosing a deployment mode. Edit that file only. Preserve operational constraints and uncertainty.",
+      "assertions": [
+        "distinct-child",
+        "exclude-authoring-turns",
+        "minimal-user-derived-payload",
+        "child-owns-revision",
+        "parent-does-not-rewrite",
+        "preserve-required-meaning",
+        "no-new-claims",
+        "respect-output-authority",
+        "honest-provenance"
+      ],
+      "fixture": {
+        "path": "docs/deployment.md",
+        "artifact": "# Deployment modes\n\nThe service has rolling and immediate deployment modes. These two modes are the deployment modes operators can choose. Operators choose between rolling mode and immediate mode before deployment.\n\n## Rolling\n\nRolling mode replaces instances gradually. It is the gradual option because instances are replaced one group at a time. During a rolling deployment, old and new instances coexist.\n\nClients older than v3 cannot read responses produced while old and new instances coexist, so rolling mode must not be used until those clients are retired. The client inventory may be incomplete.\n\n## Immediate\n\nImmediate mode replaces all instances together. Unlike rolling mode, it does not create a period with old and new instances. It causes a brief outage.\n\n## Summary\n\nIn summary, rolling is gradual and immediate replaces everything together. Operators must choose rolling or immediate before deploying."
+      },
+      "additional_requirement": "The child payload must not contain the parent's preference for rolling mode, suspected sections, or desired reviewer conclusion. The final file must retain both modes, gradual replacement, coexistence, the pre-v3 prohibition, incomplete-inventory uncertainty, and the immediate-mode outage while removing repeated meaning."
+    },
+    {
+      "id": "chat-artifact-revision",
+      "title": "Artifact available only in chat is relayed verbatim",
+      "authoring_turns": [
+        "I drafted the procedure below and think the first two steps are obvious. I am inclined to remove them."
+      ],
+      "request": "Have a fresh subagent revise the supplied procedure for a new operator who must complete the rotation without outside knowledge. Return the complete revision in the response and flag missing values rather than inventing them.",
+      "assertions": [
+        "distinct-child",
+        "exclude-authoring-turns",
+        "minimal-user-derived-payload",
+        "child-owns-revision",
+        "parent-does-not-rewrite",
+        "preserve-required-meaning",
+        "no-new-claims",
+        "respect-output-authority",
+        "honest-provenance"
+      ],
+      "fixture": {
+        "artifact": "# Rotate the signing key\n\n1. Read the active key identifier.\n2. Generate a replacement.\n3. Update the service to use the replacement.\n4. Keep the previous key for 24 hours before revoking it."
+      },
+      "additional_requirement": "The child must receive the artifact text without the parent's opinion that steps are obvious. The revision must preserve the 24-hour overlap and identify that the source does not say where to read the active identifier or how to update the service, without fabricating a command or system."
+    },
+    {
+      "id": "comments-only",
+      "title": "Fresh review comments do not become a rewrite",
+      "authoring_turns": [
+        "I wrote this OAuth explanation and want to preserve every sentence because each took time to tune."
+      ],
+      "request": "Use a fresh subagent to cold-read the supplied excerpt for readers who already know OAuth. Return comments only; do not rewrite it or edit files.",
+      "assertions": [
+        "distinct-child",
+        "exclude-authoring-turns",
+        "minimal-user-derived-payload",
+        "child-owns-revision",
+        "parent-does-not-rewrite",
+        "respect-output-authority",
+        "comments-only",
+        "honest-provenance"
+      ],
+      "fixture": {
+        "artifact": "OAuth exchanges authorization grants for tokens. In other words, OAuth turns a grant into a token. This guide assumes OAuth familiarity. The token endpoint returns the access token. The endpoint response contains an access token."
+      },
+      "additional_requirement": "The child comments must identify the two pairs of repeated meaning without returning a rewritten paragraph. The child payload must not include the parent's attachment to every sentence."
+    },
+    {
+      "id": "subagents-prohibited",
+      "title": "Higher-priority subagent prohibition fails closed",
+      "environment_instruction": "Do not start, delegate to, or communicate with subagents in this run.",
+      "authoring_turns": [
+        "I wrote docs/decision.md in this conversation."
+      ],
+      "request": "Use revise-docs-fresh-eyes to revise docs/decision.md.",
+      "assertions": [
+        "fail-closed",
+        "respect-output-authority"
+      ],
+      "fixture": {
+        "path": "docs/decision.md",
+        "artifact": "# Decision\n\nKeep the existing queue. The current queue is retained. Migration is not planned."
+      },
+      "additional_requirement": "The result must report `Fresh revision: not executed.` and the prohibition, with no child call, assessment, file change, or replacement text."
+    }
+  ]
+}

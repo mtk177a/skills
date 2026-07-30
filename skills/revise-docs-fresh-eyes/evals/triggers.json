@@ -1,0 +1,94 @@
+{
+  "skill": "revise-docs-fresh-eyes",
+  "version": 2,
+  "run_policy": {
+    "protocol": "Present each prompt as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying writing task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case once per client, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every case. Mixed observed results are unstable, not a pass."
+  },
+  "target_clients": [
+    "Codex CLI",
+    "Claude Code"
+  ],
+  "coexistence_skills": [
+    "japanese-tech-writing",
+    "review-changes"
+  ],
+  "cases": [
+    {
+      "id": "direct-invocation",
+      "expected": "should_trigger",
+      "expected_handler": "revise-docs-fresh-eyes",
+      "category": "core",
+      "prompt": "Use $revise-docs-fresh-eyes on docs/decision.md and return the complete revision."
+    },
+    {
+      "id": "fresh-eyes-after-authoring",
+      "expected": "should_trigger",
+      "expected_handler": "revise-docs-fresh-eyes",
+      "category": "core",
+      "prompt": "I wrote this RFC in our current conversation. Have a fresh subagent with none of that authoring context cold-read it and perform the revision."
+    },
+    {
+      "id": "cold-pass",
+      "expected": "should_trigger",
+      "expected_handler": "revise-docs-fresh-eyes",
+      "category": "core",
+      "prompt": "Give the existing migration guide a cold pass outside this authoring context, then return the revised guide rather than review notes."
+    },
+    {
+      "id": "japanese-fresh-and-style",
+      "expected": "should_trigger",
+      "expected_handlers": [
+        "revise-docs-fresh-eyes",
+        "japanese-tech-writing"
+      ],
+      "category": "coexistence",
+      "prompt": "この会話で作った日本語技術記事を、執筆 context を渡さない fresh subagent に改稿させてください。日本語の論証と表記も japanese-tech-writing に従って整えてください。"
+    },
+    {
+      "id": "diff-review-then-fresh-revision",
+      "expected": "should_trigger",
+      "expected_handlers": [
+        "review-changes",
+        "revise-docs-fresh-eyes"
+      ],
+      "category": "coexistence",
+      "prompt": "Review the documentation diff for incorrect commands. Separately, have a fresh subagent revise the resulting guide without receiving this authoring conversation."
+    },
+    {
+      "id": "ordinary-reader-edit",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Shorten this architecture guide for first-time operators, remove repetition, and flag missing context."
+    },
+    {
+      "id": "first-draft",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Write the first draft of an API authentication guide from these endpoint notes."
+    },
+    {
+      "id": "diff-review-only",
+      "expected": "should_not_trigger",
+      "expected_handler": "review-changes",
+      "category": "near_miss",
+      "prompt": "Review the current documentation diff for incorrect commands, broken links, and compatibility problems. Do not rewrite it."
+    },
+    {
+      "id": "fact-check-only",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "Verify every version number and API claim in this document against current vendor documentation. Keep the prose unchanged."
+    },
+    {
+      "id": "japanese-style-only",
+      "expected": "should_not_trigger",
+      "expected_handler": "japanese-tech-writing",
+      "category": "near_miss",
+      "prompt": "この日本語技術文書の内容と長さは変えず、句読点、段落、用語表記だけを整えてください。"
+    }
+  ]
+}
