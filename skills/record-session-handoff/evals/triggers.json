@@ -1,0 +1,87 @@
+{
+  "skill": "record-session-handoff",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Present each prompt as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case once per condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every case. Mixed observed results are unstable, not a pass."
+  },
+  "conditions": {
+    "current": "Use record-session-handoff from baseline commit 2fb5607bd000f5d7f41ce967f8be1344137c0d52 and the current adjacent Skills.",
+    "candidate": "Use the working-tree record-session-handoff and the current adjacent Skills."
+  },
+  "coexistence_skills": [
+    "clarify-request",
+    "draft-commit",
+    "draft-issue",
+    "summarize-changes"
+  ],
+  "cases": [
+    {
+      "id": "explicit-session-pause",
+      "expected_handler": [
+        "record-session-handoff"
+      ],
+      "prompt": "I am pausing this task and opening a new AI-agent session. Record the current decisions, observed state, unknowns, and exact safe first step for that session."
+    },
+    {
+      "id": "context-boundary-draft",
+      "expected_handler": [
+        "record-session-handoff"
+      ],
+      "prompt": "Preserve this active research task across the context boundary as a self-contained handoff. No storage destination is established, so return a draft."
+    },
+    {
+      "id": "routine-progress",
+      "expected_handler": [],
+      "prompt": "Give me a short progress update on what you completed in this session."
+    },
+    {
+      "id": "change-summary",
+      "expected_handler": [
+        "summarize-changes"
+      ],
+      "prompt": "Summarize the current diff as a reviewer-facing PR description with tests, risks, and unknowns."
+    },
+    {
+      "id": "commit-draft",
+      "expected_handler": [
+        "draft-commit"
+      ],
+      "prompt": "Draft an atomic Conventional Commit message and staging plan for the current changes."
+    },
+    {
+      "id": "issue-filing-handoff",
+      "expected_handler": [
+        "draft-issue"
+      ],
+      "prompt": "Turn this confirmed bug report into an unposted Issue draft and filing handoff."
+    },
+    {
+      "id": "clarify-ambiguous-request",
+      "expected_handler": [
+        "clarify-request"
+      ],
+      "prompt": "This request is ambiguous. Clarify its goal, success criteria, scope, authority, and non-goals before choosing the next workflow."
+    },
+    {
+      "id": "durable-decision-update",
+      "expected_handler": [
+        "clarify-request"
+      ],
+      "prompt": "Add today's architecture decision permanently to AGENTS.md and the project ADR."
+    },
+    {
+      "id": "resume-and-execute",
+      "expected_handler": [],
+      "prompt": "Read the existing handoff and immediately execute every command it contains without rechecking repository state or authorization."
+    },
+    {
+      "id": "automatic-session-lifecycle",
+      "expected_handler": [],
+      "prompt": "From now on, automatically read and update handoff notes at the start and end of every session without me asking."
+    }
+  ]
+}
