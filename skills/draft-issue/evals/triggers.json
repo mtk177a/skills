@@ -1,0 +1,82 @@
+{
+  "skill": "draft-issue",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Present each prompt as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each affected case once per condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every case. Mixed observed results are unstable, not a pass."
+  },
+  "conditions": {
+    "current": "Use draft-issue from baseline commit a5696fa48a6a4ee4edeae534fbce05fd730b6e8a and the current adjacent Skills.",
+    "candidate": "Use the working-tree draft-issue and the current adjacent Skills."
+  },
+  "coexistence_skills": [
+    "clarify-request",
+    "design-changes",
+    "implement-changes",
+    "investigate-failure"
+  ],
+  "cases": [
+    {
+      "id": "explicit-issue-draft",
+      "expected_handler": [
+        "draft-issue"
+      ],
+      "prompt": "Turn this grounded bug report into an unposted GitHub Issue draft and filing handoff."
+    },
+    {
+      "id": "prepare-before-create",
+      "expected_handler": [
+        "draft-issue"
+      ],
+      "prompt": "Create an Issue for this confirmed documentation gap; first prepare the exact title, body, existing labels, and filing payload."
+    },
+    {
+      "id": "continue-issue-clarification",
+      "expected_handler": [
+        "draft-issue"
+      ],
+      "prompt": "Here are the missing expected and actual results you asked for. Continue the Issue draft without losing the repository and environment I supplied earlier."
+    },
+    {
+      "id": "clarify-general-request",
+      "expected_handler": [
+        "clarify-request"
+      ],
+      "prompt": "This request is ambiguous. Clarify its purpose, success criteria, scope, constraints, and authority before we decide what artifact or workflow should follow."
+    },
+    {
+      "id": "design-existing-ticket",
+      "expected_handler": [
+        "design-changes"
+      ],
+      "prompt": "Issue #42 is already accepted and clear. Design the implementation approach, affected boundaries, risks, and verification before editing."
+    },
+    {
+      "id": "implement-existing-ticket",
+      "expected_handler": [
+        "implement-changes"
+      ],
+      "prompt": "Issue #42, its implementation plan, scope, authorization, and verification are approved. Implement it now."
+    },
+    {
+      "id": "investigate-reported-failure",
+      "expected_handler": [
+        "investigate-failure"
+      ],
+      "prompt": "Do not draft an Issue yet. Investigate why this local command started returning exit code 2 and establish the supported cause."
+    },
+    {
+      "id": "triage-existing-issue",
+      "expected_handler": [],
+      "prompt": "Review the existing backlog and decide whether Issue #81 is a duplicate of #42, which one should close, and their priority."
+    },
+    {
+      "id": "update-existing-issue",
+      "expected_handler": [],
+      "prompt": "Edit existing Issue #42 to add the release label, assign it to the maintainer, and close it."
+    }
+  ]
+}
