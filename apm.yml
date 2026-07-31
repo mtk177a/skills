@@ -14,6 +14,7 @@ dependencies:
     - mtk177a/skills/skills/define-referents
     - mtk177a/skills/skills/japanese-tech-writing
     - mtk177a/skills/skills/cognitive-rhythm-writing
+    - mtk177a/skills/skills/curate-repo-docs
     - mtk177a/skills/skills/revise-docs-fresh-eyes
     - mtk177a/skills/skills/review-changes
     - mtk177a/skills/skills/audit-agent-guidance

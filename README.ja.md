@@ -10,7 +10,7 @@
 
 ## Skill 一覧
 
-開発作業全般をカバーする 25 の Skill を収録しています。
+開発作業全般をカバーする 26 の Skill を収録しています。
 
 | Skill | 説明 |
 | --- | --- |
@@ -20,6 +20,7 @@
 | `choose-ai-execution-setup` | 具体的な task に使う AI execution setup を、access、model、reasoning、context、permission、verification、topology の独立した次元から助言する |
 | `clarify-request` | 曖昧な依頼を、次の workflow を開始できるか、低影響な前提で進めるか、blocked と判断できるまで反復して明確化・構造化する |
 | `cognitive-rhythm-writing` | 認知モードと未回収の緊張を管理し、日本語の説明文に緩急を設計する |
+| `curate-repo-docs` | リポジトリ管理の文書について、変更要否、根拠、正本、最小差分、検証を判断する |
 | `define-referents` | 曖昧な語を具体的な指示対象へ結び付け、命名上の制約を元の workflow へ返す |
 | `design-agent-instructions` | AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md を設計する |
 | `design-changes` | 実装前に変更方針・影響範囲・リスク・確認方針を設計する |

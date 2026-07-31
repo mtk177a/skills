@@ -8,7 +8,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 
 ## Skills
 
-25 Skills covering common development workflows:
+26 Skills covering common development workflows:
 
 | Skill | Description |
 | --- | --- |
@@ -18,6 +18,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `choose-ai-execution-setup` | Advise which available AI execution setup should handle a concrete task across access, model, reasoning, context, permission, verification, and topology dimensions |
 | `clarify-request` | Iteratively clarify or structure an ambiguous request until the next workflow can start, proceed under low-impact assumptions, or report a blocker |
 | `cognitive-rhythm-writing` | Design pacing in explanatory Japanese writing by managing cognitive rhythm and unresolved tension |
+| `curate-repo-docs` | Keep repository-managed documentation minimal, evidence-backed, correctly placed, and validated |
 | `define-referents` | Ground ambiguous terms in concrete referents and return naming constraints to the originating workflow |
 | `design-agent-instructions` | Design AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md instruction sets |
 | `design-changes` | Design change scope, impact, risk, and verification approach before implementing |

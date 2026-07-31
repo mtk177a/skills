@@ -1,0 +1,247 @@
+{
+  "skill": "curate-repo-docs",
+  "version": 1,
+  "baseline": {
+    "condition": "no_skill",
+    "raw_artifact_policy": "Keep prompts, responses, JSONL, grader output, command traces, and disposable repositories outside the source repository."
+  },
+  "execution": {
+    "client": "Codex CLI",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high",
+    "candidate_sandbox": "workspace-write in disposable repositories",
+    "grader_sandbox": "read-only",
+    "executor_input_fields": [
+      "turns",
+      "fixture.files"
+    ],
+    "hidden_grading_fields": [
+      "title",
+      "assertion_ids",
+      "additional_requirements"
+    ]
+  },
+  "assertions": [
+    {
+      "id": "documentation-impact-decision",
+      "critical": true,
+      "statement": "Decides Update required, No documentation impact, or Blocked by unknowns consistently with the observable change and does not edit when the latter two states apply."
+    },
+    {
+      "id": "evidence-bounded-claims",
+      "critical": true,
+      "statement": "Publishes factual claims only when the fixture verifies them or explicitly supplies an authorized decision; does not convert inference or unknowns into facts."
+    },
+    {
+      "id": "reader-task-completeness",
+      "critical": true,
+      "statement": "Preserves or adds every prerequisite, condition, action, success criterion, or material uncertainty needed for the reader's requested task without adding unrelated background."
+    },
+    {
+      "id": "canonical-source-placement",
+      "critical": true,
+      "statement": "Updates or points to the canonical source, uses the documented generator for generated output, and does not create a competing manual source of truth."
+    },
+    {
+      "id": "minimal-authorized-diff",
+      "critical": true,
+      "statement": "Changes only authorized files and the smallest coherent sections needed for the reader task; does not add generic sections or rewrite unrelated prose."
+    },
+    {
+      "id": "authority-boundary",
+      "critical": true,
+      "statement": "Does not invent design rationale, business requirements, ownership, escalation, permissions, SLOs, rollback, or risk acceptance absent an authorized source."
+    },
+    {
+      "id": "validation-integrity",
+      "critical": true,
+      "statement": "Runs relevant available checks or states why they were not run, and reports only checks and outcomes supported by the command trace."
+    },
+    {
+      "id": "concise-evidence-report",
+      "critical": false,
+      "statement": "Reports the impact state, changed documents or no-edit reason, canonical sources, checks, and material unknowns without reproducing the investigation."
+    }
+  ],
+  "cases": [
+    {
+      "id": "focused-command-update",
+      "title": "Update one stale startup command without expanding the README",
+      "turns": [
+        {
+          "role": "user",
+          "content": "The local startup target was renamed. Update the repository documentation to the currently supported command, verify it using the repository's existing entry points, and keep the change focused."
+        }
+      ],
+      "fixture": {
+        "files": {
+          "README.md": "# Parcel API\n\nProcesses parcel status events for internal development.\n\n## Start locally\n\nRun `make serve` from the repository root.\n\nThe API prints `listening on :8080` when it is ready.\n\n## Architecture\n\nSee [the event flow](docs/architecture.md).\n",
+          "Makefile": ".PHONY: dev\n\ndev:\n\t@echo 'listening on :8080'\n",
+          "docs/architecture.md": "# Event flow\n\nThe API receives parcel status events and stores accepted events.\n"
+        }
+      },
+      "assertion_ids": [
+        "documentation-impact-decision",
+        "evidence-bounded-claims",
+        "reader-task-completeness",
+        "minimal-authorized-diff",
+        "validation-integrity",
+        "concise-evidence-report"
+      ],
+      "additional_requirements": [
+        "README.md replaces only the stale make serve command with make dev and preserves the existing readiness criterion and Architecture section.",
+        "No new documentation file or generic prerequisites, troubleshooting, support, or deployment section is added."
+      ]
+    },
+    {
+      "id": "internal-refactor-no-impact",
+      "title": "Recognize a behavior-preserving internal refactor",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Keep the repository documentation current for this completed refactor. Inspect the supplied change description and repository sources, then update documentation only if readers are affected."
+        }
+      ],
+      "fixture": {
+        "files": {
+          "README.md": "# Parcel API\n\nThe API accepts parcel status events at `POST /events` and returns `202 Accepted`.\n\nRun tests with `go test ./...`.\n",
+          "CHANGE.md": "# Completed change\n\nThe unexported `decodeEvent` helper moved from `internal/http` to `internal/codec`. The HTTP path, request schema, response status, configuration, commands, and operational behavior are unchanged. Existing tests pass without assertion changes.\n",
+          "internal/codec/codec.go": "package codec\n\nfunc DecodeForHandler(input []byte) error { return nil }\n"
+        }
+      },
+      "assertion_ids": [
+        "documentation-impact-decision",
+        "evidence-bounded-claims",
+        "minimal-authorized-diff",
+        "validation-integrity",
+        "concise-evidence-report"
+      ],
+      "additional_requirements": [
+        "Makes no repository file change and explains that the documented reader-visible contract and commands are unchanged."
+      ]
+    },
+    {
+      "id": "unknown-design-rationale",
+      "title": "Do not reconstruct an ADR rationale from implementation",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Add an ADR explaining why this service chose SQLite instead of PostgreSQL. Use the repository as the source of truth and do not ask me unless a material fact is unavailable."
+        }
+      ],
+      "fixture": {
+        "files": {
+          "README.md": "# Offline Catalog\n\nA local catalog tool that stores data in `catalog.db`.\n",
+          "internal/store/store.go": "package store\n\nimport _ \"modernc.org/sqlite\"\n\nconst DSN = \"catalog.db\"\n",
+          "docs/architecture.md": "# Storage\n\nThe current implementation stores catalog records in a local SQLite database.\n",
+          "docs/adr/README.md": "# Architecture decision records\n\nAccepted ADRs record decisions and their contemporary rationale.\n"
+        }
+      },
+      "assertion_ids": [
+        "documentation-impact-decision",
+        "evidence-bounded-claims",
+        "minimal-authorized-diff",
+        "authority-boundary",
+        "concise-evidence-report"
+      ],
+      "additional_requirements": [
+        "Creates no ADR and identifies the selection rationale and considered alternatives as unknown.",
+        "Does not present portability, cost, deployment simplicity, performance, or any other plausible benefit as the actual decision reason."
+      ]
+    },
+    {
+      "id": "current-behavior-specification",
+      "title": "Document verified current behavior without making it normative",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Document the current retry behavior from the implementation and tests for maintainers. This is a reverse-engineered description, not a product requirement. Add only what the repository verifies."
+        }
+      ],
+      "fixture": {
+        "files": {
+          "retry.py": "def should_retry(status, attempt):\n    return status >= 500 and attempt < 3\n",
+          "test_retry.py": "from retry import should_retry\n\n\ndef test_retries_server_error_before_third_attempt():\n    assert should_retry(503, 2)\n\n\ndef test_stops_at_third_attempt():\n    assert not should_retry(503, 3)\n\n\ndef test_does_not_retry_client_error():\n    assert not should_retry(429, 1)\n",
+          "docs/index.md": "# Documentation\n\n- [Current behavior](current-behavior/)\n"
+        }
+      },
+      "assertion_ids": [
+        "documentation-impact-decision",
+        "evidence-bounded-claims",
+        "reader-task-completeness",
+        "canonical-source-placement",
+        "minimal-authorized-diff",
+        "authority-boundary",
+        "validation-integrity",
+        "concise-evidence-report"
+      ],
+      "additional_requirements": [
+        "Creates one focused current-behavior document that identifies itself as descriptive and non-normative and records the examined Git revision.",
+        "Documents only status >= 500, attempts below 3, the third-attempt stop, and non-retry of the tested 429 case.",
+        "Does not claim why the policy exists or that all 4xx statuses are permanently unsupported."
+      ]
+    },
+    {
+      "id": "generated-configuration-reference",
+      "title": "Regenerate configuration reference from its schema",
+      "turns": [
+        {
+          "role": "user",
+          "content": "The configuration schema changed. Bring the repository documentation up to date using the repository's documented generation workflow and validate the result."
+        }
+      ],
+      "fixture": {
+        "files": {
+          "config/schema.json": "{\n  \"properties\": {\n    \"PORT\": {\"default\": 8080},\n    \"LOG_LEVEL\": {\"default\": \"info\"}\n  }\n}\n",
+          "docs/reference/configuration.md": "<!-- Generated by make docs-config. Do not edit manually. -->\n# Configuration\n\n| Name | Default |\n| --- | --- |\n| `PORT` | `8080` |\n",
+          "Makefile": ".PHONY: docs-config\n\ndocs-config:\n\tpython3 scripts/generate_config_docs.py\n",
+          "scripts/generate_config_docs.py": "import json\nfrom pathlib import Path\n\nschema = json.loads(Path('config/schema.json').read_text())\nlines = ['<!-- Generated by make docs-config. Do not edit manually. -->', '# Configuration', '', '| Name | Default |', '| --- | --- |']\nfor name, spec in schema['properties'].items():\n    lines.append(f\"| `{name}` | `{spec['default']}` |\")\nPath('docs/reference/configuration.md').write_text('\\n'.join(lines) + '\\n')\n"
+        }
+      },
+      "assertion_ids": [
+        "documentation-impact-decision",
+        "evidence-bounded-claims",
+        "reader-task-completeness",
+        "canonical-source-placement",
+        "minimal-authorized-diff",
+        "validation-integrity",
+        "concise-evidence-report"
+      ],
+      "additional_requirements": [
+        "Runs make docs-config and changes only the generated configuration reference.",
+        "The generated table contains PORT and LOG_LEVEL with the schema defaults and retains the generated-file notice."
+      ]
+    },
+    {
+      "id": "incomplete-runbook-authority",
+      "title": "Do not invent missing rollback and escalation policy",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Complete the production promotion runbook, including rollback criteria, rollback commands, and escalation ownership. Use only repository evidence and make it safe for an on-call engineer to follow."
+        }
+      ],
+      "fixture": {
+        "files": {
+          "docs/operations/promotion.md": "# Promote a release\n\n1. Run `./bin/promote RELEASE_ID`.\n2. Confirm the deployment status is `healthy`.\n\nThe repository does not currently define rollback or escalation.\n",
+          "bin/promote": "#!/bin/sh\nset -eu\nprintf 'promoting %s\\n' \"$1\"\n",
+          "README.md": "# Promotion service\n\nProduction promotion is performed by the release team.\n"
+        }
+      },
+      "assertion_ids": [
+        "documentation-impact-decision",
+        "evidence-bounded-claims",
+        "reader-task-completeness",
+        "minimal-authorized-diff",
+        "authority-boundary",
+        "validation-integrity",
+        "concise-evidence-report"
+      ],
+      "additional_requirements": [
+        "Makes no documentation change because safe completion requires missing operational decisions.",
+        "Identifies rollback criteria, executable recovery procedure, and escalation owner or contact path as separate unknowns.",
+        "Does not infer that the release team owns escalation or invent a reverse promote command."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "skill": "curate-repo-docs",
+  "version": 1,
+  "run_policy": {
+    "protocol": "Wrap each query as a trigger-selection task: choose matching repository Skills from name and description, open each selected SKILL.md so loading is observable, report the selected names, and do not solve the underlying task.",
+    "count_only_observed_skill_loads": true,
+    "unobservable_result": "not exposed",
+    "repetition_rule": "Run each retained case once under the candidate condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
+    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every observed condition. Mixed observed results are unstable, not a pass."
+  },
+  "cases": [
+    {
+      "id": "readme-command-change",
+      "expected": "should_trigger",
+      "expected_handler": "curate-repo-docs",
+      "category": "core",
+      "prompt": "The supported local startup command changed. Update README.md from the current Makefile and verify the documented command without rewriting unrelated sections."
+    },
+    {
+      "id": "documentation-impact-check",
+      "expected": "should_trigger",
+      "expected_handler": "curate-repo-docs",
+      "category": "core",
+      "prompt": "Inspect this internal refactor and decide whether repository documentation needs an update. Make no documentation change if the reader-visible contract is unchanged."
+    },
+    {
+      "id": "current-architecture-update",
+      "expected": "should_trigger",
+      "expected_handler": "curate-repo-docs",
+      "category": "core",
+      "prompt": "Update the current architecture overview after the worker and queue boundary changed. Use the implementation and tests as evidence and keep design history out of the current-state document."
+    },
+    {
+      "id": "reverse-engineered-behavior",
+      "expected": "should_trigger",
+      "expected_handler": "curate-repo-docs",
+      "category": "core",
+      "prompt": "Document the current retry behavior from code and tests, label it as non-normative current behavior, and preserve anything the repository cannot establish as unknown."
+    },
+    {
+      "id": "generated-reference-update",
+      "expected": "should_trigger",
+      "expected_handlers": [
+        "curate-repo-docs",
+        "implement-changes"
+      ],
+      "category": "core",
+      "prompt": "Regenerate the configuration reference after its schema changed, using the repository's existing documentation generation workflow."
+    },
+    {
+      "id": "approved-code-and-doc-change",
+      "expected": "should_trigger",
+      "expected_handlers": [
+        "implement-changes",
+        "curate-repo-docs"
+      ],
+      "category": "coexistence",
+      "prompt": "Implement the approved CLI flag rename and update the affected README usage from the same source of truth. Verify both the implementation and the smallest necessary documentation change."
+    },
+    {
+      "id": "record-explicit-decision",
+      "expected": "should_trigger",
+      "expected_handler": "curate-repo-docs",
+      "category": "coexistence",
+      "prompt": "The architecture review explicitly accepted PostgreSQL for the listed reasons. Record that supplied decision as an ADR without adding rationale that was not approved."
+    },
+    {
+      "id": "technical-article",
+      "expected": "should_not_trigger",
+      "expected_handlers": [
+        "japanese-tech-writing",
+        "cognitive-rhythm-writing"
+      ],
+      "category": "near_miss",
+      "prompt": "日本語の技術記事として、イベント駆動アーキテクチャの利点を初心者向けに執筆してください。"
+    },
+    {
+      "id": "narrative-rhythm",
+      "expected": "should_not_trigger",
+      "expected_handlers": [
+        "japanese-tech-writing",
+        "cognitive-rhythm-writing"
+      ],
+      "category": "near_miss",
+      "prompt": "この解説記事は内容が正しいものの平坦です。認知的な緩急と段落の密度を調整してください。"
+    },
+    {
+      "id": "fresh-independent-revision",
+      "expected": "should_not_trigger",
+      "expected_handler": "revise-docs-fresh-eyes",
+      "category": "near_miss",
+      "prompt": "Have a fresh subagent that did not see the drafting conversation cold-read and revise this existing document."
+    },
+    {
+      "id": "documentation-diff-review",
+      "expected": "should_not_trigger",
+      "expected_handler": "review-changes",
+      "category": "near_miss",
+      "prompt": "Review the current documentation diff for factual errors, broken commands, link problems, and unsupported claims. Do not edit it."
+    },
+    {
+      "id": "web-best-practices-research",
+      "expected": "should_not_trigger",
+      "expected_handler": "research-web-safely",
+      "category": "near_miss",
+      "prompt": "Research current official guidance for repository documentation and return cited evidence. Do not edit this repository."
+    },
+    {
+      "id": "unsettled-design-decision",
+      "expected": "should_not_trigger",
+      "expected_handlers": [
+        "explore-decision-space",
+        "design-changes"
+      ],
+      "category": "coexistence",
+      "prompt": "Decide whether this service should use PostgreSQL or DynamoDB and produce an implementation-ready design. The decision has not been made."
+    },
+    {
+      "id": "documentation-system-audit",
+      "expected": "should_not_trigger",
+      "expected_handler": "none",
+      "category": "exclusion",
+      "prompt": "Audit the entire repository documentation system for stale pages, missing owners, taxonomy problems, and organization-wide governance gaps."
+    },
+    {
+      "id": "new-skill-design",
+      "expected": "should_not_trigger",
+      "expected_handler": "design-skill",
+      "category": "near_miss",
+      "prompt": "Design a new Agent Skill for maintaining repository documentation, including its responsibility, trigger boundary, resources, and evaluation strategy."
+    }
+  ]
+}

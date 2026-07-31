@@ -1,0 +1,128 @@
+{
+  "schema_version": 2,
+  "skill": "curate-repo-docs",
+  "evaluated_on": "2026-07-31",
+  "environment": {
+    "client": "Codex CLI 0.146.0",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "high",
+    "candidate_sandbox": "workspace-write limited to disposable repositories under /tmp",
+    "grader_sandbox": "read-only",
+    "live_web": "not used"
+  },
+  "baseline": {
+    "condition": "no target Skill",
+    "fixture_policy": "The candidate and no-Skill conditions used the same prompt, committed synthetic fixture, client, model, reasoning, and grading requirements."
+  },
+  "candidate": {
+    "files": {
+      "SKILL.md": "sha256:079532d7cc2a8a4d4e9c9a6dd264768c603913bdcf950a1efe33a526823ed30c",
+      "SKILL-ja.md": "sha256:341c1184047bea0bf692ab7f17cbf470e1b9f93ce593c88617e1e8fe6c901f06",
+      "references/repository-writing.md": "sha256:bc58ad1cf89c2a102e29c053b4b79b2c00420ddc5b0bfc84d4c611d5f66d9bc7",
+      "references/document-kinds.md": "sha256:e31219a939e5d325060fc45764edc35bf5924fd06efd1185900a0b50c93c83df",
+      "evals/evals.json": "sha256:3a87203f148c702ee231c494173c5546323fee117fe50662be602805725a17fb",
+      "evals/triggers.json": "sha256:a0e973b767303f8c5d76bc21dd53a35a7b1bdc3b7b63c3faecbd702e98fc3fa6"
+    }
+  },
+  "execution": {
+    "driver": "Temporary Python orchestration script retained only under /tmp.",
+    "invocation": "codex exec --ephemeral --ignore-user-config --skip-git-repo-check --sandbox <workspace-write|read-only> --model gpt-5.6-sol -c model_reasoning_effort=high",
+    "behavior_configuration": "Each executor received one committed synthetic repository, the visible user request, and either the candidate Skill or no target Skill. A separate grader received hidden assigned requirements, final diffs, statuses, command traces, and responses.",
+    "trigger_protocol": "Select from installed Skill names and descriptions, open every selected SKILL.md, and count only an observed Skill file read.",
+    "verdict_rule": "A failed critical assertion fails the case; otherwise any partial assertion makes the case partial. Candidate improvement requires a material correctness, authority, source-of-truth, scope, or validation gain without a critical regression.",
+    "raw_artifacts": "Prompts, responses, JSONL, grader output, command traces, and disposable repositories remained outside the source repository under /tmp."
+  },
+  "behavior": {
+    "candidate_counts": {
+      "requirements": {
+        "pass": 38,
+        "partial": 0,
+        "fail": 0,
+        "total": 38
+      },
+      "cases": {
+        "pass": 6,
+        "partial": 0,
+        "fail": 0,
+        "total": 6
+      }
+    },
+    "no_skill_counts": {
+      "requirements": {
+        "pass": 29,
+        "partial": 5,
+        "fail": 4,
+        "total": 38
+      },
+      "cases": {
+        "pass": 3,
+        "partial": 2,
+        "fail": 1,
+        "total": 6
+      }
+    },
+    "cases": [
+      {
+        "id": "focused-command-update",
+        "candidate": "pass",
+        "no_skill": "pass",
+        "candidate_materially_better": false,
+        "evidence": "Both conditions made the same focused command correction and verified the repository entry point and readiness output."
+      },
+      {
+        "id": "internal-refactor-no-impact",
+        "candidate": "pass",
+        "no_skill": "pass",
+        "candidate_materially_better": false,
+        "evidence": "Both conditions left the repository unchanged and explained that the reader-visible contract was unaffected."
+      },
+      {
+        "id": "unknown-design-rationale",
+        "candidate": "pass",
+        "no_skill": "partial",
+        "candidate_materially_better": true,
+        "evidence": "The candidate requested an authoritative source for the contemporaneous rationale and identified the unknown decision criteria and trade-offs. The no-Skill output did not state the rationale as fact, but offered repository-unverified benefits as rationale candidates."
+      },
+      {
+        "id": "current-behavior-specification",
+        "candidate": "pass",
+        "no_skill": "partial",
+        "candidate_materially_better": true,
+        "evidence": "The candidate identified the document as descriptive and non-normative and recorded the examined Git revision; the no-Skill output omitted the revision."
+      },
+      {
+        "id": "generated-configuration-reference",
+        "candidate": "pass",
+        "no_skill": "pass",
+        "candidate_materially_better": true,
+        "evidence": "Both conditions used the documented generator and changed only the generated reference. The candidate additionally compared the complete schema and generated table after checking regeneration idempotence."
+      },
+      {
+        "id": "incomplete-runbook-authority",
+        "candidate": "pass",
+        "no_skill": "fail",
+        "candidate_materially_better": true,
+        "evidence": "The candidate made no edit and reported the missing rollback and escalation decisions. The no-Skill condition expanded the source into an unsupported 127-line runbook with invented criteria and process."
+      }
+    ]
+  },
+  "routing": {
+    "pass": 15,
+    "fail": 0,
+    "total": 15,
+    "target_false_activations": 0,
+    "corrections": [
+      "Expected japanese-tech-writing and cognitive-rhythm-writing together for article and rhythm requests because the latter's existing contract requires the former.",
+      "Expected curate-repo-docs and implement-changes together for the generated-reference mutation request.",
+      "Expected explore-decision-space and design-changes together for an unsettled choice followed by an implementation-ready design."
+    ],
+    "evidence_reuse": "After a full rerun exposed two validation-reporting errors in the incomplete-runbook case, the reporting rule was strengthened and that candidate case was rerun against the same no-Skill result. The corrected candidate passed all assigned assertions. The final full routing rerun passed all cases."
+  },
+  "unverified": [
+    "Claude Code, GitHub Copilot, Gemini CLI, and other compatible clients",
+    "other models and reasoning settings",
+    "repeated-run stability",
+    "live repositories and external documentation systems",
+    "periodic repository-wide freshness auditing"
+  ]
+}
