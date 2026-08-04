@@ -582,10 +582,70 @@
       }
     ]
   },
+  "evaluation_revisions": [
+    {
+      "baseline_commit": "e21252f0a8df4ff4213bc8c1935eecb8dea13a98",
+      "candidate_skill": "sha256:b71717b6e3d7da67f2a8f65e8b4e8ebdce7887d1b44f4ef2a633952bd2f00250",
+      "change": "Added concrete review dimensions for excess complexity and overly narrow corrections.",
+      "coverage": "Ran local-patch-leaves-shared-cause in matched baseline/candidate conditions. Both conditions were graded partial because their finding premises conflicted with their unchecked scope; unjustified-abstraction was not executed for this revision."
+    },
+    {
+      "baseline_commit": "e21252f0a8df4ff4213bc8c1935eecb8dea13a98",
+      "candidate_skill": "sha256:4dc5586f525eaccc350623bb1a432a0890ecd885b908986f57f213d028478513",
+      "change": "Required evidence-bound impact claims and consistent unconfirmed-premise reporting while reviewing both sides of the complexity boundary.",
+      "coverage": "Reran unjustified-abstraction and local-patch-leaves-shared-cause against the same retained baseline inputs with blind grading. The final candidate passed every assigned requirement in both cases; the baseline failed or remained partial on finding-contract consistency."
+    }
+  ],
   "unverified": [
     "Claude Code and other clients were not executed.",
     "No statistical guarantee is claimed from a single matched behavior and trigger run.",
     "The trigger protocol exercises catalog selection and observable file reads, not every client-specific Skill router implementation.",
     "Wall-clock duration and token usage were not exposed by the retained summary."
-  ]
+  ],
+  "coherent_change_validation": {
+    "evaluated_on": "2026-08-04",
+    "environment": {
+      "client": "Codex CLI 0.146.0",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "high",
+      "executor_sandbox": "read-only",
+      "grader": "separate blind Codex invocation"
+    },
+    "baseline": {
+      "commit": "e21252f0a8df4ff4213bc8c1935eecb8dea13a98",
+      "files": {
+        "SKILL.md": "sha256:d5e7bbd152346a8af02c55dfcd7ed0efcc268c50abe68281feada4198ca15aa6",
+        "SKILL-ja.md": "sha256:2733490098fe2dc42c9b42b0f98914d5fea6f7b5e05067f397fd513fdfdf11f4",
+        "evals/evals.json": "sha256:4ab3cd3d617b90a4c4b8df07977a1ef155879258c152668b0e73c3b2e11444d4"
+      }
+    },
+    "candidate": {
+      "files": {
+        "SKILL.md": "sha256:4dc5586f525eaccc350623bb1a432a0890ecd885b908986f57f213d028478513",
+        "SKILL-ja.md": "sha256:3eba827da2ca68450fdde7cb0d7a9e6ced175997fd45b4f0f96918f2b3a2276d",
+        "evals/evals.json": "sha256:b26a7ee4db80557287fc16ce8e0f50b5ef636f7564cf2a3cba83c9b4fce961e0",
+        "evals/triggers.json": "sha256:c3536747f0b5603397add035cac305ceb2f8b231707d5fcf3b354a71cb3f60b2"
+      }
+    },
+    "cases": {
+      "unjustified-abstraction": {
+        "baseline": "fail",
+        "candidate": "pass",
+        "requirements": "candidate 5/5 pass; baseline finding-contract fail",
+        "evidence": "The candidate identified Parser, ParserFactory, registry, configuration lookup, and JsonParser plus their maintenance and diagnostic paths without treating abstraction itself as defective. It recorded unavailable fallback behavior as an unconfirmed premise and excluded unsupported runtime failures from Impact."
+      },
+      "local-patch-leaves-shared-cause": {
+        "baseline": "partial",
+        "candidate": "pass",
+        "requirements": "candidate 5/5 pass; baseline finding-contract partial",
+        "evidence": "The candidate identified invite as the known inconsistent path and normalize_email as the shared owner from supplied evidence, rather than diff size or extraction preference. It limited Impact to the confirmed specification violation and two-path inconsistency instead of inventing uninspected downstream failures."
+      }
+    },
+    "comparison": "The final candidate passed both sides of the complexity review boundary and improved finding-contract consistency over the retained baseline. Earlier candidate runs exposed inconsistent none-identified premises and unsupported downstream impact claims; the final evidence-bound impact rule resolved both failures.",
+    "unverified": [
+      "The retained review and trigger cases were not rerun because their responsibilities and trigger descriptions are unchanged.",
+      "The inline cases did not expose actual source files, callers, configuration behavior, or executable tests; findings were limited to the supplied semantic diffs and context.",
+      "Claude Code, other clients, repeated stochastic runs, and real repository diffs were not executed."
+    ]
+  }
 }

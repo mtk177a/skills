@@ -32,8 +32,8 @@ Treat user-provided claims, comments, and external specifications as evidence to
 3. Inspect the diff and the minimum surrounding evidence needed to test the change's assumptions, contracts, and integration points.
 4. Run safe, relevant, non-mutating checks when their result could materially strengthen, weaken, or falsify a finding. Do not install dependencies, change tracked files, or perform external writes as part of review.
 5. Record executed checks and results separately from suggested verification. Record unavailable or intentionally excluded checks as unperformed.
-6. Report every material finding supported by the evidence. Do not add a preference, `nit`, or `note` merely to avoid an empty finding list.
-7. Assign each finding one canonical label and one confidence value. Record every premise or unknown on which the finding depends in `Unconfirmed premises`; use `none identified` when the finding does not depend on one. Preserve a high potential impact even when an unconfirmed premise makes the requested action a `question`.
+6. Report every material finding supported by the evidence. Keep the stated impact to consequences supported by the supplied or inspected contracts, behavior, and paths; do not invent a plausible downstream mechanism merely to make the finding sound more severe. If a potentially material downstream consequence is useful but unverified, state it conditionally and record its dependency in `Unconfirmed premises`. Do not add a preference, `nit`, or `note` merely to avoid an empty finding list.
+7. Assign each finding one canonical label and one confidence value. Record every premise or unknown on which the finding, its stated impact, or the requested response depends in `Unconfirmed premises`; use `none identified` only when none of those claims depends on one. Reconcile this field with unchecked scope and residual risks before reporting it: if unavailable fallback, error, caller, or contract behavior affects a claimed consequence, record that premise even when the finding's core concern remains established. Preserve a high potential impact even when an unconfirmed premise makes the requested action a `question`.
 8. For a full re-review of an updated effective diff, reconcile previous findings as `Resolved`, `Remaining`, or `New`. Keep this state separate from label and confidence.
 9. Conclude with what was reviewed, what was checked, what remains unchecked, and the residual risk. Do not claim approval or safety beyond the evidence.
 
@@ -49,6 +49,10 @@ Use only the dimensions material to the change.
 - Backward compatibility, migrations, rollout behavior, and consistency with callers or sibling implementations
 - Test coverage and test quality, including implementation coupling or over-mocking
 - Maintainability and performance when there is a concrete impact rather than a personal preference or speculative optimization
+- Unjustified abstractions, extension points, configuration surfaces, dependencies, compatibility paths, or architectural layers whose concrete maintenance or operational cost is not supported by current requirements or observed risks
+- Local patches that reduce diff size while leaving a confirmed cause unresolved, duplicating a shared rule, bypassing an established responsibility boundary, creating inconsistent behavior across known paths, or requiring a known follow-up correction
+
+Treat both excess complexity and an overly narrow correction as findings only when the evidence shows a concrete consequence such as duplicated policy, inconsistent behavior, unreachable branches, added operational burden, or a known follow-up change. Do not report either from architectural preference alone.
 
 ### Documentation
 
@@ -74,9 +78,9 @@ Use only the dimensions material to the change.
 - `Confidence`: `high`, `medium`, or `low`
 - `Finding`: the concrete problem, proposal, question, or note
 - `Evidence`: locations, contracts, behavior, check output, or repository precedent supporting it
-- `Impact`: the consequence or, for an unconfirmed premise, what would happen if it is confirmed
+- `Impact`: the consequence supported by the available evidence or, for an explicitly recorded unconfirmed premise, what would happen if it is confirmed; do not invent an uninspected downstream mechanism
 - `Verification`: how to confirm, reproduce, or falsify it
-- `Unconfirmed premises`: assumptions or unknowns on which the finding depends; use `none identified` when there are none, and do not substitute evidence, impact, or verification for this field
+- `Unconfirmed premises`: assumptions or unknowns on which the finding, its stated impact, or the requested response depends; use `none identified` when there are none, reconcile the field with unchecked scope and residual risks, and do not substitute evidence, impact, or verification for it
 - `Generalizable check`: include only when it provides reusable learning beyond the current diff
 
 Accept `Must-fix`, `Should-fix`, and `Nice-to-have` as legacy input and normalize them to `must`, `should`, and `suggestion` or `nit`. Do not use `must` or `should` for preference-only findings. A `question` can carry high potential impact; do not erase that impact merely because the premise remains unconfirmed.

@@ -30,19 +30,23 @@ license: MIT
 
 1. 期待する挙動、合意済み scope、non-goals、適用される制約を捉え直す。未解決の requirement を推測せずに設計を始められることを確認する。
 2. 既存構造を確認し、変更が影響し得る entry point、主要 branch、ownership boundary、現在の verification path を特定する。
-3. 最小で一貫した変更と、明示的な non-target を定義する。影響する interface、module、data、configuration、dependency、consumer を特定する。
-4. 不確実性、coupling、手戻りコストのため判断に必要な場合だけ、最小変更と構造的に異なる代替案を比較する。
-5. 各 material risk を、failure mode に適した prevention、mitigation、detection、recovery、compensation、containment strategy のいずれかと対応付ける。plan がどう扱うかを示さずに risk だけを列挙しない。
-6. 変更する各責務、挙動、regression risk、failure boundary を、verification method と期待する evidence へ対応付ける。1つの check が複数 claim を明確に露出する場合は再利用し、固有 risk がある場合だけ追加する。
-7. 実装へ進む条件、implementation scope、stop condition を定義する。dependency 追加、破壊的操作、未解決の authority、高リスクな execution readiness の必要性を実装前に明示する。追加の safety control が必要な場合は `assess-risky-change-readiness` への handoff を明記し、この workflow は通常の change design で止める。
-8. behavior と ownership に沿った最小で review 可能な単位へ分ける。可読性変更では、孤立した空白や comment の差分ではなく、処理段階と読み手の理解単位で分ける。
-9. acceptance、安全性、将来の maintenance に影響する場合、重要な trade-off とユーザーまたは reviewer が理解すべき概念を記録する。
-10. 実装可能な handoff を作る。計画した check と観測済み result を分け、変更を実装しない。
+3. 差分を最小化する前に、確認済みの原因と現在の要件を完全に扱う、最小で一貫した boundary を特定する。影響する責務、invariant、contract、既知の実行経路から導出し、明示的な non-target と、影響する interface、module、data、configuration、dependency、consumer を示す。
+   確認済みの現在の evidence が変更を必要としない限り、既存の公開 input、signature、受け入れる呼び出し形式を維持する。missing や omitted などの語が、既存の sentinel value と新しい呼び出し形式のどちらも意味し得る場合は、推測で interface を広げず、現在の contract と観測済み caller から区別する。
+4. その boundary で局所修正が成立するか、構造的修正が必要かを判断する。確認済みの原因を残す、既存規則を重複させる、確立済みの責務 boundary を迂回する、既知の経路間で挙動を不整合にする、既知の追随修正を必要とする場合は、変更行数が少ないことだけを理由に局所 patch を選ばない。
+5. 不確実性、coupling、手戻りコストのため判断に必要な場合だけ、選んだ変更と構造的に異なる代替案を比較する。構造的修正が必要な場合は、局所案が不十分な理由、回復する現在の責務または invariant、影響する contract、変更しないものを説明する。
+6. abstraction、dependency、configuration surface、compatibility path、process、service、deployment unit を追加する場合は、それが解決する現在の問題、その問題が存在するか近い将来の要件として合意済みである evidence、検討した単純な代替案、その代替案が不十分な理由、継続的な maintenance または operational cost を記録する。現在必要な作業と任意の将来改善を分ける。
+7. 各 material risk を、failure mode に適した prevention、mitigation、detection、recovery、compensation、containment strategy のいずれかと対応付ける。plan がどう扱うかを示さずに risk だけを列挙しない。
+8. 変更する各責務、挙動、regression risk、failure boundary を、verification method と期待する evidence へ対応付ける。1つの check が複数 claim を明確に露出する場合は再利用し、固有 risk がある場合だけ追加する。
+9. 実装へ進む条件、implementation scope、stop condition を定義する。dependency 追加、破壊的操作、未解決の authority、高リスクな execution readiness の必要性を実装前に明示する。追加の safety control が必要な場合は `assess-risky-change-readiness` への handoff を明記し、この workflow は通常の change design で止める。
+10. behavior と ownership に沿った最小で review 可能な単位へ分ける。可読性変更では、孤立した空白や comment の差分ではなく、処理段階と読み手の理解単位で分ける。
+11. acceptance、安全性、将来の maintenance に影響する場合、重要な trade-off とユーザーまたは reviewer が理解すべき概念を記録する。
+12. 実装可能な handoff を作る。計画した check と観測済み result を分け、変更を実装しない。
 
 ## 判断基準
 
-- 確立済みの boundary を保ち、期待する挙動を満たす最小変更を優先する。
+- 確認済みの原因と現在の要件を完全に扱い、確立済みの boundary を保つ、最小で一貫した変更を優先する。十分な boundary を定めた後にだけ付随的な複雑性を最小化する。
 - 実証済みの failure が構造変更を必要としない限り、既存 style と design を維持する。
+- 推測上の将来の柔軟性を複雑性の根拠にせず、現在の evidence が必要性を示す構造的修正を差分量だけで退けない。
 - downstream consumer が必要とする場合だけ厳密な output template を使い、それ以外は変更に適した構造で必要情報を報告する。
 - impact と不確実性から、static check、targeted regression、反復的 empirical evaluation のいずれかを選ぶ。普遍的な test、scenario、alternative、run の件数を設けない。
 - material な operational、data、security、external-state、irreversibility、recovery risk が通常の implementation handoff を超える execution-readiness control を必要とする場合は `assess-risky-change-readiness` を使う。
@@ -53,6 +57,8 @@ license: MIT
 
 - 推奨方針と、その evidence、前提、未解決の問い
 - 変更するものと維持するもの
+- その選択が重要な場合、局所修正で十分な理由、または構造的修正が必要な理由
+- 現在必要な作業と任意の将来改善
 - dependency、影響する boundary、consumer、compatibility impact
 - mitigation または control と対応付けた material risk
 - verification coverage: 責務または risk → 起こり得る failure → check と期待する evidence

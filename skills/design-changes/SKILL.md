@@ -28,19 +28,23 @@ Distinguish confirmed evidence, inference, assumptions, unknowns, and planned ve
 
 1. Restate the intended behavior, accepted scope, non-goals, and applicable constraints. Confirm that design can begin without inventing unresolved requirements.
 2. Inspect the existing structure and identify the entry points, major branches, ownership boundaries, and current verification paths that the change can affect.
-3. Define the smallest coherent change and its explicit non-targets. Identify affected interfaces, modules, data, configuration, dependencies, and consumers.
-4. Compare the minimal change with a structurally different alternative only when uncertainty, coupling, or rework cost makes that comparison decision-relevant.
-5. Pair each material risk with a prevention, mitigation, detection, recovery, compensation, or containment strategy suited to the failure mode. Do not list a risk without explaining how the plan handles it.
-6. Map each changed responsibility, behavior, regression risk, and failure boundary to a verification method and expected evidence. Reuse a check when it exposes multiple claims clearly; add another only for a distinct risk.
-7. Define conditions to proceed, implementation scope, and stop conditions. Surface dependency additions, destructive operations, unresolved authority, and high-risk execution-readiness needs before implementation. When additional safety controls are needed, name the `assess-risky-change-readiness` handoff explicitly and stop this workflow at the ordinary change design.
-8. Split the work into minimal reviewable units aligned with behavior and ownership. For readability changes, use the processing stages and the reader's unit of understanding rather than isolated whitespace or comment diffs.
-9. Record material trade-offs and concepts the user or reviewer must understand when they affect acceptance, safety, or future maintenance.
-10. Produce an implementation-ready handoff. Keep proposed checks separate from observed results and do not implement the change.
+3. Before minimizing the diff, identify the smallest coherent boundary that fully addresses the confirmed cause and current requirements. Derive it from affected responsibilities, invariants, contracts, and known execution paths; then state its explicit non-targets and affected interfaces, modules, data, configuration, dependencies, and consumers.
+   Preserve existing public inputs, signatures, and accepted call forms unless confirmed current evidence requires changing them. When terms such as missing or omitted could describe either an existing sentinel value or a new call form, resolve that distinction from the current contract and observed callers rather than broadening the interface by assumption.
+4. Decide whether that boundary supports a local correction or requires a structural correction. Do not select a local patch merely because it changes fewer lines when it would leave a confirmed cause unresolved, duplicate an existing rule, bypass an established responsibility boundary, create inconsistent behavior across known paths, or require a known follow-up correction.
+5. Compare the selected change with a structurally different alternative only when uncertainty, coupling, or rework cost makes that comparison decision-relevant. When a structural correction is required, explain why the local alternative is insufficient, which current responsibility or invariant it restores, which contracts it affects, and what remains unchanged.
+6. When the change adds an abstraction, dependency, configuration surface, compatibility path, process, service, or deployment unit, record the current problem it solves, the evidence that the problem exists or is an accepted near-term requirement, the simpler alternative considered, why that alternative is insufficient, and the ongoing maintenance or operational cost. Separate required current work from optional future improvement.
+7. Pair each material risk with a prevention, mitigation, detection, recovery, compensation, or containment strategy suited to the failure mode. Do not list a risk without explaining how the plan handles it.
+8. Map each changed responsibility, behavior, regression risk, and failure boundary to a verification method and expected evidence. Reuse a check when it exposes multiple claims clearly; add another only for a distinct risk.
+9. Define conditions to proceed, implementation scope, and stop conditions. Surface dependency additions, destructive operations, unresolved authority, and high-risk execution-readiness needs before implementation. When additional safety controls are needed, name the `assess-risky-change-readiness` handoff explicitly and stop this workflow at the ordinary change design.
+10. Split the work into minimal reviewable units aligned with behavior and ownership. For readability changes, use the processing stages and the reader's unit of understanding rather than isolated whitespace or comment diffs.
+11. Record material trade-offs and concepts the user or reviewer must understand when they affect acceptance, safety, or future maintenance.
+12. Produce an implementation-ready handoff. Keep proposed checks separate from observed results and do not implement the change.
 
 ## Decision criteria
 
-- Prefer the smallest change that preserves established boundaries and satisfies the intended behavior.
+- Prefer the smallest coherent change that fully addresses the confirmed cause and current requirements while preserving established boundaries. Minimize incidental complexity only after establishing that sufficient boundary.
 - Preserve existing style and design unless a demonstrated failure requires a structural change.
+- Do not use speculative future flexibility to justify complexity, and do not use diff size to reject a structural correction required by current evidence.
 - Use an exact output template only when a downstream consumer requires it; otherwise report the required information in a structure suited to the change.
 - Choose verification depth from impact and uncertainty: static checks, targeted regression, or repeated empirical evaluation. Do not use a universal test, scenario, alternative, or run count.
 - Use `assess-risky-change-readiness` when material operational, data, security, external-state, irreversibility, or recovery risks require execution-readiness controls beyond an ordinary implementation handoff.
@@ -51,6 +55,8 @@ Use a structure suited to the change. Include:
 
 - the recommended approach and its evidence, assumptions, and unresolved questions
 - what changes and what remains unchanged
+- why a local correction is sufficient or why a structural correction is required, when that choice is material
+- required current work versus optional future improvement
 - dependencies, affected boundaries, consumers, and compatibility impact
 - material risks paired with mitigations or controls
 - verification coverage: responsibility or risk → plausible failure → check and expected evidence

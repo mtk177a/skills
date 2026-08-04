@@ -8,7 +8,7 @@ Structured assets:
 
 - `triggers.json`: review, near-miss, and coexistence selection cases
 - `evals.json`: baseline, behavior, fixture, and assertion definitions
-- `results.json`: compact evidence for the currently accepted revision, added after execution
+- `results.json`: compact, hash-bound evidence across recorded revisions, added after execution
 
 ## Candidate static check
 
@@ -34,6 +34,8 @@ Structured assets:
 | No-findings state | Invents nits or returns a bare approval | `clean-diff` | Finding count and report contract |
 | Full re-review | Mixes `Resolved` / `Remaining` / `New` with label or confidence, or repeats classifications supplied by the prompt instead of deriving them from the target | `full-rereview` | Fixture-derived state reconciliation and new-finding discovery |
 | Trigger boundary | Collides with triage, validation, comment drafting, summary, implementation, or guidance audit | `triggers.json` | Observable Skill loads |
+| Excess complexity | Accepts speculative abstractions whose concrete maintenance cost has no current requirement or observed-risk basis | `unjustified-abstraction` | Finding evidence and assigned assertions |
+| Overly narrow correction | Accepts a small patch that leaves a confirmed shared rule inconsistent across a known path | `local-patch-leaves-shared-cause` | Finding evidence and assigned assertions |
 
 ## Execution protocol
 
@@ -62,8 +64,10 @@ Claude Code and other clients are outside the current execution plan and must be
 - `unavailable diff reported as no issues`
 - `re-review state mixed with label or copied from an answer-bearing prompt`
 - `review workflow routed to an adjacent Skill`
+- `speculative abstraction accepted without concrete cost or requirement evidence`
+- `small diff accepted while a confirmed shared cause remains`
 
-## Current result
+## Recorded full evaluation — 2026-07-27
 
 On 2026-07-27, Codex CLI 0.145.0 with `gpt-5.6-sol` and high reasoning produced:
 
@@ -74,3 +78,12 @@ On 2026-07-27, Codex CLI 0.145.0 with `gpt-5.6-sol` and high reasoning produced:
 The baseline omitted the dedicated `Unconfirmed premises` field and, in two cases, other reporting details. The candidate preserved the gateway premise in that field, derived F1 as `Resolved`, F2 as `Remaining`, and the unbounded retry as `New` from the disposable repository rather than an answer-bearing prompt, and passed the retained cases. Every invocation used an isolated `HOME` so globally installed personal Skills were unavailable.
 
 Claude Code and other clients were not executed. Detailed case-by-assertion and observable trigger evidence is in `results.json`; raw traces are intentionally not retained in the repository.
+
+## Coherent-change revision — 2026-08-04
+
+- Compared committed `HEAD` and the final working-tree candidate on `unjustified-abstraction` and `local-patch-leaves-shared-cause` with Codex CLI 0.146.0, `gpt-5.6-sol`, and high reasoning. Separate blind graders evaluated each matched pair.
+- `unjustified-abstraction`: the final candidate passed 5/5 requirements; the baseline failed `finding-contract`. The candidate tied the concrete added concepts to maintenance and diagnostic paths, recorded unavailable fallback behavior as a premise, and did not claim unsupported runtime failure.
+- `local-patch-leaves-shared-cause`: the final candidate passed 5/5 requirements; the baseline was partial on `finding-contract`. The candidate identified the known inconsistent path and shared owner while limiting Impact to the supplied specification violation and two-path inconsistency.
+- Earlier candidate runs exposed two useful failures: `none identified` conflicted with an unchecked fallback, and speculative downstream account-matching effects exceeded the supplied evidence. The final candidate requires premise-consistent, evidence-bound Impact claims.
+- Retained review cases and trigger routing were not rerun because their responsibilities and descriptions are unchanged.
+- Next validation question: Does the same distinction hold on a real diff where callers, fallback behavior, and downstream contracts can be inspected directly?

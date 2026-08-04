@@ -35,8 +35,8 @@ license: MIT
 3. 差分と、変更の前提・契約・統合点を確認するために必要な最小限の周辺根拠を調べる。
 4. 結果が指摘を実質的に強める、弱める、または反証できる場合、安全で関連する非変更型の確認を実行する。レビュー中に依存を導入したり、tracked file を変更したり、外部へ書き込んだりしない。
 5. 実行した確認と結果を、提案だけの確認から分ける。利用不能または意図的に除外した確認は未実行として記録する。
-6. 根拠で裏付けられた重要な指摘をすべて報告する。空の指摘一覧を避けるためだけに好み、`nit`、`note` を追加しない。
-7. 各指摘へ正規ラベルを 1 つ、確信度を 1 つ付ける。指摘が依存する前提や未知はすべて `Unconfirmed premises` に記録し、依存するものがなければ `none identified` とする。未確認前提によって求める対応が `question` でも、大きな潜在影響は保持する。
+6. 根拠で裏付けられた重要な指摘をすべて報告する。記載する impact は、提示済みまたは確認済みの contract、behavior、path が裏付ける結果に限定し、指摘を深刻に見せるためだけに、あり得そうな downstream mechanism を作らない。重要になり得る downstream の結果が有用でも未確認なら、条件付きで記述し、その依存関係を `Unconfirmed premises` に記録する。空の指摘一覧を避けるためだけに好み、`nit`、`note` を追加しない。
+7. 各指摘へ正規ラベルを 1 つ、確信度を 1 つ付ける。指摘、その記載済み impact、または求める対応が依存する前提や未知はすべて `Unconfirmed premises` に記録し、どの claim も依存しない場合だけ `none identified` とする。報告前にこの field と未確認範囲・残る risk を照合し、利用不能な fallback、error、caller、contract の挙動が記載した結果へ影響する場合は、指摘の中心部分が成立していてもその premise を記録する。未確認前提によって求める対応が `question` でも、大きな潜在影響は保持する。
 8. 更新後の effective diff を全面再レビューする場合、前回指摘を `Resolved` / `Remaining` / `New` に整理する。この状態をラベルや確信度と混同しない。
 9. レビュー範囲、実行した確認、未確認範囲、残るリスクをまとめる。根拠を超えて Approve や安全性を主張しない。
 
@@ -52,6 +52,10 @@ license: MIT
 - 後方互換性、migration、rollout、呼び出し元や sibling 実装との整合
 - テスト範囲と、実装依存・過剰な mock を含むテスト品質
 - 個人の好みや推測的最適化ではなく、具体的影響がある保守性と性能
+- 現在の requirement または観測済み risk で具体的な maintenance・operational cost を正当化できない abstraction、extension point、configuration surface、dependency、compatibility path、architecture layer
+- 差分量を減らす一方で、確認済みの原因を残す、共有規則を重複させる、確立済みの責務 boundary を迂回する、既知の経路間で挙動を不整合にする、既知の追随修正を必要とする局所 patch
+
+過剰な複雑性と狭すぎる修正は、規則の重複、挙動の不整合、到達不能な分岐、追加の運用負担、既知の追随変更など、具体的な結果を evidence が示す場合だけ指摘する。architecture 上の好みだけで報告しない。
 
 ### 文書
 
@@ -77,9 +81,9 @@ license: MIT
 - `Confidence`: `high` / `medium` / `low`
 - `Finding`: 具体的な問題、提案、質問、補足
 - `Evidence`: 根拠となる位置、契約、挙動、確認結果、リポジトリ内の先例
-- `Impact`: 影響。前提が未確認なら、確認された場合に起きること
+- `Impact`: 利用可能な evidence が裏付ける影響。明示した未確認 premise がある場合は、それが確認されたときに起きること。未確認の downstream mechanism を作らない
 - `Verification`: 確認、再現、反証の方法
-- `Unconfirmed premises`: 指摘が依存する前提または未知。該当しない場合は `none identified` とし、根拠、影響、確認方法でこのフィールドを代用しない
+- `Unconfirmed premises`: 指摘、その記載済み impact、または求める対応が依存する前提または未知。該当しない場合は `none identified` とし、未確認範囲・残る risk と照合し、根拠、影響、確認方法でこの field を代用しない
 - `Generalizable check`: 今回の差分を超えて再利用できる学びがある場合だけ
 
 `Must-fix`、`Should-fix`、`Nice-to-have` は互換入力として受け取り、`must`、`should`、`suggestion` または `nit` へ正規化する。好みだけの指摘に `must` や `should` を使わない。`question` でも潜在影響は大きくなり得るため、前提が未確認であることだけを理由に影響を消さない。

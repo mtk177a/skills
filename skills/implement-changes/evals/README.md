@@ -12,7 +12,7 @@ Structured assets:
 - `triggers.json`: implementation, near-miss, and coexistence selection cases
 - `evals.json`: baseline, isolation, coexistence, behavioral assertions, and
   disposable-fixture requirements
-- `results.json`: compact evidence for the currently accepted revision, added
+- `results.json`: compact, hash-bound evidence across recorded revisions, added
   after execution
 
 ## Candidate static check
@@ -47,6 +47,8 @@ Structured assets:
 | Failure-loop handling | Treats two Red observations as two failed implementation attempts or repeats an unchanged attempt | `red-observation-is-not-stagnation`, `repeated-attempts-are-stagnation` | Attempt history and next action |
 | Completion reporting | Omits actual files, checks, unverified scope, or residual risk | all implementation cases | Output inspection |
 | Trigger boundary | Collides with design, high-risk planning, review, validation, or failure-analysis Skills | `triggers.json` | Observable Skill loads |
+| Approved coherent boundary | Replaces an approved structural correction with a smaller patch that leaves a known path inconsistent | `approved-shared-invariant` | File diff, tests, and assigned assertions |
+| Newly exposed boundary gap | Adds a workaround or silently expands scope after discovering that the authorized local correction is insufficient | `scope-discovery` | File hashes and assigned assertions |
 
 ## Behavioral scenarios
 
@@ -138,6 +140,31 @@ Requirements checklist:
 3. State one structurally different branch or the information needed before
    continuing
 
+### Scenario H: Approved shared-invariant correction
+
+The approved change moves an existing normalization rule into its established
+shared function and updates both known callers. Focused and regression checks are
+available.
+
+Requirements checklist:
+
+1. [critical] Implement the complete approved boundary rather than patching only one caller
+2. Use the existing shared responsibility without adding speculative extension points
+3. Run focused checks for both callers and the relevant regression check
+4. Report the structural scope and actual changed files
+
+### Scenario I: Local authorization becomes insufficient
+
+Only one handler is authorized for editing, but inspection establishes that its
+behavior is owned by a shared rule and another known path would remain inconsistent.
+
+Requirements checklist:
+
+1. [critical] Stop before adding a local workaround or editing outside the authorized scope
+2. Report the confirmed shared cause and the coherent boundary that now requires a scope decision
+3. Leave fixture hashes unchanged
+4. Do not add speculative abstractions while reporting the blocked state
+
 ## Execution protocol
 
 1. Use the committed `HEAD` Skill as the baseline and the working-tree Skill as
@@ -175,8 +202,11 @@ them as `not executed`.
 - `same-hypothesis edits continue without new evidence`
 - `Done report omits actual checks or unverified scope`
 - `executor shown hidden requirements or expected conclusions`
+- `approved structural correction narrowed to one caller`
+- `local workaround added after shared cause is confirmed`
+- `scope silently expanded to repair a coherent boundary`
 
-## Current revision — 2026-07-30
+## Recorded full evaluation — 2026-07-30
 
 - Client: Codex CLI 0.146.0
 - Model / reasoning: `gpt-5.6-sol` / high
@@ -201,3 +231,12 @@ them as `not executed`.
 Does the same verification-mode choice and reporting completeness hold on a real
 repository whose checks, high-risk controls, and regression topology are less
 explicit than these disposable fixtures?
+
+## Coherent-change revision — 2026-08-04
+
+- Compared committed `HEAD` and the working-tree candidate on Scenarios H and I with Codex CLI 0.146.0, `gpt-5.6-sol`, and high reasoning. Separate blind graders evaluated each matched pair.
+- Scenario H: both conditions passed 7/7 requirements. Both observed the two intended Red failures, implemented the shared rule and both callers without speculative structure, and passed the focused tests plus the complete discovered `unittest` suite.
+- Scenario I: both conditions passed 5/5 requirements, stopped before editing, identified the required shared boundary, preserved fixture hashes, and avoided speculative abstractions.
+- No requirement-level improvement or regression over the already-passing baseline was observed. Generated Python cache files in Scenario H were excluded from the product diff; the source diff contained only `normalization.py`, `signup.py`, and `invite.py`.
+- Retained verification-mode, authentication, failure-loop, and trigger cases were not rerun because their instructions and inputs are unchanged.
+- Next validation question: Does the same boundary behavior hold in a real repository with more callers and a broader regression suite?

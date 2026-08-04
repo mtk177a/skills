@@ -22,6 +22,7 @@ Gather what is available:
 - the approved objective, expected behavior, scope, exclusions, and stop
   conditions
 - output from `design-changes` or another accepted implementation handoff
+- an accepted diagnosis or other evidence for the required change boundary, when applicable
 - target files, repository guidance, existing behavior, and affected consumers
 - focused checks, broader regression commands, and environment constraints
 - authorization and controls for dependency, destructive, migration,
@@ -37,23 +38,30 @@ stop as `Blocked`.
 1. Confirm the objective, authorization, entry conditions, scope, exclusions, and
    stop conditions before editing.
 2. For a high-risk change, confirm that its exact action, scope, required controls, residual risk, and execution authority are ready for implementation. If not, stop before editing and identify the missing target, evidence, control, recovery, risk-acceptance, or authorization decision. Use `assess-risky-change-readiness` as an optional readiness handoff when available, but provide a self-contained stop report.
-3. Inspect the relevant implementation and guidance. Split the change into small
-   work units, each with an expected outcome and a verification method.
+3. Inspect the relevant implementation and guidance. Confirm that the planned work
+   units collectively cover the accepted coherent change boundary; do not narrow
+   an approved structural correction to a local patch merely to reduce the diff.
+   Split the change into small work units, each with an expected outcome and a
+   verification method.
 4. Select one work unit. Choose its verification mode using the criteria below and
    record the reason.
 5. For a TDD work unit:
    - create or update one focused test
    - run it and confirm that it fails for the intended reason (Red)
-   - make the smallest implementation change that passes it (Green)
+   - make the simplest implementation change within the approved coherent boundary
+     that passes it (Green)
    - refactor only while the test remains passing
 6. For a non-TDD work unit:
    - establish the relevant baseline or pre-change observation when useful
-   - make the smallest scoped change
+   - make the simplest change within the approved coherent boundary
    - run the selected deterministic or inspection-based checks
    - do not manufacture an unrelated failure merely to create a Red phase
-7. Record new evidence and update the remaining work units. If it exposes a
-   material scope, dependency, test-strategy, or risk change, stop and request the
-   required decision before expanding the work.
+7. Record new evidence and update the remaining work units. If it shows that a
+   local correction would leave the confirmed cause, a shared rule, an established
+   responsibility boundary, or a known affected path unresolved, do not add a
+   workaround. If the required coherent boundary exceeds the authorized scope, stop
+   and report the evidence and required scope decision. Also stop for any other
+   material dependency, test-strategy, or risk change before expanding the work.
 8. Track implementation attempts separately from test executions. If two
    materially equivalent attempts under the same unchanged hypothesis fail
    without new evidence, stop before a third equivalent edit. Record the failed
@@ -121,6 +129,10 @@ For `Done`, include:
   hypothesis.
 - Do not claim an unexecuted check passed or imply broader safety than the evidence
   supports.
+- Do not replace an approved structural correction with a smaller local patch when
+  that would leave the accepted cause or known affected paths unresolved.
+- Do not introduce an abstraction, generalization, compatibility path, or unrelated
+  refactoring unless it is required by the authorized outcome or accepted design.
 - Ask before materially expanding scope, adding dependencies, changing the agreed
   test strategy, or performing an unapproved destructive or high-risk operation.
 - Do not use another agent or subagent by default. Keep the workflow useful when no

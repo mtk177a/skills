@@ -57,6 +57,18 @@
       "candidate_skill": "sha256:7372f5a58bf4495d768901890a0fa32eb9468624a3d4dfd18bf779920989d48e",
       "change": "Updated the high-risk readiness handoff to assess-risky-change-readiness.",
       "coverage": "Reran auth-high-risk candidate behavior and high-risk-migration-coexistence candidate routing."
+    },
+    {
+      "baseline_commit": "e21252f0a8df4ff4213bc8c1935eecb8dea13a98",
+      "candidate_skill": "sha256:e4321bd0dd2d38c06f89f3a227be3cb4ca11610d94a6a04964ee18ef87eda6a4",
+      "change": "Added explicit local-versus-structural coherent-boundary guidance.",
+      "coverage": "Ran shared-invariant in matched baseline/candidate conditions and exercised local-defect on the candidate only. The matched shared-invariant case passed both conditions; the local-defect evidence was incomplete for this candidate revision."
+    },
+    {
+      "baseline_commit": "e21252f0a8df4ff4213bc8c1935eecb8dea13a98",
+      "candidate_skill": "sha256:ef9e879365585741f4c43c8855b091a4ddad0f6d166087bfe5b28113be02a011",
+      "change": "Preserved existing input contracts while selecting a sufficient local or structural boundary.",
+      "coverage": "Reran local-defect and shared-invariant in matched baseline/candidate conditions with blind grading. Both final candidate cases passed every assigned requirement and made no fixture changes."
     }
   ],
   "behavior": {
@@ -404,5 +416,48 @@
       "verdict": "pass",
       "duration_seconds": 16.67
     }
+  },
+  "coherent_change_validation": {
+    "evaluated_on": "2026-08-04",
+    "environment": {
+      "client": "Codex CLI 0.146.0",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "high",
+      "executor_sandbox": "workspace-write",
+      "grader": "separate blind Codex invocation"
+    },
+    "baseline": {
+      "commit": "e21252f0a8df4ff4213bc8c1935eecb8dea13a98",
+      "files": {
+        "SKILL.md": "sha256:7372f5a58bf4495d768901890a0fa32eb9468624a3d4dfd18bf779920989d48e",
+        "SKILL-ja.md": "sha256:99f6a2596c8dafbc48d2ab02ef31af1862c61ae60ef1270b3ef39403fdcefa74"
+      }
+    },
+    "candidate": {
+      "files": {
+        "SKILL.md": "sha256:ef9e879365585741f4c43c8855b091a4ddad0f6d166087bfe5b28113be02a011",
+        "SKILL-ja.md": "sha256:b882bb1b2f943a400e3cb6f276fb8e826f4ec631cf47e44366aaa39660a36d99",
+        "evals/triggers.json": "sha256:40e8dde5ec674baedb8c8689f25e7be0619f022aa1706f78a363cc1565d66e77"
+      }
+    },
+    "cases": {
+      "local-defect": {
+        "baseline": "pass",
+        "candidate": "pass",
+        "requirements": "4/4 pass in both conditions",
+        "evidence": "Both conditions selected a parse_port-local correction, preserved the existing required-argument signature and invalid-value behavior, excluded speculative structure, and mapped the defect and regression boundary to verification. Before and after fixture hashes matched."
+      },
+      "shared-invariant": {
+        "baseline": "pass",
+        "candidate": "pass",
+        "requirements": "5/5 pass in both conditions",
+        "evidence": "Both conditions selected normalize_email and both known paths as the coherent boundary, rejected a one-handler patch, excluded speculative architecture, and mapped both paths to verification. Before and after fixture hashes matched."
+      }
+    },
+    "comparison": "The final candidate passed both sides of the complexity boundary. The first candidate local-defect run unnecessarily added a no-argument call form; preserving existing input contracts removed that regression. No requirement-level advantage over the final matched baseline was established.",
+    "unverified": [
+      "The retained authentication scenario and trigger suite were not rerun because the description, routing boundary, and high-risk rules are unchanged.",
+      "Claude Code, other clients, repeated stochastic runs, and real application repositories were not executed."
+    ]
   }
 }

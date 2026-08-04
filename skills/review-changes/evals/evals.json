@@ -83,6 +83,11 @@
       "id": "read-only-review",
       "critical": true,
       "statement": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes."
+    },
+    {
+      "id": "complexity-balance",
+      "critical": true,
+      "statement": "Reports excess complexity or an overly narrow correction only from concrete current requirements, observed risks, affected paths, and maintenance or behavioral consequences rather than architectural preference."
     }
   ],
   "assertion_policy": "Grade every assertion assigned to a case. A failed critical assertion fails that case. Record case-by-condition evidence and do not pass an assertion because it succeeded in another case.",
@@ -224,6 +229,42 @@
         }
       },
       "additional_requirement": "Derive from the fixture, without relying on conclusions in the executor input, that F1 is Resolved, F2 is Remaining, and the unbounded retry loop is a New material finding."
+    },
+    {
+      "id": "unjustified-abstraction",
+      "title": "Speculative extension architecture for one current format",
+      "input": "Review this change as a new code review. The current requirement and all known callers use JSON only, no additional formats are accepted or scheduled, and the existing parse_json function already satisfies the behavior. The diff adds Parser, ParserFactory, a registry, configuration lookup, and one JsonParser implementation, then routes the same callers through them. Report only material findings supported by current requirements and concrete maintenance or operational consequences. Include the complete finding contract, checks, unchecked scope, and residual risk. Do not edit or propose a redesign beyond what is needed to explain the finding.",
+      "assertions": [
+        "contextual-evidence",
+        "finding-contract",
+        "complexity-balance",
+        "checks-vs-suggestions",
+        "read-only-review"
+      ],
+      "fixture": {
+        "type": "inline",
+        "diff": "parse_json(payload) is replaced by Parser, JsonParser, ParserFactory, a parser registry, and config-driven parser selection; every caller selects the only registered value, json",
+        "context": "The current specification and every known caller require JSON only. No accepted near-term format or runtime selection requirement exists."
+      },
+      "additional_requirement": "Identify the concrete added concepts and maintenance paths without treating every abstraction as inherently defective."
+    },
+    {
+      "id": "local-patch-leaves-shared-cause",
+      "title": "One-path patch leaves a confirmed shared normalization rule inconsistent",
+      "input": "Review this change as a new code review. The current specification requires trimmed, case-folded email addresses on both signup and invite paths. The repository has normalize_email as the shared owner, but the diff adds inline case-folding only to signup.py; invite.py still trims without case-folding. Report material findings with the complete finding contract, checks, unchecked scope, and residual risk. Do not prefer a larger change merely by style and do not implement a fix.",
+      "assertions": [
+        "contextual-evidence",
+        "finding-contract",
+        "complexity-balance",
+        "checks-vs-suggestions",
+        "read-only-review"
+      ],
+      "fixture": {
+        "type": "inline",
+        "diff": "signup.py changes email.strip() to email.strip().casefold(); normalize_email and invite.py are unchanged",
+        "context": "The current specification applies the same normalization invariant to signup and invite. normalize_email is the established shared owner, and invite.py currently calls only strip()."
+      },
+      "additional_requirement": "Identify the known inconsistent path and shared cause; do not base the finding on diff size or extraction preference alone."
     }
   ]
 }

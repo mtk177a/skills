@@ -404,6 +404,12 @@
       "candidate_skill": "sha256:4d5b4fafab145b0865900e70a1adc4102381ac789ff238ebad1aea90c58af732",
       "change": "Updated the optional readiness handoff to assess-risky-change-readiness.",
       "coverage": "Reran unapproved-auth-change candidate behavior and unapproved-auth-coexistence candidate routing."
+    },
+    {
+      "baseline_commit": "e21252f0a8df4ff4213bc8c1935eecb8dea13a98",
+      "candidate_skill": "sha256:9118808ff1b9945e451f24d62c549cc04a032e4d43f09beb8f338f013b704d57",
+      "change": "Implemented approved coherent boundaries and stopped when a newly discovered boundary exceeded authorization.",
+      "coverage": "Ran approved-shared-invariant and scope-discovery in matched baseline/candidate conditions with blind grading. Both conditions passed every assigned assertion in both cases."
     }
   ],
   "targeted_high_risk_readiness": {
@@ -658,5 +664,52 @@
       "verdict": "pass",
       "duration_seconds": 17.63
     }
+  },
+  "coherent_change_validation": {
+    "evaluated_on": "2026-08-04",
+    "environment": {
+      "client": "Codex CLI 0.146.0",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "high",
+      "executor_sandbox": "workspace-write",
+      "grader": "separate blind Codex invocation"
+    },
+    "baseline": {
+      "commit": "e21252f0a8df4ff4213bc8c1935eecb8dea13a98",
+      "files": {
+        "SKILL.md": "sha256:4d5b4fafab145b0865900e70a1adc4102381ac789ff238ebad1aea90c58af732",
+        "SKILL-ja.md": "sha256:e98f9cebe7ff355cd6583817d4adee22776f4f88dc3f18c9fcbbf4a7daca2e6e",
+        "evals/evals.json": "sha256:5e647b9539e8ce01a0edbde1203832b18d6ea95183906a0a966fd45640ee664a"
+      }
+    },
+    "candidate": {
+      "files": {
+        "SKILL.md": "sha256:9118808ff1b9945e451f24d62c549cc04a032e4d43f09beb8f338f013b704d57",
+        "SKILL-ja.md": "sha256:0a8e88fd1cb5eb158e8967e6b1bcec34ff7c6fce239df774d76a13d69c063cfe",
+        "references/tdd_twada.md": "sha256:808c1e099d3d944ac9e8fbfc5dbabfd629a9236cb8b8f56536494ecfe793c04f",
+        "evals/evals.json": "sha256:6fd22d45a00d5b9e73ce63e73249ff76cf31dcb9ff44122aade2b478bd211f4d",
+        "evals/triggers.json": "sha256:c7aaca7fca4e2919c6e64de29743e1ed80ff3faf9355484b1ec007d1ff1344da"
+      }
+    },
+    "cases": {
+      "approved-shared-invariant": {
+        "baseline": "pass",
+        "candidate": "pass",
+        "requirements": "7/7 pass in both conditions",
+        "evidence": "Both conditions observed two meaningful Red failures, implemented strip().casefold() in normalize_email, delegated signup.py and invite.py to it, added no speculative structure, and passed the two focused tests plus the complete discovered unittest suite. The product source diff contained exactly those three files; generated Python cache files were excluded from scope."
+      },
+      "scope-discovery": {
+        "baseline": "pass",
+        "candidate": "pass",
+        "requirements": "5/5 pass in both conditions",
+        "evidence": "Both conditions stopped before editing, identified normalize_email and both known callers as the required boundary, reported that no checks ran, left the fixture unchanged, and avoided speculative abstractions."
+      }
+    },
+    "comparison": "The final candidate completed the authorized structural boundary and stopped at an unauthorized boundary expansion. The blind graders found no requirement-level improvement or regression over the already-passing baseline.",
+    "unverified": [
+      "The retained authentication, verification-mode, failure-loop, and trigger cases were not rerun because their instructions and inputs are unchanged.",
+      "The disposable fixture's complete unittest suite contained only the two focused email-path tests; lint, type checking, external callers, and integrations were not exercised.",
+      "Claude Code, other clients, and repeated stochastic runs were not executed."
+    ]
   }
 }
