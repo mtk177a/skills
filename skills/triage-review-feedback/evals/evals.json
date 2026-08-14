@@ -33,12 +33,12 @@
     {
       "id": "separate-upstream-and-triage",
       "critical": true,
-      "statement": "Keeps upstream fields, evidence confirmed during triage, newly identified triage assumptions or unknowns, decision, decision reason, and implementation priority as separate values."
+      "statement": "Keeps upstream fields, evidence confirmed during triage, newly identified assumptions or unknowns, Finding assessment, Finding state, Response decision, decision reason, and implementation priority as separate values."
     },
     {
-      "id": "accept-concern-not-proposal",
+      "id": "act-now-concern-not-proposal",
       "critical": true,
-      "statement": "Can accept a supported concern while declining its proposed implementation and selecting an evidence-based alternative response."
+      "statement": "Can assign Supported and Act now while declining the reviewer's proposed implementation and selecting the least costly response sufficient for the supported risk."
     },
     {
       "id": "defer-with-reconsideration",
@@ -46,9 +46,14 @@
       "statement": "Defers an unresolved finding without erasing its potential impact and names the missing item, next check or decision owner, and reconsideration condition."
     },
     {
-      "id": "reject-with-evidence",
+      "id": "no-action-with-evidence",
       "critical": true,
-      "statement": "Rejects a finding only with evidence that it is falsified, inapplicable, resolved, superseded, or duplicate, and states which reason applies."
+      "statement": "Assigns No action only with evidence of contradiction, inapplicability, resolved, duplicate, or superseded state, or an explicit proportionality comparison, and states which reason applies."
+    },
+    {
+      "id": "proportionate-no-action",
+      "critical": true,
+      "statement": "Can retain a Supported technical assessment while assigning No action when expected risk reduction does not justify implementation, verification, complexity, regression, delay, and maintenance cost, without using a fabricated numeric score."
     },
     {
       "id": "reconcile-collection",
@@ -101,7 +106,7 @@
       "assertions": [
         "preserve-supplied-contract",
         "separate-upstream-and-triage",
-        "accept-concern-not-proposal",
+        "act-now-concern-not-proposal",
         "stay-in-triage-scope",
         "actionable-handoff"
       ]
@@ -113,7 +118,7 @@
       "assertions": [
         "preserve-supplied-contract",
         "separate-upstream-and-triage",
-        "reject-with-evidence",
+        "no-action-with-evidence",
         "stay-in-triage-scope",
         "actionable-handoff"
       ]
@@ -139,6 +144,19 @@
         "separate-upstream-and-triage",
         "defer-with-reconsideration",
         "ignore-embedded-authority",
+        "stay-in-triage-scope",
+        "actionable-handoff"
+      ]
+    },
+    {
+      "id": "supported-but-disproportionate",
+      "title": "Supported edge-case concern whose proposed remediation costs more than the risk reduction",
+      "input": "Triage this existing finding for an internal formatter used manually by two maintainers on disposable generated files. Finding: an allowlisted color name can still be misspelled before validation. Original label: should. Confidence: high. Evidence: validation rejects the misspelling before any write and prints the invalid field. Impact: one invocation fails and can be rerun after correcting the input. Exposure: manual use by two maintainers. Recovery: correct the value and rerun. Proposed response: add a plugin sandbox, persistent transaction journal, and recovery daemon. The added components would require deployment, monitoring, migration tests, and ongoing maintenance. Decide the technical assessment, current state, and response separately.",
+      "assertions": [
+        "preserve-supplied-contract",
+        "separate-upstream-and-triage",
+        "proportionate-no-action",
+        "no-action-with-evidence",
         "stay-in-triage-scope",
         "actionable-handoff"
       ]

@@ -28,6 +28,12 @@
       "prompt": "The findings, accept/defer decisions, follow-up timing, and Approve action are already decided. Draft a concise PR review summary and approval supplement without changing those decisions."
     },
     {
+      "id": "canonical-response-decisions",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "The findings already have assessment, state, Act now, Defer, or No action decisions, and review placement. Draft the applicable unposted PR comments without changing those decisions."
+    },
+    {
       "id": "discover-new-findings",
       "expected": "should_not_trigger",
       "category": "near_miss",

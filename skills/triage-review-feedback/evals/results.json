@@ -281,5 +281,22 @@
     "Behavior fixtures intentionally contained no repository implementation, so local evidence checks were limited to the supplied scenario evidence and read-only absence checks.",
     "The final matched run isolated HOME so globally installed personal Skills were unavailable; Codex authentication remained available through the existing Codex home.",
     "Wall-clock duration was not exposed by the recorded client events."
-  ]
+  ],
+  "current_revision": {
+    "date": "2026-08-14",
+    "status": "targeted evidence only; full revision unverified",
+    "hashes": {
+      "SKILL.md": "4d9f4ac381928c8085a8ecca15028e07848fd72ab2e570194e3221da82390d1c",
+      "evals.json": "1b540f700fab7c18b1799f98857fe3b833a3624729d99adf68cd88ba47e76d4a",
+      "triggers.json": "e52a98282f925cb3d4a1db1c9f6d389b6fe53372ba620ea9fc29314f6a555911"
+    },
+    "previous_evidence_status": "Superseded for the changed assessment, state, response-decision, proportionality, and legacy-normalization requirements.",
+    "executed": [
+      "Matched baseline/candidate proportionality forward test: the baseline returned reject for a supported but disproportionate concern; the candidate returned Supported, Open, and No action with an explicit proportionality rationale."
+    ],
+    "unverified": [
+      "Full behavior and trigger suites for this revision",
+      "Repeated stochastic runs and clients other than the recorded Codex invocation"
+    ]
+  }
 }

@@ -647,5 +647,23 @@
       "The inline cases did not expose actual source files, callers, configuration behavior, or executable tests; findings were limited to the supplied semantic diffs and context.",
       "Claude Code, other clients, repeated stochastic runs, and real repository diffs were not executed."
     ]
+  },
+  "current_revision": {
+    "date": "2026-08-14",
+    "status": "targeted evidence only; full revision unverified",
+    "hashes": {
+      "SKILL.md": "21cfeb569c4330480c0e7c384009ebfbfc0ef9202030dae9ea4468de49919adc",
+      "evals.json": "5377a50967d040b73380eacc8f9f5f6e1441105558b385f3d106991eaf3f7ff0",
+      "triggers.json": "1a8cbf2caf5666e09d52131b1f01b0317c514c2ab1405b8a0e01b621fc8ce6e1"
+    },
+    "previous_evidence_status": "Superseded for the changed trigger, proportionality, re-review-origin, and output-contract requirements; historical evidence remains reusable only for explicitly unchanged requirements.",
+    "executed": [
+      "Matched baseline/candidate forward test: low-criticality, low-exposure, high-remediation-cost edge case; both produced no material finding and the candidate stated proportionality and a cheaper verification alternative.",
+      "Matched baseline/candidate routing test: ordinary post-fix request selected validate-fix in both conditions; the candidate stated the bounded-validation boundary explicitly."
+    ],
+    "unverified": [
+      "Full behavior and trigger suites for this revision",
+      "Repeated stochastic runs and clients other than the recorded Codex invocation"
+    ]
   }
 }

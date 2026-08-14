@@ -20,7 +20,8 @@ Structured assets:
 - a high-impact unconfirmed premise remains visible as a `question` and can be handed to triage without downstream inference
 - executed checks, suggested verification, unchecked scope, and residual risk are not conflated
 - no-findings and unavailable-diff states are distinct
-- full re-review state is separate from label and confidence
+- full re-review state and new-finding origin are separate from label and confidence
+- reviewer context and remediation cost calibrate requested response without a numeric score
 - the Skill remains read-only, portable, and usable without a companion Skill or subagent
 
 ## Coverage map
@@ -36,6 +37,8 @@ Structured assets:
 | Trigger boundary | Collides with triage, validation, comment drafting, summary, implementation, or guidance audit | `triggers.json` | Observable Skill loads |
 | Excess complexity | Accepts speculative abstractions whose concrete maintenance cost has no current requirement or observed-risk basis | `unjustified-abstraction` | Finding evidence and assigned assertions |
 | Overly narrow correction | Accepts a small patch that leaves a confirmed shared rule inconsistent across a known path | `local-patch-leaves-shared-cause` | Finding evidence and assigned assertions |
+| Proportionate response | A speculative low-exposure edge case becomes a blocking request despite cheap detection and recovery and high remediation cost | `low-criticality-expensive-edge-case` | Risk-context fields and requested label |
+| Re-review convergence | New origins are conflated or a previously observable non-blocking nit starts another fix round | `full-rereview-origin-and-convergence` | Origin classification and actionable-output inspection |
 
 ## Execution protocol
 
@@ -66,6 +69,9 @@ Claude Code and other clients are outside the current execution plan and must be
 - `review workflow routed to an adjacent Skill`
 - `speculative abstraction accepted without concrete cost or requirement evidence`
 - `small diff accepted while a confirmed shared cause remains`
+- `missing context treated as low risk`
+- `speculative remediation cost ignored when assigning must`
+- `late non-blocking issue starts another fix round`
 
 ## Recorded full evaluation — 2026-07-27
 
@@ -87,3 +93,10 @@ Claude Code and other clients were not executed. Detailed case-by-assertion and 
 - Earlier candidate runs exposed two useful failures: `none identified` conflicted with an unchecked fallback, and speculative downstream account-matching effects exceeded the supplied evidence. The final candidate requires premise-consistent, evidence-bound Impact claims.
 - Retained review cases and trigger routing were not rerun because their responsibilities and descriptions are unchanged.
 - Next validation question: Does the same distinction hold on a real diff where callers, fallback behavior, and downstream contracts can be inspected directly?
+
+## Proportional-review revision — 2026-08-14
+
+- Added coverage for proportional blocking decisions, conditional high-criticality risk, re-review origin, incomplete coverage, and routing ordinary post-fix checks to `validate-fix`.
+- A matched forward test on a low-criticality, low-exposure, expensive edge case produced no material finding in either condition. The candidate additionally made the proportionality basis and cheaper verification alternative explicit.
+- A matched routing test selected `validate-fix` in both conditions for an ordinary post-fix request; the candidate made the responsibility boundary explicit.
+- The earlier pass totals are historical evidence and are superseded for the changed trigger and output contract. The full behavior and trigger suites were not rerun for this revision.

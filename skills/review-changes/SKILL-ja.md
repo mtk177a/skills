@@ -1,6 +1,6 @@
 ---
 name: review-changes
-description: コード・文書・設定の新規または更新差分について、正しさ、安全性、検証、互換性、保守性、性能上の実行可能な問題を、根拠・影響・確信度・正規ラベル付きでレビューするときに使う。pre-commit、コミット範囲、PR、effective diff の全面再レビューが対象であり、既存指摘の採否、特定の完了済み修正だけの検証、GitHub コメント案作成、差分要約、実装修正には使わない。
+description: コード・文書・設定の新規差分、または明示的に依頼された effective diff の全面再レビューについて、正しさ、安全性、検証、互換性、保守性、性能上の比例的で実行可能な問題をレビューし、根拠、影響、リスク文脈、確信度、正規ラベルを報告するときに使う。特定済み指摘に対する通常の修正後再レビュー、既存指摘の整理、GitHub コメント案作成、差分要約、実装修正には使わない。
 license: MIT
 ---
 
@@ -12,6 +12,7 @@ license: MIT
 
 - effective diff が導入または顕在化させる重要な問題を発見し、別の人や Skill がレビュー文脈を調べ直さずに評価できる根拠を返す。
 - 求める対応、潜在影響、確信度、再レビュー状態を別の軸として扱う。
+- 変更目的、対象の重要度と露出、修正のコストとリスクに応じて求める対応を調整し、数値スコアへ還元しない。
 - コード、文書、設定を、全差分に同じチェックリストを強制せず、変更内容とリスクに応じた確認方法でレビューする。
 
 ## 対象範囲と根拠
@@ -28,17 +29,20 @@ license: MIT
 
 ユーザーが示した主張、コメント、外部仕様は結論ではなく検証対象の根拠として扱う。観測済み挙動、静的推論、前提、未知を区別する。
 
+利用可能な場合は reviewer context を使う。目的と期待結果、プロダクトまたは運用文脈と重要度、scope と non-goals、影響する利用者・データ・契約・露出、制約と採用済み trade-off、verification と unknown、検知・復旧 control、review focus が対象になる。重要な evidence state は `Observed`、`Reported`、`Inferred`、`Unknown`、`Conflicting` のまま保持する。重要度または露出の不足は `Unknown` であり、低リスクの根拠ではない。
+
 ## 手順
 
-1. effective diff、意図する挙動、レビュー範囲、重要な除外範囲を示す。
-2. 変更のリスク面を特定し、全観点を機械的に適用せず、必要なレビュー観点を選ぶ。
-3. 差分と、変更の前提・契約・統合点を確認するために必要な最小限の周辺根拠を調べる。
+1. effective diff、意図する挙動、reviewer context、レビュー範囲、重要な除外範囲を示す。目的、重要度、露出が判断に重要でも利用できない場合は、値を作らず unknown として保持する。
+2. 行単位の詳細より先に、変更目的、設計、契約、責務境界、影響する consumer を確認する。変更のリスク面を特定し、全観点を機械的に適用せず、必要なレビュー観点を選ぶ。
+3. 差分と、変更の前提・契約・統合点・提示された reviewer context を確認するために必要な最小限の周辺根拠を調べる。
 4. 結果が指摘を実質的に強める、弱める、または反証できる場合、安全で関連する非変更型の確認を実行する。レビュー中に依存を導入したり、tracked file を変更したり、外部へ書き込んだりしない。
 5. 実行した確認と結果を、提案だけの確認から分ける。利用不能または意図的に除外した確認は未実行として記録する。
 6. 根拠で裏付けられた重要な指摘をすべて報告する。記載する impact は、提示済みまたは確認済みの contract、behavior、path が裏付ける結果に限定し、指摘を深刻に見せるためだけに、あり得そうな downstream mechanism を作らない。重要になり得る downstream の結果が有用でも未確認なら、条件付きで記述し、その依存関係を `Unconfirmed premises` に記録する。空の指摘一覧を避けるためだけに好み、`nit`、`note` を追加しない。
-7. 各指摘へ正規ラベルを 1 つ、確信度を 1 つ付ける。指摘、その記載済み impact、または求める対応が依存する前提や未知はすべて `Unconfirmed premises` に記録し、どの claim も依存しない場合だけ `none identified` とする。報告前にこの field と未確認範囲・残る risk を照合し、利用不能な fallback、error、caller、contract の挙動が記載した結果へ影響する場合は、指摘の中心部分が成立していてもその premise を記録する。未確認前提によって求める対応が `question` でも、大きな潜在影響は保持する。
-8. 更新後の effective diff を全面再レビューする場合、前回指摘を `Resolved` / `Remaining` / `New` に整理する。この状態をラベルや確信度と混同しない。
-9. レビュー範囲、実行した確認、未確認範囲、残るリスクをまとめる。根拠を超えて Approve や安全性を主張しない。
+7. 求める対応を変え得る場合は、指摘の露出と前提、対象の重要度と blast radius、検知と復旧、修正コストまたは trade-off を整理する。捏造した数値スコアではなく、根拠のある順序比較を使い、支持されたリスクを十分に扱える最も低コストな対応を優先する。
+8. 各指摘へ正規ラベルを 1 つ、確信度を 1 つ付ける。指摘、その記載済み impact、risk context、または求める対応が依存する前提や未知はすべて `Unconfirmed premises` に記録し、どの claim も依存しない場合だけ `none identified` とする。未確認前提によって求める対応が `question` でも、大きな潜在影響は保持する。
+9. 明示的な全面再レビューでは、前回指摘を `Resolved` / `Remaining` / `New` に整理する。すべての `New` を `Fix-induced`、`Newly observable`、`Late-discovered` のいずれかへ分類する。3種類とも重要な問題は報告する。以前から観測可能だった `Late-discovered` が独立に non-blocking なら、新しい修正ラウンドを開始せず、actionable finding から除外するか、有用な場合だけ非actionableな `note` として要約する。
+10. レビュー範囲、実行した確認、未確認範囲、残るリスクをまとめる。重要なレビュー観点が未完了なら、Approve や安全性を暗示せずレビュー未完了と示す。
 
 ## レビュー観点
 
@@ -72,7 +76,7 @@ license: MIT
 ## 指摘契約
 
 - `Label`
-  - `must`: 存在が十分確認され、マージ前の修正が必要
+  - `must`: 重要なリスクが十分に支持され、それを十分に扱える低コストな対応がなく、マージ前の修正が必要
   - `should`: 原則修正推奨。代替案や制約を相談できる
   - `suggestion`: マージを止めない改善
   - `question`: 次の行動が前提や意図の確認
@@ -82,8 +86,14 @@ license: MIT
 - `Finding`: 具体的な問題、提案、質問、補足
 - `Evidence`: 根拠となる位置、契約、挙動、確認結果、リポジトリ内の先例
 - `Impact`: 利用可能な evidence が裏付ける影響。明示した未確認 premise がある場合は、それが確認されたときに起きること。未確認の downstream mechanism を作らない
+- `Exposure and preconditions`: 求める対応に重要な場合、evidence が裏付ける条件、到達可能な path、頻度、影響人口。重要でも利用できない場合は `Unknown`
+- `Criticality and blast radius`: 求める対応に重要な場合、影響する product、tool、data、contract、operation の重要度と、裏付けられた影響範囲
+- `Detectability, recovery, and workaround`: 求める対応に重要な場合、適用可能な検知、封じ込め、復旧、rollback、実用的な workaround の evidence
+- `Remediation cost and trade-offs`: 求める対応に重要な場合、現在の evidence が裏付ける実装、verification、複雑性、regression、遅延、保守の重要な cost
 - `Verification`: 確認、再現、反証の方法
 - `Unconfirmed premises`: 指摘、その記載済み impact、または求める対応が依存する前提または未知。該当しない場合は `none identified` とし、未確認範囲・残る risk と照合し、根拠、影響、確認方法でこの field を代用しない
+- `Re-review state`: 明示的な全面再レビューだけで `Resolved`、`Remaining`、`New`
+- `New finding origin`: `New` finding だけで `Fix-induced`、`Newly observable`、`Late-discovered`
 - `Generalizable check`: 今回の差分を超えて再利用できる学びがある場合だけ
 
 `Must-fix`、`Should-fix`、`Nice-to-have` は互換入力として受け取り、`must`、`should`、`suggestion` または `nit` へ正規化する。好みだけの指摘に `must` や `should` を使わない。`question` でも潜在影響は大きくなり得るため、前提が未確認であることだけを理由に影響を消さない。
@@ -106,9 +116,9 @@ diff を取得できない、または結果が実質的に異なる解釈を解
 
 ## 関連ワークフローとの境界
 
-- 既存指摘を採用、保留、却下して対応方針を決める場合は `triage-review-feedback` を使う。
-- 特定の完了済み修正または指摘が解消したかだけを確認する場合は `validate-fix` を使う。
+- 既存指摘を評価し、response decision と対応方針を決める場合は `triage-review-feedback` を使う。
+- 一つ以上の特定済み指摘に対する通常の修正後再レビューには、既定で `validate-fix` を使う。
 - 整理済み指摘を GitHub コメント案へ変換する場合は `draft-review-comments` を使う。
 - 問題発見を伴わない説明的な差分要約には `summarize-changes` を使う。
 
-修正を実装したり、指摘の最終的な採用・保留・却下を決めたりしない。未解決の仕様質問が差分の残りをレビューする妨げにならない場合、全体を止めず `question` として報告する。別エージェントやサブエージェントは既定で使わない。
+修正を実装したり、指摘の最終的な response decision を決めたりしない。未解決の仕様質問が差分の残りをレビューする妨げにならない場合、全体を止めず `question` として報告する。別エージェントやサブエージェントは既定で使わない。

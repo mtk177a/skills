@@ -59,6 +59,11 @@
       "id": "paste-ready-wording",
       "critical": false,
       "statement": "When the location is verified, returns one-concern comment text with a canonical label, concrete identifiers, proportional certainty, and a clear supplied next action."
+    },
+    {
+      "id": "response-decision-routing",
+      "critical": true,
+      "statement": "Only Act now becomes a current requested action; Defer remains follow-up, and No action or a non-blocking Late-discovered item does not become an actionable inline comment unless an explicitly requested non-actionable note or summary preserves it."
     }
   ],
   "assertion_policy": "Grade every assertion assigned to a case. A failed critical assertion fails that case. Record evidence for each condition separately.",
@@ -140,6 +145,18 @@
         "location-integrity",
         "adaptive-output",
         "paste-ready-wording"
+      ]
+    },
+    {
+      "id": "no-action-late-discovered",
+      "title": "No-action late finding remains non-actionable",
+      "input": "Draft only the applicable unposted review text from this organized re-review item. Finding assessment: Supported. Finding state: Open. Response decision: No action. Re-review state: New. New finding origin: Late-discovered. Label: note. Confidence: high. Evidence: one trailing-space inconsistency was already visible in the first review and CI formatting removes it automatically. Impact: no runtime or maintenance impact. The upstream decision explicitly permits one non-actionable summary note and forbids another fix request or inline action. Preserve all decisions and do not reassess, post, or implement.",
+      "assertions": [
+        "preserve-contract",
+        "authority-boundary",
+        "adaptive-output",
+        "response-decision-routing",
+        "draft-only-safety"
       ]
     }
   ]

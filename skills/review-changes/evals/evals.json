@@ -47,7 +47,7 @@
     {
       "id": "finding-contract",
       "critical": true,
-      "statement": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, and an explicit Unconfirmed premises field that uses none identified when no dependency remains unknown."
+      "statement": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, an explicit Unconfirmed premises field, and the material exposure, criticality, recovery, and remediation-trade-off fields needed to justify the requested response."
     },
     {
       "id": "uncertainty-impact",
@@ -77,7 +77,7 @@
     {
       "id": "rereview-state",
       "critical": true,
-      "statement": "For full re-review, separates Resolved, Remaining, and New state from canonical label and confidence."
+      "statement": "For an explicitly requested full re-review, separates Resolved, Remaining, and New state from canonical label and confidence, classifies each New finding as Fix-induced, Newly observable, or Late-discovered, and does not start another fix round for an independently non-blocking Late-discovered item."
     },
     {
       "id": "read-only-review",
@@ -88,6 +88,16 @@
       "id": "complexity-balance",
       "critical": true,
       "statement": "Reports excess complexity or an overly narrow correction only from concrete current requirements, observed risks, affected paths, and maintenance or behavioral consequences rather than architectural preference."
+    },
+    {
+      "id": "reviewer-context",
+      "critical": true,
+      "statement": "Uses supplied purpose, criticality, scope, exposure, trade-offs, recovery controls, verification, and review focus with their evidence state, and does not treat missing context as low risk."
+    },
+    {
+      "id": "proportionate-response",
+      "critical": true,
+      "statement": "Calibrates the requested response from supported risk reduction and total remediation cost without a fabricated numeric score, and reserves must for a material pre-merge risk lacking a sufficient lower-cost response."
     }
   ],
   "assertion_policy": "Grade every assertion assigned to a case. A failed critical assertion fails that case. Record case-by-condition evidence and do not pass an assertion because it succeeded in another case.",
@@ -265,6 +275,43 @@
         "context": "The current specification applies the same normalization invariant to signup and invite. normalize_email is the established shared owner, and invite.py currently calls only strip()."
       },
       "additional_requirement": "Identify the known inconsistent path and shared cause; do not base the finding on diff size or extraction preference alone."
+    },
+    {
+      "id": "low-criticality-expensive-edge-case",
+      "title": "Low-exposure internal helper with a disproportionate hardening proposal",
+      "input": "Review this new configuration change. The tool is an internal, manually invoked formatter used by two maintainers on disposable generated files. Malformed input is detected immediately, the command exits without writing, and rerunning after correcting the input is the documented recovery. The diff accepts an optional color name from the existing allowlist. A hypothetical reviewer proposal would add a plugin sandbox, persistent transaction journal, and recovery daemon for malformed color values. Review for material findings, preserve unknowns, and calibrate any requested response to the supplied context and remediation cost. Do not triage or implement.",
+      "assertions": [
+        "contextual-evidence",
+        "finding-contract",
+        "reviewer-context",
+        "proportionate-response",
+        "no-invented-findings",
+        "read-only-review"
+      ],
+      "fixture": {
+        "type": "inline",
+        "diff": "formatter config now accepts color from the same static allowlist already used by the renderer",
+        "context": "Internal manual tool; two maintainers; disposable generated output; invalid values fail before writes; correction and rerun is the recovery."
+      },
+      "additional_requirement": "Do not issue must or should solely for the speculative sandbox, journal, or daemon proposal; report a material defect only if the supplied diff and contracts support one."
+    },
+    {
+      "id": "full-rereview-origin-and-convergence",
+      "title": "Full re-review distinguishes new-finding origins and avoids a late nit loop",
+      "input": "Perform an explicit full re-review after fixes. Previous F1 was a null dereference and is fixed. The fix changes the same function to catch every exception and return success, which can hide a documented authorization failure. A newly added caller now exposes an existing integer-overflow path that the prior revision could not reach. The original diff also had a trailing-space inconsistency that was visible in the first review but missed; formatting is CI-enforced and it has no behavior or maintenance impact. Reconcile the previous finding and all material new problems, record each New origin, and do not triage or implement.",
+      "assertions": [
+        "finding-contract",
+        "rereview-state",
+        "proportionate-response",
+        "checks-vs-suggestions",
+        "read-only-review"
+      ],
+      "fixture": {
+        "type": "inline",
+        "diff": "F1 null guard added; the function now catches all exceptions and returns success; a new caller reaches the existing integer conversion path; one CI-formatted line has trailing spaces",
+        "context": "Authorization failures must propagate. The new caller did not exist in the prior revision. Formatting is enforced automatically and the trailing spaces were already visible in the original diff."
+      },
+      "additional_requirement": "Classify the swallowed authorization failure as Fix-induced, the reachable overflow as Newly observable, and do not create another actionable fix round for the non-blocking Late-discovered formatting item."
     }
   ]
 }

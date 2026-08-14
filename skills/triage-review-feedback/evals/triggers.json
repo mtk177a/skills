@@ -20,7 +20,12 @@
     },
     {
       "id": "triage-ai-review",
-      "prompt": "An AI reviewer left findings with mixed confidence. Decide which existing findings to accept, defer, or reject before we plan the fixes.",
+      "prompt": "An AI reviewer left findings with mixed confidence. Assess whether each concern is supported and current, then decide Act now, Defer, or No action before we plan the fixes.",
+      "expected": "should_trigger"
+    },
+    {
+      "id": "legacy-triage-wording",
+      "prompt": "Here are existing review findings. Decide which to accept, defer, or reject, preserve the reasons, and choose the response approach.",
       "expected": "should_trigger"
     },
     {
