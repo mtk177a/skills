@@ -299,5 +299,20 @@
     "The routing candidate was executed before body-only evidence and impact clarifications; name and description were unchanged, and the routing protocol exposes only discovery metadata.",
     "Real GitHub PR templates, hosted CI APIs, release publication workflows, and external write integrations were not exercised.",
     "Arbitrary prompt-injection and secret formats beyond the synthetic fixture were not evaluated."
-  ]
+  ],
+  "current_revision": {
+    "date": "2026-08-14",
+    "status": "unverified behavior; static definitions only",
+    "hashes": {
+      "SKILL.md": "416336f4f3ab05920b128d942ade3d0428e2e3e150d90e85e7866b7e63056ac7",
+      "evals.json": "93d708a383e05da3469a730d5b279252bdfb55349b9ff28b0581afc1f20b3dcf",
+      "triggers.json": "2fb070481a8ab35bb34a69e1571bba1d0c852c2d743f860c3996a232e2f1972c"
+    },
+    "previous_evidence_status": "Superseded for the changed PR-description reviewer-context requirements.",
+    "executed": [],
+    "unverified": [
+      "Behavior and trigger invocations for this revision",
+      "Repeated stochastic runs and clients other than the previously recorded client"
+    ]
+  }
 }

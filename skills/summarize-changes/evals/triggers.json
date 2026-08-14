@@ -24,6 +24,13 @@
       "prompt": "Write a PR description for the current diff with impact, tests, remaining risks, and unconfirmed items."
     },
     {
+      "id": "pr-description-reviewer-context",
+      "expected": "should_trigger",
+      "expected_handler": "summarize-changes",
+      "category": "core",
+      "prompt": "Write a reviewer-facing PR description that preserves the supplied purpose, criticality, scope, exposure, trade-offs, verification, recovery, unknowns, and review focus."
+    },
+    {
       "id": "public-release-notes",
       "expected": "should_trigger",
       "expected_handler": "summarize-changes",

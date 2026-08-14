@@ -20,12 +20,15 @@ license: MIT
 
 - 承認済みの目的、期待動作、対象範囲、対象外、停止条件
 - `design-changes` または別の承認済み実装引き継ぎ
+- 利用可能な場合は planned reviewer context: product または operational criticality、影響する user・data・contract、exposure、採用済み trade-off、detection・recovery control、evidence state（`Observed` / `Reported` / `Inferred` / `Unknown` / `Conflicting`）、review focus
 - 該当する場合、必要な変更 boundary に対する合意済みの診断または別の evidence
 - 対象ファイル、リポジトリ指示、既存挙動、影響を受ける利用者
 - 局所確認、広い回帰確認コマンド、環境上の制約
 - 依存追加、破壊的変更、migration、authentication、authorization、credential、permission、cryptography に関する承認と制御
 
 `design-changes` の出力は必須ではない。依頼と既存実装から低影響で局所的な詳細は補ってよいが、要件、権限、リスク許容を作り出してはならない。不足が実装を実質的に変え得る場合は `Blocked` として止まる。
+
+上流 review feedback が現在の response contract を使う場合は、承認済みの `Act now` 作業だけを実装する。legacy downstream decision は technical assessment を推論せず、`accept` を `Act now`、`defer` を `Defer`、`reject` を `No action` へ正規化する。handoff に含まれるだけの `Defer` または `No action` 作業を実装しない。
 
 ## 手順
 
@@ -43,7 +46,7 @@ license: MIT
    - 承認済みの一貫した boundary 内で最も単純な変更を行う
    - 選択した決定的確認または目視確認を実行する
    - Red を作るためだけに無関係な失敗を作らない
-7. 新しい根拠を記録し、残る作業単位を更新する。局所修正では確認済みの原因、共有規則、確立済みの責務 boundary、既知の影響経路が未解決になると判明した場合、workaround を追加しない。必要な一貫した boundary が承認済み scope を超える場合は停止し、その evidence と必要な scope 判断を報告する。その他の dependency、test strategy、risk の実質的変更も、作業を広げる前に止める。
+7. 新しい根拠、actual reviewer context、planned objective・scope・affected boundary・trade-off・verification・recovery control・review focus との差異を記録し、残る作業単位を更新する。局所修正では確認済みの原因、共有規則、確立済みの責務 boundary、既知の影響経路が未解決になると判明した場合、workaround を追加しない。必要な一貫した boundary が承認済み scope を超える場合は停止し、その evidence と必要な scope 判断を報告する。その他の dependency、test strategy、risk の実質的変更も、作業を広げる前に止める。
 8. 実装試行とテスト実行を分けて記録する。同じ仮説のまま実質的に同じ試行が新しい根拠なしに2回失敗した場合は、同等の3回目の編集前に止まる。失敗した仮説と、構造的に異なる分岐または不足する入力を一つ記録する。
 9. 各作業単位の後に局所確認を実行する。完了報告前に、影響範囲で利用可能な、より広い関連回帰確認を実行する。存在しない、実行できない、意図的に除外した確認は記録し、通過したものとして扱わない。
 10. 後述の semantic contract に従って最終状態を報告する。
@@ -89,6 +92,7 @@ TDD を適用しない場合は、理由と代替根拠を明示する。TDD を
 - 実際に実行した局所確認と広い確認、そのコマンドと結果
 - 未実行の確認と未確認事項
 - correctness、safety、maintainability の残存リスク
+- 関連する actual reviewer context: 目的と結果、product または operational context と criticality、実際の scope と non-goals、影響する user・data・contract・exposure、制約と採用済み trade-off、verification と unknown、detection・recovery control、review focus、および plan との重要な差異。無関係な field は省略し、重要な unknown は保持する
 - 結果を判断するために必要なユーザー向け説明ポイント
 
 ## 境界

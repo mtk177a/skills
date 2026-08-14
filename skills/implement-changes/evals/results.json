@@ -711,5 +711,20 @@
       "The disposable fixture's complete unittest suite contained only the two focused email-path tests; lint, type checking, external callers, and integrations were not exercised.",
       "Claude Code, other clients, and repeated stochastic runs were not executed."
     ]
+  },
+  "current_revision": {
+    "date": "2026-08-14",
+    "status": "unverified behavior; static definitions only",
+    "hashes": {
+      "SKILL.md": "d53bd96e9df43d6baa636995f9c82a7dd5cbb915142c8cc8709d6857d75a1512",
+      "evals.json": "f07de4297ea17a5f33adf3a877e8599b22d5950e97c0cb1ef3858732d48d6bce",
+      "triggers.json": "86e8801592c7431b0988b58178475105f39c2038322edc3c1f5b32eb2cba8d6b"
+    },
+    "previous_evidence_status": "Superseded for the changed actual-reviewer-context Done-handoff requirements.",
+    "executed": [],
+    "unverified": [
+      "Behavior and trigger invocations for this revision",
+      "Repeated stochastic runs and clients other than the previously recorded client"
+    ]
   }
 }

@@ -92,6 +92,16 @@
       "id": "self-contained",
       "critical": false,
       "statement": "Provides a usable stop or implementation decision without requiring a companion Skill or subagent."
+    },
+    {
+      "id": "response-decision-boundary",
+      "critical": true,
+      "statement": "Implements only authorized Act now work, treats legacy accept as Act now without inferring assessment, and does not implement Defer or No action items merely because they appear in the handoff."
+    },
+    {
+      "id": "actual-reviewer-context",
+      "critical": true,
+      "statement": "The Done report carries actual purpose and result, criticality, scope and non-goals, affected consumers, data, contracts and exposure, trade-offs, verification and unknowns, recovery controls, review focus, and material deviations from the plan without filling unknowns."
     }
   ],
   "assertion_policy": "Grade every assertion assigned to a case. A failed critical assertion fails that case. Record case-by-condition evidence and do not pass an assertion merely because it succeeded in a different case.",
@@ -218,6 +228,22 @@
       ],
       "fixture": "shared-email-normalization",
       "additional_requirement": "All fixture file hashes must remain unchanged."
+    },
+    {
+      "id": "act-now-only-with-reviewer-context",
+      "title": "Implementation respects response decisions and returns actual reviewer context",
+      "input": "Implement the authorized review handoff in this disposable repository. F1 is Supported, Open, and Act now: parse_port must return 8080 for an omitted value while invalid text still raises ValueError; use the focused test and regression suite. F2 is Supported but No action: add a plugin registry for hypothetical future port syntaxes; the decision reason says its complexity is disproportionate and it is not authorized. Report actual reviewer context. Reported context: this is an internal CLI; affected consumer count and operational criticality are Unknown; reverting the focused parse_port change is the recovery. Do not implement F2 or invent the unknown context.",
+      "assertions": [
+        "entry-authority-scope",
+        "meaningful-red",
+        "small-scoped-change",
+        "focused-and-regression-checks",
+        "response-decision-boundary",
+        "actual-reviewer-context",
+        "state-appropriate-report"
+      ],
+      "fixture": "python-config",
+      "additional_requirement": "Only the parse_port behavior and its focused test may change; no registry, extension point, or future-syntax abstraction may be added."
     }
   ]
 }

@@ -23,8 +23,9 @@ license: MIT
 - 既存仕様、repository guidance、確立済みの implementation pattern
 - 観測済み failure、trace、過去の試行、design decision
 - dependency、migration、compatibility、security、rollout の制約
+- 後続レビューの調整に影響する reviewer context: product または operational criticality、影響する user・data・contract、exposure、採用済み trade-off、detection・recovery control、review focus
 
-確認済み evidence、推論、前提、不明点、計画した verification を区別する。成功条件と non-goals を定義できるほど request が理解されていない場合は、変更設計の前に `clarify-request` へ回す。
+重要な claim を `Observed`、`Reported`、`Inferred`、`Unknown`、`Conflicting` に分け、計画した verification と区別する。文脈不足から低い criticality または exposure を推論しない。成功条件と non-goals を定義できるほど request が理解されていない場合は、変更設計の前に `clarify-request` へ回す。
 
 ## Workflow
 
@@ -40,7 +41,8 @@ license: MIT
 9. 実装へ進む条件、implementation scope、stop condition を定義する。dependency 追加、破壊的操作、未解決の authority、高リスクな execution readiness の必要性を実装前に明示する。追加の safety control が必要な場合は `assess-risky-change-readiness` への handoff を明記し、この workflow は通常の change design で止める。
 10. behavior と ownership に沿った最小で review 可能な単位へ分ける。可読性変更では、孤立した空白や comment の差分ではなく、処理段階と読み手の理解単位で分ける。
 11. acceptance、安全性、将来の maintenance に影響する場合、重要な trade-off とユーザーまたは reviewer が理解すべき概念を記録する。
-12. 実装可能な handoff を作る。計画した check と観測済み result を分け、変更を実装しない。
+12. 利用可能な evidence から planned reviewer context を作る。目的と期待結果、product または operational context と criticality、scope と non-goals、影響する user・data・contract・exposure、制約と採用済み trade-off、計画した verification と unknown、detection・recovery control、review focus を対象とする。関連する field だけを含め、gap を埋めずに重要な evidence state を保持する。
+13. 実装可能な handoff を作る。計画した check と観測済み result を分け、変更を実装しない。
 
 ## 判断基準
 
@@ -62,6 +64,7 @@ license: MIT
 - dependency、影響する boundary、consumer、compatibility impact
 - mitigation または control と対応付けた material risk
 - verification coverage: 責務または risk → 起こり得る failure → check と期待する evidence
+- review severity を宣言せず、実装と後続 review に十分な、重要な unknown と evidence state を含む planned reviewer context
 - 実装へ進む条件、implementation scope、stop condition、review 可能な変更単位
 
 代替設計、module map、migration detail、rollback、user explanation point は重要な場合だけ含める。計画した validation は未実行と明示し、観測済み evidence として報告しない。
