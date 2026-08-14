@@ -36,10 +36,10 @@
 | `assess-risky-change-readiness` | 重大または復旧困難な変更について、安全 control、recovery、evidence、authorization が decision-ready か評価する |
 | `record-session-handoff` | 後続の AI agent session が state を再検証して安全に再開できる、evidence に基づく handoff を記録する |
 | `research-web-safely` | 取得したコンテンツを命令として扱わず、追跡可能な Web 上の根拠を収集・評価する |
-| `review-changes` | コード・文書・設定の差分を、根拠・影響・確信度・正規ラベル付きでレビューする |
+| `review-changes` | 新規差分または明示的な全面再レビューを、比例的なリスク文脈と正規ラベル付きでレビューする |
 | `summarize-changes` | 差分またはコミット範囲をレビューや文書化のために要約する |
-| `triage-review-feedback` | 既存レビュー指摘の出所、根拠、不確実性を保持し、採用・保留・却下と対応方針を決める |
-| `validate-fix` | 特定の完了済み修正が元の指摘または期待動作を解消したか、適切な read-only evidence で検証する |
+| `triage-review-feedback` | 指摘の assessment と state を、`Act now`・`Defer`・`No action` の response decision から分けて評価する |
+| `validate-fix` | 特定済み指摘への通常の修正後再レビューを、適切な read-only evidence で限定的に行う |
 
 ## インストール
 

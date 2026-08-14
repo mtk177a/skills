@@ -34,10 +34,10 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `assess-risky-change-readiness` | Assess whether a consequential or hard-to-recover change has decision-ready safety controls, recovery, evidence, and authorization |
 | `record-session-handoff` | Record an evidence-grounded handoff so a later AI-agent session can revalidate and safely resume active work |
 | `research-web-safely` | Gather and evaluate traceable Web evidence while treating retrieved content as untrusted data |
-| `review-changes` | Review code, documentation, or configuration diffs with evidence, impact, confidence, and canonical labels |
+| `review-changes` | Review new diffs or explicitly requested full re-reviews with proportionate risk context and canonical labels |
 | `summarize-changes` | Summarize changes in a diff or commit range for review or documentation |
-| `triage-review-feedback` | Evaluate existing review findings and decide accept, defer, or reject while preserving their provenance, evidence, and uncertainty |
-| `validate-fix` | Verify whether a specific completed fix resolved its original finding or expected behavior using appropriate read-only evidence |
+| `triage-review-feedback` | Separate finding assessment and state from act-now, defer, or no-action response decisions |
+| `validate-fix` | Perform bounded post-fix re-review of identified findings using appropriate read-only evidence |
 
 ## Installation
 
