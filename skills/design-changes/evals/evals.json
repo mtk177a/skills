@@ -1,0 +1,54 @@
+{
+  "skill": "design-changes",
+  "version": 1,
+  "baseline": {
+    "required": true,
+    "condition": "Run affected cases against the committed HEAD Skill and the working-tree candidate with matched inputs and grading.",
+    "raw_artifact_policy": "Keep JSONL, full responses, and temporary fixtures outside the repository."
+  },
+  "execution": {
+    "client": "record exact client and version at execution time",
+    "model": "record exact model at execution time",
+    "reasoning_effort": "record at execution time",
+    "sandbox": "read-only",
+    "executor_input_fields": [
+      "input"
+    ],
+    "hidden_grading_fields": [
+      "title",
+      "assertions",
+      "additional_requirement"
+    ]
+  },
+  "candidate_assertions": [
+    {
+      "id": "planned-reviewer-context",
+      "critical": true,
+      "statement": "Produces only relevant planned reviewer context covering purpose, criticality, scope and non-goals, affected users, data, contracts and exposure, accepted trade-offs, verification and unknowns, recovery controls, and review focus without declaring review severity."
+    },
+    {
+      "id": "reviewer-context-evidence-state",
+      "critical": true,
+      "statement": "Preserves material Observed, Reported, Inferred, Unknown, and Conflicting states and does not infer low criticality or exposure from missing context."
+    },
+    {
+      "id": "implementation-ready-boundary",
+      "critical": true,
+      "statement": "Keeps the implementation approach, coherent scope, non-goals, risks, controls, verification, and stop conditions decision-complete without implementing the change."
+    }
+  ],
+  "assertion_policy": "Grade every assertion assigned to a case. A failed critical assertion fails that case. Record baseline and candidate evidence separately.",
+  "cases": [
+    {
+      "id": "reviewer-context-with-unknown-criticality",
+      "title": "Design handoff preserves useful reviewer context and an unknown criticality",
+      "input": "Design the approved change before implementation. Objective: add an optional retry delay to the existing batch importer. Scope: importer configuration and its focused tests; the public API and storage schema are non-goals. Observed: failures currently stop before writing partial records. Reported: operations can rerun the batch. Unknown: whether this importer is used for business-critical data, how many consumers invoke it, and the maximum batch size. Accepted trade-off: do not add a queue or scheduler. Produce an implementation-ready handoff with risks, verification, recovery, and review focus, but do not implement or declare review severity.",
+      "assertions": [
+        "planned-reviewer-context",
+        "reviewer-context-evidence-state",
+        "implementation-ready-boundary"
+      ],
+      "additional_requirement": "The handoff must retain criticality, consumer count, and maximum batch size as Unknown rather than describing the importer as low risk."
+    }
+  ]
+}

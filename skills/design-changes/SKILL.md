@@ -21,8 +21,9 @@ Gather what is available:
 - existing specifications, repository guidance, and established implementation patterns
 - observed failures, traces, prior attempts, or design decisions
 - dependency, migration, compatibility, security, and rollout constraints
+- reviewer context that can affect later review calibration: product or operational criticality, affected users, data and contracts, exposure, accepted trade-offs, detection and recovery controls, and requested review focus
 
-Distinguish confirmed evidence, inference, assumptions, unknowns, and planned verification. If the request is not understood well enough to define success and non-goals, route it to `clarify-request` before designing the change.
+Distinguish `Observed`, `Reported`, `Inferred`, `Unknown`, and `Conflicting` material claims and planned verification. Do not infer low criticality or exposure from missing context. If the request is not understood well enough to define success and non-goals, route it to `clarify-request` before designing the change.
 
 ## Workflow
 
@@ -38,7 +39,8 @@ Distinguish confirmed evidence, inference, assumptions, unknowns, and planned ve
 9. Define conditions to proceed, implementation scope, and stop conditions. Surface dependency additions, destructive operations, unresolved authority, and high-risk execution-readiness needs before implementation. When additional safety controls are needed, name the `assess-risky-change-readiness` handoff explicitly and stop this workflow at the ordinary change design.
 10. Split the work into minimal reviewable units aligned with behavior and ownership. For readability changes, use the processing stages and the reader's unit of understanding rather than isolated whitespace or comment diffs.
 11. Record material trade-offs and concepts the user or reviewer must understand when they affect acceptance, safety, or future maintenance.
-12. Produce an implementation-ready handoff. Keep proposed checks separate from observed results and do not implement the change.
+12. Prepare planned reviewer context from the available evidence: objective and expected result; product or operational context and criticality; scope and non-goals; affected users, data, contracts, and exposure; constraints and accepted trade-offs; planned verification and unknowns; detection and recovery controls; and review focus. Include only relevant fields and preserve material evidence states instead of filling gaps.
+13. Produce an implementation-ready handoff. Keep proposed checks separate from observed results and do not implement the change.
 
 ## Decision criteria
 
@@ -60,6 +62,7 @@ Use a structure suited to the change. Include:
 - dependencies, affected boundaries, consumers, and compatibility impact
 - material risks paired with mitigations or controls
 - verification coverage: responsibility or risk → plausible failure → check and expected evidence
+- planned reviewer context, including material unknowns and evidence states, sufficient for implementation and later review without declaring review severity
 - conditions to proceed, implementation scope, stop conditions, and reviewable change units
 
 Include alternative designs, module maps, migration details, rollback, or user explanation points only when they are material. Clearly label planned validation as unexecuted; do not present it as observed evidence.

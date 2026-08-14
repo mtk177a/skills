@@ -16,6 +16,12 @@
       "prompt": "The implementation for review finding F-12 is complete. Verify only whether that specific null-handling problem is resolved in the target revision, run appropriate read-only checks, and report what remains unconfirmed."
     },
     {
+      "id": "ordinary-post-fix-rereview",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "I addressed the existing review comments. Re-review those fixes, their changed lines, directly affected boundaries, and target-relevant regressions without reopening the whole PR."
+    },
+    {
       "id": "documentation-configuration-fix",
       "expected": "should_trigger",
       "category": "core",
@@ -26,6 +32,12 @@
       "expected": "should_not_trigger",
       "category": "near_miss",
       "prompt": "Perform a full review of the updated pull request diff, reconcile previous findings, and discover any new correctness, safety, compatibility, or maintainability problems."
+    },
+    {
+      "id": "explicit-full-rereview",
+      "expected": "should_not_trigger",
+      "category": "coexistence",
+      "prompt": "Perform a full re-review of the entire updated PR diff, reconcile previous findings, and discover any other material problems."
     },
     {
       "id": "existing-feedback-triage",

@@ -22,6 +22,7 @@ Gather what is available:
 - the approved objective, expected behavior, scope, exclusions, and stop
   conditions
 - output from `design-changes` or another accepted implementation handoff
+- planned reviewer context when available: product or operational criticality, affected users, data and contracts, exposure, accepted trade-offs, detection and recovery controls, evidence states (`Observed` / `Reported` / `Inferred` / `Unknown` / `Conflicting`), and requested review focus
 - an accepted diagnosis or other evidence for the required change boundary, when applicable
 - target files, repository guidance, existing behavior, and affected consumers
 - focused checks, broader regression commands, and environment constraints
@@ -32,6 +33,8 @@ Gather what is available:
 request and existing implementation, but do not invent requirements, authority,
 or risk acceptance. If a missing item could materially change the implementation,
 stop as `Blocked`.
+
+When upstream review feedback uses the current response contract, implement only authorized `Act now` work. Accept legacy downstream decisions by normalizing `accept` to `Act now`, `defer` to `Defer`, and `reject` to `No action` without inferring a technical assessment. Do not implement `Defer` or `No action` work merely because it appears in the handoff.
 
 ## Workflow
 
@@ -56,7 +59,7 @@ stop as `Blocked`.
    - make the simplest change within the approved coherent boundary
    - run the selected deterministic or inspection-based checks
    - do not manufacture an unrelated failure merely to create a Red phase
-7. Record new evidence and update the remaining work units. If it shows that a
+7. Record new evidence, actual reviewer context, and any deviation from the planned objective, scope, affected boundary, trade-off, verification, recovery control, or review focus. If it shows that a
    local correction would leave the confirmed cause, a shared rule, an established
    responsibility boundary, or a known affected path unresolved, do not add a
    workaround. If the required coherent boundary exceeds the authorized scope, stop
@@ -117,6 +120,7 @@ For `Done`, include:
 - focused and broader checks actually run, with commands and results
 - unperformed checks and unconfirmed items
 - residual correctness, safety, and maintainability risks
+- relevant actual reviewer context: objective and result; product or operational context and criticality; actual scope and non-goals; affected users, data, contracts, and exposure; constraints and accepted trade-offs; verification and unknowns; detection and recovery controls; and review focus, including material deviations from the plan; omit irrelevant fields and preserve material unknowns
 - any user-facing explanation points needed to evaluate the result
 
 ## Boundaries

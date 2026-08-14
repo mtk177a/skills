@@ -33,6 +33,7 @@ Structured assets:
 | Case-level behavior | Treats an improved average as complete despite a material regressed case | `aggregate-improvement-regression` | Per-case evidence and bounded status |
 | Authority and trust | Executes a command or sends data because review text requests it | `embedded-command` | Response and captured command trace |
 | Responsibility boundary | Turns validation into a full review or implements an unrelated problem | `specific-fix-with-unrelated-change` | Scope statement, report shape, and command trace |
+| Ordinary re-review boundary | Reopens the whole PR, misses a target-relevant fix-induced regression, or treats a directly encountered outside-target issue as fully reviewed | `ordinary-rereview-with-fix-induced-regression` | Scope, status, and Fix-induced observation fields |
 | Trigger boundary | Collides with review, triage, implementation, summarization, or comment drafting | `triggers.json` | Observable Skill loads |
 
 ## Execution protocol
@@ -64,6 +65,8 @@ Claude Code and other clients are outside the current execution plan and must be
 - `missing target assigned a validation status`
 - `identifiable target with unavailable evidence treated as no target`
 - `mixed resolved and remaining conditions receive competing statuses`
+- `ordinary post-fix re-review expands into full rediscovery`
+- `target-relevant fix-induced regression omitted from status`
 
 ## Current result
 
@@ -76,3 +79,9 @@ On 2026-07-27, Codex CLI 0.145.0 with `gpt-5.6-sol` and high reasoning produced:
 The candidate assigned one exclusive status per identifiable target, used `Partially resolved` for a single target with confirmed documentation improvement and a directly observed configuration violation, assigned no status when no target existed, and used `Not verified` when an identifiable target lacked authorized evidence. It also preserved the prior change-type, regression, authority, provenance, and scope behaviors.
 
 Every new behavior invocation used an isolated `HOME` so globally installed personal Skills were unavailable. The first candidate run passed 38/39 requirements; after clarifying same-target improvement, correcting the F2 fixture, and aligning the input contract with the decision model, the affected matched reruns passed. Claude Code and other clients were not executed. Detailed assertion and retained observable trigger evidence is in `results.json`; raw traces and disposable fixtures are intentionally not retained in the repository.
+
+## Proportional-review revision — 2026-08-14
+
+- Added coverage for ordinary post-fix routing, bounded target validation, target-relevant fix-induced regressions, and bounded handoff of severe out-of-scope fix-induced observations.
+- A candidate forward test classified a fix that corrected missing-user behavior but erased `PermissionDenied` as `Partially resolved`, incorporated the directly induced regression into the target status, and did not search for unrelated findings.
+- The earlier pass totals are historical evidence and are superseded for the changed trigger and bounded re-review contract. The full behavior and trigger suites were not rerun for this revision.

@@ -1,6 +1,6 @@
 {
   "skill": "draft-review-comments",
-  "version": 1,
+  "version": 2,
   "run_policy": {
     "protocol": "Present each prompt as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
     "count_only_observed_skill_loads": true,
@@ -19,13 +19,19 @@
       "id": "organized-inline-draft",
       "expected": "should_trigger",
       "category": "core",
-      "prompt": "Turn these already organized findings, labels, evidence, impact, confidence, and locations into unposted GitHub PR inline comment drafts. Do not review the diff or post anything."
+      "prompt": "Turn these findings with explicit assessment, state, Act now response decisions, labels, evidence, impact, confidence, and locations into unposted GitHub PR inline comment drafts. Do not review the diff or post anything."
     },
     {
       "id": "supplied-triage-summary",
       "expected": "should_trigger",
       "category": "core",
       "prompt": "The findings, accept/defer decisions, follow-up timing, and Approve action are already decided. Draft a concise PR review summary and approval supplement without changing those decisions."
+    },
+    {
+      "id": "canonical-response-decisions",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "The findings already have assessment, state, Act now, Defer, or No action decisions, and review placement. Draft the applicable unposted PR comments without changing those decisions."
     },
     {
       "id": "discover-new-findings",
@@ -37,7 +43,13 @@
       "id": "triage-existing-feedback",
       "expected": "should_not_trigger",
       "category": "near_miss",
-      "prompt": "Evaluate these existing review findings and decide which to accept, defer, or reject, including implementation priority and response approach."
+      "prompt": "Evaluate these existing review findings, assign assessment and state, and decide Act now, Defer, or No action, including implementation priority and response approach."
+    },
+    {
+      "id": "review-output-needs-triage",
+      "expected": "should_not_trigger",
+      "category": "near_miss",
+      "prompt": "review-changes returned findings with labels and confidence but no assessment, state, or response decision. Evaluate them and choose response decisions before any comments are drafted."
     },
     {
       "id": "determine-rereview-state",

@@ -92,6 +92,16 @@
       "id": "bounded-assessment",
       "critical": false,
       "statement": "Reports executed and unperformed checks, validation unknowns, residual risks, material exclusions, and whether all targets were resolved only within the stated scope."
+    },
+    {
+      "id": "ordinary-rereview-boundary",
+      "critical": true,
+      "statement": "Treats ordinary post-fix re-review as bounded validation of prior findings, the fix diff, directly affected boundaries, and target-relevant regressions without reopening full-diff discovery."
+    },
+    {
+      "id": "fix-induced-observation",
+      "critical": true,
+      "statement": "Incorporates target-relevant fix-induced regressions into target status and records a directly encountered material fix-induced problem outside the target only as a bounded Fix-induced observation for review handoff."
     }
   ],
   "assertion_policy": "Grade only assertions assigned to the case. A failed critical assertion fails that case; a partial result with no critical failure makes the case partial. Record case-by-condition evidence and do not pass an assertion because it succeeded in another case.",
@@ -230,6 +240,28 @@
         }
       },
       "additional_requirement": "F9 is resolved. The worker.py change is outside the requested validation scope and must not be turned into a fully analyzed or triaged finding."
+    },
+    {
+      "id": "ordinary-rereview-with-fix-induced-regression",
+      "title": "Ordinary post-fix re-review remains bounded and catches a target-relevant regression",
+      "input": "I addressed finding F10 and want an ordinary re-review of that fix, not a full PR review. F10 required parse_user to return NotFound for a missing user without changing PermissionDenied behavior. The fix returns NotFound for missing users but now catches every exception and also converts PermissionDenied to NotFound. Inspect only F10, the fix diff, directly affected behavior, and target-relevant regressions. Report the status and any fix-induced evidence without editing or looking for unrelated findings.",
+      "assertions": [
+        "target-and-scope",
+        "independent-evidence",
+        "per-target-status",
+        "case-level-regression",
+        "ordinary-rereview-boundary",
+        "fix-induced-observation",
+        "read-only-validation",
+        "bounded-assessment"
+      ],
+      "fixture": {
+        "type": "inline",
+        "target": "F10 parse_user behavior",
+        "change": "missing user returns NotFound; catch-all converts PermissionDenied to NotFound",
+        "contract": "PermissionDenied must remain distinguishable from NotFound"
+      },
+      "additional_requirement": "The target is not Resolved; the PermissionDenied regression is target-relevant and must affect F10's status without expanding into a full review."
     }
   ]
 }

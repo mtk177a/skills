@@ -16,6 +16,12 @@
       "prompt": "Before implementation, design the database and API changes for adding organization-level billing. Separate targets and non-targets, map impact and risks, and define verification and stop conditions."
     },
     {
+      "id": "reviewer-context-design",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "Design this approved change and include planned reviewer context: purpose, criticality, scope, affected consumers and exposure, trade-offs, verification, recovery, unknowns, and review focus. Do not implement it."
+    },
+    {
       "id": "readability-refactor-design",
       "expected": "should_trigger",
       "category": "core",

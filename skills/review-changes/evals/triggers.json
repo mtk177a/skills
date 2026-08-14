@@ -46,6 +46,12 @@
       "prompt": "Verify only whether the completed fix for finding F-2 is resolved. Compare the fix diff and test output with the original finding and report what remains unconfirmed."
     },
     {
+      "id": "ordinary-post-fix-rereview",
+      "expected": "should_not_trigger",
+      "category": "coexistence",
+      "prompt": "I addressed all existing review comments. Re-review those fixes, their changed lines, and any directly related regressions, but do not reopen the entire PR for new findings."
+    },
+    {
       "id": "comment-drafting",
       "expected": "should_not_trigger",
       "category": "near_miss",

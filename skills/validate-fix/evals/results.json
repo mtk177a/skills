@@ -635,5 +635,23 @@
     "Claude Code and other clients were not executed.",
     "Explicit invocation UI and client permission prompts were not evaluated.",
     "The targeted regression does not establish behavior for untested models or environments."
-  ]
+  ],
+  "current_revision": {
+    "date": "2026-08-14",
+    "status": "targeted evidence only; full revision unverified",
+    "hashes": {
+      "SKILL.md": "7641926ec002e80fac0283f7844030054339ff50409db557b1f60b2f5c2ffa65",
+      "evals.json": "e79afd597e29cd4817c6b5903e4bf74b93096626f662ec55c62361b5d5953009",
+      "triggers.json": "13507b18a634f6b0fad1078b5205c28dfb12e3955920a562474ea10142245cb2"
+    },
+    "previous_evidence_status": "Superseded for the changed ordinary-post-fix trigger and bounded fix-induced-regression requirements.",
+    "executed": [
+      "Candidate forward test: a fix that corrected missing-user behavior but erased PermissionDenied was Partially resolved; the target-relevant fix-induced regression was reflected in the target status and unrelated findings were not searched for."
+    ],
+    "unverified": [
+      "Matched baseline comparison for the new behavior case",
+      "Full behavior and trigger suites for this revision",
+      "Repeated stochastic runs and clients other than the recorded Codex invocation"
+    ]
+  }
 }

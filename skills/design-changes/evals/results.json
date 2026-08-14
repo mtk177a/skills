@@ -459,5 +459,20 @@
       "The retained authentication scenario and trigger suite were not rerun because the description, routing boundary, and high-risk rules are unchanged.",
       "Claude Code, other clients, repeated stochastic runs, and real application repositories were not executed."
     ]
+  },
+  "current_revision": {
+    "date": "2026-08-14",
+    "status": "unverified behavior; static definitions only",
+    "hashes": {
+      "SKILL.md": "494792eee12f694f612bc6ffa13af9687c2383ac2456b3b613fbfce26ec4dde9",
+      "evals.json": "24e088f38aad39b4483db148b0de874a935253ffa146dce7c11d801147edf2fb",
+      "triggers.json": "c693cb6b21483e210135b2c76cdf88346e1daf9978d837865e9b44fcd4d62f9c"
+    },
+    "previous_evidence_status": "Superseded for the changed planned-reviewer-context handoff requirements.",
+    "executed": [],
+    "unverified": [
+      "Behavior and trigger invocations for this revision",
+      "Repeated stochastic runs and clients other than the previously recorded client"
+    ]
   }
 }

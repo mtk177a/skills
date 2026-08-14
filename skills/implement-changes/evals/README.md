@@ -49,6 +49,8 @@ Structured assets:
 | Trigger boundary | Collides with design, high-risk planning, review, validation, or failure-analysis Skills | `triggers.json` | Observable Skill loads |
 | Approved coherent boundary | Replaces an approved structural correction with a smaller patch that leaves a known path inconsistent | `approved-shared-invariant` | File diff, tests, and assigned assertions |
 | Newly exposed boundary gap | Adds a workaround or silently expands scope after discovering that the authorized local correction is insufficient | `scope-discovery` | File hashes and assigned assertions |
+| Response-decision boundary | Implements Defer or No action work from the review handoff | `act-now-only-with-reviewer-context` | File diff and assigned assertions |
+| Actual reviewer context | Omits actual scope, unknown criticality, recovery, review focus, or plan deviations from the Done report | `act-now-only-with-reviewer-context` | Report inspection |
 
 ## Behavioral scenarios
 
@@ -191,6 +193,10 @@ them as `not executed`.
 
 ## Failure Pattern Ledger
 
+- `Defer or No action work implemented from a mixed handoff`
+- `legacy decision used to invent technical assessment`
+- `Done report drops reviewer context or fills unknown criticality`
+
 - `general implementation narrowed to TDD-only execution`
 - `artificial Red created for documentation or static configuration`
 - `behavior-affecting configuration exempted from a meaningful test`
@@ -240,3 +246,9 @@ explicit than these disposable fixtures?
 - No requirement-level improvement or regression over the already-passing baseline was observed. Generated Python cache files in Scenario H were excluded from the product diff; the source diff contained only `normalization.py`, `signup.py`, and `invite.py`.
 - Retained verification-mode, authentication, failure-loop, and trigger cases were not rerun because their instructions and inputs are unchanged.
 - Next validation question: Does the same boundary behavior hold in a real repository with more callers and a broader regression suite?
+
+## Reviewer-context revision — 2026-08-14
+
+- Added coverage for actual reviewer context, deviations from plan, actual change boundaries, verification evidence, residual risk, review focus, and preservation of `Unknown` criticality.
+- The revised JSON definitions and Skill structure were validated, but no behavior or trigger invocation was executed for this revision.
+- The earlier pass totals are historical evidence and are superseded for the changed `Done` handoff contract.

@@ -39,6 +39,7 @@ Structured output cases remain optional. Add `evals.json` only if repeated execu
 | Retired implementation-scoping handoff | A former `scope-implementation` request has no successor or routes directly to editing | `implementation-scope-handoff` | Observable Skill loads |
 | Proportional local correction | Adds speculative abstraction to a defect whose cause and affected behavior are local | D | Requirements 1–4 |
 | Coherent structural correction | Minimizes the diff while leaving a confirmed shared cause or known path unresolved | E | Requirements 1–5 |
+| Planned reviewer context | Omits criticality, exposure, trade-offs, recovery, or review focus, or turns unknown context into a low-risk claim | `reviewer-context-with-unknown-criticality` in `evals.json` | Assigned assertions |
 
 ## Behavioral scenarios
 
@@ -129,6 +130,8 @@ Requirements checklist:
 - `readability plan split by local diff instead of reader understanding`
 - `local defect expanded into speculative architecture`
 - `smallest diff leaves confirmed shared cause unresolved`
+- `planned reviewer context omitted from implementation handoff`
+- `unknown criticality inferred as low risk`
 
 ## Recorded full evaluation — 2026-07-30
 
@@ -154,3 +157,9 @@ Requirements checklist:
 - The final candidate passed both the proportional local-correction and coherent structural-correction boundaries. It did not establish a requirement-level advantage over the already-passing final matched baseline.
 - Scenario C and trigger routing were not rerun because their instructions and descriptions are unchanged.
 - Next validation question: Does the explicit boundary classification hold when the shared cause must be discovered from a real repository rather than supplied in the case input?
+
+## Reviewer-context revision — 2026-08-14
+
+- Added a producer case for carrying planned reviewer context, preserving unsupported criticality as `Unknown`, and omitting irrelevant fields rather than inventing them.
+- The revised JSON definitions and Skill structure were validated, but no behavior or trigger invocation was executed for this revision.
+- The earlier pass totals are historical evidence and are superseded for the changed implementation-handoff contract.

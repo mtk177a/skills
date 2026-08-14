@@ -28,6 +28,12 @@
       "prompt": "The review findings have been triaged. Apply only the accepted fixes, run the relevant checks, and hand off the resulting evidence."
     },
     {
+      "id": "act-now-review-fixes",
+      "expected": "should_trigger",
+      "category": "core",
+      "prompt": "The review findings are triaged. Implement only authorized Act now items, leave Defer and No action unchanged, run relevant checks, and return actual reviewer context."
+    },
+    {
       "id": "undefined-request",
       "expected": "should_not_trigger",
       "category": "near_miss",
