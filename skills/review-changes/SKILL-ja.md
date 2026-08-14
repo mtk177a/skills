@@ -118,7 +118,7 @@ diff を取得できない、または結果が実質的に異なる解釈を解
 
 - 既存指摘を評価し、response decision と対応方針を決める場合は `triage-review-feedback` を使う。
 - 一つ以上の特定済み指摘に対する通常の修正後再レビューには、既定で `validate-fix` を使う。
-- 整理済み指摘を GitHub コメント案へ変換する場合は `draft-review-comments` を使う。
+- finding assessment、state、response decision が明示済みの場合だけ `draft-review-comments` を使う。通常は `triage-review-feedback` がそれらを供給し、この review 出力だけでは actionable comment draft を許可しない。
 - 問題発見を伴わない説明的な差分要約には `summarize-changes` を使う。
 
 修正を実装したり、指摘の最終的な response decision を決めたりしない。未解決の仕様質問が差分の残りをレビューする妨げにならない場合、全体を止めず `question` として報告する。別エージェントやサブエージェントは既定で使わない。

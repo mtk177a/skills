@@ -28,7 +28,7 @@
 | `explore-decision-space` | 重要な意思決定が早期収束する前に、問題フレームまたは解決案を広げる |
 | `draft-commit` | Git の staging 境界を保ちながら、原子的なコミット計画と Conventional Commits メッセージを作成する |
 | `draft-issue` | 根拠と tracker の確認状態を保った未投稿の Issue draft と filing handoff を作る |
-| `draft-review-comments` | 整理済みの指摘と判断の意味を変えず、未投稿の PR コメント案へ変換する |
+| `draft-review-comments` | assessment、state、response decision が明示済みの指摘を未投稿の PR コメント案へ変換する |
 | `revise-docs-fresh-eyes` | 執筆会話を受け取らない fresh な Codex または Claude Code subagent に、既存文書の cold read と改稿を完結させる |
 | `implement-changes` | 承認済みの変更を小さな単位で、TDD または適切な別の検証方法を使って実装する |
 | `investigate-failure` | 環境を問わず、原因不明の error、failing test、regression、performance anomaly、予期しない技術的挙動を調査する |

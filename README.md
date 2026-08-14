@@ -26,7 +26,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `explore-decision-space` | Expand problem frames or solution options before a consequential decision converges prematurely |
 | `draft-commit` | Draft atomic commit plans and Conventional Commits messages while preserving Git staging boundaries |
 | `draft-issue` | Draft an evidence-grounded, tracker-aware Issue and filing handoff without writing to the tracker |
-| `draft-review-comments` | Draft unposted PR comments from organized findings and decisions without changing their meaning |
+| `draft-review-comments` | Draft unposted PR comments after assessment, state, and response decision are explicitly supplied |
 | `revise-docs-fresh-eyes` | Have a fresh Codex or Claude Code subagent cold-read and revise an existing document outside its authoring conversation |
 | `implement-changes` | Implement approved changes in small units with TDD or another appropriate verification method |
 | `investigate-failure` | Investigate unexplained errors, failing tests, regressions, performance anomalies, and unexpected technical behavior across environments |

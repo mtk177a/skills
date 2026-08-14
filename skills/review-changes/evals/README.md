@@ -100,3 +100,9 @@ Claude Code and other clients were not executed. Detailed case-by-assertion and 
 - A matched forward test on a low-criticality, low-exposure, expensive edge case produced no material finding in either condition. The candidate additionally made the proportionality basis and cheaper verification alternative explicit.
 - A matched routing test selected `validate-fix` in both conditions for an ordinary post-fix request; the candidate made the responsibility boundary explicit.
 - The earlier pass totals are historical evidence and are superseded for the changed trigger and output contract. The full behavior and trigger suites were not rerun for this revision.
+
+## Actionable-draft boundary clarification — 2026-08-14
+
+- Clarified that review output alone does not authorize an actionable draft; assessment, state, and response decision must be supplied first, normally by `triage-review-feedback`.
+- A matched routing check selected `triage-review-feedback`, not `draft-review-comments`, for review output without those decisions in both conditions.
+- Review behavior cases were not rerun because finding discovery and output fields were unchanged.

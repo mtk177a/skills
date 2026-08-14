@@ -42,11 +42,11 @@ Failure investigation は active な production incident を支援できます�
 
 ## レビューワークフロー
 
-`review-changes` → 必要に応じて `triage-review-feedback` または `draft-review-comments` → `implement-changes` → `validate-fix` → remaining または fix-induced work がある場合だけ反復
+`review-changes` → `triage-review-feedback` → 必要に応じて `draft-review-comments` → `implement-changes` → `validate-fix` → remaining または fix-induced work がある場合だけ反復
 
 - `review-changes`: 新規 effective diff または明示的に依頼された全面再レビューから重要な問題を発見し、既存指摘の最終 response decision は決めない
 - `triage-review-feedback`: 出所、risk context、確信度、確認方法、未確認事項を保持したまま、finding assessment、lifecycle state、`Act now` / `Defer` / `No action` の response decision を分けて既存指摘を評価する
-- `draft-review-comments`: 新しい問題の発見、指摘の triage、review action・対応時期の決定、コメント投稿を行わず、整理済みの指摘と入力済み判断を未投稿の GitHub コメント案へ変換する
+- `draft-review-comments`: 新しい問題の発見、指摘の triage、review action・対応時期の決定、コメント投稿を行わず、assessment、state、response decision が明示済みの指摘を未投稿の GitHub コメント案へ変換する
 - `implement-changes`: 承認済みの `Act now` work だけを適用する
 - `validate-fix`: 既定では、対応済み指摘、fix diff、直接影響する境界、target-relevant regression を、full diff の discovery を再開せず確認する
 
@@ -54,6 +54,8 @@ Failure investigation は active な production incident を支援できます�
 期待するリスク削減が実装、verification、複雑性、regression、遅延、保守 cost に見合わない場合、`Supported` な懸念でも `No action` にできます。
 `Act now` は懸念を採用しますが、レビューアーが提案した実装方法の自動採用を意味しません。
 潜在影響が大きい `question` は前提が確認されるまで `question` のままとし、下流 Skill は潜在影響を消したり、確定した不具合へ変えたりしません。
+
+`review-changes` の出力から actionable comment を直接作りません。label、confidence、review action、next-action の文言は response decision ではありません。標準workflowでは、先にtriageがassessment、state、response decisionを供給します。単独の呼び出し元は、同じcanonicalな判断を明示する場合だけtriage Skillを省略できます。legacy `accept` / `defer` / `reject` inputは、不足assessmentまたはstateを推論せず引き続き受け付けます。
 
 「レビュー指摘へ対応したので再レビューして」のような通常依頼は `validate-fix` へ渡します。更新後の effective diff 全体を確認する明示依頼だけを `review-changes` へ戻します。全面再レビューの新規 finding は `Fix-induced`、`Newly observable`、`Late-discovered` に分類します。すべての origin の重要な finding を報告しますが、以前から観測可能で独立に non-blocking な `Late-discovered` から新しい修正ラウンドを開始しません。
 

@@ -557,17 +557,21 @@
   ],
   "current_revision": {
     "date": "2026-08-14",
-    "status": "unverified behavior; static definitions only",
+    "status": "targeted candidate evidence; unaffected suites unverified",
     "hashes": {
-      "SKILL.md": "6aa955c99fcd7ca11fbf09679a37a1133b88e61c211af1a9275180d8ea68547a",
-      "evals.json": "b7b7e79c85349dfb9fa37653debaa44b9e7864b45f2e555489e56bd98a0c227e",
-      "triggers.json": "1276ec594c1479b593327481ded99085d924bd3c4cbdce56efbf0f17518dcd2d"
+      "SKILL.md": "9f01d36ba8975d9669085cd77adfef415afe8c7f129b63a059a1b1f7a601aa3e",
+      "evals.json": "e5c00bc282dfb6883423e1ebde176cea9d18c5b732ef17eb3a355a8f3cb2ca56",
+      "triggers.json": "194e07b09483595fd8f044ee15d863d33073b81f2717c021766bbe7150e7dbc5"
     },
-    "previous_evidence_status": "Superseded for the changed decision-preservation and actionability requirements.",
-    "executed": [],
+    "previous_evidence_status": "Superseded for changed decision-gate, summary preservation, and actionable-response requirements; reusable only for explicitly unchanged requirements.",
+    "executed": [
+      "Matched PR HEAD c52ca49 and final candidate on seven affected behavior cases with fresh gpt-5.6-sol high-reasoning executors and separate graders. Final candidate: 44/44 assigned requirements and 7/7 cases passed. Baseline: 39/44 requirements and 2/7 cases passed.",
+      "Decision-relevant reruns corrected initial candidate omissions in summary-only decision fields and prevented Act now from becoming an invented remediation approach; rerun candidate passed 19/19 assertions across the three affected cases.",
+      "Matched routing checks selected draft-review-comments for explicit canonical decisions and triage-review-feedback for undecided review output in both baseline and candidate conditions."
+    ],
     "unverified": [
-      "Behavior and trigger invocations for this revision",
-      "Repeated stochastic runs and clients other than the previously recorded client"
+      "Unaffected behavior and trigger cases for this revision",
+      "Repeated stochastic runs, Claude Code, and clients other than the recorded fresh agent invocations"
     ]
   }
 }

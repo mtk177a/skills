@@ -115,7 +115,7 @@ If the diff cannot be obtained or its materially different interpretations canno
 
 - Use `triage-review-feedback` to assess existing findings and choose a response decision and approach.
 - Use `validate-fix` by default for ordinary post-fix re-review of one or more identified findings.
-- Use `draft-review-comments` to turn already organized findings into GitHub comment drafts.
+- Use `draft-review-comments` only after finding assessment, state, and response decision have been explicitly supplied, normally by `triage-review-feedback`; this review output alone does not authorize an actionable comment draft.
 - Use `summarize-changes` for a descriptive diff summary without problem discovery.
 
 Do not implement fixes or make final response decisions on findings. When an unresolved specification question does not prevent reviewing the rest of the diff, continue and report it as a `question` rather than blocking the entire review. Do not use another agent or subagent by default.
