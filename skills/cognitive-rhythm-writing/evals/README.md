@@ -8,6 +8,9 @@
   procedure
 - the missing-companion path stops application and provides one exact install
   command for both Skills
+- the approved relationship, Unlicense provenance, and local adaptations remain
+  documented in `../../../docs/authoring.md`, `../UPSTREAM.md`, and
+  `../../../THIRD_PARTY_NOTICES.md`
 - the body distinguishes situation-updating prose from document-updating meta
   prose
 - [critical] the executor must read the companion Skill before applying this
@@ -58,8 +61,15 @@ Requirements checklist:
 - `companion Skill not read before application`
 - `partial rewrite produced when companion is missing`
 - `exact pair-install command omitted or altered`
+- `approved companion relationship or provenance record no longer matches the Skill`
 - `writing process narrated in the resulting prose`
 - `device vocabulary leaked into the resulting prose`
+
+## Maintenance trigger
+
+When either Skill, the companion relationship, its installation command, or its
+missing-companion behavior changes, rerun the static check and the two
+companion scenarios before accepting the update.
 
 ## Iter 1 — not yet executed
 

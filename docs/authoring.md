@@ -48,6 +48,34 @@ These are review models, not mandatory headings. A Skill may mix them when conte
 
 Do not add a body-level `When to use` section merely to repeat `description`. Keep one only when the agent needs loaded-time branching after the Skill has already been selected. Likewise, use exact output templates, `Always` / `Ask first` / `Never`, companion-Skill sections, and self-review checklists only when their distinctions materially change execution.
 
+## Companion Skills
+
+Skills are self-contained by default. A companion relationship is a narrow,
+approved exception in which one Skill deliberately requires another to apply
+its rules correctly. Do not use it for convenience, related subject matter, or
+an arbitrary dependency graph; accidental cross-Skill coupling remains a
+design problem.
+
+An approved relationship must record:
+
+- the direction of the relationship and the participating Skills
+- why the companion is required
+- the supported installation path
+- the behavior when the companion is unavailable, including whether work stops
+- provenance and local adaptations that introduced or maintain the relationship
+- the evaluation coverage and the update trigger for keeping the relationship
+  correct
+
+When either Skill, the relationship, the installation path, or its missing-
+companion behavior changes, review this record and the affected evaluation
+assets together.
+
+### Approved relationship
+
+| Relationship | Rationale | Installation and missing-companion behavior | Provenance | Evaluation |
+| --- | --- | --- | --- | --- |
+| `cognitive-rhythm-writing` → `japanese-tech-writing` | The pacing rules extend, rather than replace, the Japanese technical-writing constraints. | Install both with `apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing`. `cognitive-rhythm-writing` stops without applying its rules when the companion is unavailable. | [`skills/cognitive-rhythm-writing/UPSTREAM.md`](../skills/cognitive-rhythm-writing/UPSTREAM.md), [`skills/japanese-tech-writing/UPSTREAM.md`](../skills/japanese-tech-writing/UPSTREAM.md), and [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md) preserve the Unlicense sources and local adaptations. | [`skills/cognitive-rhythm-writing/evals/README.md`](../skills/cognitive-rhythm-writing/evals/README.md) covers the required read order and missing-companion path. |
+
 ## Writing the description
 
 The `description` is the entry point for usage decisions, not a general explanation. Include:
@@ -152,7 +180,7 @@ When iterating on a Skill, manage evaluation assets alongside the content.
 
 - Skill-level scenarios and checklists go in `skills/<skill-name>/evals/`
 - Multi-Skill flow evaluations go in `docs/` (see `evaluation.md`)
-- Start with Iter 0: statically check that `description` and body are consistent, that output format is defined, and that the Skill is self-contained
+- Start with Iter 0: statically check that `description` and body are consistent, that output format is defined, and that the Skill is self-contained or has an approved companion relationship
 - Before adding scenarios, map each material Skill claim or change to a plausible failure, a scenario that can expose it, and a grading method
 - Add a scenario only when it covers a distinct responsibility, boundary, coexistence risk, or known regression; do not target a universal scenario count
 - Formalize scenarios and requirement checklists runnable by a blank-slate executor

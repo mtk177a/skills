@@ -50,6 +50,27 @@ Skills の見出しを統一する必要はありません。一方で、blank-s
 
 `description` の繰り返しとして本文へ `When to use` を追加しません。Skill が選択された後にも agent が分岐判断へ使う条件がある場合だけ残します。同様に、厳密な output template、`Always` / `Ask first` / `Never`、companion Skill section、self-review checklist は、その区別が実行を実質的に変える場合だけ使います。
 
+## Companion Skill
+
+Skill は原則として自己完結させます。companion 関係は、一方の Skill が規範を正しく適用するために、他方の Skill を意図的に必要とする限定的な承認例外です。利便性、関連する主題、任意の依存グラフを表すために使いません。偶発的な Skill 間結合は、引き続き設計上の問題として扱います。
+
+承認する関係には、次を記録します。
+
+- 関係の方向と対象 Skill
+- companion が必要な理由
+- サポートする導入方法
+- companion が利用できない場合の動作。作業を停止するかどうかを含む
+- 関係を導入または維持する provenance とローカル改変
+- 関係を正しく保つための評価範囲と更新契機
+
+いずれかの Skill、関係、導入方法、または companion 不在時の動作を変更する場合は、この記録と影響を受ける評価資産をまとめて確認します。
+
+### 承認済みの関係
+
+| 関係 | 理由 | 導入と companion 不在時の動作 | Provenance | 評価 |
+| --- | --- | --- | --- | --- |
+| `cognitive-rhythm-writing` → `japanese-tech-writing` | 緩急の規範は、日本語技術文書の規範を置き換えず、その制約を前提に拡張する。 | `apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing` で両方を導入する。companion がない場合、`cognitive-rhythm-writing` は規範を適用せず停止する。 | [`skills/cognitive-rhythm-writing/UPSTREAM.md`](../../skills/cognitive-rhythm-writing/UPSTREAM.md)、[`skills/japanese-tech-writing/UPSTREAM.md`](../../skills/japanese-tech-writing/UPSTREAM.md)、[`THIRD_PARTY_NOTICES.md`](../../THIRD_PARTY_NOTICES.md) が Unlicense の出典とローカル改変を保持する。 | [`skills/cognitive-rhythm-writing/evals/README.md`](../../skills/cognitive-rhythm-writing/evals/README.md) が必須の読込順と companion 不在時の経路を扱う。 |
+
 ## description の書き方
 
 `description` は、一般的な説明ではなく利用判断の入口です。次を含めます:
@@ -171,7 +192,7 @@ Skill を繰り返し改善するとき、評価資産をコンテンツと一�
 
 - Skill 単位のシナリオとチェックリストは `skills/<skill-name>/evals/` に置く
 - 複数 Skill をまたぐフロー評価は `docs/` を参照 (`evaluation.md`)
-- まず Iter 0 から始める: `description` と本文が一致しているか、出力フォーマットが定義されているか、Skill が自己完結しているかを静的に確認する
+- まず Iter 0 から始める: `description` と本文が一致しているか、出力フォーマットが定義されているか、Skill が自己完結しているか、または承認済みの companion 関係を持つかを静的に確認する
 - シナリオを追加する前に、重要な Skill の claim または変更を、起こり得る失敗、それを露出できるシナリオ、採点方法へ対応付ける
 - 固有の責務、境界、共存リスク、既知の regression を担う場合だけシナリオを追加し、普遍的な件数目標を設けない
 - blank-slate の executor が実行できるシナリオと要件チェックリストを整備する
