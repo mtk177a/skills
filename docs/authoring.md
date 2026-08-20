@@ -228,7 +228,9 @@ Before opening a pull request for a new Skill:
 
 When adapting a Codex-specific Skill for Claude Code or GitHub Copilot, review whether Codex-specific language should stay.
 
-Do not assume that compatible clients discover the same instruction filenames or apply the same precedence rules. As of the linked official documentation, Codex uses `AGENTS.md` for durable repository guidance, while Claude Code reads `CLAUDE.md` and can use an import or bridge to reuse `AGENTS.md`. Recheck current client documentation when this behavior affects a design.
+Do not assume that compatible clients discover the same instruction filenames or apply the same precedence rules. As of the linked official documentation, Codex uses `AGENTS.md` for durable repository guidance, while Claude Code reads `CLAUDE.md` and can use an import or bridge to reuse `AGENTS.md`. GitHub Copilot support for `AGENTS.md` varies by surface, so this repository keeps `.github/copilot-instructions.md` as a minimal bridge for surfaces that load it but do not automatically load `AGENTS.md`. Recheck current client documentation when this behavior affects a design.
+
+For this repository, `AGENTS.md` is the canonical source for shared repository instructions. The GitHub Copilot bridge instructs Copilot to read that source and, when it is unavailable, to stop instead of modifying files, running commands, or making external changes. Because some Copilot surfaces load the bridge without automatically loading `AGENTS.md`, the bridge repeats only the minimum safety and approval rules needed to preserve those boundaries. This limited fallback is a delivery-layer exception, not a second canonical source. When a related rule changes in `AGENTS.md`, verify and update the fallback at the same time. Do not repeat other shared rules in a client-specific bridge file.
 
 Check:
 
@@ -236,10 +238,11 @@ Check:
 - Whether the request format and output format make sense for other agents
 - Whether steps assume Codex-specific features
 - Whether agent-specific differences are adequately described in `description` or the body
-- Whether shared guidance has one canonical source and client-specific bridge files avoid duplication
+- Whether shared guidance has one canonical source and client-specific bridge files duplicate only a documented minimum safety and approval fallback
+- Whether a retained safety and approval fallback remains aligned with its canonical rules
 - Whether a requirement needs behavioral guidance or a client-enforced policy, permission, or hook
 
 Keep Codex-specific language only when that specificity is the core value of the Skill.
 Otherwise, rewrite around purpose and decision criteria, making the mechanics swappable.
 
-Sources: [OpenAI agents guidance](https://developers.openai.com/codex/concepts/customization#agents-guidance), [Claude Code memory and CLAUDE.md](https://code.claude.com/docs/en/memory).
+Sources: [OpenAI agents guidance](https://developers.openai.com/codex/concepts/customization#agents-guidance), [Claude Code memory and CLAUDE.md](https://code.claude.com/docs/en/memory), [GitHub Copilot custom instructions support](https://docs.github.com/en/copilot/reference/custom-instructions-support).

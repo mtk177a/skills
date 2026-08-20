@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file provides instructions for agents working in this repository.
+This file is the canonical source for shared instructions for agents working in this repository.
 If a deeper `AGENTS.md` exists in a subdirectory, that file takes precedence.
 
 ## Purpose
