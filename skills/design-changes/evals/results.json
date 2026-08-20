@@ -1,6 +1,29 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "skill": "design-changes",
+  "candidate": {
+    "accepted_on": "2026-08-14",
+    "evidence_status": "unverified",
+    "evidence_summary": "Behavior and trigger execution has not been performed for this accepted revision; only the recorded JSON parsing and candidate file hash checks were completed.",
+    "files": {
+      "SKILL.md": "sha256:494792eee12f694f612bc6ffa13af9687c2383ac2456b3b613fbfce26ec4dde9",
+      "SKILL-ja.md": "sha256:9b8666e1953a8c6dabbbc4ee1090b6cf7a1a22f640ea8e658dc6d34f1fbb68d6",
+      "evals/evals.json": "sha256:24e088f38aad39b4483db148b0de874a935253ffa146dce7c11d801147edf2fb",
+      "evals/triggers.json": "sha256:c693cb6b21483e210135b2c76cdf88346e1daf9978d837865e9b44fcd4d62f9c"
+    },
+    "previous_evidence_status": "Superseded for the changed planned-reviewer-context handoff requirements.",
+    "executed": [
+      "Parsed this results.json with the standard Python JSON parser.",
+      "Recalculated every candidate.files SHA-256 value from the accepted repository files and confirmed exact matches."
+    ],
+    "unverified": [
+      "Behavior and trigger invocations for this revision",
+      "Repeated stochastic runs and clients other than the previously recorded client"
+    ]
+  },
+  "historical_full_evaluation": {
+    "status": "superseded_for_current_candidate",
+    "applicability": "Pass claims apply only to the hash-bound evaluated revisions and to explicitly identified unchanged requirements; they do not establish the accepted candidate as passing.",
   "evaluated_on": "2026-07-30",
   "environment": {
     "client": "Codex CLI 0.146.0",
@@ -10,7 +33,7 @@
   "baseline": {
     "commit": "42ebd18cb2406d1cfcbeb34cd289fd620c8e4f9b"
   },
-  "candidate": {
+  "evaluated_revision": {
     "files": {
       "SKILL.md": "sha256:7372f5a58bf4495d768901890a0fa32eb9468624a3d4dfd18bf779920989d48e",
       "SKILL-ja.md": "sha256:99f6a2596c8dafbc48d2ab02ef31af1862c61ae60ef1270b3ef39403fdcefa74",
@@ -49,6 +72,7 @@
     {
       "baseline_commit": "2f57393c818f1f9524b31025776721368ebdf6f5",
       "candidate_skill": "sha256:db76af84fd1f3c4b278add72056c8a319e62e50ee4084d3c147307e301d4ba94",
+      "snapshot_availability": "not_retained",
       "change": "Reframed the plan-risky-change boundary around risk-based execution readiness rather than universal approval and rollback planning.",
       "coverage": "Reran auth-high-risk behavior with blinded current/candidate grading and high-risk-migration-coexistence routing. Prior unaffected behavior and routing evidence is reused."
     },
@@ -61,6 +85,7 @@
     {
       "baseline_commit": "e21252f0a8df4ff4213bc8c1935eecb8dea13a98",
       "candidate_skill": "sha256:e4321bd0dd2d38c06f89f3a227be3cb4ca11610d94a6a04964ee18ef87eda6a4",
+      "snapshot_availability": "not_retained",
       "change": "Added explicit local-versus-structural coherent-boundary guidance.",
       "coverage": "Ran shared-invariant in matched baseline/candidate conditions and exercised local-defect on the candidate only. The matched shared-invariant case passed both conditions; the local-defect evidence was incomplete for this candidate revision."
     },
@@ -259,7 +284,8 @@
     "Real application entry points, dependency constraints, auth boundaries, and test commands",
     "Rollback and recovery procedures",
     "Claude Code and other clients"
-  ],
+  ]
+  },
   "targeted_high_risk_readiness": {
     "behavior": {
       "fingerprint": "bdb79b056907f2093997c8caaf035f2825cfd8c8b7b934b2b31503429d1ee6ea",
@@ -458,21 +484,6 @@
     "unverified": [
       "The retained authentication scenario and trigger suite were not rerun because the description, routing boundary, and high-risk rules are unchanged.",
       "Claude Code, other clients, repeated stochastic runs, and real application repositories were not executed."
-    ]
-  },
-  "current_revision": {
-    "date": "2026-08-14",
-    "status": "unverified behavior; static definitions only",
-    "hashes": {
-      "SKILL.md": "494792eee12f694f612bc6ffa13af9687c2383ac2456b3b613fbfce26ec4dde9",
-      "evals.json": "24e088f38aad39b4483db148b0de874a935253ffa146dce7c11d801147edf2fb",
-      "triggers.json": "c693cb6b21483e210135b2c76cdf88346e1daf9978d837865e9b44fcd4d62f9c"
-    },
-    "previous_evidence_status": "Superseded for the changed planned-reviewer-context handoff requirements.",
-    "executed": [],
-    "unverified": [
-      "Behavior and trigger invocations for this revision",
-      "Repeated stochastic runs and clients other than the previously recorded client"
     ]
   }
 }

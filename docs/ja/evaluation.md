@@ -96,6 +96,12 @@ raw trace、完全な response、credential、環境固有の absolute path は�
 
 `results.json` は、現在採用中の Skill revision に対する簡潔な evidence として扱います。実行ごとに日付付きファイルを追加せず、同じ candidate の再実行や修正結果を1つの record へ統合して更新します。過去に採用した result は、評価対象の Skill source とともに Git 履歴で保持します。
 
+schema version 3 の record では、`candidate` はリポジトリで現在採用している source file と評価定義 file を特定します。採用とはリポジトリ上の revision を特定することであり、それだけでは behavior または trigger を実行して合格したことを意味しません。`unverified` や `targeted_only` などの evidence state と、実行済み・未実行の check を明示します。
+
+evaluated revision は、実際に実行した content の immutable な file hash、baseline、environment、execution evidence の集合です。置換済みの full-suite result は、元の evaluated-revision hash と pass claim を含めて `historical_full_evaluation` に保持します。後続の targeted evidence は、それぞれ hash と結び付いた別の record に保持します。pass は、その evaluated revision と、適用可能であることを明示した未変更の requirement だけに適用します。異なる現行 candidate 全体の合格を意味しません。
+
+必要な baseline、environment、execution provenance が欠けている過去の targeted observation は、`status: incomplete_provenance` を付けて `historical_targeted_evidence` に保持します。欠けている provenance field をすべて列挙し、`claim_status: no_pass_claim` とします。不完全な provenance は evaluated-revision pass の evidence ではなく、採用中の candidate に `targeted_only` を設定する根拠にもなりません。欠けている metadata を推測して補いません。記録済みの一時 candidate hash を Git から再現できない場合は、snapshot が現在も利用可能だと主張せず、hash を `snapshot_availability: not_retained` とともに保持します。
+
 採用中の Skill source が変わった場合は、`results.json` を更新するか、影響を受ける evidence を superseded または unverified と明示するか、ファイルを削除します。古い candidate が現行 source であると誤解させる hash や pass claim を残しません。以前の evidence を再利用する場合は、変更されていない requirement と評価済み content を明示的に特定できることを条件とします。
 
 現在の判断に引き続き必要で、Git 履歴だけでは不十分な場合に限り、過去の result を別名で保持します。たとえば、比較不能な client または評価方式、直接再現できる状態を保つ必要がある既知の regression、外部監査要件です。その目的と削除条件を README に記録します。固定件数に合わせて result file を保持または削除しません。
