@@ -204,7 +204,7 @@ Codex 固有の Skill を Claude Code や GitHub Copilot 向けに改変する�
 
 互換 client が同じ instruction filename を発見し、同じ precedence rule を適用すると仮定しません。リンク先の現行公式文書では、Codex は durable repository guidance に `AGENTS.md` を使い、Claude Code は `CLAUDE.md` を読み、import または bridge により `AGENTS.md` を再利用できます。GitHub Copilot における `AGENTS.md` の対応状況は surface によって異なるため、このリポジトリでは、`.github/copilot-instructions.md` を、そのファイルを読み込む一方で `AGENTS.md` を自動では読み込まない surface 向けの最小限の bridge として維持します。この挙動が設計に影響する場合は、最新 client documentation を再確認します。
 
-このリポジトリでは、`AGENTS.md` を共有 repository instructions の正本とします。GitHub Copilot 用の bridge は、その正本を読むよう Copilot に指示し、正本を参照できない場合は作業を停止させ、Copilot 固有の読み込みまたは動作に必要な guidance だけを含めます。共有ルールを client 固有の bridge file に重複して記載しません。
+このリポジトリでは、`AGENTS.md` を共有 repository instructions の正本とします。GitHub Copilot 用の bridge は、その正本を読むよう Copilot に指示し、正本を参照できない場合は、file の変更、command の実行、外部状態の変更を行わずに停止するよう指示します。一部の Copilot surface は bridge を読み込んでも `AGENTS.md` を自動では読み込まないため、bridge には、その境界を維持するために必要最小限の安全性・承認ルールだけを重複して記載します。この限定的な fallback は delivery layer の例外であり、2 つ目の正本ではありません。`AGENTS.md` の関連ルールを変更するときは、fallback の整合性を同時に確認して更新します。それ以外の共有ルールを client 固有の bridge file に重複して記載しません。
 
 確認すること:
 
@@ -212,7 +212,8 @@ Codex 固有の Skill を Claude Code や GitHub Copilot 向けに改変する�
 - リクエスト・出力フォーマットが他のエージェントでも意味をなすか
 - Codex 固有の機能を前提にしているステップ
 - エージェント固有の差異が `description` や本文で十分に説明されているか
-- 共通 guidance が1つの canonical source を持ち、client 固有 bridge file が重複を避けているか
+- 共通 guidance が 1 つの canonical source を持ち、client 固有 bridge file が文書化された必要最小限の安全性・承認 fallback だけを重複しているか
+- 維持している安全性・承認 fallback が正本のルールと整合しているか
 - requirement に behavioral guidance が必要なのか、client が強制する policy、permission、hook が必要なのか
 
 その固有性が Skill の核心的な価値である場合のみ、Codex 固有の表現を残します。
