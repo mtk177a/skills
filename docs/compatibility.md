@@ -33,14 +33,16 @@ Format compatibility is not evidence of client discovery, invocation, or behavio
 | Claude Code | Official documentation describes its own Skill discovery, invocation, frontmatter, permission, and hook behavior. These client-specific controls do not follow from portable Skill format compatibility. | No repository installation, discovery, explicit or implicit invocation, permission, or behavior run has been recorded. | Format-compatible; runtime behavior unverified |
 | GitHub Copilot / `gh skill` | Client-specific discovery, invocation, metadata, permissions, and runtime behavior must be checked against current official documentation and the target version. | No repository installation, discovery, invocation, permission, or behavior run has been recorded. | Format-compatible; runtime behavior unverified |
 | Gemini CLI | Client-specific discovery, invocation, metadata, permissions, and runtime behavior must be checked against current official documentation and the target version. | No repository installation, discovery, invocation, permission, or behavior run has been recorded. | Format-compatible; runtime behavior unverified |
-| Other clients | A client may be able to consume the standard package, but format compatibility alone does not establish discovery or execution. | No client is verified unless it has a versioned entry in the verification record below. | Unverified unless recorded below |
+| Other clients | A client may be able to consume the standard package, but format compatibility alone does not establish discovery or execution. | No client is locally verified unless a versioned repository-level or Skill-level record exists. | Unverified without a versioned record |
 | APM | APM distributes this repository as an `agent-skills` package; it is not an execution client. Target selection and installation layout do not establish downstream invocation or behavior. | The package checks listed below have been executed. | Distribution verified for the recorded scope only |
 
 Do not add client-specific metadata to every Skill merely because a client supports it. Add it only when the Skill needs that client's invocation control, UI presentation, tool dependency declaration, or permission behavior. Keep portable `name`, `description`, instructions, and resources as the common layer.
 
-## Verification record
+## Representative verification snapshot
 
-The table records observed repository checks, not support claims inferred from documentation.
+The table preserves representative observations from recorded repository checks, not support claims inferred from documentation.
+It is not a current or exhaustive inventory of later Skill-level evaluations.
+Later client versions, dates, and scenario scopes remain recorded in each Skill's `evals/README.md` and optional `results.json`; see [evaluation.md](evaluation.md) for those evidence responsibilities.
 
 | Target | Version | Verified date | Observed scope |
 | --- | --- | --- | --- |
@@ -51,7 +53,9 @@ The table records observed repository checks, not support claims inferred from d
 | APM | 0.26.0 | 2026-07-21 | install resolution, frozen dry-run, offline pack dry-run, audit |
 | Other clients, including `npx skills add` consumers | — | — | Not executed unless separately recorded |
 
-When recording a new result, include the client and version, date, installation path, explicit and implicit invocation results when observable, adjacent Skills, model, permission mode, and any unexposed behavior. `not exposed` and `not executed` are not passes.
+When adding a client-level result to this snapshot, include the client and version, date, installation path, explicit and implicit invocation results when observable, adjacent Skills, model, permission mode, and any unexposed behavior.
+Record Skill-level behavior results in that Skill's evaluation assets.
+`not exposed` and `not executed` are not passes.
 
 ## Installation paths
 

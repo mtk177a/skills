@@ -37,14 +37,17 @@ Format 互換性は、client の discovery、invocation、behavioral compatibili
 | Claude Code | 公式文書には、Claude Code 固有の Skill discovery、invocation、frontmatter、permission、hook behavior が記載されている。これらの client 固有 control は、portable Skill の format 互換性からは導けない | repository installation、discovery、明示・暗黙 invocation、permission、behavior の実行記録なし | Format-compatible。runtime behavior は未検証 |
 | GitHub Copilot / `gh skill` | client 固有の discovery、invocation、metadata、permission、runtime behavior は、現行公式文書と対象 version に照らして確認する必要がある | repository installation、discovery、invocation、permission、behavior の実行記録なし | Format-compatible。runtime behavior は未検証 |
 | Gemini CLI | client 固有の discovery、invocation、metadata、permission、runtime behavior は、現行公式文書と対象 version に照らして確認する必要がある | repository installation、discovery、invocation、permission、behavior の実行記録なし | Format-compatible。runtime behavior は未検証 |
-| その他の client | 標準 package を扱える可能性はあるが、format 互換性だけでは discovery または実行を確認できない | 下記の検証記録に version 付きで載っていない client は未検証 | 下記に記録がない限り未検証 |
+| その他の client | 標準 package を扱える可能性はあるが、format 互換性だけでは discovery または実行を確認できない | repository-level または Skill-level の version 付き記録がない client は、ローカルで未検証 | version 付き記録がない場合は未検証 |
 | APM | このリポジトリを `agent-skills` package として配布するが、実行 client ではない。target 選択と installation layout は、downstream の invocation または behavior を示さない | 下記の package check を実行済み | 記録した範囲の distribution のみ検証済み |
 
 client が対応しているという理由だけで、client 固有 metadata を全 Skills に追加しません。その client の invocation control、UI 表示、tool dependency declaration、permission behavior が必要な場合だけ追加します。portable な `name`、`description`、instructions、resources を共通層として維持します。
 
-## 検証記録
+## 代表的な検証スナップショット
 
-次の表は、文書から推測した support claim ではなく、観測済みの repository check を記録します。
+次の表は、文書から推測した support claim ではなく、記録済みの repository check から選んだ観測結果を残すスナップショットです。
+後続の Skill 単位の評価について、最新状態または全件を示す一覧ではありません。
+後続の client version、日付、scenario scope は、各 Skill の `evals/README.md` と任意の `results.json` に記録します。
+証拠の責務は [evaluation.md](evaluation.md) を参照してください。
 
 | 対象 | Version | 検証日 | 観測した範囲 |
 | --- | --- | --- | --- |
@@ -55,7 +58,9 @@ client が対応しているという理由だけで、client 固有 metadata �
 | APM | 0.26.0 | 2026-07-21 | install resolution、frozen dry-run、offline pack dry-run、audit |
 | `npx skills add` の利用先を含むその他の client | — | — | 個別の記録がない限り未実行 |
 
-新しい結果を記録するときは、client と version、日付、installation path、観測できる場合は明示・暗黙 invocation の結果、隣接 Skills、model、permission mode、観測できなかった挙動を含めます。`not exposed` と `not executed` は pass ではありません。
+このスナップショットに client-level の結果を追加するときは、client と version、日付、installation path、観測できる場合は明示・暗黙 invocation の結果、隣接 Skills、model、permission mode、観測できなかった挙動を含めます。
+Skill-level の behavior result は、その Skill の評価資産に記録します。
+`not exposed` と `not executed` は pass ではありません。
 
 ## Installation paths
 
