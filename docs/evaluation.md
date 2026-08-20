@@ -16,11 +16,32 @@ A suite is sufficient when every material responsibility, changed behavior, know
 
 Official guidance sometimes uses three or 3–5 scenarios as an example or an organizational starting point. This repository does not treat those numbers as a universal minimum or maximum.
 
+## Companion-Skill exceptions
+
+Skills remain self-contained unless an approved companion relationship is
+recorded in `docs/authoring.md`. An undocumented dependency fails static
+validation; a documented relationship is not a general dependency mechanism.
+
+For an approved relationship, static validation confirms that the relationship,
+rationale, installation path, missing-companion behavior, provenance, and
+evaluation location agree across the registry and the affected Skill assets.
+Targeted behavioral evaluation covers both of these distinct risks:
+
+- **Coexistence:** the dependent Skill reads the companion in the required
+  order and preserves its applicable constraints.
+- **Missing companion:** the dependent Skill follows its documented stop or
+  fallback behavior and gives the supported installation path without producing
+  an unauthorized partial result.
+
+Re-run these checks when either Skill, the relationship, its installation path,
+or its missing-companion behavior changes. Do not treat the exception as proof
+that either Skill works independently of the documented relationship.
+
 ## Choosing evaluation depth
 
 Use the least expensive level that can resolve the current uncertainty:
 
-1. **Static validation:** use for every Skill change. Check metadata, internal consistency, self-containment, references, boundaries, and output contract.
+1. **Static validation:** use for every Skill change. Check metadata, internal consistency, self-containment or an approved companion relationship, references, boundaries, and output contract.
 2. **Targeted behavioral regression:** use when instructions, triggering, coexistence, safety behavior, or output requirements change. Run only the scenarios that cover the affected and adjacent risks.
 3. **Empirical prompt tuning:** use repeated baseline/candidate cycles when observed failures, high impact, unstable behavior, or a substantial redesign make iteration evidence worth the cost.
 
@@ -114,7 +135,7 @@ Retain a separately named historical result only when it remains necessary for a
 
 - description and body are internally consistent
 - output format is defined or clearly implied
-- the Skill is self-contained
+- the Skill is self-contained or has an approved companion relationship
 - material claims and fail-gating requirements are identified
 
 ## Coverage map
@@ -185,7 +206,7 @@ Before writing scenarios, perform a static Iter 0 check:
 
 1. `description` and body are internally consistent
 2. Output format is defined or clearly implied
-3. The Skill is self-contained (does not assume another Skill or agent as a dependency)
+3. The Skill is self-contained, or an approved companion relationship documents the required Skill and its missing-companion behavior
 4. Critical requirements are identified only where violating them should fail the scenario
 5. Material claims and changed behavior are mapped to plausible failures and grading methods
 

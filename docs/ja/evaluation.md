@@ -18,11 +18,22 @@
 
 公式 guidance では、3件または3–5件のシナリオが例や組織的な出発点として示されることがあります。このリポジトリでは、その数を普遍的な最小値・最大値として扱いません。
 
+## Companion Skill の例外
+
+`docs/authoring.md` に承認済みの companion 関係を記録していない限り、Skill は自己完結していなければなりません。文書化されていない依存は static validation で失敗とします。文書化された関係も、一般的な依存機構にはしません。
+
+承認済みの関係では、static validation により、関係、理由、導入方法、companion 不在時の動作、provenance、評価場所が、一覧と影響を受ける Skill 資産の間で一致していることを確認します。targeted behavioral evaluation では、次の異なるリスクを扱います。
+
+- **Coexistence:** 依存する Skill が指定順で companion を読み、適用される制約を維持する。
+- **Companion 不在:** 依存する Skill が文書化された停止または fallback の動作を守り、許可されていない部分的な成果を出さずに、サポートする導入方法を案内する。
+
+いずれかの Skill、関係、導入方法、または companion 不在時の動作を変更した場合は、これらの確認を再実行します。この例外を、いずれかの Skill が文書化された関係から独立して動作する証拠として扱いません。
+
 ## 評価の深さを選ぶ
 
 現在の不確実性を解消できる最も低コストな段階を使います。
 
-1. **Static validation:** すべての Skill 変更で使います。metadata、内部整合、自己完結性、参照、境界、出力契約を確認します。
+1. **Static validation:** すべての Skill 変更で使います。metadata、内部整合、自己完結性または承認済みの companion 関係、参照、境界、出力契約を確認します。
 2. **Targeted behavioral regression:** 指示、trigger、共存、安全挙動、出力要件が変わる場合に使います。影響を受けるリスクと隣接リスクを担うシナリオだけを実行します。
 3. **Empirical prompt tuning:** 観測済みの失敗、高い影響、不安定な挙動、大幅な再設計により反復証拠のコストが正当化される場合に、baseline/candidate の反復比較を使います。
 
@@ -115,7 +126,7 @@ evaluated revision は、実際に実行した content の immutable な file ha
 
 - description と本文が内部的に一致している
 - 出力フォーマットが定義されているか明確に示されている
-- Skill が自己完結している
+- Skill が自己完結しているか、承認済みの companion 関係を持つ
 - material claim と critical requirement が特定されている
 
 ## Coverage map
@@ -186,7 +197,7 @@ behavioral evaluation は blank-slate executor で実行します。リポジト
 
 1. `description` と本文が内部的に一致している
 2. 出力フォーマットが定義されているか明確に示されている
-3. Skill が自己完結している
+3. Skill が自己完結しているか、必要な Skill と companion 不在時の動作を記録した承認済みの companion 関係を持つ
 4. 違反時に scenario を fail とすべき箇所だけが critical requirement として特定されている
 5. 重要な claim と変更した挙動が、起こり得る失敗と採点方法へ対応付けられている
 
