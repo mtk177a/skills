@@ -95,6 +95,14 @@ license: MIT
     write(root / "docs" / "authoring.md", "# Authoring\n")
 
 
+def rename_fixture_skill(root: Path, name: str) -> None:
+    source = root / "skills" / "alpha-skill"
+    target = root / "skills" / name
+    source.rename(target)
+    for path in sorted(candidate for candidate in root.rglob("*") if candidate.is_file()):
+        path.write_text(path.read_text().replace("alpha-skill", name), encoding="utf-8")
+
+
 def run_checker(root: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(CHECKER), "--root", str(root)],
@@ -140,12 +148,113 @@ class CheckerCliTests(unittest.TestCase):
 
         self.assert_fixture_failure(mutate, "frontmatter name `other-skill` does not match directory `alpha-skill`")
 
+    def test_quoted_frontmatter_name_is_normalized(self) -> None:
+        for quoted_name in ('"alpha-skill"', "'alpha-skill'", r'"alpha\x2dskill"'):
+            with self.subTest(quoted_name=quoted_name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                create_valid_repository(root)
+                path = root / "skills" / "alpha-skill" / "SKILL.md"
+                path.write_text(path.read_text().replace("name: alpha-skill", f"name: {quoted_name}"))
+
+                result = run_checker(root)
+
+                self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_frontmatter_name_length_boundary(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            rename_fixture_skill(root, "a" * 64)
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_frontmatter_name_over_64_characters_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            rename_fixture_skill(root, "a" * 65)
+
+        self.assert_fixture_failure(mutate, "frontmatter `name` exceeds 64 characters")
+
+    def test_frontmatter_description_length_boundary(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            path = root / "skills" / "alpha-skill" / "SKILL.md"
+            path.write_text(path.read_text().replace(
+                "description: Checks a fixture Skill.",
+                f'description: {"a" * 1024}',
+            ))
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_frontmatter_description_over_1024_characters_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills" / "alpha-skill" / "SKILL.md"
+            path.write_text(path.read_text().replace(
+                "description: Checks a fixture Skill.",
+                f'description: {"a" * 1025}',
+            ))
+
+        self.assert_fixture_failure(mutate, "frontmatter `description` exceeds 1024 characters")
+
+    def test_unsupported_frontmatter_scalar_is_rejected(self) -> None:
+        for replacement in ("description: >\n  Checks a fixture Skill.", "description: [fixture]"):
+            with self.subTest(replacement=replacement):
+                def mutate(root: Path) -> None:
+                    path = root / "skills" / "alpha-skill" / "SKILL.md"
+                    path.write_text(path.read_text().replace(
+                        "description: Checks a fixture Skill.",
+                        replacement,
+                    ))
+
+                self.assert_fixture_failure(
+                    mutate,
+                    "frontmatter `description` must use a supported single-line string scalar",
+                )
+
     def test_broken_relative_markdown_link_is_detected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "README.md"
             path.write_text(path.read_text() + "\n[Missing](docs/missing.md)\n")
 
         self.assert_fixture_failure(mutate, "relative Markdown link target does not exist: `docs/missing.md`")
+
+    def test_link_inside_multi_backtick_code_span_is_ignored(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            path = root / "README.md"
+            path.write_text(path.read_text() + "\n``[Example](docs/missing.md)``\n")
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_unequal_backtick_runs_do_not_close_code_span(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "README.md"
+            path.write_text(path.read_text() + "\n``[Missing](docs/missing.md)```\n")
+
+        self.assert_fixture_failure(mutate, "relative Markdown link target does not exist: `docs/missing.md`")
+
+    def test_shorter_fence_does_not_close_longer_fenced_block(self) -> None:
+        for marker in ("`", "~"):
+            with self.subTest(marker=marker), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                create_valid_repository(root)
+                path = root / "README.md"
+                path.write_text(
+                    path.read_text()
+                    + f"\n{marker * 4}text\n[First](docs/first-missing.md)\n{marker * 3}\n"
+                    + f"[Second](docs/second-missing.md)\n{marker * 4}\n"
+                )
+
+                result = run_checker(root)
+
+                self.assertEqual(0, result.returncode, result.stderr)
 
     def test_stale_candidate_hash_is_detected(self) -> None:
         def mutate(root: Path) -> None:
@@ -215,6 +324,28 @@ class CheckerCliTests(unittest.TestCase):
             write(root / "docs" / "local.md", "Use `/home/alice/private/config`.\n")
 
         self.assert_fixture_failure(mutate, "prohibited environment-specific absolute path `/home/alice`")
+
+    def test_personal_absolute_path_in_python_source_is_detected(self) -> None:
+        def mutate(root: Path) -> None:
+            write(root / "scripts" / "local-path.py", 'CONFIG = "/Users/alice/private/config"\n')
+
+        self.assert_fixture_failure(
+            mutate,
+            "scripts/local-path.py:1: prohibited environment-specific absolute path `/Users/alice`",
+        )
+
+    def test_intentional_personal_path_in_checker_test_is_ignored(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            write(
+                root / "tests" / "test_check_repository.py",
+                'EXAMPLE = "/Users/alice/private/config"\n',
+            )
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
 
     def test_unexpected_deployment_artifact_is_detected(self) -> None:
         def mutate(root: Path) -> None:

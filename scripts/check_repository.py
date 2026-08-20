@@ -25,7 +25,12 @@ PERSONAL_PATHS = (
     re.compile(r"(?<![A-Za-z0-9_])/mnt/[A-Za-z]/Users/[^/\s\"'`<>]+"),
     re.compile(r"(?<![A-Za-z0-9_])[A-Za-z]:\\Users\\[^\\\s\"'`<>]+"),
 )
-TEXT_SUFFIXES = {".json", ".md", ".sh", ".txt", ".yaml", ".yml"}
+TEXT_SUFFIXES = {".json", ".md", ".py", ".sh", ".txt", ".yaml", ".yml"}
+PERSONAL_PATH_EXCLUSIONS = {
+    "apm.lock.yaml",
+    "scripts/check_repository.py",
+    "tests/test_check_repository.py",
+}
 
 
 @dataclass(frozen=True, order=True)
@@ -72,6 +77,91 @@ def parse_frontmatter(path: Path) -> tuple[dict[str, tuple[str, int]], list[tupl
         else:
             fields[key] = (field_value.strip(), index)
     return fields, duplicates
+
+
+def parse_double_quoted_yaml_scalar(value: str) -> tuple[str | None, int]:
+    escapes = {
+        "0": "\0",
+        "a": "\a",
+        "b": "\b",
+        "t": "\t",
+        "n": "\n",
+        "v": "\v",
+        "f": "\f",
+        "r": "\r",
+        "e": "\x1b",
+        " ": " ",
+        '"': '"',
+        "/": "/",
+        "\\": "\\",
+        "N": "\x85",
+        "_": "\xa0",
+        "L": "\u2028",
+        "P": "\u2029",
+    }
+    parsed: list[str] = []
+    index = 1
+    while index < len(value):
+        character = value[index]
+        if character == '"':
+            return "".join(parsed), index + 1
+        if character != "\\":
+            parsed.append(character)
+            index += 1
+            continue
+        index += 1
+        if index >= len(value):
+            return None, index
+        escape = value[index]
+        if escape in escapes:
+            parsed.append(escapes[escape])
+            index += 1
+            continue
+        digits = {"x": 2, "u": 4, "U": 8}.get(escape)
+        if digits is None:
+            return None, index
+        encoded = value[index + 1 : index + 1 + digits]
+        if len(encoded) != digits or re.fullmatch(r"[0-9A-Fa-f]+", encoded) is None:
+            return None, index
+        try:
+            parsed.append(chr(int(encoded, 16)))
+        except ValueError:
+            return None, index
+        index += digits + 1
+    return None, index
+
+
+def parse_frontmatter_scalar(raw: str) -> tuple[str | None, str | None]:
+    value = raw.strip()
+    guidance = "must use a supported single-line string scalar (plain, single-quoted, or double-quoted)"
+    if not value:
+        return "", None
+    if value[0] == '"':
+        parsed, end = parse_double_quoted_yaml_scalar(value)
+        remainder = value[end:].strip()
+        if parsed is None or (remainder and not remainder.startswith("#")):
+            return None, guidance
+        return parsed, None
+    if value[0] == "'":
+        parsed: list[str] = []
+        index = 1
+        while index < len(value):
+            if value[index] != "'":
+                parsed.append(value[index])
+                index += 1
+                continue
+            if index + 1 < len(value) and value[index + 1] == "'":
+                parsed.append("'")
+                index += 2
+                continue
+            remainder = value[index + 1 :].strip()
+            if remainder and not remainder.startswith("#"):
+                return None, guidance
+            return "".join(parsed), None
+        return None, guidance
+    if value[0] in "[{|>&*!":
+        return None, guidance
+    return re.split(r"\s+#", value, maxsplit=1)[0].rstrip(), None
 
 
 def skill_directories(root: Path) -> list[Path]:
@@ -154,21 +244,41 @@ def check_skill_packages(root: Path, problems: list[Problem]) -> None:
             continue
         for line, key in duplicates:
             add(problems, root, skill_file, line, f"duplicate frontmatter key `{key}`")
+        normalized: dict[str, tuple[str, int]] = {}
         for key in ("name", "description", "license"):
-            if key not in fields or not fields[key][0]:
+            if key not in fields:
                 add(problems, root, skill_file, 1, f"required frontmatter `{key}` is missing or empty")
-        name = fields.get("name", ("", 1))[0]
+                continue
+            value, error = parse_frontmatter_scalar(fields[key][0])
+            if error:
+                add(problems, root, skill_file, fields[key][1], f"frontmatter `{key}` {error}")
+            elif not value:
+                add(problems, root, skill_file, fields[key][1], f"required frontmatter `{key}` is missing or empty")
+            else:
+                normalized[key] = (value, fields[key][1])
+        name = normalized.get("name", ("", 1))[0]
         if not KEBAB_CASE.fullmatch(directory.name):
             add(problems, root, skill_file, 1, f"Skill directory `{directory.name}` is not kebab-case")
         if name and not KEBAB_CASE.fullmatch(name):
-            add(problems, root, skill_file, fields["name"][1], f"frontmatter name `{name}` is not kebab-case")
+            add(problems, root, skill_file, normalized["name"][1], f"frontmatter name `{name}` is not kebab-case")
         if name and name != directory.name:
             add(
                 problems,
                 root,
                 skill_file,
-                fields["name"][1],
+                normalized["name"][1],
                 f"frontmatter name `{name}` does not match directory `{directory.name}`",
+            )
+        if name and len(name) > 64:
+            add(problems, root, skill_file, normalized["name"][1], "frontmatter `name` exceeds 64 characters")
+        description = normalized.get("description", ("", 1))[0]
+        if description and len(description) > 1024:
+            add(
+                problems,
+                root,
+                skill_file,
+                normalized["description"][1],
+                "frontmatter `description` exceeds 1024 characters",
             )
         eval_readme = directory / "evals" / "README.md"
         if not eval_readme.is_file():
@@ -176,23 +286,65 @@ def check_skill_packages(root: Path, problems: list[Problem]) -> None:
 
 
 def markdown_without_code(text: str) -> str:
-    result: list[str] = []
-    fence: str | None = None
+    visible = list(text)
+
+    def mask(start: int, end: int) -> None:
+        for index in range(start, end):
+            if visible[index] not in "\r\n":
+                visible[index] = " "
+
+    fence_marker: str | None = None
+    fence_length = 0
+    offset = 0
     for line in text.splitlines(keepends=True):
-        match = re.match(r"^\s*(```+|~~~+)", line)
-        if match:
-            marker = match.group(1)[0]
-            if fence is None:
-                fence = marker
-            elif fence == marker:
-                fence = None
-            result.append("\n" if line.endswith("\n") else "")
+        if fence_marker is None:
+            opening = re.match(r"^ {0,3}(`{3,}|~{3,})", line)
+            if opening and not (opening.group(1).startswith("`") and "`" in line[opening.end() :]):
+                fence_marker = opening.group(1)[0]
+                fence_length = len(opening.group(1))
+                mask(offset, offset + len(line))
+        else:
+            closing = re.match(r"^ {0,3}(`+|~+)[ \t]*(?:\r?\n)?$", line)
+            mask(offset, offset + len(line))
+            if (
+                closing
+                and closing.group(1)[0] == fence_marker
+                and len(closing.group(1)) >= fence_length
+            ):
+                fence_marker = None
+                fence_length = 0
+        offset += len(line)
+
+    masked_fences = "".join(visible)
+    index = 0
+    while index < len(masked_fences):
+        if masked_fences[index] != "`":
+            index += 1
             continue
-        if fence is not None:
-            result.append("\n" if line.endswith("\n") else "")
+        opening_end = index + 1
+        while opening_end < len(masked_fences) and masked_fences[opening_end] == "`":
+            opening_end += 1
+        delimiter_length = opening_end - index
+        search = opening_end
+        closing_end: int | None = None
+        while search < len(masked_fences):
+            if masked_fences[search] != "`":
+                search += 1
+                continue
+            run_end = search + 1
+            while run_end < len(masked_fences) and masked_fences[run_end] == "`":
+                run_end += 1
+            if run_end - search == delimiter_length:
+                closing_end = run_end
+                break
+            search = run_end
+        if closing_end is None:
+            index = opening_end
             continue
-        result.append(re.sub(r"`[^`\n]*`", "", line))
-    return "".join(result)
+        mask(index, closing_end)
+        index = closing_end
+
+    return "".join(visible)
 
 
 def link_destination(raw: str) -> str:
@@ -370,15 +522,14 @@ def check_companion_relationships(root: Path, problems: list[Problem], catalog: 
 
 
 def repository_text_files(root: Path) -> list[Path]:
-    candidates: set[Path] = set()
-    for pattern in ("README*", "AGENTS*", "CLAUDE*", "THIRD_PARTY_NOTICES.md", "apm.yml"):
-        candidates.update(path for path in root.glob(pattern) if path.is_file())
-    for directory in ("docs", "skills", ".github", ".agents"):
-        base = root / directory
-        if base.exists():
-            candidates.update(
-                path for path in base.rglob("*") if path.is_file() and path.suffix.lower() in TEXT_SUFFIXES
-            )
+    candidates: list[Path] = []
+    for path in root.rglob("*"):
+        if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
+            continue
+        relative = path.relative_to(root).as_posix()
+        if ".git" in path.relative_to(root).parts or relative in PERSONAL_PATH_EXCLUSIONS:
+            continue
+        candidates.append(path)
     return sorted(candidates)
 
 
