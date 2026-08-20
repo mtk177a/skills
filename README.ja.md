@@ -78,6 +78,18 @@ apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tec
 ただし、このリポジトリはクライアントごとの証拠を記録していない実行時動作を対応済みとは扱いません。
 文書化された動作、ローカルでの検証結果、インストール方法は [docs/ja/compatibility.md](docs/ja/compatibility.md) を参照してください。
 
+## リポジトリの検証
+
+リポジトリのルートで、機械的かつ読み取り専用の整合性 checker を実行します。
+
+```bash
+python3 scripts/check_repository.py
+```
+
+リポジトリに不整合がなければ終了コード `0`、修正可能な不整合を検出した場合は `1`、呼び出し方法または checker の実行自体に失敗した場合は `2` を返します。LLM を呼び出したりリポジトリの内容を変更したりせず、構造、metadata、link、正本表示、評価証拠、deployment artifact を確認します。
+
+この checker は Skill 評価の静的検証層です。behavior、routing、比較、model-backed evaluation が必要な場合に、それらを置き換えるものではありません。
+
 ## リポジトリ構成
 
 ```text
