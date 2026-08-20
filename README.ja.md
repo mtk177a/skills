@@ -4,7 +4,10 @@
 
 [mtk177a](https://github.com/mtk177a) が作成・保守する個人用エージェント Skill リポジトリです。
 
-各 Skill は [Agent Skills 仕様](https://agentskills.io/specification) に準拠しており、Codex、Claude Code、GitHub Copilot、Gemini CLI などの対応クライアントで利用できます。
+各 Skill は [Agent Skills 仕様](https://agentskills.io/specification) に準拠しています。
+形式上の互換性だけでは、クライアントによる探索や実行時の動作まで確認できません。
+このリポジトリには Codex を対象とした限定的な動作証拠がありますが、Claude Code、GitHub Copilot、Gemini CLI などのクライアントは未検証です。
+証拠の状態と検証範囲は [docs/ja/compatibility.md](docs/ja/compatibility.md) を参照してください。
 
 > **無保証。** このリポジトリは個人が手の空いたときに保守するものです。Skill は予告なく変更・削除される場合があります。自己責任でご利用ください。
 
@@ -71,7 +74,9 @@ apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tec
 
 ### その他のクライアント
 
-`skills/<name>/SKILL.md` を探索するクライアントであれば動作します。検証済みクライアントとインストール方法については [docs/compatibility.md](docs/compatibility.md) を参照してください。
+標準の `skills/<name>/SKILL.md` package を探索できるクライアントは、形式上の互換性を持つ可能性があります。
+ただし、このリポジトリはクライアントごとの証拠を記録していない実行時動作を対応済みとは扱いません。
+文書化された動作、ローカルでの検証結果、インストール方法は [docs/ja/compatibility.md](docs/ja/compatibility.md) を参照してください。
 
 ## リポジトリ構成
 

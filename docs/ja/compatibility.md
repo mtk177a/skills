@@ -4,6 +4,16 @@
 
 この文書では、portable な Agent Skills format の互換性と、client 固有の discovery、invocation、permission、実行挙動を分けます。Skill の構造が有効でも、特定の client で意図どおり読み込まれ、発火し、実行されるとは限りません。
 
+このリポジトリでは、証拠を次の 4 状態に分けます。
+各状態は記録した範囲にだけ適用し、記録していない client behavior まで裏付けるものではありません。
+
+| 状態 | 意味 |
+| --- | --- |
+| Format-compatible | Skill package が Agent Skills specification に準拠している。client が Skill を発見または実行できることまでは示さない |
+| Documented | 現行の client 公式文書に、対象の discovery、invocation、extension、runtime behavior が記載されている。このリポジトリで実行済みとは限らない |
+| Locally verified | client version、日付、観測した discovery または invocation の結果を、このリポジトリに記録している。観測していない invocation path は未検証のままとする |
+| Behavior-tested | 定義済みの scenario set について、Skill が選択され、指示に従ったかを targeted evaluation evidence に記録している。特定範囲の証拠であり、一般的な support guarantee ではない |
+
 ## 互換性の層
 
 | 層 | 確認する問い |
@@ -16,35 +26,41 @@
 | Runtime | scripts、dependencies、filesystem access、network access が対象環境で利用できるか |
 | Verification | 以上のうち、version と日付を記録してローカルで観測したものは何か |
 
-Format 互換性は挙動互換性の証拠ではありません。公式文書とローカル実行結果を分けて記録します。
+Format 互換性は、client の discovery、invocation、behavioral compatibility の証拠ではありません。
+公式文書は Documented の根拠になりますが、Locally verified または Behavior-tested とするには、記録されたローカル実行結果が必要です。
 
 ## Client matrix
 
-| Client または層 | Format と discovery の位置付け | Invocation と client extensions | Enforcement と runtime の位置付け | ローカル検証 |
-| --- | --- | --- | --- | --- |
-| Codex | Codex 文書に従った Agent Skills と repository / user Skill discovery をサポートする | 暗黙選択と明示的な `$skill` / picker invocation。任意の `agents/openai.yaml` が Codex の UI metadata と dependencies を提供する | sandbox、approval、rules、利用可能な tools は Skill 本文と別の制御面。runtime access は実行中の Codex 環境に依存する | repository-local の targeted selection と behavior のみ |
-| Claude Code | Claude Code の discovery と plugin surface で Skills をサポートする | 暗黙選択と `/skill-name`。`disable-model-invocation`、`user-invocable` などの frontmatter が invocation を変更し、`context: fork` が実行 context を変更する | `allowed-tools` は列挙 tool を事前承認するが、他の tool を禁止しない。settings では permission deny rule が禁止を強制し、CLI の `--disallowedTools` と SDK の `disallowed_tools` はそれぞれ固有の制御面である。hooks と settings も Skill 本文とは別の制御面である | 保留 |
-| GitHub Copilot / `gh skill` | client が標準 Skill package を発見する場合に動作を期待する | client 固有の invocation と metadata は対象 version で確認する必要がある | permission、tool、runtime の挙動は未検証 | 保留 |
-| Gemini CLI | client が標準 Skill package を発見する場合に動作を期待する | client 固有の invocation と metadata は対象 version で確認する必要がある | permission、tool、runtime の挙動は未検証 | 保留 |
-| APM | このリポジトリを `agent-skills` package として配布する。実行 client ではない | target 選択と installation layout は APM の関心事であり、Skill invocation semantics ではない | install と audit policy は downstream client の挙動を証明しない | 下記の範囲で検証済み |
-| Claude API Skills | Claude Code の local runtime ではなく API Skill execution environment を使う | Claude Code frontmatter や local plugin behavior を API surface へ投影しない | network と package availability は API execution environment に制約されるため、現行 API 文書で確認する | 未実行 |
+| Client または層 | 文書上の位置付け | リポジトリ内の証拠 | 現在の状態 |
+| --- | --- | --- | --- |
+| Codex | 公式文書には、暗黙選択と、Codex CLI または IDE extension で `/skills` か `$` による Skill mention を使う明示的 invocation が記載されている。任意の `agents/openai.yaml` は OpenAI 固有の表示と dependency metadata を提供する。sandbox、approval、rules、tools、runtime access は Skill 本文とは別の制御面である | repository-local discovery と、対象を限定した暗黙選択および behavior を観測済み。明示的な `/skills` と `$` invocation、UI behavior、live permission behavior は、このリポジトリについて未実行 | Documented。記録済み scenario について Locally verified かつ Behavior-tested。明示的 invocation はローカルで未検証 |
+| Claude Code | 公式文書には、Claude Code 固有の Skill discovery、invocation、frontmatter、permission、hook behavior が記載されている。これらの client 固有 control は、portable Skill の format 互換性からは導けない | repository installation、discovery、明示・暗黙 invocation、permission、behavior の実行記録なし | Format-compatible。runtime behavior は未検証 |
+| GitHub Copilot / `gh skill` | client 固有の discovery、invocation、metadata、permission、runtime behavior は、現行公式文書と対象 version に照らして確認する必要がある | repository installation、discovery、invocation、permission、behavior の実行記録なし | Format-compatible。runtime behavior は未検証 |
+| Gemini CLI | client 固有の discovery、invocation、metadata、permission、runtime behavior は、現行公式文書と対象 version に照らして確認する必要がある | repository installation、discovery、invocation、permission、behavior の実行記録なし | Format-compatible。runtime behavior は未検証 |
+| その他の client | 標準 package を扱える可能性はあるが、format 互換性だけでは discovery または実行を確認できない | repository-level または Skill-level の version 付き記録がない client は、ローカルで未検証 | version 付き記録がない場合は未検証 |
+| APM | このリポジトリを `agent-skills` package として配布するが、実行 client ではない。target 選択と installation layout は、downstream の invocation または behavior を示さない | 下記の package check を実行済み | 記録した範囲の distribution のみ検証済み |
 
 client が対応しているという理由だけで、client 固有 metadata を全 Skills に追加しません。その client の invocation control、UI 表示、tool dependency declaration、permission behavior が必要な場合だけ追加します。portable な `name`、`description`、instructions、resources を共通層として維持します。
 
-## 検証記録
+## 代表的な検証スナップショット
 
-次の表は、文書から推測した support claim ではなく、観測済みの repository check を記録します。
+次の表は、文書から推測した support claim ではなく、記録済みの repository check から選んだ観測結果を残すスナップショットです。
+後続の Skill 単位の評価について、最新状態または全件を示す一覧ではありません。
+後続の client version、日付、scenario scope は、各 Skill の `evals/README.md` と任意の `results.json` に記録します。
+証拠の責務は [evaluation.md](evaluation.md) を参照してください。
 
 | 対象 | Version | 検証日 | 観測した範囲 |
 | --- | --- | --- | --- |
-| Claude Code | — | — | 未実行 |
-| Codex | 0.145.0 | 2026-07-24 | repository-local discovery、baseline/candidate 16 selection run での target Skill open 観測、影響 case の5回の再実行を含む candidate/baseline 29 behavior run。明示的な `$skill`、UI、live permission behavior は未検証 |
-| GitHub Copilot / `gh skill` | — | — | 未実行 |
-| Gemini CLI | — | — | 未実行 |
+| Claude Code | — | — | 未実行。installation、discovery、明示・暗黙 invocation、permission、behavior は未検証 |
+| Codex | 0.145.0 | 2026-07-24 | repository-local discovery、baseline/candidate 16 selection run での target Skill open 観測、影響 case の 5 回の再実行を含む candidate/baseline 29 behavior run。明示的な `/skills` と `$` invocation、UI、live permission behavior は未実行 |
+| GitHub Copilot / `gh skill` | — | — | 未実行。installation、discovery、invocation、permission、behavior は未検証 |
+| Gemini CLI | — | — | 未実行。installation、discovery、invocation、permission、behavior は未検証 |
 | APM | 0.26.0 | 2026-07-21 | install resolution、frozen dry-run、offline pack dry-run、audit |
-| `npx skills add` | — | — | 未実行 |
+| `npx skills add` の利用先を含むその他の client | — | — | 個別の記録がない限り未実行 |
 
-新しい結果を記録するときは、client と version、日付、installation path、観測できる場合は明示・暗黙 invocation の結果、隣接 Skills、model、permission mode、観測できなかった挙動を含めます。`not exposed` と `not executed` は pass ではありません。
+このスナップショットに client-level の結果を追加するときは、client と version、日付、installation path、観測できる場合は明示・暗黙 invocation の結果、隣接 Skills、model、permission mode、観測できなかった挙動を含めます。
+Skill-level の behavior result は、その Skill の評価資産に記録します。
+`not exposed` と `not executed` は pass ではありません。
 
 ## Installation paths
 
