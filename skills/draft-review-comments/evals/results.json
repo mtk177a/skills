@@ -1,7 +1,29 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "skill": "draft-review-comments",
-  "evaluated_on": "2026-07-27",
+  "candidate": {
+    "accepted_on": "2026-08-20",
+    "evidence_status": "unverified",
+    "evidence_summary": "Behavior and trigger execution has not been performed for this accepted revision; only JSON parsing and candidate file hash checks were completed.",
+    "files": {
+      "SKILL.md": "sha256:9f01d36ba8975d9669085cd77adfef415afe8c7f129b63a059a1b1f7a601aa3e",
+      "SKILL-ja.md": "sha256:b549362eed7a84e32ae1c23609f8481705eeb70f1e7647d78d4db88081a7270c",
+      "evals/evals.json": "sha256:e5c00bc282dfb6883423e1ebde176cea9d18c5b732ef17eb3a355a8f3cb2ca56",
+      "evals/triggers.json": "sha256:194e07b09483595fd8f044ee15d863d33073b81f2717c021766bbe7150e7dbc5"
+    },
+    "executed": [
+      "Parsed this results.json with the standard Python JSON parser.",
+      "Recalculated every candidate.files SHA-256 value from the accepted repository files."
+    ],
+    "unverified": [
+      "Behavior and trigger invocations for this revision",
+      "Repeated stochastic runs and clients other than the historically recorded client"
+    ]
+  },
+  "historical_full_evaluation": {
+    "status": "superseded_for_current_candidate",
+    "applicability": "Pass claims apply only to the hash-bound evaluated revision below; they do not establish the accepted candidate as passing.",
+    "evaluated_on": "2026-07-27",
   "environment": {
     "client": "Codex CLI 0.145.0",
     "model": "gpt-5.6-sol",
@@ -14,7 +36,7 @@
       "SKILL.md": "sha256:04cbccdce4432bb531976e14b3cde1b63f87977f0aa9ab4fd8ccdee326edfc5c"
     }
   },
-  "candidate": {
+  "evaluated_revision": {
     "files": {
       "SKILL.md": "sha256:94a6351ca3e34a849b320d176594e61c1f824e57c913606a0289ebdddc6f3a79",
       "SKILL-ja.md": "sha256:9eb0d10e7c07db340afdbeb24725f90ebc5d64f41d71bc2f12031346813f1786",
@@ -573,5 +595,6 @@
       "Unaffected behavior and trigger cases for this revision",
       "Repeated stochastic runs, Claude Code, and clients other than the recorded fresh agent invocations"
     ]
+  }
   }
 }
