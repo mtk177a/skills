@@ -1,6 +1,30 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "skill": "review-changes",
+  "candidate": {
+    "accepted_on": "2026-08-14",
+    "evidence_status": "targeted_only",
+    "evidence_summary": "Only the recorded targeted checks apply to this accepted revision; the full behavior and trigger suites were not executed.",
+    "files": {
+      "SKILL.md": "sha256:c15f9c2295820ad5c8802415bc559d633556bb76ef84a2c977cff67be91e9e7b",
+      "SKILL-ja.md": "sha256:445849a8989819ea41c3703a1c15d93dfcf692548e6f4a3225bebe8ef6027c88",
+      "evals/evals.json": "sha256:5377a50967d040b73380eacc8f9f5f6e1441105558b385f3d106991eaf3f7ff0",
+      "evals/triggers.json": "sha256:1a8cbf2caf5666e09d52131b1f01b0317c514c2ab1405b8a0e01b621fc8ce6e1"
+    },
+    "previous_evidence_status": "Superseded for the changed trigger, proportionality, re-review-origin, output-contract, and actionable-draft handoff requirements; historical evidence remains reusable only for explicitly unchanged requirements.",
+    "executed": [
+      "Matched baseline/candidate forward test: low-criticality, low-exposure, high-remediation-cost edge case; both produced no material finding and the candidate stated proportionality and a cheaper verification alternative.",
+      "Matched baseline/candidate routing test: ordinary post-fix request selected validate-fix in both conditions; the candidate stated the bounded-validation boundary explicitly.",
+      "Matched actionable-draft routing test: review output without assessment, state, or response decision selected triage-review-feedback rather than draft-review-comments in both conditions."
+    ],
+    "unverified": [
+      "Full behavior and trigger suites for this revision",
+      "Repeated stochastic runs and clients other than the recorded Codex invocation"
+    ]
+  },
+  "historical_full_evaluation": {
+    "status": "superseded_for_current_candidate",
+    "applicability": "Pass claims apply only to the hash-bound evaluated revisions and to explicitly identified unchanged requirements; they do not establish the accepted candidate as fully passing.",
   "evaluated_on": "2026-07-27",
   "environment": {
     "client": "Codex CLI 0.145.0",
@@ -14,7 +38,7 @@
       "SKILL.md": "sha256:47e45af064aebd65663f52817e884546e317ca35f1c52b3b7feab6291d14fdac"
     }
   },
-  "candidate": {
+  "evaluated_revision": {
     "files": {
       "SKILL.md": "sha256:d5e7bbd152346a8af02c55dfcd7ed0efcc268c50abe68281feada4198ca15aa6",
       "SKILL-ja.md": "sha256:2733490098fe2dc42c9b42b0f98914d5fea6f7b5e05067f397fd513fdfdf11f4",
@@ -601,7 +625,8 @@
     "No statistical guarantee is claimed from a single matched behavior and trigger run.",
     "The trigger protocol exercises catalog selection and observable file reads, not every client-specific Skill router implementation.",
     "Wall-clock duration and token usage were not exposed by the retained summary."
-  ],
+  ]
+  },
   "coherent_change_validation": {
     "evaluated_on": "2026-08-04",
     "environment": {
@@ -646,25 +671,6 @@
       "The retained review and trigger cases were not rerun because their responsibilities and trigger descriptions are unchanged.",
       "The inline cases did not expose actual source files, callers, configuration behavior, or executable tests; findings were limited to the supplied semantic diffs and context.",
       "Claude Code, other clients, repeated stochastic runs, and real repository diffs were not executed."
-    ]
-  },
-  "current_revision": {
-    "date": "2026-08-14",
-    "status": "targeted evidence only; full revision unverified",
-    "hashes": {
-      "SKILL.md": "c15f9c2295820ad5c8802415bc559d633556bb76ef84a2c977cff67be91e9e7b",
-      "evals.json": "5377a50967d040b73380eacc8f9f5f6e1441105558b385f3d106991eaf3f7ff0",
-      "triggers.json": "1a8cbf2caf5666e09d52131b1f01b0317c514c2ab1405b8a0e01b621fc8ce6e1"
-    },
-    "previous_evidence_status": "Superseded for the changed trigger, proportionality, re-review-origin, output-contract, and actionable-draft handoff requirements; historical evidence remains reusable only for explicitly unchanged requirements.",
-    "executed": [
-      "Matched baseline/candidate forward test: low-criticality, low-exposure, high-remediation-cost edge case; both produced no material finding and the candidate stated proportionality and a cheaper verification alternative.",
-      "Matched baseline/candidate routing test: ordinary post-fix request selected validate-fix in both conditions; the candidate stated the bounded-validation boundary explicitly.",
-      "Matched actionable-draft routing test: review output without assessment, state, or response decision selected triage-review-feedback rather than draft-review-comments in both conditions."
-    ],
-    "unverified": [
-      "Full behavior and trigger suites for this revision",
-      "Repeated stochastic runs and clients other than the recorded Codex invocation"
     ]
   }
 }

@@ -95,6 +95,10 @@ Do not store raw traces, full responses, credentials, or environment-specific ab
 
 Treat `results.json` as the compact evidence for the currently accepted Skill revision. Update it in place rather than adding a dated file for every execution. Fold reruns and corrections for the same candidate into the same record. Git history preserves each accepted result together with the Skill source it evaluated.
 
+In schema version 3 records, `candidate` identifies the source and evaluation-definition files currently accepted in the repository. Acceptance identifies the repository revision; it does not by itself mean that behavior or triggering was executed or passed. Record the candidate's evidence state explicitly, such as `unverified` or `targeted_only`, and list the checks that were and were not executed.
+
+An evaluated revision is the immutable set of file hashes, baseline, environment, and execution evidence for content that was actually run. Keep a superseded full-suite result under `historical_full_evaluation`, including its original evaluated-revision hashes and pass claims. Keep later targeted evidence in separately hash-bound records. A pass applies only to its evaluated revision and to unchanged requirements whose applicability is identified explicitly; it does not establish that a different current candidate passes.
+
 When the accepted Skill source changes, update `results.json`, mark the affected evidence as superseded or unverified, or remove the file. Do not leave hashes or pass claims that imply the old candidate was the current source. Reuse prior evidence only when the unchanged requirement and evaluated content can be identified explicitly.
 
 Retain a separately named historical result only when it remains necessary for a current decision and Git history is insufficient—for example, an incomparable client or evaluation method, a known regression that must remain directly reproducible, or an external audit requirement. Document its purpose and removal condition in the README. Do not retain or delete result files to satisfy a fixed count.

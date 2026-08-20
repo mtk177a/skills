@@ -1,6 +1,27 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "skill": "implement-changes",
+  "candidate": {
+    "accepted_on": "2026-08-14",
+    "evidence_status": "unverified",
+    "evidence_summary": "Behavior and trigger execution has not been performed for this accepted revision; only static definitions were validated.",
+    "files": {
+      "SKILL.md": "sha256:d53bd96e9df43d6baa636995f9c82a7dd5cbb915142c8cc8709d6857d75a1512",
+      "SKILL-ja.md": "sha256:2ad938757a26af73dc310c45cc01f3bf0ec77f13942a47fb551c559a01ca74f3",
+      "references/tdd_twada.md": "sha256:808c1e099d3d944ac9e8fbfc5dbabfd629a9236cb8b8f56536494ecfe793c04f",
+      "evals/evals.json": "sha256:f07de4297ea17a5f33adf3a877e8599b22d5950e97c0cb1ef3858732d48d6bce",
+      "evals/triggers.json": "sha256:86e8801592c7431b0988b58178475105f39c2038322edc3c1f5b32eb2cba8d6b"
+    },
+    "previous_evidence_status": "Superseded for the changed actual-reviewer-context Done-handoff requirements.",
+    "executed": [],
+    "unverified": [
+      "Behavior and trigger invocations for this revision",
+      "Repeated stochastic runs and clients other than the previously recorded client"
+    ]
+  },
+  "historical_full_evaluation": {
+    "status": "superseded_for_current_candidate",
+    "applicability": "Pass claims apply only to the hash-bound evaluated revisions and to explicitly identified unchanged requirements; they do not establish the accepted candidate as passing.",
   "evaluated_on": "2026-07-30",
   "environment": {
     "client": "Codex CLI 0.146.0",
@@ -14,7 +35,7 @@
       "references/tdd_twada.md": "sha256:87ef86ad966def9efd101be690a0eea8631b38786fcdcf3de54860bdd697d396"
     }
   },
-  "candidate": {
+  "evaluated_revision": {
     "files": {
       "SKILL.md": "sha256:4d5b4fafab145b0865900e70a1adc4102381ac789ff238ebad1aea90c58af732",
       "references/tdd_twada.md": "sha256:808c1e099d3d944ac9e8fbfc5dbabfd629a9236cb8b8f56536494ecfe793c04f",
@@ -391,7 +412,8 @@
     "Repeated stochastic runs and other models",
     "Real repository test topology, dependency constraints, and high-risk controls",
     "Implicit activation outside the recorded selection protocol"
-  ],
+  ]
+  },
   "evaluation_revisions": [
     {
       "baseline_commit": "2f57393c818f1f9524b31025776721368ebdf6f5",
@@ -710,21 +732,6 @@
       "The retained authentication, verification-mode, failure-loop, and trigger cases were not rerun because their instructions and inputs are unchanged.",
       "The disposable fixture's complete unittest suite contained only the two focused email-path tests; lint, type checking, external callers, and integrations were not exercised.",
       "Claude Code, other clients, and repeated stochastic runs were not executed."
-    ]
-  },
-  "current_revision": {
-    "date": "2026-08-14",
-    "status": "unverified behavior; static definitions only",
-    "hashes": {
-      "SKILL.md": "d53bd96e9df43d6baa636995f9c82a7dd5cbb915142c8cc8709d6857d75a1512",
-      "evals.json": "f07de4297ea17a5f33adf3a877e8599b22d5950e97c0cb1ef3858732d48d6bce",
-      "triggers.json": "86e8801592c7431b0988b58178475105f39c2038322edc3c1f5b32eb2cba8d6b"
-    },
-    "previous_evidence_status": "Superseded for the changed actual-reviewer-context Done-handoff requirements.",
-    "executed": [],
-    "unverified": [
-      "Behavior and trigger invocations for this revision",
-      "Repeated stochastic runs and clients other than the previously recorded client"
     ]
   }
 }
