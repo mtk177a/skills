@@ -71,6 +71,18 @@ apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tec
 
 Clients that discover standard `skills/<name>/SKILL.md` packages may be format-compatible, but this repository does not claim runtime support without recorded client evidence. See [docs/compatibility.md](docs/compatibility.md) for documented behavior, local verification, and installation paths.
 
+## Repository validation
+
+Run the deterministic, read-only consistency checker from the repository root:
+
+```bash
+python3 scripts/check_repository.py
+```
+
+The command exits with status `0` when the repository is consistent, `1` when it finds actionable inconsistencies, and `2` when invocation or checker execution fails. It checks repository structure, metadata, links, localization notices, evaluation evidence, and deployment artifacts without invoking an LLM or modifying repository content.
+
+This checker is the static validation layer for Skill evaluation. It does not replace behavioral, routing, comparative, or model-backed evaluation when those forms of evidence are required.
+
 ## Repository structure
 
 ```text

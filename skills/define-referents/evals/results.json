@@ -19,11 +19,20 @@
   "candidate": {
     "files": {
       "SKILL.md": "sha256:daf3adb6d5c152005876748d70b712c0edde5df1ef6f2dc91d59637e7804d586",
-      "SKILL-ja.md": "sha256:ac2636d2d64b5d10fa34e94621c8450dc24e8b54effb8c6ed708309386bed33f",
+      "SKILL-ja.md": "sha256:d5b7fa1d1f51f5da40eac8effd1219b47c20a209583643a5f2e20c048f7fd5a3",
       "references/referents-before-labels.md": "sha256:2d92f95900d6820cafb2100f7000b504f668c9b13dcd4c8acbaffd7ea4b24595",
       "evals/evals.json": "sha256:49fe4b7bdb5d707fd2b5a7808d767e32cd54fcbd14fe1bd7991de736d65c1dba",
       "evals/triggers.json": "sha256:af1c2b0070272703ac445502c5781c28f332fbc18eaaa9669272cf97336eab6c"
     }
+  },
+  "post_evaluation_static_change": {
+    "change": "Added the required canonical-source notice to the Japanese reference translation without changing the canonical Skill or evaluation definitions.",
+    "behavior_rerun": false,
+    "verification": [
+      "Recalculated the accepted SKILL-ja.md SHA-256 value.",
+      "Confirmed that the canonical SKILL.md and evaluation-definition hashes are unchanged."
+    ],
+    "claim_applicability": "Existing behavior and routing claims remain bound to the unchanged canonical Skill and evaluation definitions; no new behavioral pass is claimed for the translation-only change."
   },
   "execution": {
     "driver": "Temporary define-referents-only Python orchestration script; not retained as repository source.",

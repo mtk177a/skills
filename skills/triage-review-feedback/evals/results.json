@@ -1,7 +1,29 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "skill": "triage-review-feedback",
-  "evaluated_on": "2026-07-27",
+  "candidate": {
+    "accepted_on": "2026-08-20",
+    "evidence_status": "unverified",
+    "evidence_summary": "Behavior and trigger execution has not been performed for this accepted revision; only JSON parsing and candidate file hash checks were completed.",
+    "files": {
+      "SKILL.md": "sha256:4d9f4ac381928c8085a8ecca15028e07848fd72ab2e570194e3221da82390d1c",
+      "SKILL-ja.md": "sha256:50b4c8d01dd83f1c14c7ac81f49d5c2c8fbf0dc267947031b87b741dac5b4162",
+      "evals/evals.json": "sha256:1b540f700fab7c18b1799f98857fe3b833a3624729d99adf68cd88ba47e76d4a",
+      "evals/triggers.json": "sha256:e52a98282f925cb3d4a1db1c9f6d389b6fe53372ba620ea9fc29314f6a555911"
+    },
+    "executed": [
+      "Parsed this results.json with the standard Python JSON parser.",
+      "Recalculated every candidate.files SHA-256 value from the accepted repository files."
+    ],
+    "unverified": [
+      "Behavior and trigger invocations for this revision",
+      "Repeated stochastic runs and clients other than the historically recorded client"
+    ]
+  },
+  "historical_full_evaluation": {
+    "status": "superseded_for_current_candidate",
+    "applicability": "Pass claims apply only to the hash-bound evaluated revision below; they do not establish the accepted candidate as passing.",
+    "evaluated_on": "2026-07-27",
   "environment": {
     "client": "Codex CLI 0.145.0",
     "model": "gpt-5.6-sol",
@@ -14,7 +36,7 @@
       "SKILL.md": "sha256:9f2f2b3db0a1a00bacfa166d40f023f3dc2d201b67437551b2404deb13808b88"
     }
   },
-  "candidate": {
+  "evaluated_revision": {
     "files": {
       "SKILL.md": "sha256:1612249c313303492f1faade9b0747af633a706258661ad5f313eeec8ae47980",
       "evals/evals.json": "sha256:82cd96490fb1d673df70cf4677e31a811f249cace222e5b4734b7917324f0480",
@@ -298,5 +320,6 @@
       "Full behavior and trigger suites for this revision",
       "Repeated stochastic runs and clients other than the recorded Codex invocation"
     ]
+  }
   }
 }
