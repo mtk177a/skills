@@ -4,7 +4,7 @@
   "candidate": {
     "accepted_on": "2026-08-14",
     "evidence_status": "unverified",
-    "evidence_summary": "Behavior and trigger execution has not been performed for this accepted revision; only static definitions were validated.",
+    "evidence_summary": "Behavior and trigger execution has not been performed for this accepted revision; only the recorded JSON parsing and candidate file hash checks were completed.",
     "files": {
       "SKILL.md": "sha256:d53bd96e9df43d6baa636995f9c82a7dd5cbb915142c8cc8709d6857d75a1512",
       "SKILL-ja.md": "sha256:2ad938757a26af73dc310c45cc01f3bf0ec77f13942a47fb551c559a01ca74f3",
@@ -13,7 +13,10 @@
       "evals/triggers.json": "sha256:86e8801592c7431b0988b58178475105f39c2038322edc3c1f5b32eb2cba8d6b"
     },
     "previous_evidence_status": "Superseded for the changed actual-reviewer-context Done-handoff requirements.",
-    "executed": [],
+    "executed": [
+      "Parsed this results.json with the standard Python JSON parser.",
+      "Recalculated every candidate.files SHA-256 value from the accepted repository files and confirmed exact matches."
+    ],
     "unverified": [
       "Behavior and trigger invocations for this revision",
       "Repeated stochastic runs and clients other than the previously recorded client"
@@ -418,6 +421,7 @@
     {
       "baseline_commit": "2f57393c818f1f9524b31025776721368ebdf6f5",
       "candidate_skill": "sha256:580a700e58c2071d37714df315f96e353f7e75c0c8e0c32d366f1b3be5ba3d74",
+      "snapshot_availability": "not_retained",
       "change": "Replaced universal approval and rollback gaps with exact action, evidence, control, recovery, residual-risk, and execution-authority readiness.",
       "coverage": "Reran the unprepared and authorized authentication behavior cases with blinded current/candidate grading and the unresolved-readiness routing case. Prior unaffected behavior and routing evidence is reused."
     },
