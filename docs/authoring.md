@@ -182,7 +182,7 @@ When iterating on a Skill, manage evaluation assets alongside the content.
 - Multi-Skill flow evaluations go in `docs/` (see `evaluation.md`)
 - First identify the affected responsibility and whether executable behavior or a discovery or responsibility boundary changes; follow the selection policy in `evaluation.md`
 - Start with Iter 0: statically check that `description` and body are consistent, that output format is defined, and that the Skill is self-contained or has an approved companion relationship
-- If executable behavior and responsibility boundaries are unaffected, run deterministic repository validation and stop without adding behavioral scenarios
+- If executable behavior, discovery, and responsibility boundaries are unaffected, run deterministic repository validation and stop without adding behavioral scenarios
 - If runtime behavior changes, map only the affected claim or responsibility to a plausible failure, an existing or new candidate case that can expose it, and a grading method
 - Add routing, near-miss, or coexistence cases only when discovery or an adjacent responsibility boundary changes; do not add unrelated core, routing, or coexistence coverage automatically
 - Add baseline comparison or repetition only when an escalation condition in `evaluation.md` makes the additional evidence decision-relevant
