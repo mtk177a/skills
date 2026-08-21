@@ -8,8 +8,8 @@
   },
   "execution": {
     "client": "record exact client and version at execution time",
-    "model": "gpt-5.6-sol",
-    "reasoning_effort": "high",
+    "model": "gpt-5.6-luna",
+    "reasoning_effort": "max",
     "sandbox": "read-only",
     "executor_input_fields": [
       "input"

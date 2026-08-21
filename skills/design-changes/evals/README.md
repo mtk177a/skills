@@ -125,10 +125,10 @@ Requirements checklist:
 ## Execution protocol
 
 1. For the recorded full behavior run, use baseline commit `42ebd18cb2406d1cfcbeb34cd289fd620c8e4f9b`. For the 2026-07-28 routing migrations, use the pre-merge catalog at commit `33c9d95641d816ba3957e5a6045141e3d451b753`. Never substitute moving `HEAD` when reproducing recorded evidence; use the working-tree Skill only as the candidate under evaluation.
-2. Use the same input, client, model, reasoning effort, sandbox, adjacent Skills, and grader for both conditions.
+2. Use the same input, client, model, reasoning effort, sandbox, and adjacent Skills for both conditions.
 3. Run behavioral cases in writable disposable repositories and compare file hashes before and after.
 4. Keep expected conclusions and requirements out of executor input.
-5. Use a separate grader for judgment requirements and deterministic checks for file mutations.
+5. Grade objective claims with deterministic evidence and judgment-heavy requirements by direct maintainer review. Add a separate blank-slate LLM grader only when repeated or independent judgment is materially useful.
 6. Record exact commands, versions, exposed traces, assertion evidence, and `not exposed` or `not executed` conditions.
 7. Repeat only when an unexpected result, instability, client difference, or failure impact could change the decision.
 
@@ -180,10 +180,12 @@ Requirements checklist:
 - The revised JSON definitions and Skill structure were validated, but no behavior or trigger invocation was executed for this revision.
 - The earlier pass totals are historical evidence and are superseded for the changed implementation-handoff contract.
 
-## Minimum-sufficient-design revision — 2026-08-21
+## Minimum-sufficient-design revision — 2026-08-22
 
 - Affected responsibility: distinguish incidental code similarity from one shared current responsibility while preserving the existing coherent structural-correction behavior.
 - Selected path: matched baseline and candidate checks for `incidental-code-similarity` and `shared-current-invariant`, because this revision changes a subjective quality contract. Unrelated routing and reviewer-context cases are not selected.
-- Initial execution attempt with Codex CLI 0.147.0, `gpt-5.6-luna`, and max reasoning did not execute because the client returned `401 Unauthorized`; it is not pass evidence.
-- Deterministic JSON parsing, repository validation, candidate hash checks, and any later successful targeted execution are recorded in [`results.json`](results.json).
-- Untested boundary: behavior on other models and clients remains unverified.
+- Codex CLI 0.147.0 with `gpt-5.6-luna`, max reasoning, and a read-only sandbox ran one matched baseline and candidate execution per selected case. Direct maintainer grading passed 3/3 assigned assertions in all four conditions.
+- Both conditions rejected a generic helper for incidental similarity and selected the existing owner for the shared email invariant. The candidate preserved both sides of the boundary without a requirement-level advantage over the already-passing baseline.
+- Initial `--ignore-user-config` attempts returned `401 Unauthorized` before model execution because that option removed the active ChatGPT authentication route; those defective attempts are excluded from pass evidence and do not indicate that the user was logged out.
+- Deterministic JSON parsing, repository validation, candidate hash checks, invocation details, case evidence, and excluded defective runs are recorded in [`results.json`](results.json).
+- Untested boundary: unrelated cases, repeated runs, a separate LLM grader, real application repositories, other models, and other clients remain unverified.

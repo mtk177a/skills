@@ -46,10 +46,10 @@ Structured assets:
 
 1. Use committed `HEAD` as the baseline and the working-tree Skill as the candidate.
 2. Give the executor only the case `input` and its disposable fixture. Keep titles, assertions, and expected conclusions hidden.
-3. Use the same client, model, reasoning effort, sandbox, fixture, and grader for both conditions.
+3. Use the same client, model, reasoning effort, sandbox, and fixture for both conditions.
 4. For git fixtures, construct the declared base, candidate commit, working-tree changes, and checks in a temporary repository outside this source repository.
 5. Count a Skill trigger only from an observable `SKILL.md` open.
-6. Grade objective scope and command claims from the fixture and captured output; use a separate grader for judgment-heavy findings.
+6. Grade objective scope and command claims from the fixture and captured output, then grade judgment-heavy findings by direct maintainer review. Add a separate blank-slate LLM grader only when repeated or independent judgment is materially useful.
 7. Repeat only when an unexpected result, instability, client difference, or failure consequence could change the decision.
 
 For Codex CLI, use an ephemeral session with a pinned model and reasoning effort. Keep raw JSONL and full responses in a temporary directory.
@@ -111,10 +111,12 @@ Claude Code and other clients were not executed. Detailed case-by-assertion and 
 - A matched routing check selected `triage-review-feedback`, not `draft-review-comments`, for review output without those decisions in both conditions.
 - Review behavior cases were not rerun because finding discovery and output fields were unchanged.
 
-## Minimum-sufficient-review revision — 2026-08-21
+## Minimum-sufficient-review revision — 2026-08-22
 
 - Affected responsibility: distinguish unsupported coupling from consolidation justified by one current shared responsibility, invariant, or contract.
 - Selected path: matched baseline and candidate checks for `incidental-duplication-abstraction` and `justified-shared-invariant`, because this revision changes a subjective quality contract. Existing unrelated review and routing cases are not selected.
-- Initial execution attempts with Codex CLI 0.147.0, `gpt-5.6-luna`, and max reasoning did not execute because the client returned `401 Unauthorized`; they are not pass evidence.
-- Deterministic JSON parsing, repository validation, candidate hash checks, and any later successful targeted execution are recorded in [`results.json`](results.json).
-- Untested boundary: behavior on other models and clients remains unverified.
+- Codex CLI 0.147.0 with `gpt-5.6-luna`, max reasoning, and a read-only sandbox ran one matched baseline and candidate execution per selected case. Direct maintainer grading passed 5/5 assertions for incidental duplication and 6/6 for justified shared structure in both conditions.
+- Both conditions reported the concrete maintenance coupling introduced by a generic helper across separate contracts and reported no material finding against consolidation into the existing owner of one current invariant. The candidate preserved both sides of the boundary without a requirement-level advantage over the already-passing baseline.
+- Initial authentication failures and a review batch with an incomplete inline fixture were excluded before grading. The accepted batch used complete public fixtures and separate disposable roots; no independent LLM grader or repetition was decision-relevant.
+- Deterministic JSON parsing, repository validation, candidate hash checks, invocation details, case evidence, and excluded defective runs are recorded in [`results.json`](results.json).
+- Untested boundary: unrelated cases, repeated runs, a separate LLM grader, real repository diffs, other models, and other clients remain unverified.
