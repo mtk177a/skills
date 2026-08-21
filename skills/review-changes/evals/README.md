@@ -37,6 +37,8 @@ Structured assets:
 | Trigger boundary | Collides with triage, validation, comment drafting, summary, implementation, or guidance audit | `triggers.json` | Observable Skill loads |
 | Excess complexity | Accepts speculative abstractions whose concrete maintenance cost has no current requirement or observed-risk basis | `unjustified-abstraction` | Finding evidence and assigned assertions |
 | Overly narrow correction | Accepts a small patch that leaves a confirmed shared rule inconsistent across a known path | `local-patch-leaves-shared-cause` | Finding evidence and assigned assertions |
+| Incidental duplication | Accepts a generic helper that couples separate contracts solely to remove similar lines | `incidental-duplication-abstraction` | Finding evidence and assigned assertions |
+| Justified shared structure | Reports a preference-only finding against the existing owner of one current invariant | `justified-shared-invariant` | Finding count and assigned assertions |
 | Proportionate response | A speculative low-exposure edge case becomes a blocking request despite cheap detection and recovery and high remediation cost | `low-criticality-expensive-edge-case` | Risk-context fields and requested label |
 | Re-review convergence | New origins are conflated or a previously observable non-blocking nit starts another fix round | `full-rereview-origin-and-convergence` | Origin classification and actionable-output inspection |
 
@@ -69,6 +71,8 @@ Claude Code and other clients are outside the current execution plan and must be
 - `review workflow routed to an adjacent Skill`
 - `speculative abstraction accepted without concrete cost or requirement evidence`
 - `small diff accepted while a confirmed shared cause remains`
+- `source similarity treated as sufficient abstraction evidence`
+- `justified shared owner criticized because local duplication is shorter`
 - `missing context treated as low risk`
 - `speculative remediation cost ignored when assigning must`
 - `late non-blocking issue starts another fix round`
@@ -106,3 +110,11 @@ Claude Code and other clients were not executed. Detailed case-by-assertion and 
 - Clarified that review output alone does not authorize an actionable draft; assessment, state, and response decision must be supplied first, normally by `triage-review-feedback`.
 - A matched routing check selected `triage-review-feedback`, not `draft-review-comments`, for review output without those decisions in both conditions.
 - Review behavior cases were not rerun because finding discovery and output fields were unchanged.
+
+## Minimum-sufficient-review revision — 2026-08-21
+
+- Affected responsibility: distinguish unsupported coupling from consolidation justified by one current shared responsibility, invariant, or contract.
+- Selected path: matched baseline and candidate checks for `incidental-duplication-abstraction` and `justified-shared-invariant`, because this revision changes a subjective quality contract. Existing unrelated review and routing cases are not selected.
+- Initial execution attempts with Codex CLI 0.147.0, `gpt-5.6-luna`, and max reasoning did not execute because the client returned `401 Unauthorized`; they are not pass evidence.
+- Deterministic JSON parsing, repository validation, candidate hash checks, and any later successful targeted execution are recorded in [`results.json`](results.json).
+- Untested boundary: behavior on other models and clients remains unverified.

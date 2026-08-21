@@ -35,6 +35,16 @@
       "id": "implementation-ready-boundary",
       "critical": true,
       "statement": "Keeps the implementation approach, coherent scope, non-goals, risks, controls, verification, and stop conditions decision-complete without implementing the change."
+    },
+    {
+      "id": "semantic-reuse-boundary",
+      "critical": true,
+      "statement": "Distinguishes behavior that shares a current responsibility, invariant, knowledge, or contract from code that is only syntactically similar, consolidating the former without prematurely abstracting the latter."
+    },
+    {
+      "id": "minimum-sufficient-structure",
+      "critical": true,
+      "statement": "Selects the simplest design inside the smallest coherent boundary without using future flexibility or principle conformance to add structure or using diff size to reject currently required structure."
     }
   ],
   "assertion_policy": "Grade every assertion assigned to a case. A failed critical assertion fails that case. Record baseline and candidate evidence separately.",
@@ -49,6 +59,28 @@
         "implementation-ready-boundary"
       ],
       "additional_requirement": "The handoff must retain criticality, consumer count, and maximum batch size as Unknown rather than describing the importer as low risk."
+    },
+    {
+      "id": "incidental-code-similarity",
+      "title": "Similar code implements separate current contracts",
+      "input": "Design the approved cleanup before implementation. A request parser and an audit formatter each trim a string, replace underscores, and lowercase it. The parser implements a public protocol-token contract; the formatter produces display-only labels. There is no shared domain rule, invariant, consumer contract, or evidence that they must evolve together. A generic normalize_text helper has been proposed solely to remove duplicate lines. Existing focused tests cover both behaviors. Produce an implementation-ready handoff without editing files.",
+      "assertions": [
+        "semantic-reuse-boundary",
+        "minimum-sufficient-structure",
+        "implementation-ready-boundary"
+      ],
+      "additional_requirement": "Keep the two contracts independently changeable and retain focused verification for each; do not treat source similarity or DRY as sufficient evidence for a shared abstraction."
+    },
+    {
+      "id": "shared-current-invariant",
+      "title": "Two paths implement one current invariant inconsistently",
+      "input": "Design the approved correction before implementation. Signup and invite are both required to trim and case-fold email addresses, but their inline implementations currently differ. The repository already has normalize_email as the owner of this current domain invariant. Produce the smallest implementation-ready correction and verification plan without editing files. No additional email formats, plugin mechanism, or configuration surface is requested.",
+      "assertions": [
+        "semantic-reuse-boundary",
+        "minimum-sufficient-structure",
+        "implementation-ready-boundary"
+      ],
+      "additional_requirement": "Use the existing shared owner and cover both known paths; do not preserve inconsistent duplicated policy merely to minimize the diff."
     }
   ]
 }

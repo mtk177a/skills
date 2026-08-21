@@ -39,6 +39,7 @@ Structured output cases remain optional. Add `evals.json` only if repeated execu
 | Retired implementation-scoping handoff | A former `scope-implementation` request has no successor or routes directly to editing | `implementation-scope-handoff` | Observable Skill loads |
 | Proportional local correction | Adds speculative abstraction to a defect whose cause and affected behavior are local | D | Requirements 1–4 |
 | Coherent structural correction | Minimizes the diff while leaving a confirmed shared cause or known path unresolved | E | Requirements 1–5 |
+| Semantic reuse boundary | Consolidates code from syntax alone or preserves independent implementations of one current invariant | F and `shared-current-invariant` in `evals.json` | Requirements 1–4 and assigned assertions |
 | Planned reviewer context | Omits criticality, exposure, trade-offs, recovery, or review focus, or turns unknown context into a low-risk claim | `reviewer-context-with-unknown-criticality` in `evals.json` | Assigned assertions |
 
 ## Behavioral scenarios
@@ -107,6 +108,20 @@ Requirements checklist:
 4. Explain why the local alternative is insufficient and what remains unchanged
 5. Map both paths and the shared behavior to verification without unrelated scope expansion
 
+### Scenario F: Similar code implements separate contracts
+
+A request parser and audit formatter contain the same string operations, but one
+implements a public protocol-token contract and the other produces display-only
+labels. No shared domain rule, invariant, consumer contract, or expected joint
+evolution is established.
+
+Requirements checklist:
+
+1. [critical] Do not infer a shared responsibility or abstraction from source-code similarity alone
+2. Keep both current contracts independently changeable
+3. Prefer the small local duplication to a generic helper that solves no current problem
+4. Preserve focused verification for both contracts
+
 ## Execution protocol
 
 1. For the recorded full behavior run, use baseline commit `42ebd18cb2406d1cfcbeb34cd289fd620c8e4f9b`. For the 2026-07-28 routing migrations, use the pre-merge catalog at commit `33c9d95641d816ba3957e5a6045141e3d451b753`. Never substitute moving `HEAD` when reproducing recorded evidence; use the working-tree Skill only as the candidate under evaluation.
@@ -130,6 +145,7 @@ Requirements checklist:
 - `readability plan split by local diff instead of reader understanding`
 - `local defect expanded into speculative architecture`
 - `smallest diff leaves confirmed shared cause unresolved`
+- `source similarity mistaken for shared knowledge or responsibility`
 - `planned reviewer context omitted from implementation handoff`
 - `unknown criticality inferred as low risk`
 
@@ -163,3 +179,11 @@ Requirements checklist:
 - Added a producer case for carrying planned reviewer context, preserving unsupported criticality as `Unknown`, and omitting irrelevant fields rather than inventing them.
 - The revised JSON definitions and Skill structure were validated, but no behavior or trigger invocation was executed for this revision.
 - The earlier pass totals are historical evidence and are superseded for the changed implementation-handoff contract.
+
+## Minimum-sufficient-design revision — 2026-08-21
+
+- Affected responsibility: distinguish incidental code similarity from one shared current responsibility while preserving the existing coherent structural-correction behavior.
+- Selected path: matched baseline and candidate checks for `incidental-code-similarity` and `shared-current-invariant`, because this revision changes a subjective quality contract. Unrelated routing and reviewer-context cases are not selected.
+- Initial execution attempt with Codex CLI 0.147.0, `gpt-5.6-luna`, and max reasoning did not execute because the client returned `401 Unauthorized`; it is not pass evidence.
+- Deterministic JSON parsing, repository validation, candidate hash checks, and any later successful targeted execution are recorded in [`results.json`](results.json).
+- Untested boundary: behavior on other models and clients remains unverified.

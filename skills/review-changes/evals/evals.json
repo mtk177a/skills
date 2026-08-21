@@ -90,6 +90,11 @@
       "statement": "Reports excess complexity or an overly narrow correction only from concrete current requirements, observed risks, affected paths, and maintenance or behavioral consequences rather than architectural preference."
     },
     {
+      "id": "justified-shared-structure",
+      "critical": true,
+      "statement": "Does not criticize an abstraction or consolidation merely because local duplication would be shorter when current evidence establishes a shared responsibility, invariant, or contract and no concrete unsupported cost is introduced."
+    },
+    {
       "id": "reviewer-context",
       "critical": true,
       "statement": "Uses supplied purpose, criticality, scope, exposure, trade-offs, recovery controls, verification, and review focus with their evidence state, and does not treat missing context as low risk."
@@ -275,6 +280,43 @@
         "context": "The current specification applies the same normalization invariant to signup and invite. normalize_email is the established shared owner, and invite.py currently calls only strip()."
       },
       "additional_requirement": "Identify the known inconsistent path and shared cause; do not base the finding on diff size or extraction preference alone."
+    },
+    {
+      "id": "incidental-duplication-abstraction",
+      "title": "Generic helper couples separate contracts to remove similar lines",
+      "input": "Review this change as a new code review. A request parser and an audit formatter happen to trim, replace underscores, and lowercase strings, but they implement separate current contracts and do not need to evolve together. The diff introduces a generic normalize_text helper used by both solely to remove the duplicated lines. The helper makes changes to either contract affect the shared implementation and both test paths; no current requirement or observed risk justifies that coupling. Report only material findings with the complete finding contract, checks, unchecked scope, and residual risk. Do not edit files.",
+      "assertions": [
+        "contextual-evidence",
+        "finding-contract",
+        "complexity-balance",
+        "checks-vs-suggestions",
+        "read-only-review"
+      ],
+      "fixture": {
+        "type": "inline",
+        "diff": "parser.normalize_token and formatter.display_label replace their local string operations with calls to a new shared normalize_text helper",
+        "context": "The parser and formatter have separate current contracts. The only demonstrated reason for sharing the helper is syntactically similar code."
+      },
+      "additional_requirement": "Identify the concrete maintenance coupling without treating duplicate lines themselves as a defect or inventing an unsupported runtime impact."
+    },
+    {
+      "id": "justified-shared-invariant",
+      "title": "Existing owner consolidates one current invariant",
+      "input": "Review this change as a new code review. The current specification requires signup and invite to apply the same email canonicalization rule. Their previous inline implementations differed and caused an observed inconsistency. The diff moves the rule into the existing canonicalize_email owner and updates both entry points to call it. It adds no interface, registry, configuration, dependency, compatibility layer, or future extension point. Focused tests for both paths pass. Report only material findings, checks, unchecked scope, and residual risk. Do not edit files.",
+      "assertions": [
+        "contextual-evidence",
+        "complexity-balance",
+        "justified-shared-structure",
+        "checks-vs-suggestions",
+        "no-invented-findings",
+        "read-only-review"
+      ],
+      "fixture": {
+        "type": "inline",
+        "diff": "signup.py and invite.py replace different inline canonicalization rules with calls to the existing canonicalize_email owner; focused tests for both paths are added",
+        "context": "Both entry points implement the same current specification. The shared owner already exists, the previous duplication was observably inconsistent, and the diff adds no extension mechanism."
+      },
+      "additional_requirement": "Do not criticize the shared owner or consolidation merely because duplicated local code would be shorter, and do not invent a finding when no concrete consequence is supported."
     },
     {
       "id": "low-criticality-expensive-edge-case",

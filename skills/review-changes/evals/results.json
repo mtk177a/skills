@@ -2,22 +2,23 @@
   "schema_version": 3,
   "skill": "review-changes",
   "candidate": {
-    "accepted_on": "2026-08-14",
+    "accepted_on": "2026-08-21",
     "evidence_status": "unverified",
-    "evidence_summary": "Behavior and trigger execution is unverified for this accepted revision; only the recorded JSON parsing and candidate file hash checks were completed. Incomplete historical targeted evidence is retained separately without a pass claim.",
+    "evidence_summary": "The selected minimum-sufficient-review behavior comparison was attempted but did not execute because Codex CLI authentication returned 401 Unauthorized; only deterministic JSON parsing, repository validation, and candidate file hash checks were completed. Historical evidence is retained separately without a pass claim for the changed responsibility.",
     "files": {
-      "SKILL.md": "sha256:c15f9c2295820ad5c8802415bc559d633556bb76ef84a2c977cff67be91e9e7b",
-      "SKILL-ja.md": "sha256:445849a8989819ea41c3703a1c15d93dfcf692548e6f4a3225bebe8ef6027c88",
-      "evals/evals.json": "sha256:5377a50967d040b73380eacc8f9f5f6e1441105558b385f3d106991eaf3f7ff0",
+      "SKILL.md": "sha256:900a0143fabccf514ce6146d3c4e186b332497bd548a3a4557b9f7d6e6c07deb",
+      "SKILL-ja.md": "sha256:42789b802efc5b233d064409d61dc951ae7171b504db4b1895889cd3a3a0a7e6",
+      "evals/evals.json": "sha256:8d2af36f29c6386ca6f78494f3c00e5e42a5a21dd56d8463c727291fda55b0ba",
       "evals/triggers.json": "sha256:1a8cbf2caf5666e09d52131b1f01b0317c514c2ab1405b8a0e01b621fc8ce6e1"
     },
-    "previous_evidence_status": "Superseded for the changed trigger, proportionality, re-review-origin, output-contract, and actionable-draft handoff requirements; historical evidence remains reusable only for explicitly unchanged requirements.",
+    "previous_evidence_status": "Superseded for the changed justified-shared-structure requirement; historical evidence remains reusable only for explicitly unchanged requirements.",
     "executed": [
       "Parsed this results.json with the standard Python JSON parser.",
-      "Recalculated every candidate.files SHA-256 value from the accepted repository files and confirmed exact matches."
+      "Recalculated every candidate.files SHA-256 value from the accepted repository files and confirmed exact matches.",
+      "Ran python3 scripts/check_repository.py successfully for the accepted repository revision."
     ],
     "unverified": [
-      "Full behavior and trigger suites for this revision",
+      "Matched baseline and candidate behavior for incidental-duplication-abstraction and justified-shared-invariant",
       "Repeated stochastic runs and clients other than the recorded Codex invocation"
     ]
   },

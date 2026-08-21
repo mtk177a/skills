@@ -33,6 +33,7 @@ license: MIT
 2. 既存構造を確認し、変更が影響し得る entry point、主要 branch、ownership boundary、現在の verification path を特定する。
 3. 差分を最小化する前に、確認済みの原因と現在の要件を完全に扱う、最小で一貫した boundary を特定する。影響する責務、invariant、contract、既知の実行経路から導出し、明示的な non-target と、影響する interface、module、data、configuration、dependency、consumer を示す。
    確認済みの現在の evidence が変更を必要としない限り、既存の公開 input、signature、受け入れる呼び出し形式を維持する。missing や omitted などの語が、既存の sentinel value と新しい呼び出し形式のどちらも意味し得る場合は、推測で interface を広げず、現在の contract と観測済み caller から区別する。
+   source code の類似だけから共有 boundary を推論しない。同じ現在の知識、責務、invariant、contract であることを evidence が示す場合は挙動を統合し、それ以外では早すぎる、または誤った abstraction より小さな局所重複を優先する。
 4. その boundary で局所修正が成立するか、構造的修正が必要かを判断する。確認済みの原因を残す、既存規則を重複させる、確立済みの責務 boundary を迂回する、既知の経路間で挙動を不整合にする、既知の追随修正を必要とする場合は、変更行数が少ないことだけを理由に局所 patch を選ばない。
 5. 不確実性、coupling、手戻りコストのため判断に必要な場合だけ、選んだ変更と構造的に異なる代替案を比較する。構造的修正が必要な場合は、局所案が不十分な理由、回復する現在の責務または invariant、影響する contract、変更しないものを説明する。
 6. abstraction、dependency、configuration surface、compatibility path、process、service、deployment unit を追加する場合は、それが解決する現在の問題、その問題が存在するか近い将来の要件として合意済みである evidence、検討した単純な代替案、その代替案が不十分な理由、継続的な maintenance または operational cost を記録する。現在必要な作業と任意の将来改善を分ける。
@@ -49,6 +50,7 @@ license: MIT
 - 確認済みの原因と現在の要件を完全に扱い、確立済みの boundary を保つ、最小で一貫した変更を優先する。十分な boundary を定めた後にだけ付随的な複雑性を最小化する。
 - 実証済みの failure が構造変更を必要としない限り、既存 style と design を維持する。
 - 推測上の将来の柔軟性を複雑性の根拠にせず、現在の evidence が必要性を示す構造的修正を差分量だけで退けない。
+- design principle は、現在の責務、contract、置換可能性、interface、dependency の問題を明確にするためだけに使う。principle への適合自体を目的として構造を追加しない。
 - downstream consumer が必要とする場合だけ厳密な output template を使い、それ以外は変更に適した構造で必要情報を報告する。
 - impact と不確実性から、static check、targeted regression、反復的 empirical evaluation のいずれかを選ぶ。普遍的な test、scenario、alternative、run の件数を設けない。
 - material な operational、data、security、external-state、irreversibility、recovery risk が通常の implementation handoff を超える execution-readiness control を必要とする場合は `assess-risky-change-readiness` を使う。
