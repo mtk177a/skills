@@ -42,7 +42,8 @@ Do not add client-specific metadata to every Skill merely because a client suppo
 
 The table preserves representative observations from recorded repository checks, not support claims inferred from documentation.
 It is not a current or exhaustive inventory of later Skill-level evaluations.
-Later client versions, dates, and scenario scopes remain recorded in each Skill's `evals/README.md` and optional `results.json`; see [evaluation.md](evaluation.md) for those evidence responsibilities.
+Record later Skill-level behavior results in the relevant Skill evaluation assets under the path-dependent evidence responsibilities in [evaluation.md](evaluation.md).
+When that evidence supports a client-specific compatibility state, include the relevant client version, date, and scenario scope.
 
 | Target | Version | Verified date | Observed scope |
 | --- | --- | --- | --- |
