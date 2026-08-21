@@ -299,9 +299,9 @@ Before writing scenarios, perform a static Iter 0 check:
 4. Critical requirements are identified only where violating them should fail the scenario
 5. The affected claims and changed behavior are mapped to plausible failures and grading methods
 
-If executable behavior and responsibility boundaries are unaffected, stop after
-deterministic validation. Otherwise, only after Iter 0 passes should you
-formalize the selected scenarios in `evals/README.md`.
+If executable behavior, discovery, and responsibility boundaries are unaffected,
+stop after deterministic validation. Otherwise, only after Iter 0 passes should
+you formalize the selected scenarios in `evals/README.md`.
 
 ## Baseline comparison
 
