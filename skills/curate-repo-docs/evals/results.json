@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "skill": "curate-repo-docs",
   "evaluated_on": "2026-07-31",
   "environment": {
@@ -118,6 +118,79 @@
     ],
     "evidence_reuse": "After a full rerun exposed two validation-reporting errors in the incomplete-runbook case, the reporting rule was strengthened and that candidate case was rerun against the same no-Skill result. The corrected candidate passed all assigned assertions. The final full routing rerun passed all cases."
   },
+  "targeted_evaluations": [
+    {
+      "id": "issue-11-focused-command-update",
+      "evaluated_on": "2026-08-21",
+      "claim": "The current Skill can make the smallest evidence-backed documentation update and report only validation supported by its command trace.",
+      "candidate_revision": {
+        "repository_commit": "23a646445fe88622c9a6260815e3f7c3408d7c68",
+        "files": {
+          "SKILL.md": "sha256:079532d7cc2a8a4d4e9c9a6dd264768c603913bdcf950a1efe33a526823ed30c",
+          "references/document-kinds.md": "sha256:e31219a939e5d325060fc45764edc35bf5924fd06efd1185900a0b50c93c83df",
+          "references/repository-writing.md": "sha256:bc58ad1cf89c2a102e29c053b4b79b2c00420ddc5b0bfc84d4c611d5f66d9bc7"
+        }
+      },
+      "selection": {
+        "path": "targeted_candidate_only",
+        "case": "focused-command-update",
+        "rationale": "This case directly exposes the affected documentation selection, evidence, scope, validation, and reporting responsibilities.",
+        "stopping_rationale": "The candidate passed without a known regression, redesign, unstable observation, target-environment claim, or ambiguous result that could make baseline, routing, repetition, another model, or an LLM grader decision-relevant."
+      },
+      "environment": {
+        "client": "Codex CLI 0.149.0-alpha.4",
+        "model": "gpt-5.6-luna",
+        "reasoning_effort": "max",
+        "sandbox": "workspace-write limited to a disposable Git repository under /tmp",
+        "fixture_commit": "96b2e2e67a50824bc13632002a067a1e6f1360eb"
+      },
+      "execution": {
+        "executor_calls": 1,
+        "selector_calls": 0,
+        "llm_grader_calls": 0,
+        "invalid_client_initializations": 1,
+        "invalid_initialization_evidence": "The first outer-sandbox launch failed while opening the Codex state DB, before executor work or a model call began; the fixture remained unchanged.",
+        "exposed_usage": {
+          "input_tokens": 197202,
+          "cached_input_tokens": 175104,
+          "output_tokens": 2804,
+          "reasoning_output_tokens": 1637
+        },
+        "raw_artifacts": "Prompt, response, JSONL, command trace, and disposable repository remained outside the source repository under /tmp."
+      },
+      "grading": {
+        "deterministic_checks": [
+          "Only README.md changed.",
+          "The diff replaced only make serve with make dev and preserved the readiness criterion and Architecture section.",
+          "The command trace showed make dev exiting successfully and printing listening on :8080.",
+          "git diff --check passed."
+        ],
+        "maintainer_review": {
+          "documentation_impact_decision": "pass",
+          "evidence_bounded_claims": "pass",
+          "reader_task_completeness": "pass",
+          "minimal_authorized_diff": "pass",
+          "validation_integrity": "pass",
+          "concise_evidence_report": "pass"
+        },
+        "verdict": "pass"
+      },
+      "cost_demonstration": {
+        "selected_executor_selector_calls": 1,
+        "prior_broad_shape_executor_selector_calls": 27,
+        "avoided_executor_selector_calls": 26,
+        "historical_llm_grader_calls": "not exposed",
+        "interpretation": "This is avoided evaluation work, not a token-equivalent quality comparison or evidence that Luna and Sol behave identically."
+      },
+      "unverified": [
+        "the other five behavior cases and all routing cases in this targeted demonstration",
+        "Claude Code, GitHub Copilot, Gemini CLI, and other clients",
+        "other models and reasoning settings",
+        "repeated-run stability",
+        "live repositories and external documentation systems"
+      ]
+    }
+  ],
   "unverified": [
     "Claude Code, GitHub Copilot, Gemini CLI, and other compatible clients",
     "other models and reasoning settings",
