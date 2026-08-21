@@ -90,10 +90,16 @@ need for more structure.
 
 ## Evidence reuse
 
-Treat prior evidence as a reuse candidate only when the evaluated responsibility
-and the relevant content are unchanged. The execution and evidence policy
-determines whether that evidence is applicable and how to represent its state.
-Do not rerun unrelated evidence merely to refresh a passing appearance.
+Reuse prior evidence only when the evaluated content, responsibility,
+environment relevance, and requirement remain applicable. Bind new targeted
+evidence to the revision that was actually evaluated. When current content
+changes, identify which prior requirements remain applicable instead of treating
+an earlier pass as evidence for the whole candidate.
+
+Preserve a historical result separately only when it still informs a current
+decision and Git history is insufficient. Otherwise, rely on Git history. Do not
+rerun unchanged evidence merely because another part of a Skill changed or to
+refresh a passing appearance.
 
 ## Evaluation assets per Skill
 
@@ -159,24 +165,28 @@ Keep executor inputs separate from grading criteria. A scenario may include evid
 
 Use this optional asset when aggregate counts in the README are not enough to audit an executed revision after temporary artifacts are removed. Record:
 
-- the immutable baseline commit or content hash and candidate file hashes
-- client, model, reasoning, date, normalized invocation, and verdict aggregation policy
-- a compact case-by-requirement matrix with baseline and candidate verdicts and supporting evidence
-- observable trigger results, deterministic fixture checks, and unverified items
+- the claim or change being checked and the evaluated candidate revision
+- the selection path, stopping rationale, executed checks or cases, results, and supporting evidence
+- client, model, and reasoning when an LLM was executed
+- the unverified scope that limits the conclusion
+- baseline identity and matched conditions only when comparison was executed
 
 Do not store raw traces, full responses, credentials, or environment-specific absolute paths in this file. Link it from the corresponding README result summary.
 
 Treat `results.json` as the compact evidence for the currently accepted Skill revision. Update it in place rather than adding a dated file for every execution. Fold reruns and corrections for the same candidate into the same record. Git history preserves each accepted result together with the Skill source it evaluated.
 
-In schema version 3 records, `candidate` identifies the source and evaluation-definition files currently accepted in the repository. Acceptance identifies the repository revision; it does not by itself mean that behavior or triggering was executed or passed. Record the candidate's evidence state explicitly, such as `unverified` or `targeted_only`, and list the checks that were and were not executed.
+Acceptance identifies the repository revision; it does not by itself mean that
+behavior or triggering was executed or passed. A pass applies only to the
+evaluated revision and to unchanged requirements whose continuing applicability
+is explicit. When the accepted Skill source changes, update `results.json`, mark
+affected evidence as `superseded` or `unverified`, or remove the file. Do not
+infer missing provenance or leave hashes and pass claims that imply an old
+candidate is the current source.
 
-An evaluated revision is the immutable set of file hashes, baseline, environment, and execution evidence for content that was actually run. Keep a superseded full-suite result under `historical_full_evaluation`, including its original evaluated-revision hashes and pass claims. Keep later targeted evidence in separately hash-bound records. A pass applies only to its evaluated revision and to unchanged requirements whose applicability is identified explicitly; it does not establish that a different current candidate passes.
-
-Retain a historical targeted observation that lacks required baseline, environment, or execution provenance under `historical_targeted_evidence` with `status: incomplete_provenance`. List every missing provenance field and use `claim_status: no_pass_claim`; incomplete provenance is not evaluated-revision pass evidence and cannot establish `targeted_only` for the accepted candidate. Do not infer missing metadata. When a recorded temporary candidate hash cannot be reproduced from Git, retain the hash with `snapshot_availability: not_retained` instead of claiming that the snapshot remains available.
-
-When the accepted Skill source changes, update `results.json`, mark the affected evidence as superseded or unverified, or remove the file. Do not leave hashes or pass claims that imply the old candidate was the current source. Reuse prior evidence only when the unchanged requirement and evaluated content can be identified explicitly.
-
-Retain a separately named historical result only when it remains necessary for a current decision and Git history is insufficient—for example, an incomparable client or evaluation method, a known regression that must remain directly reproducible, or an external audit requirement. Document its purpose and removal condition in the README. Do not retain or delete result files to satisfy a fixed count.
+This repository does not require a common result schema. Preserve an existing
+local schema when it remains useful, but record only fields that apply to the
+selected evaluation path. Do not require baseline, comparison matrices, trigger
+rates, usage metrics, or grader calls for a candidate-only result.
 
 ## Example evals/README.md structure
 
@@ -231,6 +241,26 @@ Requirements checklist:
 
 There is no repository-wide `/eval` command or required external framework. Record the exact command, script, client workflow, or manual procedure used for each runnable suite. Add a wrapper only when it makes repeated execution materially more reproducible.
 
+Use deterministic repository checks, fixture state, exact output fields, hashes,
+traces, or another objective observation without an LLM whenever they resolve
+the selected requirement.
+
+For routine model-independent behavior that requires model execution, use Codex
+with `gpt-5.6-luna` and max reasoning as the reference environment. Start with
+one candidate run for each selected case. This is a low-cost reference
+environment, not a support matrix or evidence for another model or client.
+
+When the accepted claim materially depends on another model or client, execute
+the selected case directly in that target environment. Examples include an
+explicit support claim, an environment-specific failure, or client-specific
+discovery, permissions, tools, hooks, or runtime behavior. Do not require a Luna
+preflight before target-environment execution.
+
+If a Luna run fails or is ambiguous, first determine whether it already exposes
+an instruction or fixture defect. Escalate to another model only when
+distinguishing Skill failure from model limitation can change acceptance. Do not
+treat a Luna pass or failure as evidence for unexecuted models or clients.
+
 Run behavioral evaluations with a blank-slate executor: an agent or client session that starts without repository history and receives only the Skill and inputs required by the scenario.
 
 **Blank-slate executor protocol:**
@@ -246,9 +276,16 @@ Select only the applicable configurations:
 - **Isolation:** the target Skill without adjacent Skills that could mask a gap
 - **Coexistence:** the target Skill with adjacent Skills or instruction surfaces when a plausible trigger, authority, or workflow conflict exists
 
-Record an unavailable observation as `not exposed` and a skipped run as `not executed`. Neither status counts as a pass.
+Use the first sufficient grading method:
 
-Prefer deterministic checks for objective outcomes and a separate grader or reviewer for judgment-heavy requirements. Executor self-report can help diagnose confusion, but it is not sufficient as the only pass/fail evidence. Define how per-run and per-case verdicts aggregate before execution.
+1. deterministic assertions for objective requirements
+2. direct maintainer review against a short rubric for judgment-heavy requirements
+3. a separate blank-slate LLM grader only when repeatable or independent model judgment is materially useful
+
+An LLM grader is optional and does not need to be stronger than the executor by
+default. Keep hidden answers and grading criteria out of the executor input.
+Executor self-report can help diagnose confusion, but it is not sufficient as
+the only evidence for an independently observable requirement.
 
 This approach is inspired by the empirical prompt-tuning methodology described in [mizchi/skills](https://github.com/mizchi/skills). See `THIRD_PARTY_NOTICES.md`.
 
@@ -276,12 +313,16 @@ is described as significant.
 
 When comparison is selected, use the previous version or the no-Skill condition,
 whichever represents the decision being made. Identify the baseline with a
-commit, content hash, or retained snapshot. Use the same task inputs, client,
-model, reasoning settings, environment, and grading policy for both sides.
+commit, content hash, or retained snapshot. Use the same task inputs, fixture,
+client, model, reasoning settings, sandbox, and grading policy for both sides.
 
 Check coexistence only where adjacent surfaces could mask a gap or compete with the changed behavior. Historical benchmarks may be retained for context, but the default regression baseline is the immediately preceding behavior.
 
 When a target model or client is unavailable, record `not executed`. A new paired baseline/candidate run on an available target may be added, but must not be merged silently with results from a different environment.
+
+Start with one observation for each selected condition. Repeat only after an
+unstable result, conflicting evidence, a defective run, or a material failure
+consequence makes another observation useful for the acceptance decision.
 
 ## Stopping rule
 
@@ -296,15 +337,28 @@ Continue or deepen evaluation when a requirement is ungraded, results conflict, 
 
 ## Result metadata and artifact handling
 
-When behavioral evaluation is executed and a result record is needed, record:
+Record the minimal evidence needed to bound the accepted conclusion:
 
-- client, model, reasoning settings, and date
-- run count and trigger rate
-- assertion results with supporting evidence
-- the coverage map and verdict aggregation rule
-- isolation and coexistence configuration
-- token and duration values when the client exposes them
-- `not executed` and `not exposed` items
+- the claim or change being checked
+- the selection path and stopping rationale
+- the checks or cases executed and their results
+- client, model, and reasoning when an LLM was executed
+- the unverified scope that limits the conclusion
+- baseline identity and matched conditions only when comparison was executed
+
+Record token counts, model calls, turns, tool calls, or duration only when the
+client exposes them and they are used in the current cost or acceptance decision.
+Do not invent unavailable data.
+
+Use these plain evidence states where applicable without introducing a
+repository-wide state machine:
+
+- `not executed`: a check was skipped or unavailable
+- `not exposed`: the client did not expose the observation
+- `unverified`: the accepted claim lacks applicable evidence
+- `superseded`: later content or evidence replaced the earlier claim
+
+None of these states is a pass.
 
 Store raw JSONL, authentication material, and full session logs only in a temporary directory outside the repository or in a retention-controlled CI artifact. Do not commit credentials, raw sessions, or unredacted traces. Keep the compact evidence for the currently accepted revision in `results.json`; use Git history to audit earlier accepted claims together with the Skill source that produced them.
 

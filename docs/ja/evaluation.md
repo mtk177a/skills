@@ -60,7 +60,9 @@
 
 ## 証拠の再利用
 
-評価済みの責務と関係する内容が変わっていない場合だけ、過去の証拠を再利用候補とします。実行・証拠方針が、その証拠を実際に適用できるか、状態をどう表すかを判断します。合格状態を更新するだけの目的で、無関係な証拠を再実行しません。
+評価済みの内容、責務、環境との関係、要件が引き続き適用できる場合だけ、過去の証拠を再利用します。新しい対象限定の証拠は、実際に評価した revision へ結び付けます。現在の内容が変わった場合は、以前の合格を候補版全体の証拠とせず、どの過去要件が引き続き適用できるかを特定します。
+
+現在の判断に引き続き必要で、Git 履歴だけでは不十分な場合に限り、過去の結果を別に保持します。それ以外は Git 履歴を利用します。Skill の別の部分が変わったという理由や、合格状態を更新するだけの目的で、変更されていない証拠を再実行しません。
 
 ## Skill ごとの評価資産
 
@@ -121,24 +123,19 @@ client が公開する evidence だけを trigger 判定に使います。Skill 
 
 README の集計だけでは、一時 artifact の削除後に実行済み revision を監査できない場合に、この任意 asset を使います。次を記録します:
 
-- 変更されない baseline commit または content hash と candidate file hash
-- client、model、reasoning、date、正規化した invocation、判定集約 policy
-- baseline/candidate の verdict と根拠を含む簡潔な case-by-requirement matrix
-- 観測可能な trigger result、deterministic fixture check、未確認事項
+- 確認する claim または変更と、評価した候補版 revision
+- 選択した経路、終了理由、実行した検査またはケース、結果、根拠
+- LLM を実行した場合の client、model、reasoning
+- 結論を限定する未検証範囲
+- 比較を実行した場合だけ、baseline の識別情報と一致させた条件
 
 raw trace、完全な response、credential、環境固有の absolute path はこのファイルへ保存しません。対応する README の結果要約から link します。
 
-`results.json` は、現在採用中の Skill revision に対する簡潔な evidence として扱います。実行ごとに日付付きファイルを追加せず、同じ candidate の再実行や修正結果を1つの record へ統合して更新します。過去に採用した result は、評価対象の Skill source とともに Git 履歴で保持します。
+`results.json` は、現在採用中の Skill revision に対する簡潔な evidence として扱います。実行ごとに日付付きファイルを追加せず、同じ candidate の再実行や修正結果を 1 つの record へ統合して更新します。過去に採用した result は、評価対象の Skill source とともに Git 履歴で保持します。
 
-schema version 3 の record では、`candidate` はリポジトリで現在採用している source file と評価定義 file を特定します。採用とはリポジトリ上の revision を特定することであり、それだけでは behavior または trigger を実行して合格したことを意味しません。`unverified` や `targeted_only` などの evidence state と、実行済み・未実行の check を明示します。
+採用とはリポジトリ上の revision を特定することであり、それだけでは behavior または trigger を実行して合格したことを意味しません。pass は、評価した revision と、引き続き適用できることを明示した未変更の requirement だけに適用します。採用中の Skill source が変わった場合は、`results.json` を更新するか、影響を受ける evidence を `superseded` または `unverified` と明示するか、ファイルを削除します。欠けている provenance を推測して補わず、古い candidate が現行 source であると誤解させる hash や pass claim を残しません。
 
-evaluated revision は、実際に実行した content の immutable な file hash、baseline、environment、execution evidence の集合です。置換済みの full-suite result は、元の evaluated-revision hash と pass claim を含めて `historical_full_evaluation` に保持します。後続の targeted evidence は、それぞれ hash と結び付いた別の record に保持します。pass は、その evaluated revision と、適用可能であることを明示した未変更の requirement だけに適用します。異なる現行 candidate 全体の合格を意味しません。
-
-必要な baseline、environment、execution provenance が欠けている過去の targeted observation は、`status: incomplete_provenance` を付けて `historical_targeted_evidence` に保持します。欠けている provenance field をすべて列挙し、`claim_status: no_pass_claim` とします。不完全な provenance は evaluated-revision pass の evidence ではなく、採用中の candidate に `targeted_only` を設定する根拠にもなりません。欠けている metadata を推測して補いません。記録済みの一時 candidate hash を Git から再現できない場合は、snapshot が現在も利用可能だと主張せず、hash を `snapshot_availability: not_retained` とともに保持します。
-
-採用中の Skill source が変わった場合は、`results.json` を更新するか、影響を受ける evidence を superseded または unverified と明示するか、ファイルを削除します。古い candidate が現行 source であると誤解させる hash や pass claim を残しません。以前の evidence を再利用する場合は、変更されていない requirement と評価済み content を明示的に特定できることを条件とします。
-
-現在の判断に引き続き必要で、Git 履歴だけでは不十分な場合に限り、過去の result を別名で保持します。たとえば、比較不能な client または評価方式、直接再現できる状態を保つ必要がある既知の regression、外部監査要件です。その目的と削除条件を README に記録します。固定件数に合わせて result file を保持または削除しません。
+このリポジトリでは、共通の結果 schema を要求しません。既存のローカル schema が引き続き有用な場合は維持しますが、選択した評価経路に適用される項目だけを記録します。候補版だけの結果に、baseline、比較 matrix、trigger rate、利用量 metadata、grader 呼び出しを要求しません。
 
 ## evals/README.md の構成例
 
@@ -193,6 +190,14 @@ Requirements checklist:
 
 このリポジトリに共通の `/eval` command や必須の外部 framework はありません。各 runnable suite で使った正確な command、script、client workflow、manual procedure を記録します。反復実行の再現性が実質的に上がる場合だけ wrapper を追加します。
 
+選択した要件を、機械的なリポジトリ検査、fixture の状態、正確な出力項目、hash、trace、その他の客観的な観測だけで確認できる場合は、LLM を使いません。
+
+モデル実行が必要な通常のモデル非依存動作では、Codex、`gpt-5.6-luna`、max reasoning を基準環境として使います。選択した各ケースについて、候補版 1 回から始めます。これは低コストの基準環境であり、対応環境の一覧でも、別の model または client の証拠でもありません。
+
+受け入れる claim が別の model または client に実質的に依存する場合は、選択したケースをその対象環境で直接実行します。対象には、明示的な対応 claim、環境固有の不具合、client 固有の発見方法、権限、tool、hook、実行時動作が含まれます。対象環境で実行する前に、Luna の事前評価を要求しません。
+
+Luna の実行が失敗した場合、または結果が曖昧な場合は、まず、その結果だけで指示または fixture の不備が確認できるか判断します。Skill の失敗と model 能力の限界を区別することで受入判断が変わる場合だけ、別 model へ強化します。Luna の合格または失敗を、実行していない model や client の証拠として扱いません。
+
 behavioral evaluation は blank-slate executor で実行します。リポジトリの履歴を持たず、シナリオに必要な Skill と入力だけを受け取る agent または client session です。
 
 **Blank-slate executor protocol:**
@@ -208,9 +213,13 @@ behavioral evaluation は blank-slate executor で実行します。リポジト
 - **Isolation:** 不足を隠しうる隣接 Skill を有効にせず、対象 Skill を単独で評価する
 - **Coexistence:** 起こり得る trigger、authority、workflow の競合がある場合に、隣接 Skill や instruction surface と一緒に評価する
 
-観測できない項目は `not exposed`、実行しなかった項目は `not executed` と記録します。どちらも合格として扱いません。
+最初に十分となる採点方法を次の順で使います。
 
-客観的な結果には deterministic check を優先し、判断を要する requirement には executor と分離した grader または reviewer を優先します。executor の self-report は混乱の診断には使えますが、唯一の pass/fail 証拠にはしません。実行前に run 単位と case 単位の判定集約方法を定義します。
+1. 客観的な要件には機械的 assertion を使う
+2. 判断を要する要件には、短い rubric に基づく maintainer の直接レビューを使う
+3. 反復可能または独立した model 判断が実質的に有用な場合だけ、別の blank-slate LLM grader を使う
+
+LLM grader は任意であり、既定で executor より高性能な model である必要はありません。隠された正解と採点基準を executor の入力へ含めません。executor の self-report は混乱の診断には使えますが、独立して観測できる要件の唯一の証拠にはしません。
 
 このアプローチは、[mizchi/skills](https://github.com/mizchi/skills) に記載されている empirical prompt-tuning 手法を参考にしています。`THIRD_PARTY_NOTICES.md` を参照してください。
 
@@ -230,11 +239,13 @@ behavioral evaluation は blank-slate executor で実行します。リポジト
 
 相対的な証拠が受入判断を変え得る場合だけ、baseline 比較を実行します。対象は、既知の regression、大規模な再設計・分割・統合、主観的品質目標の変更、成功契約の変更、候補版だけでは曖昧な結果です。Skill が公開されていること、Skill 本文が変わったこと、または変更を大幅と表現できることだけを理由に baseline を実行しません。
 
-比較を選択した場合は、判断対象に応じて、前バージョンまたは Skill なしの状態を使います。baseline は commit、content hash、保持した snapshot のいずれかで特定します。両側で同じ task input、client、model、reasoning settings、environment、grading policy を使います。
+比較を選択した場合は、判断対象に応じて、前バージョンまたは Skill なしの状態を使います。baseline は commit、content hash、保持した snapshot のいずれかで特定します。両側で同じ task input、fixture、client、model、reasoning settings、sandbox、grading policy を使います。
 
 隣接 surface が不足を隠すか、変更した挙動と競合し得る場合だけ coexistence を確認します。historical benchmark は文脈として保持できますが、通常の regression baseline は直前の挙動です。
 
 対象 model または client が利用できない場合は `not executed` と記録します。利用可能な対象で新しい paired baseline/candidate run を追加できますが、異なる environment の結果を黙って統合しません。
+
+選択した各条件について 1 回の観測から始めます。不安定な結果、矛盾する証拠、実行不備、または重大な失敗影響により、追加観測が受入判断に有用となった場合だけ反復します。
 
 ## 停止規則
 
@@ -249,15 +260,25 @@ behavioral evaluation は blank-slate executor で実行します。リポジト
 
 ## 結果 metadata と artifact の扱い
 
-動作評価を実行し、結果記録が必要な場合は、次を記録します。
+受け入れる結論の範囲を限定するために必要な最小限の証拠を記録します。
 
-- client、model、reasoning 設定、date
-- run count と trigger rate
-- 根拠付きの assertion 結果
-- coverage map と判定集約規則
-- isolation と coexistence の構成
-- client が公開する場合は token と duration
-- `not executed` と `not exposed` の項目
+- 確認する claim または変更
+- 選択した経路と終了理由
+- 実行した検査またはケースと結果
+- LLM を実行した場合の client、model、reasoning
+- 結論を限定する未検証範囲
+- 比較を実行した場合だけ、baseline の識別情報と一致させた条件
+
+token 数、model 呼び出し数、turn 数、tool 呼び出し数、所要時間は、client が公開し、現在のコストまたは受入判断に使う場合だけ記録します。取得できないデータを推測しません。
+
+リポジトリ全体の状態機械を導入せず、必要に応じて次の単純な evidence state を使います。
+
+- `not executed`: 検査を省略した、または実行できなかった
+- `not exposed`: client が観測値を公開しなかった
+- `unverified`: 受け入れた claim に適用可能な証拠がない
+- `superseded`: 後の内容または証拠が以前の claim を置き換えた
+
+いずれの状態も pass ではありません。
 
 raw JSONL、認証情報、完全な session log は、リポジトリ外の一時ディレクトリまたは保持期間を制御した CI artifact だけに保存します。credential、raw session、未加工の trace を commit しません。現在採用中の revision に対する簡潔な evidence は `results.json` に残し、それ以前に採用した claim は、対応する Skill source とともに Git 履歴で監査します。
 
