@@ -46,8 +46,8 @@ client が対応しているという理由だけで、client 固有 metadata �
 
 次の表は、文書から推測した support claim ではなく、記録済みの repository check から選んだ観測結果を残すスナップショットです。
 後続の Skill 単位の評価について、最新状態または全件を示す一覧ではありません。
-後続の client version、日付、scenario scope は、各 Skill の `evals/README.md` と任意の `results.json` に記録します。
-証拠の責務は [evaluation.md](evaluation.md) を参照してください。
+後続の Skill-level behavior result は、[evaluation.md](evaluation.md) の選択経路に応じた証拠責務に従い、関係する Skill の評価 asset に記録します。
+その証拠を client 固有の compatibility state の根拠に使う場合は、関係する client version、日付、scenario scope を含めます。
 
 | 対象 | Version | 検証日 | 観測した範囲 |
 | --- | --- | --- | --- |
