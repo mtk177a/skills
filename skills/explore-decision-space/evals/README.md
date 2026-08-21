@@ -59,6 +59,28 @@ The three-way comparison ran on 2026-07-29 with Codex CLI 0.145.0, `gpt-5.6-sol`
 
 The accepted decision is to replace `diversify-agent-search` with `explore-decision-space`. See [`results.json`](results.json) for the case-by-requirement record and observable routing results.
 
+## Evidence reuse under the cost-bounded policy
+
+The replacement decision required relative evidence rather than an absolute
+candidate pass. The predecessor and no-Skill conditions could already produce
+acceptable results on several ordinary exploration cases, so adoption depended
+on showing a strict candidate improvement on the exhausted-anchor handoff
+without a critical regression against the better baseline. The recorded
+three-way comparison and focused rerun provide that decision-relevant evidence.
+
+The evidence is reused without another execution because the current
+`SKILL.md` hash (`sha256:ff674c337a5fd6d3c11581e2077c91e4dfcafa425c4e9a6921ee7306db85a273`),
+the evaluated responsibility, the decisive requirement, and the behavior
+fixtures remain those recorded in `results.json`. The comparison record remains
+immutable; this README addition documents the reuse decision and is not a new
+behavior result. Rerunning only to conform to the newer policy would not change
+acceptance.
+
+The reuse claim is limited to the recorded Codex CLI 0.145.0,
+`gpt-5.6-sol`, high reasoning, read-only sandbox, and evaluated candidate
+revision. It does not verify another client, model, reasoning setting, or a
+later change to the Skill body or decisive responsibility.
+
 ## Unverified
 
 - Claude Code and other clients

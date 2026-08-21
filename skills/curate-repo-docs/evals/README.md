@@ -8,7 +8,7 @@ Verify that `curate-repo-docs` decides whether repository documentation needs to
 
 - `triggers.json`: trigger, non-trigger, near-miss, and coexistence cases
 - `evals.json`: realistic repository tasks, synthetic fixtures, and hidden assertion assignments
-- `results.json`: compact no-Skill/candidate evidence for the accepted revision after execution
+- `results.json`: compact historical comparison evidence and revision-bound targeted evidence
 - this README: static contract, coverage, protocols, and summarized results
 
 ## Static check
@@ -37,7 +37,10 @@ Verify that `curate-repo-docs` decides whether repository documentation needs to
 | Trigger and coexistence | Loads for article writing, cold revision, diff review, research, design, or system audit | `triggers.json` | Observable Skill load |
 | Incremental value | Adds no material safety or scope improvement over ordinary model behavior | matched no-Skill and candidate cases | Case-by-requirement comparison |
 
-## Behavioral execution protocol
+## Historical comparison protocol
+
+The following protocol describes the accepted 2026-07-31 full comparison. It is
+preserved as historical evidence, not as the default path for later changes.
 
 1. Use no target Skill as the baseline and the working-tree Skill as the candidate.
 2. Run every condition in a separate disposable Git repository under `/tmp`.
@@ -55,7 +58,7 @@ Present each case as a Skill-selection task using only the installed names and d
 Require the selector to open every selected `SKILL.md`, and count only an observed file read.
 Record an unavailable observation as `not exposed`.
 
-## Acceptance rule
+## Historical comparison acceptance rule
 
 - Every candidate critical assertion and trigger case passes.
 - The candidate does not omit reader information required for correctness or safe task completion.
@@ -77,7 +80,65 @@ If the absolute requirements pass but no material baseline improvement is observ
 - `shortness removes a prerequisite, condition, or success criterion`
 - `an unexecuted check is reported as passing`
 
-## Current revision
+## Targeted policy demonstration — 2026-08-21
+
+### Selection record
+
+- **Affected claim:** the current Skill can make the smallest evidence-backed
+  documentation update and report only validation supported by its command
+  trace.
+- **Selected path:** targeted candidate-only behavior evaluation using
+  `focused-command-update`. The case directly exposes documentation-impact
+  selection, evidence-bounded claims, reader-task completeness, minimal edit
+  scope, validation integrity, and concise reporting.
+- **Why sufficient:** the Skill behavior and discovery boundary did not change,
+  and the policy demonstration asks whether the routine reference path can
+  produce sufficient scoped evidence. No known regression, redesign, unstable
+  observation, target-environment claim, or ambiguous candidate result required
+  comparison, routing, repetition, or another environment.
+- **Untested boundary:** triggering, the other five behavior cases, other models,
+  and other clients were not executed by this targeted demonstration. Their
+  existing evidence remains separate.
+
+### Execution and grading
+
+The candidate ran once with Codex CLI 0.149.0-alpha.4, `gpt-5.6-luna`, max
+reasoning, and workspace-write access limited to a disposable Git repository
+under `/tmp`. The executor received the canonical Skill, its two required
+references, the visible fixture, and the user request. Hidden assertions were
+not supplied.
+
+- The final diff changed only `README.md`, replacing `make serve` with
+  `make dev` in one line while preserving the readiness criterion and
+  Architecture section.
+- The command trace showed `make dev` exiting successfully and printing
+  `listening on :8080`; `git diff --check` also passed.
+- Direct maintainer review passed the documentation-impact decision,
+  evidence boundary, reader-task completeness, minimal-scope, validation, and
+  concise-reporting rubric.
+- The verdict was `pass`. No escalation condition was observed, so evaluation
+  stopped after the single candidate execution.
+- An earlier outer-sandbox launch failed while initializing the Codex state DB,
+  before executor work or a model call began. The unchanged fixture was then
+  used for the valid run outside that outer sandbox.
+
+### Cost and evidence scope
+
+- Executor calls: 1; selector calls: 0; LLM grader calls: 0.
+- The prior broad shape implies 27 executor or selector calls: six candidate
+  behavior runs, six no-Skill behavior runs, and fifteen routing runs. Selecting
+  one candidate executor call avoided 26 such calls.
+- The client exposed 197,202 input tokens, including 175,104 cached input
+  tokens, and 2,804 output tokens for the valid run. These values describe only
+  this run; they are not a token-equivalent quality comparison.
+- The result does not establish that Luna and Sol behave identically and does
+  not verify Claude Code, GitHub Copilot, Gemini CLI, another model or reasoning
+  setting, repeated-run stability, or live-repository behavior.
+
+See `results.json` for the revision binding, check results, stopping rationale,
+and unverified scope.
+
+## Historical comparison — 2026-07-31
 
 Evaluated on 2026-07-31 with Codex CLI 0.146.0, `gpt-5.6-sol`, high reasoning, workspace-write access limited to disposable synthetic repositories, and a read-only grader.
 
