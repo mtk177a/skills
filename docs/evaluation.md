@@ -2,19 +2,35 @@
 
 This document describes the evaluation approach used for Skills in this repository.
 
-## Evaluation principle
+## Evaluation selection principle
 
-Evaluation size follows behavioral coverage, not a universal case count.
+Select the least evidence needed to decide whether a change is acceptable. Start
+with deterministic repository validation. Add model-backed behavior evaluation
+only when executable behavior, discovery, or a responsibility boundary changes,
+and select only the cases that can expose the affected responsibility, a known
+regression, or a plausibly affected adjacent boundary.
 
-Before adding or removing scenarios, make a compact coverage map:
+A changed `SKILL.md` file does not by itself require behavioral evaluation.
+Public availability likewise does not require package-wide, model-matrix, or
+client-matrix evaluation.
 
-| Skill claim or change | Plausible failure | Scenario or check | Grading method |
-| --- | --- | --- | --- |
-| `<claimed behavior>` | `<observable failure>` | `<input and environment>` | `<deterministic check, rubric, or reviewer>` |
+Use this table to select the evaluation path:
 
-A suite is sufficient when every material responsibility, changed behavior, known regression, and relevant boundary has a way to fail visibly, and each retained scenario covers a distinct risk. Do not add scenarios to reach a target number or remove scenarios merely to stay below one.
+| Change shape | Selected path | Required coverage |
+| --- | --- | --- |
+| Documentation, formatting, meaning-preserving wording, or mechanical metadata that does not affect discovery | **Static-only** | Deterministic repository checks |
+| Localized instruction, output, safety, or other runtime-responsibility change | **Targeted candidate-only** | Only candidate cases that expose the changed responsibility, a known regression, or a plausibly affected adjacent boundary; run each selected case once initially |
+| `name`, `description`, invocation behavior, or adjacent Skill responsibility boundary changes | **Targeted routing or coexistence** | Only relevant should-trigger, should-not-trigger or near-miss, ambiguous, and coexistence cases |
+| Known regression, major redesign, split or merge, changed subjective-quality target, changed success contract, or ambiguous candidate-only result | **Baseline comparison** | Matched baseline and candidate evidence for the decision-relevant cases |
+| Observed instability, conflicting evidence, or a material failure consequence | **Repetition** | Only the additional observations needed to resolve the acceptance question |
+| Explicit environment-support claim, environment-specific failure, or client-specific discovery, permission, tool, hook, or runtime change | **Model/client-specific** | Direct evaluation in the affected environment only |
+| Distribution or catalog behavior changes | **Package evaluation** | The affected distribution or catalog checks, separate from routine Skill behavior evaluation |
 
-Official guidance sometimes uses three or 3–5 scenarios as an example or an organizational starting point. This repository does not treat those numbers as a universal minimum or maximum.
+Ordinary public Skill changes do not require a package, model, or client matrix.
+Evaluation size follows the selected behavioral coverage, not a universal case
+count. Official guidance sometimes uses three or 3–5 scenarios as an example or
+an organizational starting point; this repository does not treat those numbers
+as a universal minimum or maximum.
 
 ## Companion-Skill exceptions
 
@@ -25,7 +41,9 @@ validation; a documented relationship is not a general dependency mechanism.
 For an approved relationship, static validation confirms that the relationship,
 rationale, installation path, missing-companion behavior, provenance, and
 evaluation location agree across the registry and the affected Skill assets.
-Targeted behavioral evaluation covers both of these distinct risks:
+When the relationship or its runtime behavior changes, targeted behavioral
+evaluation may cover either or both of these distinct risks, according to what
+the change affects:
 
 - **Coexistence:** the dependent Skill reads the companion in the required
   order and preserves its applicable constraints.
@@ -33,19 +51,49 @@ Targeted behavioral evaluation covers both of these distinct risks:
   fallback behavior and gives the supported installation path without producing
   an unauthorized partial result.
 
-Re-run these checks when either Skill, the relationship, its installation path,
-or its missing-companion behavior changes. Do not treat the exception as proof
-that either Skill works independently of the documented relationship.
+Re-run only the checks that cover the changed Skill responsibility, relationship,
+installation path, or missing-companion behavior. Do not treat the exception as
+proof that either Skill works independently of the documented relationship.
 
 ## Choosing evaluation depth
 
-Use the least expensive level that can resolve the current uncertainty:
+Apply these rules in order:
 
-1. **Static validation:** use for every Skill change. Check metadata, internal consistency, self-containment or an approved companion relationship, references, boundaries, and output contract.
-2. **Targeted behavioral regression:** use when instructions, triggering, coexistence, safety behavior, or output requirements change. Run only the scenarios that cover the affected and adjacent risks.
-3. **Empirical prompt tuning:** use repeated baseline/candidate cycles when observed failures, high impact, unstable behavior, or a substantial redesign make iteration evidence worth the cost.
+1. Identify the affected claim or responsibility and whether executable behavior
+   or a discovery or responsibility boundary changes.
+2. If neither changes, run deterministic repository validation and stop.
+3. If runtime behavior changes, select only the affected candidate cases. Start
+   with one observation for each selected case.
+4. If discovery or a responsibility boundary changes, add only the relevant
+   routing, near-miss, ambiguous, or coexistence cases.
+5. Escalate to baseline comparison, repetition, model/client-specific evaluation,
+   or package evaluation only when the corresponding condition in the table can
+   change acceptance.
 
-A static check does not establish runtime behavior. A targeted regression does not establish behavior on untested clients or models. State those limits instead of expanding the suite mechanically.
+Do not add an unrelated core, capability, routing, or coexistence suite
+automatically. A static check does not establish runtime behavior, and a targeted
+regression does not establish behavior on untested clients or models. State those
+limits instead of expanding the suite mechanically.
+
+## Evaluation selection record
+
+Record only:
+
+- the affected claim or responsibility
+- the selected path and why it is sufficient
+- the selected cases or deterministic checks
+- any untested boundary that limits the acceptance claim
+
+Use the existing evaluation README or change record. Do not require a shared
+metadata schema for selection records unless repeated work later demonstrates a
+need for more structure.
+
+## Evidence reuse
+
+Treat prior evidence as a reuse candidate only when the evaluated responsibility
+and the relevant content are unchanged. The execution and evidence policy
+determines whether that evidence is applicable and how to represent its state.
+Do not rerun unrelated evidence merely to refresh a passing appearance.
 
 ## Evaluation assets per Skill
 
@@ -87,7 +135,11 @@ Use this optional asset for reusable:
 
 Choose trigger cases from actual responsibility boundaries and plausible false activations. Near-miss cases are useful when an adjacent Skill or similar request could reasonably compete; unrelated negative cases are optional controls, not required coverage.
 
-Do not use a universal repetition count or pass threshold. Repeat when stochastic variation, an unexpected result, model differences, or the consequence of a false activation makes another observation decision-relevant. When a fixed run count is used as a cost-bounded smoke test, record that rationale and do not present it as a statistical guarantee.
+Do not use a universal repetition count or pass threshold. Repeat only after an
+observed unstable result, conflicting evidence, or a material failure consequence
+makes another observation decision-relevant. When a fixed run count is used as a
+cost-bounded smoke test, record that rationale and do not present it as a
+statistical guarantee.
 
 Count a trigger only from evidence the client exposes. If Skill loading is not observable, record `not exposed`; do not infer a load event from output wording.
 
@@ -189,7 +241,7 @@ Run behavioral evaluations with a blank-slate executor: an agent or client sessi
 4. Capture the outcome and exposed trace without asking the executor to declare its own pass/fail result.
 5. Grade each applicable requirement and record evidence for the verdict.
 
-Evaluate both:
+Select only the applicable configurations:
 
 - **Isolation:** the target Skill without adjacent Skills that could mask a gap
 - **Coexistence:** the target Skill with adjacent Skills or instruction surfaces when a plausible trigger, authority, or workflow conflict exists
@@ -208,13 +260,24 @@ Before writing scenarios, perform a static Iter 0 check:
 2. Output format is defined or clearly implied
 3. The Skill is self-contained, or an approved companion relationship documents the required Skill and its missing-companion behavior
 4. Critical requirements are identified only where violating them should fail the scenario
-5. Material claims and changed behavior are mapped to plausible failures and grading methods
+5. The affected claims and changed behavior are mapped to plausible failures and grading methods
 
-Only after Iter 0 passes should you formalize scenarios in `evals/README.md`.
+If executable behavior and responsibility boundaries are unaffected, stop after
+deterministic validation. Otherwise, only after Iter 0 passes should you
+formalize the selected scenarios in `evals/README.md`.
 
 ## Baseline comparison
 
-When significantly revising a Skill, compare the candidate with the previous version or with no Skill if the previous version is unavailable. Identify the baseline with a commit, content hash, or retained snapshot. Use the same task inputs, client, model, reasoning settings, environment, and grading policy for both sides.
+Run a baseline comparison only when relative evidence can change acceptance: a
+known regression, a major redesign, split, or merge, a changed subjective-quality
+target, a changed success contract, or an ambiguous candidate-only result. Do not
+run a baseline merely because a Skill is public, its body changed, or the change
+is described as significant.
+
+When comparison is selected, use the previous version or the no-Skill condition,
+whichever represents the decision being made. Identify the baseline with a
+commit, content hash, or retained snapshot. Use the same task inputs, client,
+model, reasoning settings, environment, and grading policy for both sides.
 
 Check coexistence only where adjacent surfaces could mask a gap or compete with the changed behavior. Historical benchmarks may be retained for context, but the default regression baseline is the immediately preceding behavior.
 
@@ -224,16 +287,16 @@ When a target model or client is unavailable, record `not executed`. A new paire
 
 Stop expanding or rerunning an evaluation when:
 
-- every material claim, changed behavior, known regression, and relevant boundary has a grading path
+- every affected claim, changed behavior, known regression, and relevant boundary has a grading path
 - each retained scenario covers a distinct risk
 - observed results are stable enough for the decision being made, or remaining instability is explicitly reported
-- another run would not change the current design, rollout, or confidence judgment
+- another check or run would not change acceptance
 
 Continue or deepen evaluation when a requirement is ungraded, results conflict, a high-impact boundary remains untested, or the next run could distinguish competing explanations.
 
 ## Result metadata and artifact handling
 
-Record:
+When behavioral evaluation is executed and a result record is needed, record:
 
 - client, model, reasoning settings, and date
 - run count and trigger rate

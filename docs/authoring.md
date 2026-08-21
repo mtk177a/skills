@@ -180,9 +180,12 @@ When iterating on a Skill, manage evaluation assets alongside the content.
 
 - Skill-level scenarios and checklists go in `skills/<skill-name>/evals/`
 - Multi-Skill flow evaluations go in `docs/` (see `evaluation.md`)
+- First identify the affected responsibility and whether executable behavior or a discovery or responsibility boundary changes; follow the selection policy in `evaluation.md`
 - Start with Iter 0: statically check that `description` and body are consistent, that output format is defined, and that the Skill is self-contained or has an approved companion relationship
-- Before adding scenarios, map each material Skill claim or change to a plausible failure, a scenario that can expose it, and a grading method
-- Add a scenario only when it covers a distinct responsibility, boundary, coexistence risk, or known regression; do not target a universal scenario count
+- If executable behavior, discovery, and responsibility boundaries are unaffected, run deterministic repository validation and stop without adding behavioral scenarios
+- If runtime behavior changes, map only the affected claim or responsibility to a plausible failure, an existing or new candidate case that can expose it, and a grading method
+- Add routing, near-miss, or coexistence cases only when discovery or an adjacent responsibility boundary changes; do not add unrelated core, routing, or coexistence coverage automatically
+- Add baseline comparison or repetition only when an escalation condition in `evaluation.md` makes the additional evidence decision-relevant
 - Formalize scenarios and requirement checklists runnable by a blank-slate executor
 - Keep desired answers and grading criteria out of the executor input
 - Mark requirements `[critical]` only when violating them should make the scenario fail; do not make every observation critical by default
@@ -223,6 +226,7 @@ Before opening a pull request for a new Skill:
 - [ ] Third-party provenance and capability risks have been reviewed when external material is included
 - [ ] `scripts/`, `references/`, `assets/` contain only what the Skill needs (empty directories removed)
 - [ ] `evals/README.md` Iter 0 static check is complete
+- [ ] The evaluation selection record identifies the affected responsibility, selected path and checks, and any untested boundary; selected behavioral cases are complete only when the path requires them
 
 ## Making a Codex-only Skill work across agents
 
