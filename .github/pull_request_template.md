@@ -1,6 +1,6 @@
 <!--
 English is canonical for repository pull requests. The Japanese section below is
-reference-only and optional for contributors.
+reference-only.
 -->
 
 ## Summary
@@ -38,7 +38,11 @@ reference-only and optional for contributors.
 <details>
 <summary>日本語訳 / Japanese reference translation</summary>
 
-> 上記の英語版を正本とし、以下は参照用の日本語訳です。外部コントリビューターが日本語訳を追加する必要はありません。
+> 上記の英語版を正本とし、以下は参照用の日本語訳です。
+
+## タイトル
+
+<!-- PR タイトルの日本語訳を書く。 -->
 
 ## 概要
 
