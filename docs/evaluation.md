@@ -2,6 +2,67 @@
 
 This document describes the evaluation approach used for Skills in this repository.
 
+## Evaluation decision flow
+
+Evaluation has two decision gates:
+
+1. **Gap diagnosis** determines whether current behavior demonstrates a need for
+   a change. This gate is conditional.
+2. **Candidate acceptance** determines whether an implemented change is
+   acceptable. This gate uses the least sufficient path defined below.
+
+The prose and tables in this section are normative. The diagram summarizes the
+same flow for readers and clients that render Mermaid.
+
+```mermaid
+flowchart TD
+    A[Change request] --> B{Does the change decision depend<br/>on current behavior?}
+    B -- No --> E[Design and implement the change]
+    B -- Yes --> C[Run the smallest current-version diagnosis]
+    C --> D{Diagnosis result}
+    D -- Gap demonstrated --> E
+    D -- No gap demonstrated --> D1[Stop the behavior change or<br/>reframe an independently needed clarification]
+    D -- Inconclusive --> D2[Refine the case or grading<br/>without editing the Skill]
+    E --> F[Run deterministic checks]
+    F --> G{Does executable behavior, discovery,<br/>or a responsibility boundary change?}
+    G -- No --> K[Decide acceptance from static evidence]
+    G -- Yes --> H[Run each affected candidate case once]
+    H --> I{Is the result decision-ready?}
+    I -- Pass --> K
+    I -- Fail --> L[Correct or redesign the change]
+    I -- Ambiguous or conflicting --> J[Add only decision-relevant comparison,<br/>repetition, or target-environment evidence]
+    J --> M{Are the acceptance conditions met?}
+    M -- Yes --> K
+    M -- No --> L
+```
+
+Run gap diagnosis before editing only when at least one of these conditions
+applies:
+
+- the request allows a behavior change only if current behavior is insufficient
+- acceptance depends on demonstrating improvement relative to current behavior
+- a reported regression or the sufficiency of current guidance has not yet been
+  established
+- the result can change whether to edit or how much behavior to change
+
+Do not require gap diagnosis for an explicit new requirement that does not
+depend on current behavior, a defect already established by deterministic
+evidence, a clarification that does not claim behavior improvement, or a
+meaning-preserving mechanical change.
+
+Before running a diagnosis, state what each possible result will mean:
+
+| Current-version result | Change decision |
+| --- | --- |
+| Gap demonstrated | Proceed with the smallest change that addresses the demonstrated gap |
+| No gap demonstrated | Stop the behavior change; proceed with an independently authorized clarification only after naming that purpose, without claiming behavior improvement |
+| Inconclusive or defective evaluation | Refine the case or grading and do not edit the Skill yet |
+
+A pre-change diagnostic case may become the matched baseline for candidate
+acceptance when its inputs, environment, and grading remain applicable. Reuse
+that evidence instead of rerunning the current version solely to create a
+separate baseline record.
+
 ## Evaluation selection principle
 
 Select the least evidence needed to decide whether a change is acceptable. Start
@@ -80,8 +141,9 @@ limits instead of expanding the suite mechanically.
 Record only:
 
 - the affected claim or responsibility
-- the selected path and why it is sufficient
-- the selected cases or deterministic checks
+- the evaluation purpose and the condition that triggered it
+- the selected path, cases, or deterministic checks and why they are sufficient
+- how each material result changes the change or acceptance decision
 - any untested boundary that limits the acceptance claim
 
 Use the existing evaluation README or change record. Do not require a shared
@@ -367,5 +429,11 @@ Store raw JSONL, authentication material, and full session logs only in a tempor
 - [Anthropic Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) presents evaluation-first iteration and example scenario counts.
 - [Anthropic Skills for enterprise](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise) gives an organizational 3–5 query requirement and recommends trigger, isolation, coexistence, instruction-following, output-quality, and active-model coverage.
 - [OpenAI Build skills](https://learn.chatgpt.com/docs/build-skills) recommends testing prompts against the Skill description and documents explicit and implicit Skill invocation.
+- [OpenAI Evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices) recommends defining the evaluation objective and success criteria before selecting data, metrics, and comparisons.
+- [Anthropic Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) recommends starting from observed failures and manual checks, using unambiguous success criteria, and covering both positive and negative behavior.
+- [NIST AI RMF Core](https://airc.nist.gov/airmf-resources/airmf/5-sec-core/) connects context mapping and measurement to decisions about whether development or deployment should proceed.
 
-This repository adopts the behavioral dimensions and evidence-first direction from those sources while choosing suite size from local responsibility and failure coverage.
+This repository adopts the behavioral dimensions, evidence-first direction, and
+measurement-to-decision link from those sources while choosing suite size from
+local responsibility and failure coverage. It does not adopt their example case
+counts, organizational roles, or lifecycle processes as universal requirements.

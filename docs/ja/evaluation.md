@@ -4,6 +4,56 @@
 
 このドキュメントは、このリポジトリの Skill に使用する評価アプローチを説明します。
 
+## 評価の意思決定フロー
+
+評価には、次の 2 つの関門があります。
+
+1. **ギャップ診断**では、現行の挙動から変更の必要性が示されるかを判断します。この関門は、条件に該当する場合だけ使います。
+2. **候補版の受入評価**では、実装した変更を受け入れられるかを判断します。この関門では、後述する必要十分な最小の経路を使います。
+
+この節の文章と表を規範とします。図は、Mermaid を表示できる読み手と client のために、同じフローを要約したものです。
+
+```mermaid
+flowchart TD
+    A[変更要求] --> B{変更判断が現行の挙動に<br/>依存するか}
+    B -- いいえ --> E[変更を設計・実装する]
+    B -- はい --> C[現行版で最小の診断を実行する]
+    C --> D{診断結果}
+    D -- ギャップあり --> E
+    D -- ギャップ未確認 --> D1[挙動変更を中止する、または<br/>独立して必要な明文化へ目的を変更する]
+    D -- 判定不能 --> D2[Skill を編集せず<br/>ケースまたは grading を修正する]
+    E --> F[機械的検査を実行する]
+    F --> G{実行時動作、発見方法、<br/>責務境界が変わるか}
+    G -- いいえ --> K[静的な証拠から受入可否を判断する]
+    G -- はい --> H[影響を受ける候補版ケースを各 1 回実行する]
+    H --> I{結果から判断できるか}
+    I -- 合格 --> K
+    I -- 不合格 --> L[変更を修正または再設計する]
+    I -- 曖昧または矛盾 --> J[判断に必要な比較、反復、<br/>対象環境の証拠だけを追加する]
+    J --> M{受入条件を満たすか}
+    M -- はい --> K
+    M -- いいえ --> L
+```
+
+次の条件に 1 つ以上該当する場合だけ、編集前にギャップ診断を実行します。
+
+- 現行の挙動が不十分な場合だけ、挙動変更を許す要求である
+- 現行の挙動に対する改善の実証が受入条件である
+- 報告された regression、または現行 guidance の十分性がまだ確認されていない
+- 結果によって、編集するかどうか、または変更する挙動の範囲が変わる
+
+現行の挙動に依存しない明示的な新要件、機械的な証拠ですでに確認できる不具合、挙動改善を主張しない明文化、または意味を変えない機械的変更には、ギャップ診断を要求しません。
+
+診断を実行する前に、それぞれの結果が何を意味するかを定めます。
+
+| 現行版の結果 | 変更判断 |
+| --- | --- |
+| ギャップあり | 確認したギャップを解消する最小の変更へ進む |
+| ギャップ未確認 | 挙動変更を中止する。独立して承認された明文化へ進む場合は、編集前にその目的を明示し、挙動改善を主張しない |
+| 評価が判定不能または不備あり | ケースまたは grading を修正し、まだ Skill を編集しない |
+
+入力、環境、grading を引き続き適用できる場合は、変更前の診断ケースを、候補版の受入評価で条件を揃えた baseline として使えます。別の baseline 記録を作ることだけを目的に現行版を再実行せず、その証拠を再利用します。
+
 ## 評価選択の原則
 
 変更を受け入れられるか判断するために必要な最小限の証拠を選びます。最初に機械的なリポジトリ検証を使います。実行時動作、発見方法、または責務境界が変わる場合だけ、モデルを使う動作評価を追加し、影響を受ける責務、既知の regression、または影響があり得る隣接境界を露出できるケースだけを選びます。
@@ -52,8 +102,9 @@
 次だけを記録します。
 
 - 影響を受ける claim または責務
-- 選択した経路と、それで十分な理由
-- 選択したケースまたは機械的検査
+- 評価目的と、それを発火させた条件
+- 選択した経路、ケース、または機械的検査と、それで十分な理由
+- 重要な各結果が変更判断または受入判断をどう変えるか
 - 受入主張を限定する未検証境界
 
 既存の評価 README または変更記録を使います。繰り返し作業から追加構造の必要性が確認されるまでは、評価選択記録に共通 metadata schema を要求しません。
@@ -287,5 +338,8 @@ raw JSONL、認証情報、完全な session log は、リポジトリ外の一�
 - [Anthropic Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) は evaluation-first の反復とシナリオ件数の例を示しています。
 - [Anthropic Skills for enterprise](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise) は組織向けの3–5 query 要件と、trigger、isolation、coexistence、instruction-following、output-quality、利用 model の被覆を推奨しています。
 - [OpenAI Build skills](https://learn.chatgpt.com/docs/build-skills) は Skill description に対する prompt test を推奨し、明示的・暗黙的な Skill invocation を説明しています。
+- [OpenAI Evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices) は、data、metric、比較方法を選ぶ前に、評価目的と成功条件を定義することを推奨しています。
+- [Anthropic Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) は、観測された失敗と手動確認から始め、曖昧でない成功条件を使い、挙動の positive case と negative case の両方を扱うことを推奨しています。
+- [NIST AI RMF Core](https://airc.nist.gov/airmf-resources/airmf/5-sec-core/) は、context mapping と measurement を、開発または deployment を進めるかどうかの判断へ接続しています。
 
-このリポジトリでは、これらの情報源から挙動軸と evidence-first の方向性を採用し、suite の規模はローカルな責務と失敗被覆から決めます。
+このリポジトリでは、これらの情報源から挙動軸、evidence-first の方向性、measurement と判断の接続を採用し、suite の規模はローカルな責務と失敗被覆から決めます。例示されたケース数、組織上の役割、lifecycle process は普遍的な要件として採用しません。
