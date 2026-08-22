@@ -252,3 +252,9 @@ explicit than these disposable fixtures?
 - Added coverage for actual reviewer context, deviations from plan, actual change boundaries, verification evidence, residual risk, review focus, and preservation of `Unknown` criticality.
 - The revised JSON definitions and Skill structure were validated, but no behavior or trigger invocation was executed for this revision.
 - The earlier pass totals are historical evidence and are superseded for the changed `Done` handoff contract.
+
+## Minimum-sufficient-change audit — 2026-08-21
+
+- Issue #13 changes no implementation-stage responsibility or instruction: this Skill already requires the simplest implementation inside the approved coherent boundary, rejects unrequired abstractions, and stops instead of applying a local workaround when inspection exposes a shared cause outside authorized scope.
+- Existing `approved-shared-invariant`, `scope-discovery`, and `act-now-only-with-reviewer-context` cases cover required structural correction, speculative-complexity rejection, and refusal to implement hypothetical extension work.
+- Per the repository evaluation selection and evidence-reuse policies, no behavior or routing case is rerun because the Skill body, assertions, inputs, and affected implementation-stage requirements are unchanged.

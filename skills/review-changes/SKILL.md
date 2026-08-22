@@ -57,6 +57,7 @@ Use only the dimensions material to the change.
 - Local patches that reduce diff size while leaving a confirmed cause unresolved, duplicating a shared rule, bypassing an established responsibility boundary, creating inconsistent behavior across known paths, or requiring a known follow-up correction
 
 Treat both excess complexity and an overly narrow correction as findings only when the evidence shows a concrete consequence such as duplicated policy, inconsistent behavior, unreachable branches, added operational burden, or a known follow-up change. Do not report either from architectural preference alone.
+Conversely, do not criticize an abstraction or consolidation merely because duplicated local code would be shorter when current evidence establishes a shared responsibility, invariant, or contract and the change introduces no unsupported extension surface or concrete cost.
 
 ### Documentation
 

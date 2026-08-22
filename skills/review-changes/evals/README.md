@@ -37,6 +37,8 @@ Structured assets:
 | Trigger boundary | Collides with triage, validation, comment drafting, summary, implementation, or guidance audit | `triggers.json` | Observable Skill loads |
 | Excess complexity | Accepts speculative abstractions whose concrete maintenance cost has no current requirement or observed-risk basis | `unjustified-abstraction` | Finding evidence and assigned assertions |
 | Overly narrow correction | Accepts a small patch that leaves a confirmed shared rule inconsistent across a known path | `local-patch-leaves-shared-cause` | Finding evidence and assigned assertions |
+| Incidental duplication | Accepts a generic helper that couples separate contracts solely to remove similar lines | `incidental-duplication-abstraction` | Finding evidence and assigned assertions |
+| Justified shared structure | Reports a preference-only finding against the existing owner of one current invariant | `justified-shared-invariant` | Finding count and assigned assertions |
 | Proportionate response | A speculative low-exposure edge case becomes a blocking request despite cheap detection and recovery and high remediation cost | `low-criticality-expensive-edge-case` | Risk-context fields and requested label |
 | Re-review convergence | New origins are conflated or a previously observable non-blocking nit starts another fix round | `full-rereview-origin-and-convergence` | Origin classification and actionable-output inspection |
 
@@ -44,10 +46,10 @@ Structured assets:
 
 1. Use committed `HEAD` as the baseline and the working-tree Skill as the candidate.
 2. Give the executor only the case `input` and its disposable fixture. Keep titles, assertions, and expected conclusions hidden.
-3. Use the same client, model, reasoning effort, sandbox, fixture, and grader for both conditions.
+3. Use the same client, model, reasoning effort, sandbox, and fixture for both conditions.
 4. For git fixtures, construct the declared base, candidate commit, working-tree changes, and checks in a temporary repository outside this source repository.
 5. Count a Skill trigger only from an observable `SKILL.md` open.
-6. Grade objective scope and command claims from the fixture and captured output; use a separate grader for judgment-heavy findings.
+6. Grade objective scope and command claims from the fixture and captured output, then grade judgment-heavy findings by direct maintainer review. Add a separate blank-slate LLM grader only when repeated or independent judgment is materially useful.
 7. Repeat only when an unexpected result, instability, client difference, or failure consequence could change the decision.
 
 For Codex CLI, use an ephemeral session with a pinned model and reasoning effort. Keep raw JSONL and full responses in a temporary directory.
@@ -69,6 +71,8 @@ Claude Code and other clients are outside the current execution plan and must be
 - `review workflow routed to an adjacent Skill`
 - `speculative abstraction accepted without concrete cost or requirement evidence`
 - `small diff accepted while a confirmed shared cause remains`
+- `source similarity treated as sufficient abstraction evidence`
+- `justified shared owner criticized because local duplication is shorter`
 - `missing context treated as low risk`
 - `speculative remediation cost ignored when assigning must`
 - `late non-blocking issue starts another fix round`
@@ -106,3 +110,13 @@ Claude Code and other clients were not executed. Detailed case-by-assertion and 
 - Clarified that review output alone does not authorize an actionable draft; assessment, state, and response decision must be supplied first, normally by `triage-review-feedback`.
 - A matched routing check selected `triage-review-feedback`, not `draft-review-comments`, for review output without those decisions in both conditions.
 - Review behavior cases were not rerun because finding discovery and output fields were unchanged.
+
+## Minimum-sufficient-review revision — 2026-08-22
+
+- Affected responsibility: distinguish unsupported coupling from consolidation justified by one current shared responsibility, invariant, or contract.
+- Selected path: matched baseline and candidate checks for `incidental-duplication-abstraction` and `justified-shared-invariant`, because this revision changes a subjective quality contract. Existing unrelated review and routing cases are not selected.
+- Codex CLI 0.147.0 with `gpt-5.6-luna`, max reasoning, and a read-only sandbox ran one matched baseline and candidate execution per selected case. Direct maintainer grading passed 5/5 assertions for incidental duplication and 6/6 for justified shared structure in both conditions.
+- Both conditions reported the concrete maintenance coupling introduced by a generic helper across separate contracts and reported no material finding against consolidation into the existing owner of one current invariant. The candidate preserved both sides of the boundary without a requirement-level advantage over the already-passing baseline.
+- Initial authentication failures and a review batch with an incomplete inline fixture were excluded before grading. The accepted batch used complete public fixtures and separate disposable roots; no independent LLM grader or repetition was decision-relevant.
+- Deterministic JSON parsing, repository validation, candidate hash checks, invocation details, case evidence, and excluded defective runs are recorded in [`results.json`](results.json).
+- Untested boundary: unrelated cases, repeated runs, a separate LLM grader, real repository diffs, other models, and other clients remain unverified.

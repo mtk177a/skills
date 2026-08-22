@@ -2,23 +2,75 @@
   "schema_version": 3,
   "skill": "design-changes",
   "candidate": {
-    "accepted_on": "2026-08-14",
-    "evidence_status": "unverified",
-    "evidence_summary": "Behavior and trigger execution has not been performed for this accepted revision; only the recorded JSON parsing and candidate file hash checks were completed.",
+    "accepted_on": "2026-08-22",
+    "evidence_status": "targeted_pass",
+    "evidence_summary": "Matched baseline and candidate executions passed every assigned assertion for incidental code similarity and an existing shared invariant. The candidate preserved both sides of the minimum-sufficient-structure boundary without a requirement-level advantage over the already-passing baseline.",
     "files": {
-      "SKILL.md": "sha256:494792eee12f694f612bc6ffa13af9687c2383ac2456b3b613fbfce26ec4dde9",
-      "SKILL-ja.md": "sha256:9b8666e1953a8c6dabbbc4ee1090b6cf7a1a22f640ea8e658dc6d34f1fbb68d6",
-      "evals/evals.json": "sha256:24e088f38aad39b4483db148b0de874a935253ffa146dce7c11d801147edf2fb",
+      "SKILL.md": "sha256:b25c647ff6db354148b671ea70d1dbf13e1acbb664f28540491fba956add81dc",
+      "SKILL-ja.md": "sha256:6d26d869688e306890189521b320f9edb9554b93d9dbe8e0cf2329253433c33c",
+      "evals/evals.json": "sha256:529ff26f97259698e66478ff7bc3328fd5b15faf5a0e137bd786dce8a834bf16",
       "evals/triggers.json": "sha256:c693cb6b21483e210135b2c76cdf88346e1daf9978d837865e9b44fcd4d62f9c"
     },
-    "previous_evidence_status": "Superseded for the changed planned-reviewer-context handoff requirements.",
+    "previous_evidence_status": "The earlier authentication-blocked record is superseded by the targeted 2026-08-22 comparison. Historical evidence remains reusable only for explicitly unchanged requirements.",
     "executed": [
       "Parsed this results.json with the standard Python JSON parser.",
-      "Recalculated every candidate.files SHA-256 value from the accepted repository files and confirmed exact matches."
+      "Recalculated every candidate.files SHA-256 value from the accepted repository files and confirmed exact matches.",
+      "Ran python3 scripts/check_repository.py successfully for the accepted repository revision.",
+      "Ran one matched baseline and candidate Codex execution for incidental-code-similarity and shared-current-invariant; direct maintainer grading passed every assigned assertion."
     ],
     "unverified": [
-      "Behavior and trigger invocations for this revision",
-      "Repeated stochastic runs and clients other than the previously recorded client"
+      "Unrelated behavior and routing cases",
+      "Repeated stochastic runs, a separate LLM grader, and clients other than Codex CLI 0.147.0",
+      "Real application repositories with discoverable source files and test commands"
+    ]
+  },
+  "minimum_sufficient_validation": {
+    "evaluated_on": "2026-08-22",
+    "environment": {
+      "client": "Codex CLI 0.147.0",
+      "model": "gpt-5.6-luna",
+      "reasoning_effort": "max",
+      "executor_sandbox": "read-only",
+      "grader": "direct maintainer review against hidden assigned assertions"
+    },
+    "baseline": {
+      "commit": "45fd9737763c07698786a1725428e62f47baffba",
+      "files": {
+        "SKILL.md": "sha256:494792eee12f694f612bc6ffa13af9687c2383ac2456b3b613fbfce26ec4dde9"
+      }
+    },
+    "candidate": {
+      "commit": "a32a046fa52f17468262677420f2fec65833e3b1",
+      "files": {
+        "SKILL.md": "sha256:b25c647ff6db354148b671ea70d1dbf13e1acbb664f28540491fba956add81dc"
+      }
+    },
+    "execution": {
+      "invocation": "codex exec --ephemeral --ignore-rules --skip-git-repo-check --sandbox read-only --model gpt-5.6-luna -c 'model_reasoning_effort=\"max\"' -c 'skills.config=[{path=\"<global-target>\",enabled=false}]' -C <disposable-run-dir> -o <output> <case-input>",
+      "configuration": "Each condition used a disposable catalog containing only its baseline or candidate target Skill. The installed global copy of the target Skill was disabled. User config remained loaded because Codex CLI 0.147.0 otherwise selected an API authentication route incompatible with the active ChatGPT login; other installed Skill descriptions were available, but no other Skill was loaded in the accepted traces.",
+      "raw_artifacts": "Temporary and not committed.",
+      "repetition": "One successful executor run per condition. No repetition or independent LLM grader was decision-relevant after direct grading was conclusive.",
+      "excluded_defective_runs": "Earlier attempts that returned 401 before model execution were excluded. They established that --ignore-user-config removed the active ChatGPT authentication route, not that the user was logged out."
+    },
+    "cases": {
+      "incidental-code-similarity": {
+        "baseline": "pass",
+        "candidate": "pass",
+        "requirements": "3/3 pass in both conditions",
+        "evidence": "Both conditions rejected normalize_text because syntactic similarity did not establish a shared responsibility or contract, preserved independent parser and formatter behavior, excluded unsupported structure, and mapped both contracts to planned verification without editing files."
+      },
+      "shared-current-invariant": {
+        "baseline": "pass",
+        "candidate": "pass",
+        "requirements": "3/3 pass in both conditions",
+        "evidence": "Both conditions selected the existing normalize_email owner and both known entry points as the coherent boundary, rejected one-path or duplicate-inline corrections, excluded new formats and extension surfaces, and planned verification for both paths without editing files."
+      }
+    },
+    "comparison": "The candidate passed both sides of the minimum-sufficient design boundary. The matched baseline already passed every assigned assertion, so this evaluation establishes preservation rather than a requirement-level improvement.",
+    "unverified": [
+      "Unrelated behavior and routing cases were not rerun because the changed responsibility is covered by the two selected cases.",
+      "The synthetic cases did not expose real source paths or repository-specific test commands.",
+      "Repeated stochastic runs, a separate LLM grader, Claude Code, and other clients were not executed."
     ]
   },
   "historical_full_evaluation": {
