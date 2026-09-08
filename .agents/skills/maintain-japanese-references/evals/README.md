@@ -4,7 +4,9 @@
 
 The Skill adds a translation-maintenance responsibility and a discovery boundary beside Japanese-canonical Skills and tracker authoring.\
 Use targeted candidate-only behavior checks for semantic decisions and targeted routing checks for the adjacent boundaries.\
-Start with one candidate run per selected case; add a baseline or repetition only after a failure, ambiguity, or instability makes it decision-relevant.
+Start with one candidate run per selected case, and require every critical requirement to pass before accepting the candidate.\
+A critical failure blocks acceptance: correct the Skill or a defective fixture or grader, then rerun the affected case.\
+Gather only the additional evidence needed to resolve an ambiguous, conflicting, or unstable result; add a baseline only when relative evidence can change acceptance, and compare another model only when distinguishing a Skill failure from a model limitation can change acceptance.
 
 Reference environment: Codex with `gpt-5.6-luna`, medium reasoning, and a blank-slate single executor.\
 Give the executor only `SKILL.md`, the scenario request, and the listed fixture files.\
@@ -97,18 +99,20 @@ Requirements checklist:
 The uncommitted working-tree candidate was evaluated once per scenario by one blank-slate Codex executor using `gpt-5.6-luna` with medium reasoning.\
 The executor received `SKILL.md` and the six scenario inputs, did not receive the requirements or grading notes, and did not edit repository files.
 
-| Scenario | Result | Evidence |
-| --- | --- | --- |
-| A | pass | Preserved `must`, the explicit-request condition, and the requirement to disclose risk without changing canonical content |
-| B | pass | Left the Japanese reference unchanged and reported source-line reflow as non-semantic |
-| C | pass | Excluded the documented Japanese-canonical Skill and did not propose `SKILL-ja.md` |
-| D | pass | Declined Issue authoring as outside the workflow and made no repository change |
-| E | pass | Updated only the semantically affected translation, reported the reflow-only pair unchanged, and left the unrelated pair untouched |
-| F | pass | Preserved the established term `pull request` and reported no ambiguity |
+| Scenario | Result | Evidence | Decision effect |
+| --- | --- | --- | --- |
+| A | pass | Preserved `must`, the explicit-request condition, and the requirement to disclose risk without changing canonical content | Supports acceptance of normative-meaning preservation |
+| B | pass | Left the Japanese reference unchanged and reported source-line reflow as non-semantic | Supports acceptance of no-op handling |
+| C | pass | Excluded the documented Japanese-canonical Skill and did not propose `SKILL-ja.md` | Supports acceptance of the Japanese-canonical exclusion |
+| D | pass | Declined Issue authoring as outside the workflow and made no repository change | Supports acceptance of the tracker-authoring boundary |
+| E | pass | Updated only the semantically affected translation, reported the reflow-only pair unchanged, and left the unrelated pair untouched | Supports acceptance of pair-scoped editing |
+| F | pass | Preserved the established term `pull request` and reported no ambiguity | Supports acceptance of established-terminology preservation |
 
 Maintainer review found no critical or non-critical requirement failure.\
+These results accept the candidate for the six mapped responsibilities and boundaries without requiring a baseline or repetition.\
 Deterministic repository validation checks structure, frontmatter, translation notices, links, and repository-local artifact boundaries but does not establish behavior on other models or clients.
 
 ## Next validation question
 
-- Re-run or compare models only if real use reveals a failure, ambiguous output, instability, or a model-specific support requirement.
+- If real use reveals a critical failure, correct the identified Skill, fixture, or grader defect and rerun the affected case before acceptance.
+- If a result is ambiguous, conflicting, or unstable, gather only the additional evidence needed to resolve the acceptance decision; compare models only when model-specific support or a Skill-versus-model distinction is material.
