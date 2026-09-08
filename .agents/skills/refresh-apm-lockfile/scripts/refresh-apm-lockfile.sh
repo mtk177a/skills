@@ -24,7 +24,7 @@ $status"
 
   if [[ -d .agents/skills ]]; then
     local deployed_skill
-    deployed_skill="$(find .agents/skills -mindepth 1 -maxdepth 1 ! -name refresh-apm-lockfile -print -quit)"
+    deployed_skill="$(find .agents/skills -mindepth 1 -maxdepth 1 ! -name maintain-japanese-references ! -name refresh-apm-lockfile -print -quit)"
     [[ -z "$deployed_skill" ]] || die "APM-deployed skill artifact exists: $deployed_skill"
   fi
 }

@@ -17,7 +17,13 @@ license: MIT
 ---
 ```
 
-## Japanese translations
+## Japanese reference translations
+
+Japanese reference translations are maintained as a reusable comprehension and review cache for the primary maintainer.\
+They reduce the need to translate the same technical material again whenever it is read or edited.
+
+English remains the public and normative canonical source.\
+A Japanese translation does not define requirements and must not introduce meaning that is absent from its canonical file.
 
 When `SKILL.md` is canonical English, `SKILL-ja.md` is a non-canonical Japanese translation placed alongside it:
 
@@ -46,9 +52,16 @@ The same policy applies to other translated files:
 
 ## Keeping translations in sync
 
-When a commit changes an English file, the corresponding Japanese translation must be updated in the same commit.
+When a maintained English canonical file is added or changed, review its Japanese counterpart in the same change.
 
-If a quick update is made and the Japanese translation is not ready, note the gap in the commit message and open a follow-up.
+Update or create the Japanese reference when the canonical change affects meaning.\
+Meaning includes requirements, scope, exceptions, permissions, prohibitions, safety conditions, procedures, validation, links, and other information needed to use the document correctly.
+
+If the canonical change does not affect the Japanese meaning, leave the translation unchanged rather than creating a no-op edit.\
+Record the reason in the pull request's `Validation` or `Risks / Follow-up` section so the review decision remains visible.
+
+Use the repository-local `maintain-japanese-references` Skill to make this review and synchronization decision.\
+Japanese-canonical Skills remain outside this workflow and do not receive a duplicate `SKILL-ja.md`.
 
 ## Language in Skill bodies
 
@@ -61,3 +74,9 @@ If a quick update is made and the Japanese translation is not ready, note the ga
 Commit message summaries are written in English and kept short and specific.
 
 See `AGENTS.md` for the full commit message convention.
+
+## Language in Issues and pull requests
+
+Write Issue and pull request titles and their `Summary` sections in English so the public repository remains discoverable and scannable.
+
+Write the remaining body sections and comments in Japanese by default. A full English and Japanese duplication of the body is not required.

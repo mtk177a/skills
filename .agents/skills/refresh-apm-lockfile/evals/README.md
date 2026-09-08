@@ -23,7 +23,7 @@ Requirements checklist:
 
 ### Scenario B: Working tree is dirty
 
-The working repository has unrelated changes before the refresh. This includes tracked changes, staged changes, untracked files, `apm_modules/`, and `.agents/skills/*` entries other than `refresh-apm-lockfile`. The executor must stop rather than mixing the lockfile update with other work or stale APM deployment artifacts.
+The working repository has unrelated changes before the refresh. This includes tracked changes, staged changes, untracked files, `apm_modules/`, and `.agents/skills/*` entries other than the tracked `maintain-japanese-references` and `refresh-apm-lockfile` Skills. The executor must stop rather than mixing the lockfile update with other work or stale APM deployment artifacts.
 
 Requirements checklist:
 1. [critical] Stop before creating the disposable copy
