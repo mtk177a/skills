@@ -319,6 +319,30 @@ class CheckerCliTests(unittest.TestCase):
 
         self.assert_fixture_failure(mutate, "Japanese translation must begin with a notice")
 
+    def test_tracked_repository_local_skills_are_allowed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            for name in ("refresh-apm-lockfile", "maintain-japanese-references"):
+                write(root / ".agents" / "skills" / name / "SKILL.md", f"# {name}\n")
+                write(
+                    root / ".agents" / "skills" / name / "SKILL-ja.md",
+                    "> **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳です。\n",
+                )
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_repository_local_translation_notice_is_required(self) -> None:
+        def mutate(root: Path) -> None:
+            write(
+                root / ".agents" / "skills" / "maintain-japanese-references" / "SKILL-ja.md",
+                "# 訳\n",
+            )
+
+        self.assert_fixture_failure(mutate, "Japanese translation must begin with a notice")
+
     def test_personal_absolute_path_is_detected(self) -> None:
         def mutate(root: Path) -> None:
             write(root / "docs" / "local.md", "Use `/home/alice/private/config`.\n")

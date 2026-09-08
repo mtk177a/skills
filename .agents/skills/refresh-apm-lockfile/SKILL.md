@@ -27,7 +27,7 @@ Do not use this Skill after changes limited to repository guidance, repo-local S
 
 - The working tree is clean before starting.
 - No tracked, staged, untracked, or ignored APM deployment artifacts are present in the working repository.
-- `.agents/skills/` contains no entries except the tracked repo-local `refresh-apm-lockfile` Skill.
+- `.agents/skills/` contains no entries except the tracked repo-local `maintain-japanese-references` and `refresh-apm-lockfile` Skills.
 - `apm_modules/` does not exist.
 - The current branch has an upstream.
 - `HEAD` matches the upstream branch.

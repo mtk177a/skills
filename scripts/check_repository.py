@@ -31,6 +31,10 @@ PERSONAL_PATH_EXCLUSIONS = {
     "scripts/check_repository.py",
     "tests/test_check_repository.py",
 }
+TRACKED_REPOSITORY_LOCAL_SKILLS = {
+    "maintain-japanese-references",
+    "refresh-apm-lockfile",
+}
 
 
 @dataclass(frozen=True, order=True)
@@ -391,7 +395,13 @@ def check_markdown_links(root: Path, problems: list[Problem]) -> None:
 
 
 def check_localization_notices(root: Path, problems: list[Problem]) -> None:
-    for path in sorted((root / "skills").glob("*/SKILL-ja.md")):
+    paths = list((root / "skills").glob("*/SKILL-ja.md"))
+    paths.extend(
+        path
+        for name in TRACKED_REPOSITORY_LOCAL_SKILLS
+        if (path := root / ".agents" / "skills" / name / "SKILL-ja.md").is_file()
+    )
+    for path in sorted(paths):
         lines = path.read_text(encoding="utf-8").splitlines()
         start = 0
         if lines and lines[0] == "---":
@@ -554,8 +564,8 @@ def check_deployment_artifacts(root: Path, problems: list[Problem]) -> None:
     deployed = root / ".agents" / "skills"
     if deployed.is_dir():
         for child in sorted(deployed.iterdir()):
-            if child.name != "refresh-apm-lockfile":
-                add(problems, root, child, 1, "unexpected APM-deployed Skill; preserve only the tracked repository-local exception")
+            if child.name not in TRACKED_REPOSITORY_LOCAL_SKILLS:
+                add(problems, root, child, 1, "unexpected APM-deployed Skill; preserve only tracked repository-local exceptions")
 
 
 def check_repository(root: Path) -> list[Problem]:

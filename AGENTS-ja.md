@@ -46,7 +46,9 @@ Skill を作成・編集する際は、責務の重複を解消し、判断が�
 - git で明示的に追跡している repo-local Skill は source file であり、APM の deployment output として扱わない
 - repo-local Skill を `README.md`、`README.ja.md`、`apm.yml` に追加しない
 - repo-local Skill 名は kebab-case とし、必要な場合に限り `SKILL.md`、`SKILL-ja.md`、最小限の補助ファイルを含める
-- 現在追跡している repo-local Skill の例外は `.agents/skills/refresh-apm-lockfile/`
+- 現在追跡している repo-local Skill の例外は次のとおり
+  - `.agents/skills/maintain-japanese-references/`
+  - `.agents/skills/refresh-apm-lockfile/`
 
 ## 作業ルール
 
@@ -57,6 +59,7 @@ Skill を作成・編集する際は、責務の重複を解消し、判断が�
 - 手順の順序や完全性が正しさに大きく影響する場合は、簡潔な番号付き手順と検証方法を含める
 - 補助スクリプトや参照資料は、その Skill を成立させる最小限に絞る
 - このリポジトリのコンテキストを持たないエージェントでも読めることを前提に書く
+- 保守対象の英語正本を追加または変更した場合は、`.agents/skills/maintain-japanese-references/` を使用して日本語参考訳を確認し、正本の意味が変わる場合だけ更新する
 
 ## APM source と lockfile の更新手順
 
@@ -75,7 +78,7 @@ Skill を作成・編集する際は、責務の重複を解消し、判断が�
 - このリポジトリでは、dry-run ではない `apm install` や `apm update` を実行しない。リポジトリ内の Skill が `.agents/skills/` に展開され、グローバルにインストールされたコピーと重複表示されるため。
 - エージェントツールによって作成されることがあるため、空の `.agents/` ディレクトリは許容する。
 - `.agents/` 配下にレビュー用メモ、一時ファイル、その他の作業用成果物を保存しない。代わりに、このリポジトリ外の一時ディレクトリを使う。
-- APM によって展開された `.agents/skills/*` または `apm_modules/` が存在する場合は、停止して報告する。生成物であることを確認し、承認を得た場合に限り削除する。`.agents/skills/refresh-apm-lockfile/` のような tracked repo-local Skill は保持する。
+- APM によって展開された `.agents/skills/*` または `apm_modules/` が存在する場合は、停止して報告する。生成物であることを確認し、承認を得た場合に限り削除する。上記の tracked repo-local Skill は保持する。
 
 ## コミットメッセージ運用
 

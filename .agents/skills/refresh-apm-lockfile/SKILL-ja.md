@@ -29,7 +29,7 @@ repository guidance、repo-local Skill、無関係な docs、または `apm.lock
 
 - 開始前の working tree が clean。
 - 作業リポジトリに tracked、staged、untracked、ignored APM deployment artifact が残っていない。
-- `.agents/skills/` には tracked repo-local Skill である `refresh-apm-lockfile` 以外の entry がない。
+- `.agents/skills/` には tracked repo-local Skill である `maintain-japanese-references` と `refresh-apm-lockfile` 以外の entry がない。
 - `apm_modules/` が存在しない。
 - 現在の branch に upstream がある。
 - `HEAD` が upstream branch と一致している。
