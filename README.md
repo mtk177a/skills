@@ -8,7 +8,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 
 ## Skills
 
-26 Skills covering common development workflows:
+27 Skills covering common development workflows:
 
 | Skill | Description |
 | --- | --- |
@@ -38,6 +38,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `summarize-changes` | Summarize changes in a diff or commit range for review or documentation |
 | `triage-review-feedback` | Separate finding assessment and state from act-now, defer, or no-action response decisions |
 | `validate-fix` | Perform bounded post-fix re-review of identified findings using appropriate read-only evidence |
+| `write-natural-japanese` | Write or revise Japanese prose with context-appropriate wording while preserving meaning, certainty, and established terminology |
 
 ## Installation
 
