@@ -85,6 +85,36 @@ Requirements checklist:
 6. Repeat only an ambiguous or conflicting case and state why the additional observation was needed.
 7. Keep raw prompts and outputs in a disposable directory outside the repository, and commit only the summarized result.
 
-## Iter 1 — not yet executed
+## Iter 1 — Codex comparison
 
-The matched baseline and candidate comparisons will be executed after the initial candidate commit.
+- Candidate commit: `9c36c94`
+- Client: Codex CLI `0.154.0-alpha.6.2`
+- Model: `gpt-6-astra`
+- Reasoning effort: `none`
+- Execution: separate ephemeral, read-only sessions with identical task text; the candidate session explicitly loaded this Skill
+- Grading: a separate Codex session received outputs in blinded order and applied the scenario requirements
+
+The first matched comparison covered source-language interference, observable failure behavior, and preservation of established terms, quotation, and uncertainty.
+The grader found the baseline and candidate outputs equivalent in all three cases, with no critical requirement violations.
+The baseline already produced strong Japanese and automatically loaded the existing `japanese-tech-writing` Skill for the technical-explanation case, so these prompts did not distinguish the new responsibility.
+
+One additional comparison used a longer synthetic user announcement that combined unnecessary English, an underspecified import behavior, causal uncertainty, and a `source of truth` relationship.
+The grader preferred the candidate output because it preserved the uncertainty and identifiers while making the nightly overwrite source explicit; the baseline left that relationship implicit and used `正本` without establishing its document-management meaning.
+Neither output had a critical requirement violation.
+
+The routing check installed this Skill and `japanese-tech-writing` together in a disposable repository and used Codex JSONL events as observable loading evidence.
+An ordinary Japanese debugging request did not read either Skill.
+A request covering both Japanese wording and technical-article structure read both `SKILL.md` files, then read `references/wording-decisions.md`; the resulting article preserved its measurements, uncertainty, and identifiers while applying the two responsibilities together.
+
+### Result
+
+- Output quality: pass for the evaluated candidate, with one discriminating case showing an improvement and three simpler cases showing no regression
+- Meaning and certainty preservation: pass in all executed candidate cases
+- Established terminology and quotation: pass in the preservation case
+- Ordinary-conversation boundary: pass from observable absence of Skill reads in the debugging case
+- Coexistence with `japanese-tech-writing`: pass from observable reads and the resulting article
+- Repetition: not run because the discriminating result was unambiguous and no case produced conflicting evidence
+
+The evidence supports this Skill on the executed Codex client and model only.
+It does not establish improvement for every Japanese writing task or behavior in Claude Code, GitHub Copilot, Gemini CLI, other models, or other reasoning settings.
+Raw prompts, outputs, and JSONL events were kept in a disposable directory and are not repository artifacts.
