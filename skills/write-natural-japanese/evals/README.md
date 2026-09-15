@@ -137,3 +137,12 @@ No global target Skill content was observed in the accepted traces.
 The evidence supports this Skill on the executed Codex CLI `0.154.0` with `gpt-5.6-luna` at `max` reasoning only.
 It does not establish behavior in Claude Code, GitHub Copilot, Gemini CLI, other models, other reasoning settings, or other execution environments.
 Raw prompts, outputs, and JSONL events were kept in disposable directories outside the repository and are not repository artifacts.
+
+## Iter 2 — 2026-09-15 static-only structure revision
+
+- Change: reorganize `references/wording-decisions.md` into general tendencies, expression-specific examples, and expressions to preserve without changing its decisions or the Skill's responsibility.
+- Affected responsibility: presentation and navigation of the existing wording guidance; executable behavior, discovery, and adjacent-Skill responsibility boundaries are unchanged.
+- Selected path: static-only because the change preserves the existing instructions and examples while making their hierarchy and repeated fields explicit.
+- Deterministic checks: bundled `quick_validate.py`, `python3 scripts/check_repository.py`, and `git diff --check` all passed.
+- Result-to-decision rule: accept the revision if every prior decision and example remains represented once under the new hierarchy and all deterministic checks pass.
+- Untested boundary: no Luna evaluation was rerun, so the behavioral effect of the new organization remains unverified.
