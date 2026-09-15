@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "skill": "write-natural-japanese",
-  "candidate_revision": "4af5c793b5c740b9de3724f66a50b0670c3eb2ef",
+  "candidate_revision": "74eee2fad038e5f94ad495705d70114cb82424b7",
   "executor_instruction": "依頼に従って完成した日本語だけを返してください。修正理由や作業手順は、依頼で求められていない限り追加しないでください。",
   "scenarios": [
     {

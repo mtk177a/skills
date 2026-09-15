@@ -187,7 +187,7 @@ H tests the source-language translation path with only `write-natural-japanese` 
 - Candidate source: commit `74eee2fad038e5f94ad495705d70114cb82424b7`
 - `SKILL.md` SHA-256: `6f09028839f9f61274d95fcf0812dc7fd26ea7e364d6719c5c8d135352bcadb7`
 - `references/wording-decisions.md` SHA-256: `a63a19f2d11313a50d7d91f2209757c0000ad0ef04e64b845aa6b77b90f07b88`
-- Fixture SHA-256: `8bb28727058799b78fc7256049ec4a7ed1e2ac81ddc3e1e12271f8d332a6a35c`
+- Evaluated fixture SHA-256 at commit `74eee2fad038e5f94ad495705d70114cb82424b7`: `8bb28727058799b78fc7256049ec4a7ed1e2ac81ddc3e1e12271f8d332a6a35c`
 - Client: Codex CLI `0.154.0-alpha.6.2`
 - Model: `gpt-5.6-luna`
 - Reasoning effort: `max`
@@ -198,6 +198,7 @@ H tests the source-language translation path with only `write-natural-japanese` 
 - Authentication: user configuration remained loaded because the earlier `--ignore-user-config` route failed before model execution; no global target Skill content was observed in the accepted traces
 - Grading: H used direct requirement and observable-reference-read checks because the change concerns a required read and contextual distinctions rather than relative prose preference
 - Repetition: the final H fixture was not repeated because its first result was complete and unambiguous; exploratory executions against superseded fixture versions are excluded from acceptance evidence
+- Provenance correction: the current `evals.json` changes only `candidate_revision` from the pre-change base to the evaluated candidate commit; scenario inputs and requirements are unchanged, so H was not rerun
 
 | Scenario | Evidence | Decision |
 | --- | --- | --- |
