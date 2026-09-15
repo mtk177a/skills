@@ -28,5 +28,3 @@ apm_modules/
 .agents/skills/*
 !.agents/skills/maintain-japanese-references/
 !.agents/skills/maintain-japanese-references/**
-!.agents/skills/refresh-apm-lockfile/
-!.agents/skills/refresh-apm-lockfile/**

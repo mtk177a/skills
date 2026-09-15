@@ -16,7 +16,6 @@ from urllib.parse import unquote
 KEBAB_CASE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
 CATALOG_ROW = re.compile(r"^\|\s*`([a-z0-9-]+)`\s*\|", re.MULTILINE)
-APM_SKILL = re.compile(r"^\s*-\s+\S+/skills/([a-z0-9-]+)\s*$", re.MULTILINE)
 INLINE_LINK = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 REFERENCE_LINK = re.compile(r"^\s*\[[^\]]+\]:\s*(\S+)", re.MULTILINE)
 COMPANION_ROW = re.compile(r"^\|\s*`([^`]+)`\s*→\s*`([^`]+)`\s*\|(.+)$", re.MULTILINE)
@@ -27,13 +26,11 @@ PERSONAL_PATHS = (
 )
 TEXT_SUFFIXES = {".json", ".md", ".py", ".sh", ".txt", ".yaml", ".yml"}
 PERSONAL_PATH_EXCLUSIONS = {
-    "apm.lock.yaml",
     "scripts/check_repository.py",
     "tests/test_check_repository.py",
 }
 TRACKED_REPOSITORY_LOCAL_SKILLS = {
     "maintain-japanese-references",
-    "refresh-apm-lockfile",
 }
 
 
@@ -216,23 +213,6 @@ def check_catalogs(root: Path, problems: list[Problem]) -> set[str]:
                 f"declared Skill count {declared_count} does not match {len(names)} directories",
             )
 
-    apm = root / "apm.yml"
-    if not apm.is_file():
-        add(problems, root, apm, 1, "required APM manifest is missing")
-        return names
-    text = apm.read_text(encoding="utf-8")
-    entries = [(match.group(1), line_number(text, match.start())) for match in APM_SKILL.finditer(text)]
-    seen: set[str] = set()
-    for entry, line in entries:
-        if entry in seen:
-            add(problems, root, apm, line, f"duplicate APM Skill dependency `{entry}`")
-        seen.add(entry)
-    apm_names = {entry for entry, _ in entries}
-    for missing in sorted(names - apm_names):
-        add(problems, root, apm, 1, f"APM manifest is missing Skill `{missing}`")
-    for unexpected in sorted(apm_names - names):
-        line = next(line for entry, line in entries if entry == unexpected)
-        add(problems, root, apm, line, f"APM manifest references unknown Skill `{unexpected}`")
     return names
 
 
@@ -558,6 +538,10 @@ def check_personal_paths(root: Path, problems: list[Problem]) -> None:
 
 
 def check_deployment_artifacts(root: Path, problems: list[Problem]) -> None:
+    for name in ("apm.yml", "apm.lock.yaml"):
+        path = root / name
+        if path.exists():
+            add(problems, root, path, 1, f"source repository must not contain `{name}`; consumers own APM manifests and lockfiles")
     apm_modules = root / "apm_modules"
     if apm_modules.exists():
         add(problems, root, apm_modules, 1, "unexpected APM deployment artifact; remove it after approval")

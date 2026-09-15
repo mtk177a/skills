@@ -85,13 +85,6 @@ license: MIT
 | `alpha-skill` | Fixture |
 """,
     )
-    write(
-        root / "apm.yml",
-        """dependencies:
-  apm:
-    - example/skills/skills/alpha-skill
-""",
-    )
     write(root / "docs" / "authoring.md", "# Authoring\n")
 
 
@@ -323,16 +316,34 @@ class CheckerCliTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             create_valid_repository(root)
-            for name in ("refresh-apm-lockfile", "maintain-japanese-references"):
-                write(root / ".agents" / "skills" / name / "SKILL.md", f"# {name}\n")
-                write(
-                    root / ".agents" / "skills" / name / "SKILL-ja.md",
-                    "> **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳です。\n",
-                )
+            name = "maintain-japanese-references"
+            write(root / ".agents" / "skills" / name / "SKILL.md", f"# {name}\n")
+            write(
+                root / ".agents" / "skills" / name / "SKILL-ja.md",
+                "> **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳です。\n",
+            )
 
             result = run_checker(root)
 
             self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_source_apm_manifest_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            write(root / "apm.yml", "name: fixture\n")
+
+        self.assert_fixture_failure(mutate, "source repository must not contain `apm.yml`")
+
+    def test_source_apm_lockfile_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            write(root / "apm.lock.yaml", "lockfile_version: '1'\n")
+
+        self.assert_fixture_failure(mutate, "source repository must not contain `apm.lock.yaml`")
+
+    def test_retired_refresh_skill_is_rejected(self) -> None:
+        def mutate(root: Path) -> None:
+            write(root / ".agents" / "skills" / "refresh-apm-lockfile" / "SKILL.md", "# retired\n")
+
+        self.assert_fixture_failure(mutate, "unexpected APM-deployed Skill")
 
     def test_repository_local_translation_notice_is_required(self) -> None:
         def mutate(root: Path) -> None:

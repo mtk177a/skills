@@ -44,11 +44,10 @@ Skill を作成・編集する際は、責務の重複を解消し、判断が�
 
 - このリポジトリ自体の保守専用で、公開 Skill catalog に配布しない運用 Skill に限り、`.agents/skills/<skill-name>/` に配置できる
 - git で明示的に追跡している repo-local Skill は source file であり、APM の deployment output として扱わない
-- repo-local Skill を `README.md`、`README.ja.md`、`apm.yml` に追加しない
+- repo-local Skill を public Skill catalog や配布 bundle に追加しない
 - repo-local Skill 名は kebab-case とし、必要な場合に限り `SKILL.md`、`SKILL-ja.md`、最小限の補助ファイルを含める
 - 現在追跡している repo-local Skill の例外は次のとおり
   - `.agents/skills/maintain-japanese-references/`
-  - `.agents/skills/refresh-apm-lockfile/`
 
 ## 作業ルール
 
@@ -61,24 +60,16 @@ Skill を作成・編集する際は、責務の重複を解消し、判断が�
 - このリポジトリのコンテキストを持たないエージェントでも読めることを前提に書く
 - 保守対象の英語正本を追加または変更した場合は、`.agents/skills/maintain-japanese-references/` を使用して日本語参考訳を確認し、正本の意味が変わる場合だけ更新する
 
-## APM source と lockfile の更新手順
+## APM Skill bundle の更新手順
 
-- このリポジトリが担う APM の工程は、Skill と manifest の正本を公開すること、および push 済みの source から repository lockfile を生成・検証することの2つ。consumer repository への package deployment はこの手順の対象外。
-- `apm.yml` は手動で管理し、再生成しない。public Skill の追加・削除・名前変更時に依存一覧を更新する。
-- public Skill または `apm.yml` の変更を commit する前に、関連する Skill eval と、Skill を展開しない repository check を実行する。
-
-  ```bash
-  apm install --frozen --dry-run --no-policy
-  ```
-
-- lockfile を更新する前に、public Skill と manifest source を commit・push する。
-- source commit の push 後は、`.agents/skills/refresh-apm-lockfile/` を lockfile 生成・検証の唯一の入口として使う。APM update command を手動で選択・代替しない。
-- repo-local refresh Skill は、このリポジトリ外の disposable copy で lock 生成、完全な frozen install、`apm audit --ci --no-policy` を実行する。
-- 更新された `apm.lock.yaml` は、`fix: refresh APM lockfile after <change>` のような summary を使って別コミットにする。public source に変更がないと refresh が報告した場合は、lockfile commit を作らない。
-- このリポジトリでは、dry-run ではない `apm install` や `apm update` を実行しない。リポジトリ内の Skill が `.agents/skills/` に展開され、グローバルにインストールされたコピーと重複表示されるため。
+- このリポジトリは、root の `skills/` directory を APM の native `SKILL_BUNDLE` として公開する。root に `apm.yml` や `apm.lock.yaml` を追加せず、consumer repository が manifest と lockfile を所有する。
+- public Skill の変更を commit する前に、関連する Skill eval、repository checker、repository unit test を実行する。
+- 配布動作を変更する場合は、candidate source を commit・push してから、このリポジトリ外の disposable consumer directory で push 済みの完全な commit を検証する。
+- bundle 全体、影響を受ける `--skill` の選択導入経路、影響を受ける個別の `skills/<name>` 導入経路を検証する。生成された consumer lockfile に対して consumer 側の frozen install と audit を実行する。
+- このリポジトリでは、dry-run ではない `apm install` や `apm update` を実行しない。source checkout に consumer manifest、lockfile、deployment artifact が生成されるため。
 - エージェントツールによって作成されることがあるため、空の `.agents/` ディレクトリは許容する。
 - `.agents/` 配下にレビュー用メモ、一時ファイル、その他の作業用成果物を保存しない。代わりに、このリポジトリ外の一時ディレクトリを使う。
-- APM によって展開された `.agents/skills/*` または `apm_modules/` が存在する場合は、停止して報告する。生成物であることを確認し、承認を得た場合に限り削除する。上記の tracked repo-local Skill は保持する。
+- root の APM manifest、APM によって展開された `.agents/skills/*`、または `apm_modules/` が存在する場合は、停止して報告する。生成物であることを確認し、承認を得た場合に限り削除する。上記の tracked repo-local Skill は保持する。
 
 ## コミットメッセージ運用
 
@@ -89,7 +80,7 @@ Skill を作成・編集する際は、責務の重複を解消し、判断が�
 - 既存 Skill の不整合や判断ミスの修正: `fix`
 - rename・責務整理・構造再編など振る舞いを増やさない整理: `refactor`
 - `README.md`、`docs/*`、`skills/*/evals/README.md` などの更新: `docs`
-- `apm.yml` や参照更新: 主目的となる変更の type に合わせる
+- 配布や参照の更新: 主目的となる変更の type に合わせる
 
 ## 承認が必要な作業
 

@@ -34,7 +34,7 @@ Format compatibility is not evidence of client discovery, invocation, or behavio
 | GitHub Copilot / `gh skill` | Client-specific discovery, invocation, metadata, permissions, and runtime behavior must be checked against current official documentation and the target version. | No repository installation, discovery, invocation, permission, or behavior run has been recorded. | Format-compatible; runtime behavior unverified |
 | Gemini CLI | Client-specific discovery, invocation, metadata, permissions, and runtime behavior must be checked against current official documentation and the target version. | No repository installation, discovery, invocation, permission, or behavior run has been recorded. | Format-compatible; runtime behavior unverified |
 | Other clients | A client may be able to consume the standard package, but format compatibility alone does not establish discovery or execution. | No client is locally verified unless a versioned repository-level or Skill-level record exists. | Unverified without a versioned record |
-| APM | APM distributes this repository as an `agent-skills` package; it is not an execution client. Target selection and installation layout do not establish downstream invocation or behavior. | The package checks listed below have been executed. | Distribution verified for the recorded scope only |
+| APM | APM distributes the root `skills/` directory as a native `SKILL_BUNDLE`; it is not an execution client. Target selection and installation layout do not establish downstream invocation or behavior. | The bundle checks listed below have been executed. | Distribution verified for the recorded scope only |
 
 Do not add client-specific metadata to every Skill merely because a client supports it. Add it only when the Skill needs that client's invocation control, UI presentation, tool dependency declaration, or permission behavior. Keep portable `name`, `description`, instructions, and resources as the common layer.
 
@@ -51,7 +51,7 @@ When that evidence supports a client-specific compatibility state, include the r
 | Codex | 0.145.0 | 2026-07-24 | Repository-local discovery, observable target Skill open in 16 baseline/candidate selection runs, and 29 candidate/baseline behavior runs including five affected reruns; explicit `/skills` and `$` invocation, UI, and live permission behavior not executed |
 | GitHub Copilot / `gh skill` | — | — | Not executed; installation, discovery, invocation, permissions, and behavior are unverified |
 | Gemini CLI | — | — | Not executed; installation, discovery, invocation, permissions, and behavior are unverified |
-| APM | 0.26.0 | 2026-07-21 | install resolution, frozen dry-run, offline pack dry-run, audit |
+| APM | 0.26.0 | 2026-09-15 | native bundle installation, `--skill` selection, individual Skill path installation, consumer-side frozen install, audit |
 | Other clients, including `npx skills add` consumers | — | — | Not executed unless separately recorded |
 
 When adding a client-level result to this snapshot, include the client and version, date, installation path, explicit and implicit invocation results when observable, adjacent Skills, model, permission mode, and any unexposed behavior.
@@ -90,13 +90,15 @@ Use `skills-ref` when it is available to check Agent Skills format conformance:
 skills-ref validate
 ```
 
-Also run the repository's frozen non-deploying APM check:
+Distribution changes require a pushed candidate commit. Verify that exact commit from disposable consumer directories outside this repository, covering the full bundle, affected `--skill` selections, affected individual Skill paths, and the consumer-generated lockfile:
 
 ```bash
+apm install 'mtk177a/skills#<commit>' --target agent-skills --no-policy
 apm install --frozen --dry-run --no-policy
+apm audit --ci --no-policy
 ```
 
-Neither command proves triggering, instruction following, permission behavior, or output quality. Use the targeted evaluation procedure in [evaluation.md](evaluation.md) for those claims and [security.md](security.md) for third-party and executable capability review.
+These commands do not prove triggering, instruction following, permission behavior, or output quality. Use the targeted evaluation procedure in [evaluation.md](evaluation.md) for those claims and [security.md](security.md) for third-party and executable capability review.
 
 ## Current sources
 
