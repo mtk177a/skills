@@ -63,17 +63,40 @@ Requirements checklist:
 4. Change a listed expression only when its context makes the change beneficial
 5. Do not equate naturalness with removing every expression named in the reference
 
-### Scenario D: Respect routing and coexistence boundaries
+### Scenario D1: Do not trigger for ordinary Japanese debugging
 
-The routing check contains two matched requests: an ordinary debugging question answered in Japanese, and a request to revise the wording and argument structure of a Japanese technical article with both this Skill and `japanese-tech-writing` available.
+An ordinary debugging question is answered in Japanese but does not ask for writing or editing as its deliverable.
+The executor must answer the question without loading `write-natural-japanese` merely because the response language is Japanese.
 
 Requirements checklist:
 
 1. [critical] Do not apply this Skill merely because the debugging response is Japanese
-2. Select this Skill when Japanese wording itself is an explicit deliverable
-3. Allow `japanese-tech-writing` to control headings, paragraphs, and argument structure in the article case
-4. Apply this Skill only to linguistic realization and wording in the coexistence case
-5. Do not require either Skill as a companion of the other
+2. Answer the debugging question directly without turning it into a prose-editing task
+
+### Scenario D2: Trigger for an explicit Japanese wording deliverable
+
+A request names natural Japanese wording as its deliverable without naming this Skill.
+The executor must load `write-natural-japanese`, preserve the supplied behavior and condition, and remove source-language interference.
+
+Requirements checklist:
+
+1. [critical] Load `write-natural-japanese` from the implicit wording request
+2. [critical] Preserve the behavior for invalid values and the `reload_mode` condition
+3. Replace unnecessary English generalities and source-language structure with natural Japanese
+4. Preserve identifiers and return only the revised text
+
+### Scenario D3: Compose explicitly selected Japanese writing Skills
+
+A request names `write-natural-japanese` and `japanese-tech-writing` as the two available Skills to use on a technical article fragment.
+The executor must read both Skills and apply their separate wording and document-structure responsibilities without treating either as a companion dependency.
+
+Requirements checklist:
+
+1. [critical] Read both named Skills
+2. [critical] Preserve `sync_mode` and keep the race condition as a hypothesis
+3. Apply `write-natural-japanese` to linguistic realization and wording
+4. Apply `japanese-tech-writing` to headings, paragraphs, and argument structure
+5. Return only the revised article fragment
 
 ### Scenario E: Preserve technical determinism
 
@@ -87,17 +110,29 @@ Requirements checklist:
 3. Preserve a technical term when translating it would lose the property
 4. Do not add unsupported claims about randomness, implementation, or guarantees
 
-### Scenario F: Distinguish contract terminology from the meaning it represents
+### Scenario F1: Make generic contract wording concrete
 
-A Japanese API design note calls output requirements and compatibility guarantees a 「契約」 while also referring to contract testing as an established practice.
-The executor must make the generic uses concrete without removing the established technical term.
+A Japanese API design note calls an output requirement and a compatibility requirement a 「契約」 while also referring to contract testing as an established practice.
+The executor must state the two requirements directly without removing the established technical term.
 
 Requirements checklist:
 
 1. [critical] Preserve the stated output requirements and compatibility guarantees
-2. Identify whether each generic use refers to requirements, guaranteed behavior, acceptance conditions, compatibility, or responsibility
+2. [critical] Express each generic use directly as the output behavior or requirement and the compatibility requirement it represents; retaining 「契約」 as the governing label does not satisfy this requirement
 3. Preserve contract testing as an established technical term
-4. Do not replace every occurrence of 「契約」 mechanically or invent legal force, parties, or enforcement behavior
+4. Do not invent legal force, parties, enforcement, or violation behavior
+
+### Scenario F2: Preserve defined and established contract terminology
+
+A technical explanation uses contract testing and Design by Contract as established terms and explicitly defines `API contract` as a term used in its public specification.
+The executor must preserve those semantic roles without mechanically translating `API contract` into 「API の契約」.
+
+Requirements checklist:
+
+1. [critical] Preserve what contract testing checks and its distinction from Design by Contract
+2. [critical] Preserve contract testing, Design by Contract, and the explicitly defined `API contract`
+3. Do not mechanically translate `API contract` into the generic Japanese phrase 「API の契約」
+4. Do not add requirements, enforcement behavior, or legal meaning
 
 ### Scenario G: Distinguish gates from entrances, checks, and controls
 
@@ -113,71 +148,68 @@ Requirements checklist:
 
 ## Comparison procedure
 
-1. Run each baseline and candidate task once in separate ephemeral, read-only Codex sessions with the same model, reasoning setting, repository instructions, and user input.
-2. Give the candidate session this Skill and only the supporting reference required by the scenario; do not reveal grading criteria to either executor.
-3. Remove run labels and randomize output order before grading.
-4. Use a separate Codex session to compare meaning preservation, technical accuracy, Japanese naturalness, terminology, and over-editing against the scenario checklist.
-5. Record observable Skill-loading evidence when the client exposes it; otherwise mark routing as `not exposed` rather than inferring activation from wording.
-6. Repeat only an ambiguous or conflicting case and state why the additional observation was needed.
-7. Keep raw prompts and outputs in a disposable directory outside the repository, and commit only the summarized result.
+1. Run each selected task once in a separate ephemeral, read-only Codex session with the same model, reasoning setting, repository instructions, and user input for every condition being compared.
+2. Use matched baseline and candidate sessions only for the scenarios whose acceptance depends on comparative output quality; use candidate-only sessions for routing and coexistence checks.
+3. Give each candidate session this Skill and only the adjacent Skill or supporting reference required by the scenario; do not reveal grading criteria to the executor.
+4. Grade each output against every requirement before comparing the two outputs.
+5. For F1, treat generic 「契約」 retained as the governing label as a failure of the concrete-wording requirement even if the surrounding sentence states the underlying facts.
+6. Remove run labels and randomize output order before comparing outputs that satisfy the critical requirements.
+7. Use a separate Codex session to compare meaning preservation, technical accuracy, Japanese naturalness, terminology, and over-editing when independent comparative judgment is needed; record targeted requirement compliance separately from overall prose preference.
+8. Record observable Skill-loading evidence when the client exposes it; otherwise mark routing as `not exposed` rather than inferring activation from wording.
+9. Repeat only an ambiguous or conflicting case and state why the additional observation was needed.
+10. Keep raw prompts and outputs in a disposable directory outside the repository, and commit only the summarized result.
 
-## Iter 1 — Codex comparison (Luna rerun)
+## Evaluation fixtures
 
-- Evaluation date: `2026-09-14`
-- Candidate source: PR #43 working tree after the deterministic-wording fix; no commit was created for this evaluation
-- Client: Codex CLI `0.154.0`
+[`evals.json`](evals.json) contains the complete executor inputs, isolation, routing, and coexistence configurations, and hidden grading requirements for Scenarios A through E, F1, F2, and G.
+Executors receive only the shared executor instruction and the selected scenario prompt, except that the D1 routing-negative case omits the writing-specific shared instruction.
+D2 tests implicit routing with only `write-natural-japanese` available, while D3 names both available Skills in the request without using a client-specific invocation syntax.
+
+## Current result — 2026-09-15
+
+- Candidate source: working tree based on `d5b4200c41f1c42f4616517c3c16e62994a68332`
+- `SKILL.md` SHA-256: `2e1fed1d442d64e9969705a4b44deacb98df0c811468ecda15be63399b64cf2b`
+- `references/wording-decisions.md` SHA-256: `a63a19f2d11313a50d7d91f2209757c0000ad0ef04e64b845aa6b77b90f07b88`
+- Fixture SHA-256: `eb58a0fb35afaac5f67e16aff201c623b8301ec7207797d5028662b591c3f50c`
+- Client: Codex CLI `0.154.0-alpha.6.2`
 - Model: `gpt-5.6-luna`
 - Reasoning effort: `max`
-- Sandbox: separate ephemeral, read-only sessions with identical task text
-- Execution: baseline fixtures omitted the target Skill; candidate fixtures contained the current Skill and reference under a unique temporary path, and candidate loading was confirmed from JSONL command output
-- Grading: direct checklist grading plus a separate Luna session with baseline and candidate outputs in blinded order
+- Retained evidence: the matched baseline and candidate results for A through C, E, F1, F2, and G, and the routing-negative result for D1, remain applicable because their inputs, requirements, and evaluated Skill content are unchanged
+- New execution: D2 and D3 each ran once as candidate-only tasks in separate ephemeral, read-only sessions
+- Isolation: D2 contained only the recorded working-tree copy of `write-natural-japanese`; D3 also contained the repository copy of `japanese-tech-writing`; exact global copies of adjacent writing Skills were disabled
+- Invocation: `codex exec --ephemeral --json --ignore-rules --skip-git-repo-check --sandbox read-only --model gpt-5.6-luna -c 'model_reasoning_effort="max"' -c 'skills.config=[<disabled-global-adjacent-skills>]' -C <disposable-fixture> -`
+- Authentication: user configuration remained loaded because the earlier `--ignore-user-config` route failed before model execution; no global target Skill content was observed in the accepted traces
+- Grading: the retained baseline comparisons use direct requirement checks and the existing blinded Luna comparison; D2 and D3 use direct requirement and observable-load checks because no relative prose judgment is needed
+- Repetition: D2 and D3 were not repeated because their first results were complete and unambiguous; the earlier G repetition remains applicable
 
-The A–E matched comparison passed every assigned critical requirement.
-Cases A through D preserved the stated behavior, conditions, uncertainty, identifiers, quotation, and established terminology.
-Case E preserved the technical property that identical input produces identical output, and the candidate output did not reduce `deterministic` to merely mechanical or routine processing.
+| Scenario | Evidence | Decision |
+| --- | --- | --- |
+| A | Preserved all technical conditions and removed source-language interference; both matched outputs passed, with the baseline preferred overall | Pass |
+| B | Preserved parsing, warning, and runtime-use facts without relying on the vague phrase; the candidate was preferred | Pass |
+| C | Preserved uncertainty, established terms, quotation, identifiers, and investigation order; the candidate was preferred | Pass |
+| D1 | Answered the debugging question directly without reading `write-natural-japanese/SKILL.md` | Pass |
+| D2 | Read `write-natural-japanese/SKILL.md` without the Skill being named, preserved the invalid-value and `reload_mode` conditions, and removed the source-language interference | Pass |
+| D3 | Read both named Skill files, preserved `sync_mode` and the hypothesized cause, and applied wording and article-structure responsibilities in the output | Pass |
+| E | Preserved the same-input, same-settings, same-result property without reducing it to automatic execution; the candidate was preferred | Pass |
+| F1 | Read the Skill and reference, replaced generic 「契約」 with guaranteed behavior and a compatibility requirement, and preserved `contract testing`; the candidate was preferred | Pass |
+| F2 | Preserved contract testing, Design by Contract, and the explicitly defined `API contract`; both outputs passed, with the baseline preferred overall | Pass |
+| G | Preserved the workflow and DeployGuard Quality Gate and expressed the start, test, approval, access decision, and formal quality check as separate roles; evidence for automated-check wording remains limited | Pass |
 
-The first blinded grader pass was excluded from the result because its Case C fixture omitted the source word 「キャッシュ」 and its Case A judgment assumed a warning-versus-notification distinction that the source did not specify.
-A targeted Luna re-grade with the corrected Case C facts and the original Case A wording passed both cases with no supported critical violation.
+### Acceptance decision
 
-The routing check used a disposable candidate repository and JSONL loading evidence.
-An ordinary Japanese debugging request did not read either target Skill.
-A request covering both Japanese wording and technical-article structure read the local `write-natural-japanese/SKILL.md`, `japanese-tech-writing/SKILL.md`, and `references/wording-decisions.md`, and the resulting draft preserved the uncertainty and identifier while applying both responsibilities.
+The current candidate is accepted in the recorded Codex and Luna reference environment for the evaluated responsibilities.
+Every critical requirement passed, including implicit selection of `write-natural-japanese`, explicit coexistence with `japanese-tech-writing`, context-dependent contract wording, and preservation of meaning, certainty, identifiers, and established terminology.
 
-Installed global copies of the target Skills were disabled with exact `skills.config` path overrides for the accepted runs.
-User configuration remained loaded because `--ignore-user-config` selected an authentication route that returned `401` before model execution; those attempts were excluded from pass evidence.
-No global target Skill content was observed in the accepted traces.
+The prior D2 observations are excluded from acceptance evidence because that fixture incorrectly made implicit selection of an adjacent independent Skill part of the target Skill's coexistence requirement.
+The replacement D2 evaluates implicit routing of `write-natural-japanese`, while D3 evaluates composition after both independent Skills have been named for use.
+Implicit selection of `japanese-tech-writing` is not evaluated and is not an acceptance requirement for this Skill.
 
-### Result
+Before the final suite, a focused F1 candidate check exposed that the earlier conditional reference link did not reliably cause the executor to read the reference.
+The final candidate adds the expression names to the `SKILL.md` reference-reading condition; the complete result table uses only executions made after that correction.
 
-- Output quality: pass for A–E under direct checklist grading and the corrected blinded re-grade
-- Meaning and certainty preservation: pass in all five matched cases
-- Technical determinism regression: pass in the targeted Case E
-- Established terminology and quotation: pass in Case C
-- Ordinary-conversation boundary: pass from observable absence of target Skill reads
-- Coexistence with `japanese-tech-writing`: pass from observable reads of both Skills and the target reference
-- Static validation: `git diff --check` and `python3 scripts/check_repository.py` passed after the fix
-- Repetition: targeted re-grade performed for A and C because the first grader had an invalid fixture and an ambiguous judgment; no conflicting supported finding remained
+Static validation passed with the bundled `quick_validate.py`, `python3 scripts/check_repository.py`, JSON parsing, and `git diff --check` before model execution.
+The same checks passed again after this result record was updated.
 
-The evidence supports this Skill on the executed Codex CLI `0.154.0` with `gpt-5.6-luna` at `max` reasoning only.
-It does not establish behavior in Claude Code, GitHub Copilot, Gemini CLI, other models, other reasoning settings, or other execution environments.
-Raw prompts, outputs, and JSONL events were kept in disposable directories outside the repository and are not repository artifacts.
-
-## Iter 2 — 2026-09-15 static-only structure revision
-
-- Change: reorganize `references/wording-decisions.md` into general tendencies, expression-specific examples, and expressions to preserve without changing its decisions or the Skill's responsibility.
-- Affected responsibility: presentation and navigation of the existing wording guidance; executable behavior, discovery, and adjacent-Skill responsibility boundaries are unchanged.
-- Selected path: static-only because the change preserves the existing instructions and examples while making their hierarchy and repeated fields explicit.
-- Deterministic checks: bundled `quick_validate.py`, `python3 scripts/check_repository.py`, and `git diff --check` all passed.
-- Result-to-decision rule: accept the revision if every prior decision and example remains represented once under the new hierarchy and all deterministic checks pass.
-- Untested boundary: no Luna evaluation was rerun, so the behavioral effect of the new organization remains unverified.
-
-## Iter 3 — 2026-09-15 contract and gate guidance
-
-- Change: add context-dependent decisions for 「契約」, 「ゲート」, and 「門」, together with Scenarios F and G.
-- Affected responsibility: wording behavior changes because the reference now distinguishes generic abstractions from legal, formal, and established technical terminology.
-- Selected path for this iteration: static validation only while further wording adjustments remain in progress.
-- Behavioral status: not rerun; Iter 1 predates this guidance and remains historical evidence rather than acceptance evidence for the current Skill.
-- Final acceptance plan: after the Skill content is frozen, rerun Scenarios A through G as matched baseline and candidate tasks in separate read-only Codex sessions using `gpt-5.6-luna` with `max` reasoning, then grade outputs in blinded order with a separate session.
-- Repetition rule: repeat only a case whose first comparison is ambiguous or conflicting.
-- Deterministic checks: bundled `quick_validate.py`, `python3 scripts/check_repository.py`, and `git diff --check` passed.
-- Untested boundary: the behavioral effect of the new decisions and the reorganized reference remains unverified until the final Luna rerun.
+This evidence applies only to the recorded working-tree content on Codex CLI `0.154.0-alpha.6.2` with `gpt-5.6-luna` at `max` reasoning.
+Claude Code, GitHub Copilot, Gemini CLI, other models, other reasoning settings, and other execution environments remain unverified.
+Raw prompts, outputs, JSONL events, and the blinding map were kept in a disposable directory outside the repository and are not repository artifacts.
