@@ -13,6 +13,7 @@ dependencies:
     - mtk177a/skills/skills/clarify-request
     - mtk177a/skills/skills/define-referents
     - mtk177a/skills/skills/japanese-tech-writing
+    - mtk177a/skills/skills/write-natural-japanese
     - mtk177a/skills/skills/cognitive-rhythm-writing
     - mtk177a/skills/skills/curate-repo-docs
     - mtk177a/skills/skills/revise-docs-fresh-eyes

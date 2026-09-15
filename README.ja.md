@@ -13,7 +13,7 @@
 
 ## Skill 一覧
 
-開発作業全般をカバーする 26 の Skill を収録しています。
+開発作業全般をカバーする 27 の Skill を収録しています。
 
 | Skill | 説明 |
 | --- | --- |
@@ -43,6 +43,7 @@
 | `summarize-changes` | 差分またはコミット範囲をレビューや文書化のために要約する |
 | `triage-review-feedback` | 指摘の assessment と state を、`Act now`・`Defer`・`No action` の response decision から分けて評価する |
 | `validate-fix` | 特定済み指摘への通常の修正後再レビューを、適切な read-only evidence で限定的に行う |
+| `write-natural-japanese` | 意味、確度、定着した用語を保ちながら、文脈に合う表現で日本語の文章を作成・推敲する |
 
 ## インストール
 
