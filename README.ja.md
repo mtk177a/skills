@@ -104,7 +104,6 @@ python3 scripts/check_repository.py
 ├── CLAUDE-ja.md
 ├── .github/
 │   └── copilot-instructions.md
-├── apm.yml
 ├── docs/
 │   ├── authoring.md
 │   ├── compatibility.md

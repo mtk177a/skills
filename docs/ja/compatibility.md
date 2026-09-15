@@ -38,7 +38,7 @@ Format 互換性は、client の discovery、invocation、behavioral compatibili
 | GitHub Copilot / `gh skill` | client 固有の discovery、invocation、metadata、permission、runtime behavior は、現行公式文書と対象 version に照らして確認する必要がある | repository installation、discovery、invocation、permission、behavior の実行記録なし | Format-compatible。runtime behavior は未検証 |
 | Gemini CLI | client 固有の discovery、invocation、metadata、permission、runtime behavior は、現行公式文書と対象 version に照らして確認する必要がある | repository installation、discovery、invocation、permission、behavior の実行記録なし | Format-compatible。runtime behavior は未検証 |
 | その他の client | 標準 package を扱える可能性はあるが、format 互換性だけでは discovery または実行を確認できない | repository-level または Skill-level の version 付き記録がない client は、ローカルで未検証 | version 付き記録がない場合は未検証 |
-| APM | このリポジトリを `agent-skills` package として配布するが、実行 client ではない。target 選択と installation layout は、downstream の invocation または behavior を示さない | 下記の package check を実行済み | 記録した範囲の distribution のみ検証済み |
+| APM | root の `skills/` directory を native `SKILL_BUNDLE` として配布するが、実行 client ではない。target 選択と installation layout は、downstream の invocation または behavior を示さない | 下記の bundle check を実行済み | 記録した範囲の distribution のみ検証済み |
 
 client が対応しているという理由だけで、client 固有 metadata を全 Skills に追加しません。その client の invocation control、UI 表示、tool dependency declaration、permission behavior が必要な場合だけ追加します。portable な `name`、`description`、instructions、resources を共通層として維持します。
 
@@ -55,7 +55,7 @@ client が対応しているという理由だけで、client 固有 metadata �
 | Codex | 0.145.0 | 2026-07-24 | repository-local discovery、baseline/candidate 16 selection run での target Skill open 観測、影響 case の 5 回の再実行を含む candidate/baseline 29 behavior run。明示的な `/skills` と `$` invocation、UI、live permission behavior は未実行 |
 | GitHub Copilot / `gh skill` | — | — | 未実行。installation、discovery、invocation、permission、behavior は未検証 |
 | Gemini CLI | — | — | 未実行。installation、discovery、invocation、permission、behavior は未検証 |
-| APM | 0.26.0 | 2026-07-21 | install resolution、frozen dry-run、offline pack dry-run、audit |
+| APM | 0.26.0 | 2026-09-15 | native bundle の導入、`--skill` の選択導入、個別 Skill path の導入、consumer 側の frozen install、audit |
 | `npx skills add` の利用先を含むその他の client | — | — | 個別の記録がない限り未実行 |
 
 このスナップショットに client-level の結果を追加するときは、client と version、日付、installation path、観測できる場合は明示・暗黙 invocation の結果、隣接 Skills、model、permission mode、観測できなかった挙動を含めます。
@@ -94,13 +94,15 @@ APM は複数 client を対象にできます。installation command を実行�
 skills-ref validate
 ```
 
-repository の非配布 frozen APM check も実行します:
+配布を変更する場合は、push 済みの candidate commit が必要です。このリポジトリ外の disposable consumer directory から、その完全な commit について、bundle 全体、影響を受ける `--skill` の選択、影響を受ける個別 Skill path、consumer が生成した lockfile を検証します。
 
 ```bash
+apm install 'mtk177a/skills#<commit>' --target agent-skills --no-policy
 apm install --frozen --dry-run --no-policy
+apm audit --ci --no-policy
 ```
 
-どちらの command も、triggering、instruction following、permission behavior、output quality を証明しません。それらの claim には [evaluation.md](evaluation.md) の targeted evaluation procedure を使い、第三者と executable capability の review には [security.md](security.md) を使います。
+これらの command は、triggering、instruction following、permission behavior、output quality を証明しません。それらの claim には [evaluation.md](evaluation.md) の targeted evaluation procedure を使い、第三者と executable capability の review には [security.md](security.md) を使います。
 
 ## 現行情報源
 

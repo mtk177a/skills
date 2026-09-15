@@ -97,7 +97,6 @@ This checker is the static validation layer for Skill evaluation. It does not re
 ├── CLAUDE-ja.md
 ├── .github/
 │   └── copilot-instructions.md
-├── apm.yml
 ├── docs/
 │   ├── authoring.md
 │   ├── compatibility.md

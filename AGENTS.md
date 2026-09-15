@@ -42,11 +42,10 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 
 - Repository-local operational Skills may live under `.agents/skills/<skill-name>/` only when they are exclusively for maintaining this repository itself and should not be distributed as part of the public Skill catalog.
 - These repo-local Skills are source files, not APM deployment output, when they are explicitly tracked by git.
-- Do not add repo-local Skills to `README.md`, `README.ja.md`, or `apm.yml`.
+- Do not add repo-local Skills to the public Skill catalog or distribution bundle.
 - Keep repo-local Skill names kebab-case and include `SKILL.md`, `SKILL-ja.md`, and minimal supporting files only when needed.
 - The current tracked repo-local Skill exceptions are:
   - `.agents/skills/maintain-japanese-references/`
-  - `.agents/skills/refresh-apm-lockfile/`
 
 ## Working rules
 
@@ -59,24 +58,16 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 - Skill bodies must be readable by agents that have no prior context about this repository
 - When a maintained English canonical file is added or changed, use `.agents/skills/maintain-japanese-references/` to review its Japanese counterpart and update it only when the canonical meaning changes
 
-## APM source and lockfile workflow
+## APM Skill bundle workflow
 
-- This repository owns two APM phases: publishing canonical Skill and manifest source, then generating and verifying the repository lockfile from that pushed source. Deploying packages into consumer repositories is outside this workflow.
-- Maintain `apm.yml` manually; do not regenerate it. Update its dependency list when adding, removing, or renaming a public Skill.
-- Before committing a public Skill or `apm.yml` change, run the relevant Skill evaluations and the non-deploying repository check:
-
-  ```bash
-  apm install --frozen --dry-run --no-policy
-  ```
-
-- Commit and push the public Skill and manifest source before refreshing the lockfile.
-- After the source commit is pushed, use `.agents/skills/refresh-apm-lockfile/` as the single entry point for lockfile generation and verification. Do not choose or substitute APM update commands manually.
-- The repo-local refresh Skill runs lock generation, a full frozen install, and `apm audit --ci --no-policy` in a disposable copy outside this repository.
-- Commit an updated `apm.lock.yaml` separately with a summary such as `fix: refresh APM lockfile after <change>`. If the refresh reports that no public source changed, do not create a lockfile commit.
-- Do not run a non-dry-run `apm install` or `apm update` in this repository. They deploy the repository's Skills to `.agents/skills/`, causing them to appear alongside globally installed copies.
+- This repository publishes the root `skills/` directory as a native APM `SKILL_BUNDLE`. Do not add a root `apm.yml` or `apm.lock.yaml`; consumer repositories own their manifests and lockfiles.
+- Before committing a public Skill change, run the relevant Skill evaluations, the repository checker, and the repository unit tests.
+- When distribution behavior changes, commit and push the candidate source, then verify the exact pushed commit from disposable consumer directories outside this repository.
+- Verify the full bundle, any affected `--skill` selection path, and any affected individual `skills/<name>` installation path. Run consumer-side frozen install and audit checks against the generated consumer lockfile.
+- Do not run a non-dry-run `apm install` or `apm update` in this repository. They create consumer manifests, lockfiles, and deployment artifacts in the source checkout.
 - An empty `.agents/` directory may exist because agent tools can create it.
 - Do not store review notes, temporary files, or other working artifacts under `.agents/`; use a temporary directory outside this repository instead.
-- If APM-deployed `.agents/skills/*` or `apm_modules/` are present, stop and report them. Remove them only after confirming they are generated artifacts and obtaining approval; preserve the explicitly tracked repo-local operational Skills listed above.
+- If root APM manifests, APM-deployed `.agents/skills/*`, or `apm_modules/` are present, stop and report them. Remove them only after confirming they are generated artifacts and obtaining approval; preserve the explicitly tracked repo-local operational Skill listed above.
 
 ## Commit message convention
 
@@ -87,7 +78,7 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 - Fixing an inconsistency or judgment error in an existing Skill: use `fix`
 - Renaming, reorganizing, or restructuring without adding behavior: use `refactor`
 - Updating `README.md`, `docs/*`, or `skills/*/evals/README.md`: use `docs`
-- `apm.yml` or reference updates: use the type that matches the primary purpose of the change
+- Distribution or reference updates: use the type that matches the primary purpose of the change
 
 ## Changes that require approval
 
