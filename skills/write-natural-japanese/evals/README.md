@@ -7,7 +7,7 @@ The Skill and reference are original MIT-licensed material and do not adapt a th
 
 - Affected responsibility: create a new language-level writing Skill and define its routing and coexistence boundary with `japanese-tech-writing`.
 - Purpose: determine whether the Skill improves context-appropriate Japanese without changing meaning, certainty, quotations, or established terminology.
-- Selected path: matched baseline comparison for subjective output quality, a targeted regression case for the discovered deterministic-wording ambiguity, plus targeted routing and coexistence checks for the new discovery boundary.
+- Selected path: matched baseline comparison for subjective output quality, targeted cases for technical determinism and context-dependent uses of contract and gate terminology, plus routing and coexistence checks for the discovery boundary.
 - Escalation: repeat only a case whose first comparison is ambiguous, conflicting, or exposes unstable behavior.
 - Untested boundary: behavior outside the executed Codex client and model remains unverified.
 
@@ -87,6 +87,30 @@ Requirements checklist:
 3. Preserve a technical term when translating it would lose the property
 4. Do not add unsupported claims about randomness, implementation, or guarantees
 
+### Scenario F: Distinguish contract terminology from the meaning it represents
+
+A Japanese API design note calls output requirements and compatibility guarantees a 「契約」 while also referring to contract testing as an established practice.
+The executor must make the generic uses concrete without removing the established technical term.
+
+Requirements checklist:
+
+1. [critical] Preserve the stated output requirements and compatibility guarantees
+2. Identify whether each generic use refers to requirements, guaranteed behavior, acceptance conditions, compatibility, or responsibility
+3. Preserve contract testing as an established technical term
+4. Do not replace every occurrence of 「契約」 mechanically or invent legal force, parties, or enforcement behavior
+
+### Scenario G: Distinguish gates from entrances, checks, and controls
+
+A Japanese delivery note uses 「ゲート」 or 「門」 for a starting point, an automated check, a human approval, and an access-control decision while also naming a product's Quality Gate.
+The executor must express each role clearly without changing the formal product term.
+
+Requirements checklist:
+
+1. [critical] Preserve which step starts the process and which decisions prevent progress or access
+2. Distinguish the starting point, automated check, human approval, continuation decision, and access control
+3. Preserve the product's formal Quality Gate name
+4. Do not treat every entrance as a pass/fail control or replace every gate expression with the same word
+
 ## Comparison procedure
 
 1. Run each baseline and candidate task once in separate ephemeral, read-only Codex sessions with the same model, reasoning setting, repository instructions, and user input.
@@ -146,3 +170,14 @@ Raw prompts, outputs, and JSONL events were kept in disposable directories outsi
 - Deterministic checks: bundled `quick_validate.py`, `python3 scripts/check_repository.py`, and `git diff --check` all passed.
 - Result-to-decision rule: accept the revision if every prior decision and example remains represented once under the new hierarchy and all deterministic checks pass.
 - Untested boundary: no Luna evaluation was rerun, so the behavioral effect of the new organization remains unverified.
+
+## Iter 3 — 2026-09-15 contract and gate guidance
+
+- Change: add context-dependent decisions for 「契約」, 「ゲート」, and 「門」, together with Scenarios F and G.
+- Affected responsibility: wording behavior changes because the reference now distinguishes generic abstractions from legal, formal, and established technical terminology.
+- Selected path for this iteration: static validation only while further wording adjustments remain in progress.
+- Behavioral status: not rerun; Iter 1 predates this guidance and remains historical evidence rather than acceptance evidence for the current Skill.
+- Final acceptance plan: after the Skill content is frozen, rerun Scenarios A through G as matched baseline and candidate tasks in separate read-only Codex sessions using `gpt-5.6-luna` with `max` reasoning, then grade outputs in blinded order with a separate session.
+- Repetition rule: repeat only a case whose first comparison is ambiguous or conflicting.
+- Deterministic checks: bundled `quick_validate.py`, `python3 scripts/check_repository.py`, and `git diff --check` passed.
+- Untested boundary: the behavioral effect of the new decisions and the reorganized reference remains unverified until the final Luna rerun.
