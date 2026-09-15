@@ -184,20 +184,20 @@ H tests the source-language translation path with only `write-natural-japanese` 
 
 ## Current result — 2026-09-15
 
-- Candidate source: working tree based on `d5b4200c41f1c42f4616517c3c16e62994a68332`
-- `SKILL.md` SHA-256: `2e1fed1d442d64e9969705a4b44deacb98df0c811468ecda15be63399b64cf2b`
+- Candidate source: commit `74eee2fad038e5f94ad495705d70114cb82424b7`
+- `SKILL.md` SHA-256: `6f09028839f9f61274d95fcf0812dc7fd26ea7e364d6719c5c8d135352bcadb7`
 - `references/wording-decisions.md` SHA-256: `a63a19f2d11313a50d7d91f2209757c0000ad0ef04e64b845aa6b77b90f07b88`
-- Fixture SHA-256: `eb58a0fb35afaac5f67e16aff201c623b8301ec7207797d5028662b591c3f50c`
+- Fixture SHA-256: `8bb28727058799b78fc7256049ec4a7ed1e2ac81ddc3e1e12271f8d332a6a35c`
 - Client: Codex CLI `0.154.0-alpha.6.2`
 - Model: `gpt-5.6-luna`
 - Reasoning effort: `max`
-- Retained evidence: the matched baseline and candidate results for A through C, E, F1, F2, and G, and the routing-negative result for D1, remain applicable because their inputs, requirements, and evaluated Skill content are unchanged
-- New execution: D2 and D3 each ran once as candidate-only tasks in separate ephemeral, read-only sessions
-- Isolation: D2 contained only the recorded working-tree copy of `write-natural-japanese`; D3 also contained the repository copy of `japanese-tech-writing`; exact global copies of adjacent writing Skills were disabled
+- Retained evidence: the results for A through G remain applicable because the new instruction changes only translation from another language into Japanese; none of those scenarios exercises that path
+- New execution: H ran once against the final fixture as a candidate-only task in an ephemeral, read-only session
+- Isolation: H contained only the commit copy of `write-natural-japanese` and its wording reference; exact global copies of adjacent writing Skills were disabled
 - Invocation: `codex exec --ephemeral --json --ignore-rules --skip-git-repo-check --sandbox read-only --model gpt-5.6-luna -c 'model_reasoning_effort="max"' -c 'skills.config=[<disabled-global-adjacent-skills>]' -C <disposable-fixture> -`
 - Authentication: user configuration remained loaded because the earlier `--ignore-user-config` route failed before model execution; no global target Skill content was observed in the accepted traces
-- Grading: the retained baseline comparisons use direct requirement checks and the existing blinded Luna comparison; D2 and D3 use direct requirement and observable-load checks because no relative prose judgment is needed
-- Repetition: D2 and D3 were not repeated because their first results were complete and unambiguous; the earlier G repetition remains applicable
+- Grading: H used direct requirement and observable-reference-read checks because the change concerns a required read and contextual distinctions rather than relative prose preference
+- Repetition: the final H fixture was not repeated because its first result was complete and unambiguous; exploratory executions against superseded fixture versions are excluded from acceptance evidence
 
 | Scenario | Evidence | Decision |
 | --- | --- | --- |
@@ -211,22 +211,27 @@ H tests the source-language translation path with only `write-natural-japanese` 
 | F1 | Read the Skill and reference, replaced generic 「契約」 with guaranteed behavior and a compatibility requirement, and preserved `contract testing`; the candidate was preferred | Pass |
 | F2 | Preserved contract testing, Design by Contract, and the explicitly defined `API contract`; both outputs passed, with the baseline preferred overall | Pass |
 | G | Preserved the workflow and DeployGuard Quality Gate and expressed the start, test, approval, access decision, and formal quality check as separate roles; evidence for automated-check wording remains limited | Pass |
+| H | Read the full wording reference, expressed the generic source-language terms as API requirements, a setting that is not applied, the schema reference source, and reviewer approval, and preserved `result_id`, `mode`, and DeployGuard Quality Gate | Pass |
 
 ### Acceptance decision
 
 The current candidate is accepted in the recorded Codex and Luna reference environment for the evaluated responsibilities.
-Every critical requirement passed, including implicit selection of `write-natural-japanese`, explicit coexistence with `japanese-tech-writing`, context-dependent contract wording, and preservation of meaning, certainty, identifiers, and established terminology.
+Every critical requirement passed, including implicit selection of `write-natural-japanese`, explicit coexistence with `japanese-tech-writing`, contextual translation from an English source, context-dependent contract wording, and preservation of meaning, certainty, identifiers, and established terminology.
+
+H confirms that a source-language translation causes the executor to read the full wording reference rather than waiting for a Japanese expression-specific trigger.
+The accepted output translated the generic source expressions by their stated roles and retained only the formal product feature name.
+Earlier exploratory H executions used source text that did not distinguish permission from possibility or a generic phrase from a named pipeline stage clearly enough; those fixtures were superseded before the acceptance execution.
 
 The prior D2 observations are excluded from acceptance evidence because that fixture incorrectly made implicit selection of an adjacent independent Skill part of the target Skill's coexistence requirement.
 The replacement D2 evaluates implicit routing of `write-natural-japanese`, while D3 evaluates composition after both independent Skills have been named for use.
 Implicit selection of `japanese-tech-writing` is not evaluated and is not an acceptance requirement for this Skill.
 
-Before the final suite, a focused F1 candidate check exposed that the earlier conditional reference link did not reliably cause the executor to read the reference.
-The final candidate adds the expression names to the `SKILL.md` reference-reading condition; the complete result table uses only executions made after that correction.
+Before the earlier full suite, a focused F1 candidate check exposed that the original conditional reference link did not reliably cause the executor to read the reference.
+The final candidate retains the expression-specific route and additionally requires the full reference to be read for translation from another language into Japanese.
 
 Static validation passed with the bundled `quick_validate.py`, `python3 scripts/check_repository.py`, JSON parsing, and `git diff --check` before model execution.
 The same checks passed again after this result record was updated.
 
-This evidence applies only to the recorded working-tree content on Codex CLI `0.154.0-alpha.6.2` with `gpt-5.6-luna` at `max` reasoning.
+This evidence applies only to the recorded candidate commit on Codex CLI `0.154.0-alpha.6.2` with `gpt-5.6-luna` at `max` reasoning.
 Claude Code, GitHub Copilot, Gemini CLI, other models, other reasoning settings, and other execution environments remain unverified.
 Raw prompts, outputs, JSONL events, and the blinding map were kept in a disposable directory outside the repository and are not repository artifacts.
