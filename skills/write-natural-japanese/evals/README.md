@@ -8,6 +8,8 @@ The Skill and reference are original MIT-licensed material and do not adapt a th
 - Affected responsibility: create a new language-level writing Skill and define its routing and coexistence boundary with `japanese-tech-writing`.
 - Purpose: determine whether the Skill improves context-appropriate Japanese without changing meaning, certainty, quotations, or established terminology.
 - Selected path: matched baseline comparison for subjective output quality, targeted cases for technical determinism and context-dependent uses of contract and gate terminology, plus routing and coexistence checks for the discovery boundary.
+- Current targeted change: require the wording reference to be read when translating from another language into Japanese, because source-language expressions may not match the Japanese terms that trigger expression-specific reading.
+- Current selected path: one candidate-only English-source translation case is sufficient to expose the changed reference-reading path, contextual translation, and preservation of a formal term; unchanged core, routing, and coexistence cases are not rerun.
 - Escalation: repeat only a case whose first comparison is ambiguous, conflicting, or exposes unstable behavior.
 - Untested boundary: behavior outside the executed Codex client and model remains unverified.
 
@@ -146,6 +148,20 @@ Requirements checklist:
 3. Preserve the product's formal Quality Gate name
 4. Do not treat every entrance as a pass/fail control or replace every gate expression with the same word
 
+### Scenario H: Translate source-language wording through contextual guidance
+
+An English technical explanation uses `API contract`, `silently fails`, `source of truth`, and `quality gate` for different roles while also naming the formal product feature DeployGuard Quality Gate.
+The executor must read the wording reference and translate the general expressions according to the supplied facts without changing the formal term.
+
+Requirements checklist:
+
+1. [critical] Read `references/wording-decisions.md`; wording alone does not prove the read
+2. [critical] Preserve the output, compatibility, validation, warning, runtime-use, schema-management, approval, and product-check facts
+3. [critical] Translate the general source expressions by their stated roles instead of applying corresponding Japanese labels mechanically
+4. [critical] Preserve `result_id`, `mode`, and DeployGuard Quality Gate
+5. Do not invent legal meaning or behavior absent from the source
+6. Return only the translated reader-facing text
+
 ## Comparison procedure
 
 1. Run each selected task once in a separate ephemeral, read-only Codex session with the same model, reasoning setting, repository instructions, and user input for every condition being compared.
@@ -161,9 +177,10 @@ Requirements checklist:
 
 ## Evaluation fixtures
 
-[`evals.json`](evals.json) contains the complete executor inputs, isolation, routing, and coexistence configurations, and hidden grading requirements for Scenarios A through E, F1, F2, and G.
+[`evals.json`](evals.json) contains the complete executor inputs, isolation, routing, and coexistence configurations, and hidden grading requirements for Scenarios A through E and F1 through H.
 Executors receive only the shared executor instruction and the selected scenario prompt, except that the D1 routing-negative case omits the writing-specific shared instruction.
 D2 tests implicit routing with only `write-natural-japanese` available, while D3 names both available Skills in the request without using a client-specific invocation syntax.
+H tests the source-language translation path with only `write-natural-japanese` and its reference available.
 
 ## Current result — 2026-09-15
 

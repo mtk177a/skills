@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "skill": "write-natural-japanese",
-  "candidate_revision": "d5b4200c41f1c42f4616517c3c16e62994a68332",
+  "candidate_revision": "4af5c793b5c740b9de3724f66a50b0670c3eb2ef",
   "executor_instruction": "依頼に従って完成した日本語だけを返してください。修正理由や作業手順は、依頼で求められていない限り追加しないでください。",
   "scenarios": [
     {
@@ -250,6 +250,38 @@
         {
           "critical": false,
           "text": "Do not describe every entrance as a pass-fail control or replace every gate expression with one fixed word."
+        }
+      ]
+    },
+    {
+      "id": "H",
+      "title": "Translate source-language wording through contextual guidance",
+      "configuration": "isolation",
+      "prompt": "次の英語の技術説明を、意味と条件を変えずに自然な日本語へ翻訳してください。完成稿だけを返してください。\n\nThe API contract requires successful requests to return `result_id`. The API continues to accept `mode` from older clients. When an unsupported value is supplied, validation succeeds, no warning is emitted, and the value is not used at runtime; the setting silently fails to take effect. This repository is the source of truth for the published schema. The document informally calls required reviewer approval the final quality gate before production deployment; this is not the name of a product or pipeline stage. The release is also checked by the product feature DeployGuard Quality Gate.",
+      "requirements": [
+        {
+          "critical": true,
+          "text": "Read references/wording-decisions.md from the source-language translation instruction; output wording alone is not evidence of the read."
+        },
+        {
+          "critical": true,
+          "text": "Preserve the result_id requirement, continued acceptance of mode from older clients, validation success, absence of a warning, non-use of the unsupported value at runtime, repository ownership of the published schema, reviewer approval before production deployment, and the additional product check."
+        },
+        {
+          "critical": true,
+          "text": "Translate generic API contract, silently fails, source of truth, and quality gate according to their stated roles instead of mechanically producing API の契約, 静かに失敗する, 正本, or a generic ゲート label."
+        },
+        {
+          "critical": true,
+          "text": "Preserve result_id and mode as identifiers and DeployGuard Quality Gate as the formal product feature name."
+        },
+        {
+          "critical": false,
+          "text": "Do not invent legal force, parties, warnings, exceptions, logging, validation failures, or deployment behavior not stated in the source."
+        },
+        {
+          "critical": false,
+          "text": "Return only the translated reader-facing text."
         }
       ]
     }
