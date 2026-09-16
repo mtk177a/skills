@@ -18,6 +18,10 @@ Thumbs.db
 tmp/
 temp/
 
+# Python bytecode
+__pycache__/
+*.py[cod]
+
 # Work queue (local-only, not tracked)
 tasks/
 
