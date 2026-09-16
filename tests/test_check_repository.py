@@ -24,6 +24,13 @@ def tree_hash(root: Path) -> str:
     return digest.hexdigest()
 
 
+def candidate_entry(path: Path, sha256_value: str | None = None, mode: str | None = None) -> dict[str, str]:
+    return {
+        "sha256": sha256_value or "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest(),
+        "mode": mode or ("100755" if path.stat().st_mode & 0o111 else "100644"),
+    }
+
+
 def create_valid_repository(root: Path) -> None:
     skill = root / "skills" / "alpha-skill"
     write(
@@ -55,9 +62,14 @@ license: MIT
         skill / "evals" / "evals.json",
         json.dumps(
             {
-                "skill": "alpha-skill",
-                "version": 1,
-                "cases": [{"id": "alpha-case"}],
+                "skill_name": "alpha-skill",
+                "evals": [
+                    {
+                        "id": "alpha-case",
+                        "prompt": "Run the alpha case.",
+                        "expected_output": "A bounded result.",
+                    }
+                ],
             },
             indent=2,
         )
@@ -86,6 +98,65 @@ license: MIT
 """,
     )
     write(root / "docs" / "authoring.md", "# Authoring\n")
+
+
+def create_valid_report(root: Path) -> dict[str, object]:
+    skill = root / "skills" / "alpha-skill"
+    source = skill / "SKILL.md"
+    return {
+        "schema_version": 2,
+        "skill": "alpha-skill",
+        "evaluated_on": "2026-09-16",
+        "purpose": "Check the selected responsibility.",
+        "affected_responsibilities": ["selected responsibility"],
+        "selection": {
+            "path": "targeted-candidate",
+            "cases": [{"id": "alpha-case", "conditions": ["candidate"]}],
+        },
+        "base": {"commit": "a" * 40},
+        "candidate": {
+            "files": {
+                "SKILL-ja.md": candidate_entry(skill / "SKILL-ja.md"),
+                "SKILL.md": candidate_entry(source),
+            }
+        },
+        "evaluation_inputs": {
+            "evaluation_files": {
+                "skills/alpha-skill/evals/evals.json": "sha256:"
+                + hashlib.sha256((skill / "evals" / "evals.json").read_bytes()).hexdigest()
+            },
+            "case_files": {},
+        },
+        "environment": {
+            "client": "codex-cli test",
+            "model": "test-model",
+            "reasoning_effort": "test",
+            "sandbox": "read-only",
+        },
+        "checks": {"repository": "pass"},
+        "results": [
+            {
+                "case_id": "alpha-case",
+                "condition": "candidate",
+                "status": "pass",
+                "requirements": [
+                    {
+                        "id": "expected-output",
+                        "status": "pass",
+                        "evidence": "The bounded result was present.",
+                        "critical": True,
+                    }
+                ],
+                "evidence": "The selected behavior passed.",
+            }
+        ],
+        "summary": {
+            "status": "pass",
+            "counts": {"error": 0, "fail": 0, "inconclusive": 0, "pass": 1},
+        },
+        "stopping_reason": "The selected result answered the acceptance question.",
+        "unverified": ["Unselected responsibilities"],
+    }
 
 
 def rename_fixture_skill(root: Path, name: str) -> None:
@@ -251,6 +322,48 @@ class CheckerCliTests(unittest.TestCase):
 
     def test_stale_candidate_hash_is_detected(self) -> None:
         def mutate(root: Path) -> None:
+            report = create_valid_report(root)
+            source = root / "skills" / "alpha-skill" / "SKILL.md"
+            report["candidate"] = {"files": {"SKILL.md": candidate_entry(source, "sha256:" + "0" * 64)}}
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "report.json",
+                json.dumps(report),
+            )
+
+        self.assert_fixture_failure(mutate, "candidate hash for `SKILL.md` is stale")
+
+    def test_stale_candidate_mode_is_detected(self) -> None:
+        def mutate(root: Path) -> None:
+            report = create_valid_report(root)
+            source = root / "skills" / "alpha-skill" / "SKILL.md"
+            source.chmod(0o755)
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "report.json",
+                json.dumps(report),
+            )
+
+        self.assert_fixture_failure(mutate, "candidate mode for `SKILL.md` is stale")
+
+    def test_candidate_manifest_entry_requires_valid_hash_and_mode(self) -> None:
+        for field, value, expected in (
+            ("sha256", "invalid", "must use lowercase sha256"),
+            ("mode", "100777", "must be `100644` or `100755`"),
+        ):
+            def mutate(root: Path) -> None:
+                report = create_valid_report(root)
+                report["candidate"]["files"]["SKILL.md"][field] = value
+                write(
+                    root / "skills" / "alpha-skill" / "evals" / "report.json",
+                    json.dumps(report),
+                )
+
+            with self.subTest(field=field):
+                self.assert_fixture_failure(mutate, expected)
+
+    def test_stale_legacy_result_hash_is_not_current_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
             write(
                 root / "skills" / "alpha-skill" / "evals" / "results.json",
                 json.dumps(
@@ -262,21 +375,76 @@ class CheckerCliTests(unittest.TestCase):
                 ),
             )
 
-        self.assert_fixture_failure(mutate, "candidate hash for `SKILL.md` is stale")
+            result = run_checker(root)
 
-    def test_candidate_file_may_bind_an_adjacent_skill(self) -> None:
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_runner_may_ignore_only_the_report_it_is_replacing(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             create_valid_repository(root)
+            report = create_valid_report(root)
             source = root / "skills" / "alpha-skill" / "SKILL.md"
-            expected = "sha256:" + hashlib.sha256(source.read_bytes()).hexdigest()
+            report["candidate"] = {"files": {"SKILL.md": candidate_entry(source, "sha256:" + "0" * 64)}}
             write(
-                root / "skills" / "alpha-skill" / "evals" / "results.json",
+                root / "skills" / "alpha-skill" / "evals" / "report.json",
+                json.dumps(report),
+            )
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(CHECKER),
+                    "--root",
+                    str(root),
+                    "--ignore-report-for-skill",
+                    "alpha-skill",
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_valid_change_scoped_report_is_accepted(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "report.json",
+                json.dumps(create_valid_report(root)),
+            )
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_migrated_and_legacy_assets_may_not_coexist_for_one_skill(self) -> None:
+        def mutate(root: Path) -> None:
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "triggers.json",
                 json.dumps(
                     {
-                        "schema_version": 3,
                         "skill": "alpha-skill",
-                        "candidate": {"files": {"../alpha-skill/SKILL.md": expected}},
+                        "version": 1,
+                        "cases": [{"id": "route", "prompt": "Route."}],
+                    }
+                ),
+            )
+
+        self.assert_fixture_failure(mutate, "must migrate evals.json and triggers.json together")
+
+    def test_legacy_assets_remain_valid_until_the_skill_is_migrated(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "evals.json",
+                json.dumps(
+                    {
+                        "skill": "alpha-skill",
+                        "version": 1,
+                        "cases": [{"id": "legacy-case", "input": "Run it."}],
                     }
                 ),
             )
@@ -285,19 +453,145 @@ class CheckerCliTests(unittest.TestCase):
 
             self.assertEqual(0, result.returncode, result.stderr)
 
+    def test_report_rejects_case_status_that_ignores_critical_failure(self) -> None:
+        def mutate(root: Path) -> None:
+            report = create_valid_report(root)
+            report["results"][0]["requirements"][0]["status"] = "fail"
+            report["results"][0]["status"] = "pass"
+            write(root / "skills" / "alpha-skill" / "evals" / "report.json", json.dumps(report))
+
+        self.assert_fixture_failure(mutate, "must derive status `fail` from requirement results")
+
+    def test_executor_error_report_does_not_require_fabricated_requirement_grades(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            report = create_valid_report(root)
+            report["results"][0].update(
+                {
+                    "status": "error",
+                    "requirements": [],
+                    "evidence": "The executor timed out.",
+                }
+            )
+            report["summary"] = {
+                "status": "error",
+                "counts": {"error": 1, "fail": 0, "inconclusive": 0, "pass": 0},
+            }
+            write(root / "skills" / "alpha-skill" / "evals" / "report.json", json.dumps(report))
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_report_candidate_manifest_detects_unrecorded_file(self) -> None:
+        def mutate(root: Path) -> None:
+            report = create_valid_report(root)
+            write(root / "skills" / "alpha-skill" / "NEW.md", "Unrecorded.\n")
+            write(root / "skills" / "alpha-skill" / "evals" / "report.json", json.dumps(report))
+
+        self.assert_fixture_failure(mutate, "candidate manifest does not match the current Skill tree")
+
+    def test_report_candidate_manifest_rejects_symlinks(self) -> None:
+        for kind, target in (
+            ("file", "SKILL.md"),
+            ("broken", "missing.md"),
+            ("directory", "evals"),
+        ):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                create_valid_repository(root)
+                report = create_valid_report(root)
+                (root / "skills" / "alpha-skill" / f"{kind}-link").symlink_to(target)
+                write(
+                    root / "skills" / "alpha-skill" / "evals" / "report.json",
+                    json.dumps(report),
+                )
+
+                result = run_checker(root)
+
+                self.assertNotEqual(0, result.returncode)
+                self.assertIn("candidate Skill tree must not contain symlink", result.stderr)
+
+    def test_report_result_must_match_selected_case_condition(self) -> None:
+        def mutate(root: Path) -> None:
+            report = create_valid_report(root)
+            report["results"][0]["condition"] = "baseline"
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "report.json",
+                json.dumps(report),
+            )
+
+        self.assert_fixture_failure(mutate, "report results must exactly match selected case-condition pairs")
+
+    def test_report_rejects_raw_response_field(self) -> None:
+        def mutate(root: Path) -> None:
+            report = create_valid_report(root)
+            report["response"] = "full model response"
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "report.json",
+                json.dumps(report),
+            )
+
+        self.assert_fixture_failure(mutate, "report must not contain raw artifact field `response`")
+
+    def test_report_rejects_plan_snapshot_and_absolute_path(self) -> None:
+        def add_plan(root: Path) -> None:
+            report = create_valid_report(root)
+            report["plan"] = {"schema_version": 2}
+            write(root / "skills" / "alpha-skill" / "evals" / "report.json", json.dumps(report))
+
+        def add_path(root: Path) -> None:
+            report = create_valid_report(root)
+            report["unverified"] = ["Inspect /tmp/evaluation later."]
+            write(root / "skills" / "alpha-skill" / "evals" / "report.json", json.dumps(report))
+
+        self.assert_fixture_failure(add_plan, "raw artifact field `plan`")
+        self.assert_fixture_failure(add_path, "report must not contain absolute path `/tmp/evaluation`")
+
+    def test_report_requires_execution_environment(self) -> None:
+        def mutate(root: Path) -> None:
+            report = create_valid_report(root)
+            report["environment"] = {"client": "codex-cli test"}
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "report.json",
+                json.dumps(report),
+            )
+
+        self.assert_fixture_failure(mutate, "report environment fields must be non-empty strings")
+
+    def test_report_must_grade_every_assertion_assigned_to_selected_case(self) -> None:
+        def mutate(root: Path) -> None:
+            evals = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            document = json.loads(evals.read_text())
+            document["evals"][0]["assertions"] = [
+                {"id": "required-assertion", "text": "Required.", "critical": True}
+            ]
+            write(evals, json.dumps(document))
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "report.json",
+                json.dumps(create_valid_report(root)),
+            )
+
+        self.assert_fixture_failure(mutate, "must grade every assigned assertion")
+
+    def test_candidate_manifest_may_not_use_adjacent_skill_paths(self) -> None:
+        def mutate(root: Path) -> None:
+            source = root / "skills" / "alpha-skill" / "SKILL.md"
+            report = create_valid_report(root)
+            report["candidate"] = {"files": {"../alpha-skill/SKILL.md": candidate_entry(source)}}
+            write(root / "skills" / "alpha-skill" / "evals" / "report.json", json.dumps(report))
+
+        self.assert_fixture_failure(mutate, "candidate manifest does not match the current Skill tree")
+
     def test_candidate_file_may_not_escape_skills_tree(self) -> None:
         def mutate(root: Path) -> None:
             source = root / "README.md"
-            expected = "sha256:" + hashlib.sha256(source.read_bytes()).hexdigest()
+            report = create_valid_report(root)
+            report["candidate"] = {"files": {"../../README.md": candidate_entry(source)}}
             write(
-                root / "skills" / "alpha-skill" / "evals" / "results.json",
-                json.dumps(
-                    {
-                        "schema_version": 3,
-                        "skill": "alpha-skill",
-                        "candidate": {"files": {"../../README.md": expected}},
-                    }
-                ),
+                root / "skills" / "alpha-skill" / "evals" / "report.json",
+                json.dumps(report),
             )
 
         self.assert_fixture_failure(mutate, "candidate file escapes repository skills tree")
@@ -398,10 +692,64 @@ class CheckerCliTests(unittest.TestCase):
         def mutate(root: Path) -> None:
             path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
             document = json.loads(path.read_text())
-            document["cases"].append({"id": "alpha-case"})
+            document["evals"].append(
+                {
+                    "id": "alpha-case",
+                    "prompt": "Duplicate.",
+                    "expected_output": "Duplicate.",
+                }
+            )
             path.write_text(json.dumps(document))
 
         self.assert_fixture_failure(mutate, "duplicate case id `alpha-case`")
+
+    def test_official_eval_shape_accepts_numeric_case_id_without_schema_version(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "evals.json",
+                json.dumps(
+                    {
+                        "skill_name": "alpha-skill",
+                        "evals": [
+                            {
+                                "id": 1,
+                                "prompt": "Run the official-shaped case.",
+                                "expected_output": "A bounded result.",
+                                "files": [],
+                            }
+                        ],
+                    }
+                ),
+            )
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_official_eval_files_require_safe_repository_relative_paths(self) -> None:
+        for value in ("/tmp/input.txt", "../outside.txt", r"C:\fixtures\input.txt"):
+            with self.subTest(value=value):
+                def mutate(root: Path) -> None:
+                    path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+                    document = json.loads(path.read_text())
+                    document["evals"][0]["files"] = [value]
+                    path.write_text(json.dumps(document))
+
+                self.assert_fixture_failure(
+                    mutate,
+                    "official case `alpha-case` has an unsafe repository-relative file path",
+                )
+
+    def test_official_eval_files_reject_duplicates_after_normalization(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            document = json.loads(path.read_text())
+            document["evals"][0]["files"] = ["inputs/request.txt", "inputs//request.txt"]
+            path.write_text(json.dumps(document))
+
+        self.assert_fixture_failure(mutate, "official case `alpha-case` repeats a file path")
 
     def test_companion_relationship_requires_skill_reference(self) -> None:
         def mutate(root: Path) -> None:

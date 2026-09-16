@@ -9,12 +9,41 @@ import json
 import re
 import sys
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from urllib.parse import unquote
 
 
 KEBAB_CASE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
+FILE_MODES = {"100644", "100755"}
+REPORT_STATUSES = {"pass", "fail", "inconclusive", "error"}
+REPORT_CONDITIONS = {"candidate", "baseline", "without-skill"}
+REPORT_DATE = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+GIT_COMMIT = re.compile(r"^[0-9a-f]{40}(?:[0-9a-f]{24})?$")
+REPORT_PATHS = {
+    "static-only",
+    "targeted-candidate",
+    "targeted-routing",
+    "baseline-comparison",
+    "target-environment",
+}
+RAW_REPORT_FIELDS = {
+    "artifact_directory",
+    "authentication",
+    "credentials",
+    "events",
+    "jsonl",
+    "prompt",
+    "plan",
+    "plan_snapshot",
+    "raw_output",
+    "raw_response",
+    "response",
+    "session_log",
+    "stderr",
+    "stdout",
+}
+REPORT_ABSOLUTE_PATH = re.compile(r"(?<![A-Za-z0-9:])(?:/[A-Za-z0-9._-][^\s\"'`<>]*|[A-Za-z]:\\[^\s\"'`<>]+)")
 CATALOG_ROW = re.compile(r"^\|\s*`([a-z0-9-]+)`\s*\|", re.MULTILINE)
 INLINE_LINK = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 REFERENCE_LINK = re.compile(r"^\s*\[[^\]]+\]:\s*(\S+)", re.MULTILINE)
@@ -354,6 +383,22 @@ def contained(root: Path, target: Path) -> bool:
         return False
 
 
+def normalize_case_file_path(value: str) -> str | None:
+    relative = Path(value)
+    windows_path = PureWindowsPath(value)
+    if (
+        not value
+        or value == "."
+        or relative.is_absolute()
+        or bool(windows_path.drive)
+        or "\\" in value
+        or ".." in relative.parts
+    ):
+        return None
+    normalized = relative.as_posix()
+    return None if normalized == "." else normalized
+
+
 def check_markdown_links(root: Path, problems: list[Problem]) -> None:
     for path in sorted(root.rglob("*.md")):
         if ".git" in path.parts:
@@ -404,8 +449,11 @@ def check_localization_notices(root: Path, problems: list[Problem]) -> None:
             )
 
 
-def check_json_assets(root: Path, problems: list[Problem]) -> None:
+def check_json_assets(root: Path, problems: list[Problem], ignored_report_skill: str | None = None) -> None:
+    migration_states: dict[str, dict[str, bool]] = {}
     for path in sorted((root / "skills").glob("*/evals/*.json")):
+        if path.name == "report.json" and path.parent.parent.name == ignored_report_skill:
+            continue
         text = path.read_text(encoding="utf-8")
         try:
             document = json.loads(text)
@@ -415,13 +463,32 @@ def check_json_assets(root: Path, problems: list[Problem]) -> None:
         if not isinstance(document, dict):
             add(problems, root, path, 1, "evaluation JSON top level must be an object")
             continue
+        if path.name == "report.json":
+            check_evaluation_report(root, path, document, problems)
+            continue
+        if path.name in {"evals.json", "triggers.json"}:
+            migrated = "skill_name" in document or "evals" in document
+            migration_states.setdefault(path.parent.parent.name, {})[path.name] = migrated
+        official = path.name == "evals.json" and ("skill_name" in document or "evals" in document)
+        if path.name == "triggers.json" and ("skill_name" in document or "evals" in document):
+            official = True
         version = document.get("schema_version", document.get("version"))
-        if isinstance(version, bool) or not isinstance(version, int) or version < 1:
+        if not official and (isinstance(version, bool) or not isinstance(version, int) or version < 1):
             add(problems, root, path, 1, "evaluation JSON requires a positive integer schema_version or version")
         expected_skill = path.parent.parent.name
-        if document.get("skill") != expected_skill:
-            add(problems, root, path, 1, f"evaluation JSON skill must be `{expected_skill}`")
-        cases = document.get("cases")
+        skill_field = "skill_name" if official else "skill"
+        if document.get(skill_field) != expected_skill:
+            add(problems, root, path, 1, f"evaluation JSON {skill_field} must be `{expected_skill}`")
+        cases = document.get("evals" if official else "cases")
+        if official:
+            execution = document.get("execution", {})
+            coexistence = execution.get("coexistence_skills", []) if isinstance(execution, dict) else None
+            if not isinstance(execution, dict):
+                add(problems, root, path, 1, "official execution settings must be an object")
+            elif not isinstance(coexistence, list) or not all(
+                isinstance(value, str) and KEBAB_CASE.fullmatch(value) for value in coexistence
+            ):
+                add(problems, root, path, 1, "official execution coexistence_skills must be Skill names")
         if cases is not None:
             if not isinstance(cases, list):
                 add(problems, root, path, 1, "cases must be an array")
@@ -429,17 +496,412 @@ def check_json_assets(root: Path, problems: list[Problem]) -> None:
                 seen: set[str] = set()
                 for case in cases:
                     case_id = case.get("id") if isinstance(case, dict) else None
-                    if not isinstance(case_id, str) or not case_id.strip():
-                        add(problems, root, path, 1, "every case requires a non-empty string id")
-                    elif case_id in seen:
+                    if isinstance(case_id, bool) or not isinstance(case_id, (str, int)) or not str(case_id).strip():
+                        add(problems, root, path, 1, "every case requires a non-empty string or integer id")
+                    elif str(case_id) in seen:
                         add(problems, root, path, 1, f"duplicate case id `{case_id}`")
                     else:
-                        seen.add(case_id)
-        if path.name == "results.json":
-            check_candidate_hashes(root, path, document, problems)
+                        seen.add(str(case_id))
+                    if official and isinstance(case, dict):
+                        if not isinstance(case.get("prompt"), str) or not case["prompt"].strip():
+                            add(problems, root, path, 1, f"official case `{case_id}` requires a non-empty prompt")
+                        expected_output = case.get("expected_output")
+                        if expected_output is not None and (
+                            not isinstance(expected_output, str) or not expected_output.strip()
+                        ):
+                            add(
+                                problems,
+                                root,
+                                path,
+                                1,
+                                f"official case `{case_id}` expected_output must be a non-empty string",
+                            )
+                        files = case.get("files", [])
+                        if not isinstance(files, list) or not all(isinstance(value, str) for value in files):
+                            add(problems, root, path, 1, f"official case `{case_id}` files must be a string array")
+                        else:
+                            normalized_files: list[str] = []
+                            for value in files:
+                                normalized = normalize_case_file_path(value)
+                                if normalized is None:
+                                    add(
+                                        problems,
+                                        root,
+                                        path,
+                                        1,
+                                        f"official case `{case_id}` has an unsafe repository-relative file path: `{value}`",
+                                    )
+                                else:
+                                    normalized_files.append(normalized)
+                            if len(set(normalized_files)) != len(normalized_files):
+                                add(problems, root, path, 1, f"official case `{case_id}` repeats a file path")
+                        conditions = case.get("conditions")
+                        if conditions is not None and (
+                            not isinstance(conditions, list)
+                            or not all(isinstance(value, str) and value in REPORT_CONDITIONS for value in conditions)
+                        ):
+                            add(problems, root, path, 1, f"official case `{case_id}` conditions are invalid")
+                        coexistence = case.get("coexistence_skills", [])
+                        if not isinstance(coexistence, list) or not all(
+                            isinstance(value, str) and KEBAB_CASE.fullmatch(value) for value in coexistence
+                        ):
+                            add(problems, root, path, 1, f"official case `{case_id}` coexistence_skills are invalid")
+                        assertions = case.get("assertions", [])
+                        if not isinstance(assertions, list):
+                            add(problems, root, path, 1, f"official case `{case_id}` assertions must be an array")
+                        else:
+                            assertion_ids: set[str] = set()
+                            for index, assertion in enumerate(assertions, start=1):
+                                if isinstance(assertion, str) and assertion.strip():
+                                    assertion_id = f"assertion-{index}"
+                                elif (
+                                    isinstance(assertion, dict)
+                                    and isinstance(assertion.get("id"), str)
+                                    and assertion["id"]
+                                    and isinstance(assertion.get("text"), str)
+                                    and assertion["text"].strip()
+                                    and isinstance(assertion.get("critical"), bool)
+                                ):
+                                    assertion_id = assertion["id"]
+                                else:
+                                    add(
+                                        problems,
+                                        root,
+                                        path,
+                                        1,
+                                        f"official case `{case_id}` assertions must be strings or id-text-critical objects",
+                                    )
+                                    continue
+                                if assertion_id in assertion_ids:
+                                    add(problems, root, path, 1, f"official case `{case_id}` assertion ids must be unique")
+                                assertion_ids.add(assertion_id)
+                            if path.name == "evals.json" and not assertion_ids and not (
+                                isinstance(expected_output, str) and expected_output.strip()
+                            ):
+                                add(
+                                    problems,
+                                    root,
+                                    path,
+                                    1,
+                                    f"behavior case `{case_id}` requires assertions or expected_output",
+                                )
+                        expected_handlers = case.get("expected_handlers")
+                        if path.name == "triggers.json" and (
+                            not isinstance(expected_handlers, list)
+                            or not all(
+                                isinstance(value, str) and KEBAB_CASE.fullmatch(value)
+                                for value in expected_handlers
+                            )
+                        ):
+                            add(problems, root, path, 1, f"routing case `{case_id}` requires expected_handlers")
+    for skill, states in sorted(migration_states.items()):
+        if len(states) > 1 and len(set(states.values())) > 1:
+            path = root / "skills" / skill / "evals" / sorted(states)[0]
+            add(problems, root, path, 1, "must migrate evals.json and triggers.json together")
 
 
-def check_candidate_hashes(root: Path, path: Path, document: dict[str, object], problems: list[Problem]) -> None:
+def report_case_assertions(path: Path) -> dict[str, dict[str, bool] | None]:
+    if not path.is_file():
+        return {}
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    if not isinstance(document, dict):
+        return {}
+    migrated = "evals" in document and "skill_name" in document
+    raw_cases = document.get("evals" if migrated else "cases")
+    if not isinstance(raw_cases, list):
+        return {}
+    cases: dict[str, dict[str, bool] | None] = {}
+    for case in raw_cases:
+        if not isinstance(case, dict):
+            continue
+        case_id = case.get("id")
+        if isinstance(case_id, bool) or not isinstance(case_id, (str, int)):
+            continue
+        if not migrated:
+            assertions = case.get("assertions", case.get("assertion_ids"))
+            cases[str(case_id)] = (
+                {value: True for value in assertions}
+                if isinstance(assertions, list) and all(isinstance(value, str) for value in assertions)
+                else None
+            )
+            continue
+        requirements: dict[str, bool] = {}
+        assertions = case.get("assertions", [])
+        if isinstance(assertions, list):
+            for index, assertion in enumerate(assertions, start=1):
+                if isinstance(assertion, str) and assertion.strip():
+                    requirements[f"assertion-{index}"] = True
+                elif isinstance(assertion, dict) and isinstance(assertion.get("id"), str):
+                    requirements[assertion["id"]] = assertion.get("critical") is True
+        if not requirements and isinstance(case.get("expected_output"), str):
+            requirements["expected-output"] = True
+        if path.name == "triggers.json":
+            requirements["routing-handlers"] = True
+        cases[str(case_id)] = requirements
+    return cases
+
+
+def find_forbidden_report_field(value: object) -> str | None:
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if key in RAW_REPORT_FIELDS:
+                return key
+            found = find_forbidden_report_field(child)
+            if found is not None:
+                return found
+    elif isinstance(value, list):
+        for child in value:
+            found = find_forbidden_report_field(child)
+            if found is not None:
+                return found
+    return None
+
+
+def find_report_absolute_path(value: object) -> str | None:
+    if isinstance(value, dict):
+        for child in value.values():
+            found = find_report_absolute_path(child)
+            if found is not None:
+                return found
+    elif isinstance(value, list):
+        for child in value:
+            found = find_report_absolute_path(child)
+            if found is not None:
+                return found
+    elif isinstance(value, str):
+        match = REPORT_ABSOLUTE_PATH.search(value)
+        if match is not None:
+            return match.group(0)
+    return None
+
+
+def expected_report_status(statuses: list[str], repository_status: str) -> str:
+    if "error" in statuses:
+        return "error"
+    if repository_status == "fail" or "fail" in statuses:
+        return "fail"
+    if repository_status == "unavailable" or "inconclusive" in statuses:
+        return "inconclusive"
+    return "pass"
+
+
+def derive_report_result_status(requirements: list[dict[str, object]]) -> str:
+    if any(value.get("status") == "error" for value in requirements):
+        return "error"
+    if any(value.get("critical") is True and value.get("status") == "fail" for value in requirements):
+        return "fail"
+    if any(value.get("status") in {"fail", "inconclusive"} for value in requirements):
+        return "inconclusive"
+    return "pass"
+
+
+def check_evaluation_report(
+    root: Path,
+    path: Path,
+    document: dict[str, object],
+    problems: list[Problem],
+) -> None:
+    expected_skill = path.parent.parent.name
+    if document.get("schema_version") != 2:
+        add(problems, root, path, 1, "report schema_version must be 2")
+    if document.get("skill") != expected_skill:
+        add(problems, root, path, 1, f"evaluation report skill must be `{expected_skill}`")
+    if not isinstance(document.get("evaluated_on"), str) or REPORT_DATE.fullmatch(document["evaluated_on"]) is None:
+        add(problems, root, path, 1, "report evaluated_on must use YYYY-MM-DD")
+    for field in ("purpose", "stopping_reason"):
+        if not isinstance(document.get(field), str) or not str(document[field]).strip():
+            add(problems, root, path, 1, f"report requires a non-empty `{field}`")
+    affected = document.get("affected_responsibilities")
+    if (
+        not isinstance(affected, list)
+        or not affected
+        or not all(isinstance(value, str) and value.strip() for value in affected)
+    ):
+        add(problems, root, path, 1, "report affected_responsibilities must be a non-empty string array")
+    unverified = document.get("unverified")
+    if not isinstance(unverified, list) or not all(isinstance(value, str) and value.strip() for value in unverified):
+        add(problems, root, path, 1, "report unverified must be a string array")
+
+    forbidden = find_forbidden_report_field(document)
+    if forbidden is not None:
+        add(problems, root, path, 1, f"report must not contain raw artifact field `{forbidden}`")
+    absolute_path = find_report_absolute_path(document)
+    if absolute_path is not None:
+        add(problems, root, path, 1, f"report must not contain absolute path `{absolute_path}`")
+
+    base = document.get("base")
+    commit = base.get("commit") if isinstance(base, dict) else None
+    if not isinstance(commit, str) or GIT_COMMIT.fullmatch(commit) is None:
+        add(problems, root, path, 1, "report base.commit must be a full Git object id")
+    candidate = document.get("candidate")
+    if not isinstance(candidate, dict) or not isinstance(candidate.get("files"), dict):
+        add(problems, root, path, 1, "report candidate.files must be an object")
+    evaluation_inputs = document.get("evaluation_inputs")
+    if not isinstance(evaluation_inputs, dict) or not all(
+        isinstance(evaluation_inputs.get(field), dict) for field in ("evaluation_files", "case_files")
+    ):
+        add(problems, root, path, 1, "report evaluation_inputs manifests must be objects")
+    environment = document.get("environment")
+    environment_fields = ("client", "model", "reasoning_effort", "sandbox")
+    if not isinstance(environment, dict) or not all(
+        isinstance(environment.get(field), str) and environment[field].strip()
+        for field in environment_fields
+    ):
+        add(problems, root, path, 1, "report environment fields must be non-empty strings")
+
+    selection = document.get("selection")
+    evaluation_path = selection.get("path") if isinstance(selection, dict) else None
+    raw_selected = selection.get("cases") if isinstance(selection, dict) else None
+    if evaluation_path not in REPORT_PATHS:
+        add(problems, root, path, 1, "report selection.path is invalid")
+    selected_pairs: set[tuple[str, str]] = set()
+    selected_ids: set[str] = set()
+    known_assertions: dict[str, dict[str, bool] | None] = {}
+    if not isinstance(raw_selected, list):
+        add(problems, root, path, 1, "report selection.cases must be an array")
+    else:
+        for selected in raw_selected:
+            case_id = selected.get("id") if isinstance(selected, dict) else None
+            conditions = selected.get("conditions") if isinstance(selected, dict) else None
+            if not isinstance(case_id, str) or not case_id or case_id in selected_ids:
+                add(problems, root, path, 1, "report selected case ids must be unique non-empty strings")
+                continue
+            selected_ids.add(case_id)
+            if not isinstance(conditions, list) or not conditions:
+                add(problems, root, path, 1, f"report selected case `{case_id}` requires conditions")
+                continue
+            for condition in conditions:
+                pair = (case_id, condition)
+                if condition not in REPORT_CONDITIONS or pair in selected_pairs:
+                    add(
+                        problems,
+                        root,
+                        path,
+                        1,
+                        f"report selected case `{case_id}` has invalid or duplicate conditions",
+                    )
+                else:
+                    selected_pairs.add(pair)
+    if evaluation_path == "static-only" and selected_pairs:
+        add(problems, root, path, 1, "static-only report must not select model-backed cases")
+    if evaluation_path not in {"static-only", "baseline-comparison"} and any(
+        condition != "candidate" for _, condition in selected_pairs
+    ):
+        add(problems, root, path, 1, "comparison conditions require the baseline-comparison path")
+    if evaluation_path == "baseline-comparison" and selected_pairs:
+        conditions = {condition for _, condition in selected_pairs}
+        if "candidate" not in conditions or not ({"baseline", "without-skill"} & conditions):
+            add(problems, root, path, 1, "baseline-comparison requires candidate and a comparison condition")
+    if evaluation_path in REPORT_PATHS - {"static-only"}:
+        asset_name = "triggers.json" if evaluation_path == "targeted-routing" else "evals.json"
+        known_assertions = report_case_assertions(path.parent / asset_name)
+        for case_id in sorted(selected_ids - set(known_assertions)):
+            add(problems, root, path, 1, f"report references unknown case id `{case_id}`")
+
+    results = document.get("results")
+    result_pairs: set[tuple[str, str]] = set()
+    statuses: list[str] = []
+    if not isinstance(results, list):
+        add(problems, root, path, 1, "report results must be an array")
+    else:
+        for result in results:
+            case_id = result.get("case_id") if isinstance(result, dict) else None
+            condition = result.get("condition") if isinstance(result, dict) else None
+            status = result.get("status") if isinstance(result, dict) else None
+            pair = (case_id, condition)
+            if not isinstance(case_id, str) or condition not in REPORT_CONDITIONS or pair in result_pairs:
+                add(problems, root, path, 1, "report result pairs must be unique valid case-condition values")
+            else:
+                result_pairs.add(pair)
+            if status not in REPORT_STATUSES:
+                add(problems, root, path, 1, f"report result `{case_id}` has an invalid status")
+            else:
+                statuses.append(status)
+            if (
+                not isinstance(result, dict)
+                or not isinstance(result.get("evidence"), str)
+                or not result["evidence"].strip()
+            ):
+                add(problems, root, path, 1, f"report result `{case_id}` requires concise evidence")
+            requirements = result.get("requirements") if isinstance(result, dict) else None
+            if not isinstance(requirements, list):
+                add(problems, root, path, 1, f"report result `{case_id}` requirements must be an array")
+            else:
+                requirement_ids: set[str] = set()
+                normalized_requirements: list[dict[str, object]] = []
+                for requirement in requirements:
+                    requirement_id = requirement.get("id") if isinstance(requirement, dict) else None
+                    requirement_status = requirement.get("status") if isinstance(requirement, dict) else None
+                    requirement_evidence = requirement.get("evidence") if isinstance(requirement, dict) else None
+                    requirement_critical = requirement.get("critical") if isinstance(requirement, dict) else None
+                    if (
+                        not isinstance(requirement_id, str)
+                        or not requirement_id
+                        or requirement_id in requirement_ids
+                    ):
+                        add(problems, root, path, 1, f"report result `{case_id}` has invalid requirement ids")
+                    else:
+                        requirement_ids.add(requirement_id)
+                    if requirement_status not in REPORT_STATUSES:
+                        add(problems, root, path, 1, f"report requirement `{requirement_id}` has an invalid status")
+                    if not isinstance(requirement_evidence, str) or not requirement_evidence.strip():
+                        add(problems, root, path, 1, f"report requirement `{requirement_id}` requires evidence")
+                    if not isinstance(requirement_critical, bool):
+                        add(problems, root, path, 1, f"report requirement `{requirement_id}` requires critical")
+                    if isinstance(requirement_id, str) and requirement_status in REPORT_STATUSES and isinstance(
+                        requirement_critical, bool
+                    ):
+                        normalized_requirements.append(
+                            {"id": requirement_id, "status": requirement_status, "critical": requirement_critical}
+                        )
+                expected_assertions = known_assertions.get(case_id)
+                if status != "error" and expected_assertions is not None and requirement_ids != set(expected_assertions):
+                    add(problems, root, path, 1, f"report result `{case_id}` must grade every assigned assertion")
+                if status != "error" and expected_assertions is not None:
+                    for requirement in normalized_requirements:
+                        expected_critical = expected_assertions.get(str(requirement["id"]))
+                        if expected_critical is not None and requirement["critical"] != expected_critical:
+                            add(
+                                problems,
+                                root,
+                                path,
+                                1,
+                                f"report requirement `{requirement['id']}` critical does not match the evaluation asset",
+                            )
+                derived_status = derive_report_result_status(normalized_requirements)
+                if status != "error" and status != derived_status:
+                    add(
+                        problems,
+                        root,
+                        path,
+                        1,
+                        f"report result `{case_id}` must derive status `{derived_status}` from requirement results",
+                    )
+    if result_pairs != selected_pairs:
+        add(problems, root, path, 1, "report results must exactly match selected case-condition pairs")
+
+    checks = document.get("checks")
+    repository_status = checks.get("repository") if isinstance(checks, dict) else None
+    if repository_status not in {"pass", "fail", "unavailable"}:
+        add(problems, root, path, 1, "report checks.repository has an invalid status")
+        repository_status = "unavailable"
+    summary = document.get("summary")
+    summary_status = summary.get("status") if isinstance(summary, dict) else None
+    expected_status = expected_report_status(statuses, repository_status)
+    if summary_status != expected_status:
+        add(problems, root, path, 1, f"report summary.status must be `{expected_status}`")
+    counts = summary.get("counts") if isinstance(summary, dict) else None
+    expected_counts = {status: statuses.count(status) for status in sorted(REPORT_STATUSES)}
+    if counts != expected_counts:
+        add(problems, root, path, 1, "report summary.counts do not match results")
+    check_candidate_manifest(root, path, document, problems)
+    check_evaluation_input_hashes(root, path, document, problems)
+
+
+def check_candidate_manifest(root: Path, path: Path, document: dict[str, object], problems: list[Problem]) -> None:
     candidate = document.get("candidate")
     files = candidate.get("files") if isinstance(candidate, dict) else None
     if files is None:
@@ -450,14 +912,36 @@ def check_candidate_hashes(root: Path, path: Path, document: dict[str, object], 
     skill_root = path.parent.parent.resolve()
     skills_root = (root / "skills").resolve()
     results_text = path.read_text(encoding="utf-8")
-    for file_name, expected in sorted(files.items()):
+    current_files: set[str] = set()
+    for target in skill_root.rglob("*"):
+        relative = target.relative_to(skill_root)
+        if relative.parts and relative.parts[0] == "evals":
+            continue
+        if target.is_symlink():
+            add(
+                problems,
+                root,
+                path,
+                1,
+                f"candidate Skill tree must not contain symlink `{relative.as_posix()}`",
+            )
+        elif target.is_file():
+            current_files.add(relative.as_posix())
+    if set(files) != current_files:
+        add(problems, root, path, 1, "candidate manifest does not match the current Skill tree")
+    for file_name, entry in sorted(files.items()):
         encoded_name = json.dumps(file_name)
         file_line = next(
             (index for index, value in enumerate(results_text.splitlines(), start=1) if encoded_name in value),
             1,
         )
-        if not isinstance(file_name, str) or not isinstance(expected, str):
-            add(problems, root, path, file_line, "candidate.files keys and hashes must be strings")
+        if not isinstance(file_name, str) or not isinstance(entry, dict) or set(entry) != {"sha256", "mode"}:
+            add(problems, root, path, file_line, "candidate.files entries require sha256 and mode")
+            continue
+        expected = entry.get("sha256")
+        expected_mode = entry.get("mode")
+        if not isinstance(expected, str):
+            add(problems, root, path, file_line, f"candidate hash for `{file_name}` must be a string")
             continue
         if not SHA256.fullmatch(expected):
             add(
@@ -468,9 +952,15 @@ def check_candidate_hashes(root: Path, path: Path, document: dict[str, object], 
                 f"candidate hash for `{file_name}` must use lowercase sha256:<64 hex>",
             )
             continue
-        target = (skill_root / file_name).resolve()
+        if expected_mode not in FILE_MODES:
+            add(problems, root, path, file_line, f"candidate mode for `{file_name}` must be `100644` or `100755`")
+            continue
+        unresolved = skill_root / file_name
+        target = unresolved.resolve()
         if not contained(skills_root, target):
             add(problems, root, path, file_line, f"candidate file escapes repository skills tree: `{file_name}`")
+        elif unresolved.is_symlink():
+            add(problems, root, path, file_line, f"candidate file must not be a symlink: `{file_name}`")
         elif not target.is_file():
             add(problems, root, path, file_line, f"candidate file does not exist: `{file_name}`")
         else:
@@ -483,6 +973,41 @@ def check_candidate_hashes(root: Path, path: Path, document: dict[str, object], 
                     file_line,
                     f"candidate hash for `{file_name}` is stale: expected `{actual}`, found `{expected}`",
                 )
+            actual_mode = "100755" if target.stat().st_mode & 0o111 else "100644"
+            if actual_mode != expected_mode:
+                add(
+                    problems,
+                    root,
+                    path,
+                    file_line,
+                    f"candidate mode for `{file_name}` is stale: expected `{actual_mode}`, found `{expected_mode}`",
+                )
+
+
+def check_evaluation_input_hashes(
+    root: Path,
+    path: Path,
+    document: dict[str, object],
+    problems: list[Problem],
+) -> None:
+    inputs = document.get("evaluation_inputs")
+    if not isinstance(inputs, dict):
+        return
+    for field in ("evaluation_files", "case_files"):
+        files = inputs.get(field)
+        if not isinstance(files, dict):
+            continue
+        for file_name, expected in sorted(files.items()):
+            if not isinstance(file_name, str) or not isinstance(expected, str) or not SHA256.fullmatch(expected):
+                add(problems, root, path, 1, f"report {field} entries must map paths to sha256 hashes")
+                continue
+            target = (root / file_name).resolve()
+            if not contained(root.resolve(), target) or not target.is_file():
+                add(problems, root, path, 1, f"report evaluation input is missing: `{file_name}`")
+                continue
+            actual = "sha256:" + hashlib.sha256(target.read_bytes()).hexdigest()
+            if actual != expected:
+                add(problems, root, path, 1, f"report evaluation input hash is stale: `{file_name}`")
 
 
 def check_companion_relationships(root: Path, problems: list[Problem], catalog: set[str]) -> None:
@@ -552,14 +1077,14 @@ def check_deployment_artifacts(root: Path, problems: list[Problem]) -> None:
                 add(problems, root, child, 1, "unexpected APM-deployed Skill; preserve only tracked repository-local exceptions")
 
 
-def check_repository(root: Path) -> list[Problem]:
+def check_repository(root: Path, ignored_report_skill: str | None = None) -> list[Problem]:
     root = root.resolve()
     problems: list[Problem] = []
     catalog = check_catalogs(root, problems)
     check_skill_packages(root, problems)
     check_markdown_links(root, problems)
     check_localization_notices(root, problems)
-    check_json_assets(root, problems)
+    check_json_assets(root, problems, ignored_report_skill)
     check_companion_relationships(root, problems, catalog)
     check_personal_paths(root, problems)
     check_deployment_artifacts(root, problems)
@@ -574,6 +1099,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=Path(__file__).resolve().parents[1],
         help="repository root to inspect (defaults to the checker repository)",
     )
+    parser.add_argument(
+        "--ignore-report-for-skill",
+        help=argparse.SUPPRESS,
+    )
     return parser.parse_args(argv)
 
 
@@ -584,7 +1113,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{root}:0: repository root is not a directory", file=sys.stderr)
         return 2
     try:
-        problems = check_repository(root)
+        problems = check_repository(root, args.ignore_report_for_skill)
     except (OSError, UnicodeError) as error:
         print(f"{root}:0: checker could not read repository: {error}", file=sys.stderr)
         return 2

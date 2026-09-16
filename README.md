@@ -84,6 +84,18 @@ The command exits with status `0` when the repository is consistent, `1` when it
 
 This checker is the static validation layer for Skill evaluation. It does not replace behavioral, routing, comparative, or model-backed evaluation when those forms of evidence are required.
 
+## Skill evaluation runner
+
+Use the common Runner to select and cost a targeted evaluation before invoking Codex:
+
+```bash
+python3 scripts/run_skill_evaluation.py plan --help
+```
+
+The Runner does not evaluate automatically after an edit and does not select all cases implicitly.\
+Model-backed paths use the executable `{skill_name, evals}` format; existing legacy assets migrate per Skill when that Skill is first materially changed, while `static-only` remains available before migration.\
+See [docs/evaluation.md](docs/evaluation.md) for path selection, execution, grading, and compact report handling.
+
 ## Repository structure
 
 ```text

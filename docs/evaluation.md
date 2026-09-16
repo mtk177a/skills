@@ -1,439 +1,299 @@
 # Skill Evaluation
 
-This document describes the evaluation approach used for Skills in this repository.
+This document defines how this repository selects, runs, records, migrates, and reviews Skill evaluations.
 
-## Evaluation decision flow
+The objective is to obtain the least evidence needed to decide whether a change is acceptable.\
+Evaluation is not an automatic action after every edit, and an ordinary Skill change does not require every case, a baseline, repeated runs, or a client matrix.
 
-Evaluation has two decision gates:
+## Evaluation workflow
 
-1. **Gap diagnosis** determines whether current behavior demonstrates a need for
-   a change. This gate is conditional.
-2. **Candidate acceptance** determines whether an implemented change is
-   acceptable. This gate uses the least sufficient path defined below.
+Use these steps for a Skill change:
 
-The prose and tables in this section are normative. The diagram summarizes the
-same flow for readers and clients that render Mermaid.
+1. Identify the changed claim or responsibility.
+2. Decide whether the Skill's evaluation definitions must be migrated.
+3. Select the least sufficient evaluation path.
+4. Select only cases that can expose the changed responsibility, a known regression, or a plausibly affected adjacent boundary.
+5. Generate a plan and inspect its model-call count before execution.
+6. Run the approved plan once.
+7. Grade only the planned case-condition results.
+8. Record the stopping reason and any unverified boundary.
+9. Add evidence only when the current result is not decision-ready.
 
-```mermaid
-flowchart TD
-    A[Change request] --> B{Does the change decision depend<br/>on current behavior?}
-    B -- No --> E[Design and implement the change]
-    B -- Yes --> C[Run the smallest current-version diagnosis]
-    C --> D{Diagnosis result}
-    D -- Gap demonstrated --> E
-    D -- No gap demonstrated --> D1[Stop the behavior change or<br/>reframe an independently needed clarification]
-    D -- Inconclusive --> D2[Refine the case or grading<br/>without editing the Skill]
-    E --> F[Run deterministic checks]
-    F --> G{Does executable behavior, discovery,<br/>or a responsibility boundary change?}
-    G -- No --> K[Decide acceptance from static evidence]
-    G -- Yes --> H[Run each affected candidate case once]
-    H --> I{Is the result decision-ready?}
-    I -- Pass --> K
-    I -- Fail --> L[Correct or redesign the change]
-    I -- Ambiguous or conflicting --> J[Add only decision-relevant comparison,<br/>repetition, or target-environment evidence]
-    J --> M{Are the acceptance conditions met?}
-    M -- Yes --> K
-    M -- No --> L
-```
+Do not connect the Runner to a file watcher, post-edit hook, or other mechanism that automatically evaluates every revision.\
+The developer or reviewing agent invokes it explicitly when the selected path requires execution.
 
-Run gap diagnosis before editing only when at least one of these conditions
-applies:
+## Select an evaluation path
 
-- the request allows a behavior change only if current behavior is insufficient
-- acceptance depends on demonstrating improvement relative to current behavior
-- a reported regression or the sufficiency of current guidance has not yet been
-  established
-- the result can change whether to edit or how much behavior to change
-
-Do not require gap diagnosis for an explicit new requirement that does not
-depend on current behavior, a defect already established by deterministic
-evidence, a clarification that does not claim behavior improvement, or a
-meaning-preserving mechanical change.
-
-Before running a diagnosis, state what each possible result will mean:
-
-| Current-version result | Change decision |
-| --- | --- |
-| Gap demonstrated | Proceed with the smallest change that addresses the demonstrated gap |
-| No gap demonstrated | Stop the behavior change; proceed with an independently authorized clarification only after naming that purpose, without claiming behavior improvement |
-| Inconclusive or defective evaluation | Refine the case or grading and do not edit the Skill yet |
-
-A pre-change diagnostic case may become the matched baseline for candidate
-acceptance when its inputs, environment, and grading remain applicable. Reuse
-that evidence instead of rerunning the current version solely to create a
-separate baseline record.
-
-## Evaluation selection principle
-
-Select the least evidence needed to decide whether a change is acceptable. Start
-with deterministic repository validation. Add model-backed behavior evaluation
-only when executable behavior, discovery, or a responsibility boundary changes,
-and select only the cases that can expose the affected responsibility, a known
-regression, or a plausibly affected adjacent boundary.
-
-A changed `SKILL.md` file does not by itself require behavioral evaluation.
-Public availability likewise does not require package-wide, model-matrix, or
-client-matrix evaluation.
-
-Use this table to select the evaluation path:
-
-| Change shape | Selected path | Required coverage |
+| Change shape | Path | Required evidence |
 | --- | --- | --- |
-| Documentation, formatting, meaning-preserving wording, or mechanical metadata that does not affect discovery | **Static-only** | Deterministic repository checks |
-| Localized instruction, output, safety, or other runtime-responsibility change | **Targeted candidate-only** | Only candidate cases that expose the changed responsibility, a known regression, or a plausibly affected adjacent boundary; run each selected case once initially |
-| `name`, `description`, invocation behavior, or adjacent Skill responsibility boundary changes | **Targeted routing or coexistence** | Only relevant should-trigger, should-not-trigger or near-miss, ambiguous, and coexistence cases |
-| Known regression, major redesign, split or merge, changed subjective-quality target, changed success contract, or ambiguous candidate-only result | **Baseline comparison** | Matched baseline and candidate evidence for the decision-relevant cases |
-| Observed instability, conflicting evidence, or a material failure consequence | **Repetition** | Only the additional observations needed to resolve the acceptance question |
-| Explicit environment-support claim, environment-specific failure, or client-specific discovery, permission, tool, hook, or runtime change | **Model/client-specific** | Direct evaluation in the affected environment only |
-| Distribution or catalog behavior changes | **Package evaluation** | The affected distribution or catalog checks, separate from routine Skill behavior evaluation |
+| Documentation, formatting, meaning-preserving wording, or mechanical metadata that does not affect discovery | `static-only` | Repository checker only |
+| Localized instruction, output, safety, or other runtime-responsibility change | `targeted-candidate` | The affected candidate cases, once initially |
+| `name`, `description`, invocation behavior, or adjacent Skill responsibility boundary change | `targeted-routing` | Relevant trigger, non-trigger, near-miss, ambiguous, or coexistence cases |
+| Known regression, major redesign, changed success contract, or ambiguous candidate-only result | `baseline-comparison` | Matched candidate plus `baseline` or `without-skill` conditions for the decision-relevant cases |
+| Explicit environment-support claim or environment-specific failure | `target-environment` | Direct execution in the affected environment |
 
-Ordinary public Skill changes do not require a package, model, or client matrix.
-Evaluation size follows the selected behavioral coverage, not a universal case
-count. Official guidance sometimes uses three or 3–5 scenarios as an example or
-an organizational starting point; this repository does not treat those numbers
-as a universal minimum or maximum.
+Repetition is an escalation, not a separate default path.\
+Repeat only when observed instability, conflicting evidence, or a material failure consequence makes another observation decision-relevant.
 
-## Companion-Skill exceptions
+Package and distribution checks remain separate from routine Skill behavior evaluation.\
+Run them only when distribution behavior changes.
 
-Skills remain self-contained unless an approved companion relationship is
-recorded in `docs/authoring.md`. An undocumented dependency fails static
-validation; a documented relationship is not a general dependency mechanism.
+## Migrate definitions when a Skill is first materially changed
 
-For an approved relationship, static validation confirms that the relationship,
-rationale, installation path, missing-companion behavior, provenance, and
-evaluation location agree across the registry and the affected Skill assets.
-When the relationship or its runtime behavior changes, targeted behavioral
-evaluation may cover either or both of these distinct risks, according to what
-the change affects:
+Existing evaluation assets are not migrated repository-wide.\
+For an existing Skill, migrate its complete `evals.json` and `triggers.json` set the first time a pull request materially changes its `SKILL.md`, runtime resources, discovery behavior, responsibility, safety boundary, or evaluation definition.
 
-- **Coexistence:** the dependent Skill reads the companion in the required
-  order and preserves its applicable constraints.
-- **Missing companion:** the dependent Skill follows its documented stop or
-  fallback behavior and gives the supported installation path without producing
-  an unauthorized partial result.
+README changes, reference-translation synchronization, meaning-preserving documentation or metadata changes, and legacy-result-only changes do not trigger migration.\
+If both `evals.json` and `triggers.json` exist for a Skill, migrate both in the same pull request so the Skill never has a mixed executable contract.
 
-Re-run only the checks that cover the changed Skill responsibility, relationship,
-installation path, or missing-companion behavior. Do not treat the exception as
-proof that either Skill works independently of the documented relationship.
+Migrating definitions does not mean executing every migrated case.\
+After migration, run only the cases required by the responsibility changed in that pull request.
 
-## Choosing evaluation depth
+Legacy `{skill, cases}` assets, `scenarios` assets, and legacy `triggers.json` remain valid repository history.\
+Model-backed paths reject them before invoking Codex and explain that complete per-Skill migration is required.\
+`static-only` does not read evaluation cases and remains available to an unmigrated Skill.
 
-Apply these rules in order:
+## Evaluation assets and schema
 
-1. Identify the affected claim or responsibility and whether executable behavior
-   or a discovery or responsibility boundary changes.
-2. If neither changes, run deterministic repository validation and stop.
-3. If runtime behavior changes, select only the affected candidate cases. Start
-   with one observation for each selected case.
-4. If discovery or a responsibility boundary changes, add only the relevant
-   routing, near-miss, ambiguous, or coexistence cases.
-5. Escalate to baseline comparison, repetition, model/client-specific evaluation,
-   or package evaluation only when the corresponding condition in the table can
-   change acceptance.
-
-Do not add an unrelated core, capability, routing, or coexistence suite
-automatically. A static check does not establish runtime behavior, and a targeted
-regression does not establish behavior on untested clients or models. State those
-limits instead of expanding the suite mechanically.
-
-## Evaluation selection record
-
-Record only:
-
-- the affected claim or responsibility
-- the evaluation purpose and the condition that triggered it
-- the selected path, cases, or deterministic checks and why they are sufficient
-- how each material result changes the change or acceptance decision
-- any untested boundary that limits the acceptance claim
-
-Use the existing evaluation README or change record. Do not require a shared
-metadata schema for selection records unless repeated work later demonstrates a
-need for more structure.
-
-## Evidence reuse
-
-Reuse prior evidence only when the evaluated content, responsibility,
-environment relevance, and requirement remain applicable. Bind new targeted
-evidence to the revision that was actually evaluated. When current content
-changes, identify which prior requirements remain applicable instead of treating
-an earlier pass as evidence for the whole candidate.
-
-Preserve a historical result separately only when it still informs a current
-decision and Git history is insufficient. Otherwise, rely on Git history. Do not
-rerun unchanged evidence merely because another part of a Skill changed or to
-refresh a passing appearance.
-
-## Evaluation assets per Skill
-
-Each Skill has an `evals/` directory. The README is required; structured assets are optional and should be added when they make repeated evaluation more reproducible.
+Reusable assets live with the Skill:
 
 ```text
 skills/<skill-name>/
 └── evals/
-    ├── README.md       # purpose, procedure, result summary, and reflection
-    ├── triggers.json   # optional trigger, non-trigger, and near-miss cases
-    ├── evals.json      # optional realistic tasks, inputs, assertions, and baseline conditions
-    └── results.json    # optional compact evidence record for the currently accepted revision
+    ├── README.md       # human-readable evaluation contract
+    ├── evals.json      # optional behavior cases
+    ├── triggers.json   # optional routing cases
+    ├── report.json     # optional record for the latest evaluated change
+    └── results.json    # optional legacy historical evidence
 ```
 
-Do not migrate every existing Skill merely to match this structure. Other Skills may adopt structured assets when each receives its next significant revision.
+New executable definitions follow the [Agent Skills evaluation format](https://agentskills.io/skill-creation/evaluating-skills) with explicit repository extensions:
 
-## Asset responsibilities
-
-### evals/README.md
-
-Keep the human-readable evaluation contract and summarized record:
-
-- purpose and intended behavior
-- execution procedure and environment
-- static checks and scenario overview
-- summarized results, failures, and unexecuted checks
-- iteration notes and the next validation question
-
-The exact headings may vary. Do not use the README as a substitute for raw evidence, and do not commit raw traces into it.
-
-### evals/triggers.json
-
-Use this optional asset for reusable:
-
-- `should-trigger` cases
-- `should-not-trigger` cases
-- near-miss cases that resemble the target responsibility but belong elsewhere
-- run counts, observability rules, and pass thresholds
-
-Choose trigger cases from actual responsibility boundaries and plausible false activations. Near-miss cases are useful when an adjacent Skill or similar request could reasonably compete; unrelated negative cases are optional controls, not required coverage.
-
-Do not use a universal repetition count or pass threshold. Repeat only after an
-observed unstable result, conflicting evidence, or a material failure consequence
-makes another observation decision-relevant. When a fixed run count is used as a
-cost-bounded smoke test, record that rationale and do not present it as a
-statistical guarantee.
-
-Count a trigger only from evidence the client exposes. If Skill loading is not observable, record `not exposed`; do not infer a load event from output wording.
-
-### evals/evals.json
-
-Use this optional asset for:
-
-- realistic tasks and their inputs
-- behavioral assertions and critical requirements
-- baseline conditions
-- isolation and coexistence configurations
-
-Keep scenarios rich enough to expose judgment errors without embedding the desired answer in the task.
-Keep executor inputs separate from grading criteria. A scenario may include evidence that a real user would provide, but should not name the expected finding or conclusion merely to make grading easy.
-
-### evals/results.json
-
-Use this optional asset when aggregate counts in the README are not enough to audit an executed revision after temporary artifacts are removed. Record:
-
-- the claim or change being checked and the evaluated candidate revision
-- the selection path, stopping rationale, executed checks or cases, results, and supporting evidence
-- client, model, and reasoning when an LLM was executed
-- the unverified scope that limits the conclusion
-- baseline identity and matched conditions only when comparison was executed
-
-Do not store raw traces, full responses, credentials, or environment-specific absolute paths in this file. Link it from the corresponding README result summary.
-
-Treat `results.json` as the compact evidence for the currently accepted Skill revision. Update it in place rather than adding a dated file for every execution. Fold reruns and corrections for the same candidate into the same record. Git history preserves each accepted result together with the Skill source it evaluated.
-
-Acceptance identifies the repository revision; it does not by itself mean that
-behavior or triggering was executed or passed. A pass applies only to the
-evaluated revision and to unchanged requirements whose continuing applicability
-is explicit. When the accepted Skill source changes, update `results.json`, mark
-affected evidence as `superseded` or `unverified`, or remove the file. Do not
-infer missing provenance or leave hashes and pass claims that imply an old
-candidate is the current source.
-
-This repository does not require a common result schema. Preserve an existing
-local schema when it remains useful, but record only fields that apply to the
-selected evaluation path. Do not require baseline, comparison matrices, trigger
-rates, usage metrics, or grader calls for a candidate-only result.
-
-## Example evals/README.md structure
-
-```markdown
-# <skill-name> evals
-
-## Iter 0 — Static check
-
-- description and body are internally consistent
-- output format is defined or clearly implied
-- the Skill is self-contained or has an approved companion relationship
-- material claims and fail-gating requirements are identified
-
-## Coverage map
-
-| Claim | Failure | Scenario | Grader |
-| --- | --- | --- | --- |
-| ... | ... | ... | ... |
-
-## Scenarios
-
-### Scenario A: <title>
-
-<one-sentence context>
-
-Requirements checklist:
-1. [critical] <requirement whose violation fails the scenario>
-2. <other requirements>
-
-## Failure Pattern Ledger
-
-- `<known failure pattern>`
-
-## Iter N — YYYY-MM-DD
-
-### Changes
-
-- <what changed from previous>
-
-### Execution results
-
-| Scenario | Result | Evidence | Weak phase |
-| --- | --- | --- | --- |
-| A | pass / fail / unstable | ... | — |
-
-### Next validation question
-
-- <question whose answer could change the decision>
+```json
+{
+  "skill_name": "example-skill",
+  "execution": {
+    "coexistence_skills": ["adjacent-skill"]
+  },
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Handle this request.",
+      "expected_output": "A bounded result.",
+      "files": ["tests/fixtures/input.txt"],
+      "assertions": [
+        "The result states the boundary.",
+        {
+          "id": "no-expansion",
+          "text": "The result does not expand the task.",
+          "critical": false
+        }
+      ],
+      "fixture": {
+        "files": {
+          "notes/context.txt": "Fixture content."
+        }
+      },
+      "coexistence_skills": [],
+      "conditions": ["candidate"]
+    }
+  ]
+}
 ```
 
-## Running evaluations
+The official fields consumed by the Runner are `id`, `prompt`, `expected_output`, and `files`.\
+String and integer IDs are normalized to strings.\
+A string assertion receives a stable positional ID such as `assertion-1` and is critical by default.
 
-There is no repository-wide `/eval` command or required external framework. Record the exact command, script, client workflow, or manual procedure used for each runnable suite. Add a wrapper only when it makes repeated execution materially more reproducible.
+Each `files` entry must be a repository-relative path using `/` separators.\
+The Runner rejects empty paths, absolute or Windows drive paths, backslashes, and parent-directory traversal, then normalizes accepted paths before recording the plan.
 
-Use deterministic repository checks, fixture state, exact output fields, hashes,
-traces, or another objective observation without an LLM whenever they resolve
-the selected requirement.
+Repository extensions are assertion objects with `id`, `text`, and `critical`; explicit `conditions`; inline `fixture.files`; case-level or top-level `coexistence_skills`; transcript inputs; and routing `expected_handlers`.\
+Keep executor input separate from assertions and expected output so the desired answer is not disclosed to the executor.
 
-For routine model-independent behavior that requires model execution, use Codex
-with `gpt-5.6-luna` and max reasoning as the reference environment. Start with
-one candidate run for each selected case. This is a low-cost reference
-environment, not a support matrix or evidence for another model or client.
+When a behavior case has no assertions, the Runner creates one critical `expected-output` requirement from `expected_output`.\
+Use `triggers.json` with the same top-level shape for routing cases, and give each selected routing case an `expected_handlers` array.
 
-When the accepted claim materially depends on another model or client, execute
-the selected case directly in that target environment. Examples include an
-explicit support claim, an environment-specific failure, or client-specific
-discovery, permissions, tools, hooks, or runtime behavior. Do not require a Luna
-preflight before target-environment execution.
+Routing evaluation counts only successful read or tool events for installed Skills that Codex exposes in JSONL.\
+The Runner treats the routing event stream as complete only when it contains `turn.completed`.\
+A complete stream with no successful Skill read records `observed` with an empty handler array, which can pass a case whose `expected_handlers` is empty.\
+Without `turn.completed`, the Runner records `not_exposed` and grades routing as `inconclusive`; it never infers a handler from the final response wording.
 
-If a Luna run fails or is ambiguous, first determine whether it already exposes
-an instruction or fixture defect. Escalate to another model only when
-distinguishing Skill failure from model limitation can change acceptance. Do not
-treat a Luna pass or failure as evidence for unexecuted models or clients.
+## Plan before spending tokens
 
-Run behavioral evaluations with a blank-slate executor: an agent or client session that starts without repository history and receives only the Skill and inputs required by the scenario.
+Create a temporary directory and generate a plan from the repository root:
 
-**Blank-slate executor protocol:**
+```bash
+evaluation_tmp="$(mktemp -d)"
 
-1. Start a fresh executor with no repository context.
-2. Provide the `SKILL.md` content, allowed supporting files, scenario input, and required environment.
-3. Keep hidden assertions, expected conclusions, and grader notes out of the executor input.
-4. Capture the outcome and exposed trace without asking the executor to declare its own pass/fail result.
-5. Grade each applicable requirement and record evidence for the verdict.
+python3 scripts/run_skill_evaluation.py plan \
+  --skill example-skill \
+  --path targeted-candidate \
+  --purpose "Check the changed output boundary." \
+  --affected "output boundary" \
+  --case bounded-change \
+  --base-ref origin/main \
+  --output "$evaluation_tmp/plan.json"
+```
 
-Select only the applicable configurations:
+`plan` does not invoke a model.\
+It resolves the base commit, expands only explicitly selected cases and conditions, prints the estimated model-call count, and writes schema version 2 with a digest over canonical JSON.
 
-- **Isolation:** the target Skill without adjacent Skills that could mask a gap
-- **Coexistence:** the target Skill with adjacent Skills or instruction surfaces when a plausible trigger, authority, or workflow conflict exists
+The plan records every regular candidate file that the executor can receive, excluding `evals/`, with its SHA-256 and normalized Git mode of `100644` or `100755`.\
+Evaluation files, selected repository input files, and complete coexistence Skill manifests are recorded separately.\
+Symlinks in Skill execution trees are rejected, and files outside these manifests are never copied into the fixture.
 
-Use the first sufficient grading method:
+Model-backed paths require at least one `--case`; there is no implicit all-cases option.\
+The default condition is `candidate`.\
+`baseline-comparison` defaults to `candidate` plus `baseline` and may instead receive explicit `--condition` values, including `without-skill`.\
+Other paths do not accept comparison conditions.
 
-1. deterministic assertions for objective requirements
-2. direct maintainer review against a short rubric for judgment-heavy requirements
-3. a separate blank-slate LLM grader only when repeatable or independent model judgment is materially useful
+The default model is `gpt-5.6-luna`, the default reasoning effort is `max`, and the default sandbox is `read-only`.\
+Override these inputs explicitly when the evaluation question requires another environment.
 
-An LLM grader is optional and does not need to be stronger than the executor by
-default. Keep hidden answers and grading criteria out of the executor input.
-Executor self-report can help diagnose confusion, but it is not sufficient as
-the only evidence for an independently observable requirement.
+## Execute the approved plan
 
-This approach is inspired by the empirical prompt-tuning methodology described in [mizchi/skills](https://github.com/mizchi/skills). See `THIRD_PARTY_NOTICES.md`.
+Run the plan with an explicit budget:
 
-## Iter 0 static check
+```bash
+python3 scripts/run_skill_evaluation.py run \
+  --plan "$evaluation_tmp/plan.json" \
+  --artifacts-dir "$evaluation_tmp/artifacts" \
+  --execute \
+  --max-model-calls 1
+```
 
-Before writing scenarios, perform a static Iter 0 check:
+`run` refuses to start when the plan exceeds `--max-model-calls` or any recorded candidate, evaluation input, case input, or coexistence Skill manifest has changed, including an executable-mode change.\
+These checks happen before Codex is invoked.\
+The artifacts directory must not already exist.
 
-1. `description` and body are internally consistent
-2. Output format is defined or clearly implied
-3. The Skill is self-contained, or an approved companion relationship documents the required Skill and its missing-companion behavior
-4. Critical requirements are identified only where violating them should fail the scenario
-5. The affected claims and changed behavior are mapped to plausible failures and grading methods
+Every Codex invocation uses an ephemeral session, JSONL output, the planned model, reasoning effort, and sandbox, and a disposable fixture under the system temporary directory.\
+The candidate condition copies the manifest-bound working-tree Skill, the baseline condition materializes regular files from the resolved base commit, and both reproduce the normalized executable mode.\
+The baseline condition rejects symlinks and other unsupported Git tree entries, while the without-Skill condition omits the target Skill.\
+Candidate and companion copies exclude `evals/`.
 
-If executable behavior, discovery, and responsibility boundaries are unaffected,
-stop after deterministic validation. Otherwise, only after Iter 0 passes should
-you formalize the selected scenarios in `evals/README.md`.
+Selected case inputs are copied to `fixture/inputs/<repository-relative-path>`.\
+The Runner checks the source and destination again before copying, so a case input cannot overwrite its repository source.
 
-## Baseline comparison
+Behavior evaluation explicitly tells the executor to use the target Skill.\
+Routing evaluation supplies the request without forcing Skill selection.
 
-Run a baseline comparison only when relative evidence can change acceptance: a
-known regression, a major redesign, split, or merge, a changed subjective-quality
-target, a changed success contract, or an ambiguous candidate-only result. Do not
-run a baseline merely because a Skill is public, its body changed, or the change
-is described as significant.
+The schema version 2 `run.json` embeds the normalized plan and its digest instead of an absolute plan path.\
+It also records the actual execution pairs, environment, static-check outcome, routing observations, and raw-artifact locations within the temporary artifact directory.
 
-When comparison is selected, use the previous version or the no-Skill condition,
-whichever represents the decision being made. Identify the baseline with a
-commit, content hash, or retained snapshot. Use the same task inputs, fixture,
-client, model, reasoning settings, sandbox, and grading policy for both sides.
+Raw JSONL, stderr, final responses, disposable fixtures, the plan, and the run record remain under the system temporary directory.\
+Do not commit them.
 
-Check coexistence only where adjacent surfaces could mask a gap or compete with the changed behavior. Historical benchmarks may be retained for context, but the default regression baseline is the immediately preceding behavior.
+## Grade planned results
 
-When a target model or client is unavailable, record `not executed`. A new paired baseline/candidate run on an available target may be added, but must not be merged silently with results from a different environment.
+The Runner does not use another model as an automatic grader.\
+The invoking Codex session or a human writes schema version 2 grades for the non-routing requirements:
 
-Start with one observation for each selected condition. Repeat only after an
-unstable result, conflicting evidence, a defective run, or a material failure
-consequence makes another observation useful for the acceptance decision.
+```json
+{
+  "schema_version": 2,
+  "results": [
+    {
+      "case_id": "bounded-change",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "expected-output",
+          "status": "pass",
+          "evidence": "The result states the boundary without expanding the task."
+        }
+      ],
+      "evidence": "The selected requirement passed."
+    }
+  ]
+}
+```
 
-## Stopping rule
+Do not provide a case-level status.\
+The Runner derives it from requirement statuses and the critical flags in the bound plan:
 
-Stop expanding or rerunning an evaluation when:
+1. An executor or requirement `error` produces `error`.
+2. A critical `fail` produces `fail`.
+3. A non-critical `fail` or any `inconclusive` produces `inconclusive`.
+4. All requirements passing produces `pass`.
 
-- every affected claim, changed behavior, known regression, and relevant boundary has a grading path
-- each retained scenario covers a distinct risk
-- observed results are stable enough for the decision being made, or remaining instability is explicitly reported
-- another check or run would not change acceptance
+The Runner adds and grades the critical `routing-handlers` requirement from direct observations, so grades do not repeat it.\
+Grades must exactly match completed case-condition pairs and non-routing requirements; missing, duplicate, and unplanned results are rejected.
 
-Continue or deepen evaluation when a requirement is ungraded, results conflict, a high-impact boundary remains untested, or the next run could distinguish competing explanations.
+Keep evidence concise and decision-relevant.\
+Do not paste a full prompt, response, trace, stderr, JSONL event, credential, or environment-specific absolute path into grades.
 
-## Result metadata and artifact handling
+## Preview and write the report
 
-Record the minimal evidence needed to bound the accepted conclusion:
+Preview the compact report before changing the repository:
 
-- the claim or change being checked
-- the selection path and stopping rationale
-- the checks or cases executed and their results
-- client, model, and reasoning when an LLM was executed
-- the unverified scope that limits the conclusion
-- baseline identity and matched conditions only when comparison was executed
+```bash
+python3 scripts/run_skill_evaluation.py report \
+  --run "$evaluation_tmp/artifacts/run.json" \
+  --grades "$evaluation_tmp/grades.json" \
+  --stopping-reason "The selected case answered the acceptance question." \
+  --unverified "Unselected responsibilities"
+```
 
-Record token counts, model calls, turns, tool calls, or duration only when the
-client exposes them and they are used in the current cost or acceptance decision.
-Do not invent unavailable data.
+`report` accepts no separate plan.\
+It uses the plan snapshot embedded in `run.json` as the only plan source and revalidates its digest, environment, execution pairs, candidate manifest, and evaluation inputs.
 
-Use these plain evidence states where applicable without introducing a
-repository-wide state machine:
+Add `--write` only after reviewing the preview.\
+The command then replaces `skills/<skill-name>/evals/report.json` with schema version 2.
 
-- `not executed`: a check was skipped or unavailable
-- `not exposed`: the client did not expose the observation
-- `unverified`: the accepted claim lacks applicable evidence
-- `superseded`: later content or evidence replaced the earlier claim
+The report records the evaluation purpose, affected responsibilities, selected path and pairs, base commit, candidate manifest with hashes and modes, selected evaluation-input hashes, execution environment, derived results, stopping reason, and unverified boundaries.\
+It does not include the plan snapshot, raw prompts, responses, JSONL, absolute paths, credentials, or coexistence Skill manifests.
 
-None of these states is a pass.
+The checker recomputes result and summary statuses and verifies that the target Skill and selected evaluation inputs remain current.\
+A later unrelated change to a coexistence Skill does not make the accepted report stale.
 
-Store raw JSONL, authentication material, and full session logs only in a temporary directory outside the repository or in a retention-controlled CI artifact. Do not commit credentials, raw sessions, or unredacted traces. Keep the compact evidence for the currently accepted revision in `results.json`; use Git history to audit earlier accepted claims together with the Skill source that produced them.
+The report describes one change-scoped evaluation, not the quality of the entire Skill.\
+It omits unselected cases rather than marking them stale or not executed.\
+The next evaluated change replaces this file, while Git history retains earlier accepted records.
 
-## Source interpretation
+`results.json` remains valid legacy historical evidence.\
+The repository checker validates its basic JSON identity but does not require its candidate hashes to match the current Skill.\
+Do not refresh or migrate a legacy result merely because another part of the Skill changed.
 
-- [Anthropic Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) presents evaluation-first iteration and example scenario counts.
-- [Anthropic Skills for enterprise](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise) gives an organizational 3–5 query requirement and recommends trigger, isolation, coexistence, instruction-following, output-quality, and active-model coverage.
-- [OpenAI Build skills](https://learn.chatgpt.com/docs/build-skills) recommends testing prompts against the Skill description and documents explicit and implicit Skill invocation.
-- [OpenAI Evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices) recommends defining the evaluation objective and success criteria before selecting data, metrics, and comparisons.
-- [Anthropic Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) recommends starting from observed failures and manual checks, using unambiguous success criteria, and covering both positive and negative behavior.
-- [NIST AI RMF Core](https://airc.nist.gov/airmf-resources/airmf/5-sec-core/) connects context mapping and measurement to decisions about whether development or deployment should proceed.
+## Stop and escalate
 
-This repository adopts the behavioral dimensions, evidence-first direction, and
-measurement-to-decision link from those sources while choosing suite size from
-local responsibility and failure coverage. It does not adopt their example case
-counts, organizational roles, or lifecycle processes as universal requirements.
+Stop after one observation per selected candidate case when the result answers the acceptance question, all material selected requirements are graded, and the remaining unverified scope is explicit.
+
+Add only the evidence needed to resolve one of these conditions:
+
+- a selected requirement is ungraded
+- the case or grading rule is defective
+- candidate evidence is ambiguous or conflicts with another observation
+- an observed instability makes repetition decision-relevant
+- acceptance depends on comparison with the prior Skill or no-Skill behavior
+- a material environment-specific claim remains untested
+
+Do not edit the Skill merely to repair a defective case or grader.\
+Correct the evaluation input first.
+
+## Review evaluation sufficiency
+
+A reviewer decides whether the selected evidence covers the changed responsibility.\
+The checker can establish record integrity, but it cannot decide semantic sufficiency.
+
+An evaluation-insufficiency finding must identify all of the following:
+
+- the changed responsibility that lacks coverage
+- a concrete plausible failure that matters to acceptance
+- why the recorded checks cannot expose that failure
+- the smallest additional case, condition, or deterministic check that would resolve it
+
+Do not report insufficiency merely because an unselected case, unrelated suite, unmigrated Skill, legacy `results.json`, or prior report was not refreshed.\
+Do not require a fixed case count, baseline, repetition, Skill-without condition, or model matrix without connecting it to a decision-relevant failure.
+
+## Repository checks
+
+Run the complete deterministic validation after writing a report or changing evaluation assets:
+
+```bash
+python3 scripts/check_repository.py
+python3 -m unittest discover -s tests
+```
+
+The checker validates structure, mixed-format migration state, manifest content and executable-mode freshness, symlink absence in the candidate execution tree, and record consistency without invoking an LLM.\
+Passing static validation does not establish runtime quality, routing, or support in an untested client.
