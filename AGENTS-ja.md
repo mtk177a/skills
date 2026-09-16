@@ -1,13 +1,13 @@
-> **注記:** 英語版 (`AGENTS.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。
+> **注記:** このファイルは英語版 (`AGENTS.md`) の参考訳です。内容に差異がある場合は英語版を優先してください。
 
 # AGENTS.md（日本語参考訳）
 
-英語版の `AGENTS.md` は、このリポジトリで作業するエージェント向け共通指示の正本です。
+このリポジトリで作業するエージェント向けの共通指示は、英語版の `AGENTS.md` で定めます。
 より深い階層に `AGENTS.md` があれば、そちらを優先します。
 
 ## 目的
 
-- 自作したエージェント向け Skill と、自分で継続保守する Skill を管理する
+- 自作したエージェント向け Skill と、自分で継続的に改変・保守する Skill を管理する
 - Codex、Claude Code、GitHub Copilot など複数のエージェントから参照しやすい単純な構成を保つ
 - macOS M1 と Windows WSL の両方に対応するため、OS 固有の前提を持ち込まない
 
@@ -21,71 +21,71 @@ Skill を作成・編集する際は、責務の重複を解消し、判断が�
 ## このリポジトリに入れるもの
 
 - 自作した Skill
-- 外部 Skill を参考にしつつ、自分で継続的に改変・保守している Skill
+- 外部 Skill を確認して取り込み、自分で継続的に改変・保守している Skill
 - Skill の運用ルール、作成ルール、移行メモ
 
 ## このリポジトリに入れないもの
 
 - 外部 Skill の単純コピー
 - 試験的・未整理な Skill
-- 顧客名、社内 URL、秘密情報、API key、個人情報を含む内容
+- 顧客名、社内 URL、秘密情報、API キー、個人情報を含む内容
 - チーム共有前提の運用ルール
 
 ## 構成ルール
 
 - 基本単位は `skills/<skill-name>/SKILL.md`
 - `<skill-name>` は kebab-case
-- `SKILL.md` の frontmatter には最低限 `name`、`description`、`license` を入れる
+- `SKILL.md` のフロントマターには最低限 `name`、`description`、`license` を入れる
 - `evals/`、`references/`、`scripts/`、`assets/` は必要な場合のみ追加する
 - `common/`、`codex/`、`claude-code/` のようなエージェント別分類ディレクトリは作らない
 - エージェント固有の差分は Skill 名や `description` で表現し、ディレクトリ構造には反映しない
 
 ## リポジトリローカルな運用 Skill
 
-- このリポジトリ自体の保守専用で、公開 Skill catalog に配布しない運用 Skill に限り、`.agents/skills/<skill-name>/` に配置できる
-- git で明示的に追跡している repo-local Skill は source file であり、APM の deployment output として扱わない
-- repo-local Skill を public Skill catalog や配布 bundle に追加しない
-- repo-local Skill 名は kebab-case とし、必要な場合に限り `SKILL.md`、`SKILL-ja.md`、最小限の補助ファイルを含める
-- 現在追跡している repo-local Skill の例外は次のとおり
+- このリポジトリ自体の保守専用で、公開 Skill カタログに配布しない運用 Skill に限り、`.agents/skills/<skill-name>/` に配置できる
+- Git で明示的に追跡しているリポジトリローカル Skill はソースファイルであり、APM が配備時に生成するファイルとして扱わない
+- リポジトリローカル Skill を公開 Skill カタログや配布バンドルに追加しない
+- リポジトリローカル Skill 名は kebab-case とし、必要な場合に限り `SKILL.md`、`SKILL-ja.md`、最小限の補助ファイルを含める
+- 現在追跡しているリポジトリローカル Skill の例外は次のとおり
   - `.agents/skills/maintain-japanese-references/`
 
 ## 作業ルール
 
 - 変更は小さく、レビューしやすい単位に保つ
-- Skill 本文は英語を原則とする。日本語の執筆・推敲そのものを目的とする Skill は、日本語の `SKILL.md` を正本として重複する `SKILL-ja.md` を省略できる。例外と出典は文書化する。
+- Skill 本文は英語を原則とする。日本語の執筆・推敲そのものを目的とする Skill は、日本語の `SKILL.md` で要件を定め、重複する `SKILL-ja.md` を省略できる。例外と出典は文書化する。
 - ローカル絶対パスや環境依存情報を埋め込まない
-- Skill 本文では、明確な trigger、入力、期待する出力、境界を優先する
+- Skill 本文では、明確な使用条件、入力、期待する出力、境界を優先する
 - 手順の順序や完全性が正しさに大きく影響する場合は、簡潔な番号付き手順と検証方法を含める
 - 補助スクリプトや参照資料は、その Skill を成立させる最小限に絞る
 - このリポジトリのコンテキストを持たないエージェントでも読めることを前提に書く
-- 保守対象の英語正本を追加または変更した場合は、`.agents/skills/maintain-japanese-references/` を使用して日本語参考訳を確認し、正本の意味が変わる場合だけ更新する
+- 保守対象の英語版を追加または変更した場合は、`.agents/skills/maintain-japanese-references/` を使用して日本語参考訳を確認し、英語版の意味が変わる場合だけ更新する
 
-## APM Skill bundle の更新手順
+## APM Skill バンドルの更新手順
 
-- このリポジトリは、root の `skills/` directory を APM の native `SKILL_BUNDLE` として公開する。root に `apm.yml` や `apm.lock.yaml` を追加せず、consumer repository が manifest と lockfile を所有する。
-- public Skill の変更を commit する前に、関連する Skill eval、repository checker、repository unit test を実行する。
-- 既存 Skill の指示、runtime resource、発見方法、責務、安全境界、または評価定義を PR で初めて実質的に変更するとき、その Skill の `evals.json` と `triggers.json` 全体を実行可能な `{skill_name, evals}` 形式へ移行する。README、参考訳、意味を変えない文書や metadata、legacy result だけの変更では移行を要求しない。
+- このリポジトリは、ルートの `skills/` ディレクトリを APM が直接扱う `SKILL_BUNDLE` として公開する。ルートに `apm.yml` や `apm.lock.yaml` を追加せず、利用側のリポジトリでマニフェストとロックファイルを管理する。
+- 公開 Skill の変更をコミットする前に、関連する Skill 評価、リポジトリ検査、単体テストを実行する。
+- 既存 Skill の指示、実行時リソース、発見方法、責務、安全境界、または評価定義を PR で初めて実質的に変更するとき、その Skill の `evals.json` と `triggers.json` 全体を実行可能な `{skill_name, evals}` 形式へ移行する。README、参考訳、意味を変えない文書やメタデータ、旧形式の評価結果だけの変更では移行を要求しない。
 - 評価定義の移行を理由に、移行した全ケースの実行を要求しない。変更した責務に必要なケースだけを実行する。
-- pull request で変更された責務に照らして評価の十分性をレビューし、普遍的なケース数や suite 更新規則に照らして判断しない。
-- 評価不足の指摘では、被覆されていない変更責務、受け入れ判断に関係する具体的な失敗、記録済み証拠でその失敗を露出できない理由、解消に必要な最小の追加評価を特定する。
-- 未選択ケース、無関係な suite、変更していない Skill、リポジトリ内の未移行 asset、legacy `results.json`、以前の report が更新されていないという理由だけで、評価の欠陥を指摘しない。
-- 配布動作を変更する場合は、candidate source を commit・push してから、このリポジトリ外の disposable consumer directory で push 済みの完全な commit を検証する。
-- bundle 全体、影響を受ける `--skill` の選択導入経路、影響を受ける個別の `skills/<name>` 導入経路を検証する。生成された consumer lockfile に対して consumer 側の frozen install と audit を実行する。
-- このリポジトリでは、dry-run ではない `apm install` や `apm update` を実行しない。source checkout に consumer manifest、lockfile、deployment artifact が生成されるため。
+- PR で変更された責務に照らして評価の十分性をレビューし、すべてに共通するケース数や評価一式の更新規則に照らして判断しない。
+- 評価不足の指摘では、評価できていない変更責務、受け入れ判断に関係する具体的な失敗、記録済みの証拠でその失敗を検出できない理由、解消に必要な最小限の追加評価を特定する。
+- 未選択ケース、無関係な評価一式、変更していない Skill、リポジトリ内の未移行の評価用ファイル、旧形式の `results.json`、以前の評価記録が更新されていないという理由だけで、評価の欠陥を指摘しない。
+- 配布動作を変更する場合は、候補版のソースをコミットして push してから、このリポジトリ外に作った一時的な利用側ディレクトリで、push 済みのコミット全体を検証する。
+- バンドル全体、影響を受ける `--skill` の選択導入経路、影響を受ける個別の `skills/<name>` 導入経路を検証する。生成された利用側のロックファイルに対して、依存関係を固定したインストールと監査を実行する。
+- このリポジトリでは、`dry-run` ではない `apm install` や `apm update` を実行しない。ソースの作業ディレクトリに、利用側のマニフェスト、ロックファイル、配備時に生成されるファイルが作られるため。
 - エージェントツールによって作成されることがあるため、空の `.agents/` ディレクトリは許容する。
 - `.agents/` 配下にレビュー用メモ、一時ファイル、その他の作業用成果物を保存しない。代わりに、このリポジトリ外の一時ディレクトリを使う。
-- root の APM manifest、APM によって展開された `.agents/skills/*`、または `apm_modules/` が存在する場合は、停止して報告する。生成物であることを確認し、承認を得た場合に限り削除する。上記の tracked repo-local Skill は保持する。
+- ルートの APM マニフェスト、APM によって展開された `.agents/skills/*`、または `apm_modules/` が存在する場合は、停止して報告する。生成物であることを確認し、承認を得た場合に限り削除する。上記の追跡対象のリポジトリローカル Skill は保持する。
 
 ## コミットメッセージ運用
 
-- Conventional Commits を使い、summary は英語で短く具体的に書く
+- Conventional Commits を使い、概要は英語で短く具体的に書く
 - 1 コミット 1 主題を基本とし、無関係な変更を混ぜない
 - `skills/*/SKILL.md` はこのリポジトリの成果物として扱い、一律に `docs` としない
 - 新しい Skill の追加や新しい振る舞いの追加: `feat`
 - 既存 Skill の不整合や判断ミスの修正: `fix`
-- rename・責務整理・構造再編など振る舞いを増やさない整理: `refactor`
+- 名前変更・責務整理・構造再編など、振る舞いを増やさない整理: `refactor`
 - `README.md`、`docs/*`、`skills/*/evals/README.md` などの更新: `docs`
-- 配布や参照の更新: 主目的となる変更の type に合わせる
+- 配布や参照の更新: 主目的となる変更の `type` に合わせる
 
 ## 承認が必要な作業
 
