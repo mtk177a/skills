@@ -107,6 +107,9 @@ Runner が扱う公式フィールドは `id`、`prompt`、`expected_output`、`
 文字列と整数の ID は文字列へ正規化します。\
 `assertions` の文字列要素には `assertion-1` のような位置に基づく安定した ID を与え、既定では重大な要件として扱います。
 
+`files` の各要素には、区切り文字として `/` を使ったリポジトリ相対パスを指定します。\
+Runner は、空のパス、絶対パス、Windows のドライブを含むパス、バックスラッシュ、親ディレクトリへの参照を拒否し、受け付けたパスを正規化してから計画へ記録します。
+
 リポジトリ固有拡張は、`id`、`text`、`critical` を持つ `assertions` のオブジェクト要素、明示的な `conditions`、埋め込みの `fixture.files`、ケースまたは最上位の `coexistence_skills`、会話履歴の入力、呼び出し評価用の `expected_handlers` です。\
 期待する回答が実行担当エージェントに伝わらないよう、実行時の入力と `assertions`、`expected_output` を分離してください。
 
@@ -170,6 +173,9 @@ python3 scripts/run_skill_evaluation.py run \
 `candidate` 条件ではマニフェストに記録した作業ツリーの Skill、`baseline` 条件では確定済みの基準コミットにある通常ファイルを配置し、どちらも正規化した実行可能属性を再現します。\
 `baseline` 条件ではシンボリックリンクなどの未対応の Git tree 項目を拒否し、`without-skill` 条件では対象 Skill を配置しません。\
 `candidate` と併用 Skill のコピーから `evals/` を除外します。
+
+選択したケースの入力ファイルは、`fixture/inputs/<リポジトリ相対パス>` へコピーします。\
+Runner はコピー前に入力元とコピー先を再確認するため、ケース入力がリポジトリ内の入力元ファイルを上書きすることはありません。
 
 挙動評価では対象 Skill の使用を実行担当エージェントに明示します。\
 呼び出し評価では Skill の選択を強制せずに依頼を渡します。

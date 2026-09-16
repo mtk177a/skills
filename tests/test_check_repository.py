@@ -728,6 +728,29 @@ class CheckerCliTests(unittest.TestCase):
 
             self.assertEqual(0, result.returncode, result.stderr)
 
+    def test_official_eval_files_require_safe_repository_relative_paths(self) -> None:
+        for value in ("/tmp/input.txt", "../outside.txt", r"C:\fixtures\input.txt"):
+            with self.subTest(value=value):
+                def mutate(root: Path) -> None:
+                    path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+                    document = json.loads(path.read_text())
+                    document["evals"][0]["files"] = [value]
+                    path.write_text(json.dumps(document))
+
+                self.assert_fixture_failure(
+                    mutate,
+                    "official case `alpha-case` has an unsafe repository-relative file path",
+                )
+
+    def test_official_eval_files_reject_duplicates_after_normalization(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            document = json.loads(path.read_text())
+            document["evals"][0]["files"] = ["inputs/request.txt", "inputs//request.txt"]
+            path.write_text(json.dumps(document))
+
+        self.assert_fixture_failure(mutate, "official case `alpha-case` repeats a file path")
+
     def test_companion_relationship_requires_skill_reference(self) -> None:
         def mutate(root: Path) -> None:
             write(

@@ -105,6 +105,9 @@ The official fields consumed by the Runner are `id`, `prompt`, `expected_output`
 String and integer IDs are normalized to strings.\
 A string assertion receives a stable positional ID such as `assertion-1` and is critical by default.
 
+Each `files` entry must be a repository-relative path using `/` separators.\
+The Runner rejects empty paths, absolute or Windows drive paths, backslashes, and parent-directory traversal, then normalizes accepted paths before recording the plan.
+
 Repository extensions are assertion objects with `id`, `text`, and `critical`; explicit `conditions`; inline `fixture.files`; case-level or top-level `coexistence_skills`; transcript inputs; and routing `expected_handlers`.\
 Keep executor input separate from assertions and expected output so the desired answer is not disclosed to the executor.
 
@@ -168,6 +171,9 @@ Every Codex invocation uses an ephemeral session, JSONL output, the planned mode
 The candidate condition copies the manifest-bound working-tree Skill, the baseline condition materializes regular files from the resolved base commit, and both reproduce the normalized executable mode.\
 The baseline condition rejects symlinks and other unsupported Git tree entries, while the without-Skill condition omits the target Skill.\
 Candidate and companion copies exclude `evals/`.
+
+Selected case inputs are copied to `fixture/inputs/<repository-relative-path>`.\
+The Runner checks the source and destination again before copying, so a case input cannot overwrite its repository source.
 
 Behavior evaluation explicitly tells the executor to use the target Skill.\
 Routing evaluation supplies the request without forcing Skill selection.

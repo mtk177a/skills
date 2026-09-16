@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -11,6 +12,7 @@ from scripts.run_skill_evaluation import (
     attach_plan_digest,
     canonical_json,
     copy_baseline_skill,
+    copy_case_files,
     copy_manifest,
     direct_skill_load_observation,
     observed_skill_handlers,
@@ -180,6 +182,48 @@ def create_manual_run(plan_path: Path, run_path: Path) -> None:
 
 
 class SkillEvaluationRunnerTests(unittest.TestCase):
+    def test_case_file_copy_rejects_absolute_destination(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            fixture = Path(output) / "fixture"
+            fixture.mkdir()
+            input_file = root / "inputs" / "request.txt"
+            write(input_file, "Original input.\n")
+            original_timestamp = 1_600_000_000_000_000_000
+            os.utime(input_file, ns=(original_timestamp, original_timestamp))
+
+            with self.assertRaisesRegex(EvaluationError, "unsafe case input path"):
+                copy_case_files(
+                    root,
+                    {"id": "absolute-input", "files": [str(input_file)], "inline_files": {}},
+                    fixture,
+                )
+
+            self.assertFalse((fixture / "inputs" / "request.txt").exists())
+            self.assertEqual("Original input.\n", input_file.read_text(encoding="utf-8"))
+            self.assertEqual(original_timestamp, input_file.stat().st_mtime_ns)
+
+    def test_case_file_copy_uses_disposable_inputs_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            fixture = Path(output) / "fixture"
+            fixture.mkdir()
+            input_file = root / "inputs" / "request.txt"
+            write(input_file, "Original input.\n")
+            original_timestamp = 1_600_000_000_000_000_000
+            os.utime(input_file, ns=(original_timestamp, original_timestamp))
+
+            copy_case_files(
+                root,
+                {"id": "relative-input", "files": ["inputs/request.txt"], "inline_files": {}},
+                fixture,
+            )
+
+            copied = fixture / "inputs" / "inputs" / "request.txt"
+            self.assertEqual("Original input.\n", copied.read_text(encoding="utf-8"))
+            self.assertEqual("Original input.\n", input_file.read_text(encoding="utf-8"))
+            self.assertEqual(original_timestamp, input_file.stat().st_mtime_ns)
+
     def test_candidate_manifest_detects_changed_and_deleted_files(self) -> None:
         for mutation in ("change", "delete"):
             with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as repository:
@@ -626,6 +670,189 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 plan["cases"][0]["grading_requirements"][0]["text"],
             )
 
+    def test_plan_rejects_absolute_case_input_path(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            input_file = root / "inputs" / "request.txt"
+            write(input_file, "Original input.\n")
+            asset = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            write(
+                asset,
+                json.dumps(
+                    {
+                        "skill_name": "alpha-skill",
+                        "evals": [
+                            {
+                                "id": "absolute-input",
+                                "prompt": "Use the input.",
+                                "expected_output": "A bounded result.",
+                                "files": [str(input_file)],
+                            }
+                        ],
+                    }
+                )
+                + "\n",
+            )
+            plan_path = Path(output) / "plan.json"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "plan",
+                    "--skill",
+                    "alpha-skill",
+                    "--path",
+                    "targeted-candidate",
+                    "--purpose",
+                    "Reject an unsafe case input.",
+                    "--affected",
+                    "case input isolation",
+                    "--case",
+                    "absolute-input",
+                    "--base-ref",
+                    "HEAD",
+                    "--output",
+                    str(plan_path),
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(2, result.returncode)
+            self.assertIn("unsafe case input path", result.stderr)
+            self.assertFalse(plan_path.exists())
+
+    def test_plan_rejects_non_repository_case_input_paths_and_duplicates(self) -> None:
+        unsafe_values = (
+            ([""], "unsafe case input path"),
+            (["."], "unsafe case input path"),
+            (["../outside.txt"], "unsafe case input path"),
+            ([r"C:\\fixtures\\input.txt"], "unsafe case input path"),
+            (["inputs/request.txt", "inputs//request.txt"], "repeats a case input path"),
+        )
+        for files, expected in unsafe_values:
+            with (
+                self.subTest(files=files),
+                tempfile.TemporaryDirectory() as repository,
+                tempfile.TemporaryDirectory() as output,
+            ):
+                root = Path(repository)
+                create_repository(root)
+                write(root / "inputs" / "request.txt", "Original input.\n")
+                asset = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+                write(
+                    asset,
+                    json.dumps(
+                        {
+                            "skill_name": "alpha-skill",
+                            "evals": [
+                                {
+                                    "id": "unsafe-input",
+                                    "prompt": "Use the input.",
+                                    "expected_output": "A bounded result.",
+                                    "files": files,
+                                }
+                            ],
+                        }
+                    )
+                    + "\n",
+                )
+                plan_path = Path(output) / "plan.json"
+
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(RUNNER),
+                        "--root",
+                        str(root),
+                        "plan",
+                        "--skill",
+                        "alpha-skill",
+                        "--path",
+                        "targeted-candidate",
+                        "--purpose",
+                        "Reject an unsafe case input.",
+                        "--affected",
+                        "case input isolation",
+                        "--case",
+                        "unsafe-input",
+                        "--base-ref",
+                        "HEAD",
+                        "--output",
+                        str(plan_path),
+                    ],
+                    text=True,
+                    capture_output=True,
+                )
+
+                self.assertEqual(2, result.returncode)
+                self.assertIn(expected, result.stderr)
+                self.assertFalse(plan_path.exists())
+
+    def test_plan_normalizes_safe_relative_case_input_path(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            input_file = root / "inputs" / "request.txt"
+            write(input_file, "Original input.\n")
+            asset = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            write(
+                asset,
+                json.dumps(
+                    {
+                        "skill_name": "alpha-skill",
+                        "evals": [
+                            {
+                                "id": "relative-input",
+                                "prompt": "Use the input.",
+                                "expected_output": "A bounded result.",
+                                "files": ["./inputs/request.txt"],
+                            }
+                        ],
+                    }
+                )
+                + "\n",
+            )
+            plan_path = Path(output) / "plan.json"
+
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "plan",
+                    "--skill",
+                    "alpha-skill",
+                    "--path",
+                    "targeted-candidate",
+                    "--purpose",
+                    "Normalize a safe case input.",
+                    "--affected",
+                    "case input isolation",
+                    "--case",
+                    "relative-input",
+                    "--base-ref",
+                    "HEAD",
+                    "--output",
+                    str(plan_path),
+                ],
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+
+            plan = json.loads(plan_path.read_text(encoding="utf-8"))
+            self.assertEqual(["inputs/request.txt"], plan["cases"][0]["files"])
+            self.assertEqual(
+                ["inputs/request.txt"],
+                list(plan["inputs"]["case_files"]),
+            )
+
     def test_plan_allows_explicit_model_and_reasoning_overrides(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
             root = Path(repository)
@@ -887,6 +1114,54 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             self.assertEqual(2, result.returncode)
             self.assertIn("plan digest does not match", result.stderr)
             self.assertFalse((Path(output) / "artifacts").exists())
+
+    def test_run_rejects_digest_valid_plan_with_absolute_case_input(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            input_file = root / "inputs" / "request.txt"
+            write(input_file, "Original input.\n")
+            original_timestamp = 1_600_000_000_000_000_000
+            os.utime(input_file, ns=(original_timestamp, original_timestamp))
+            plan_path = Path(output) / "plan.json"
+            create_manual_plan(root, plan_path)
+            plan = json.loads(plan_path.read_text(encoding="utf-8"))
+            plan.pop("plan_digest")
+            plan["cases"][0]["files"] = [str(input_file)]
+            plan["inputs"]["case_files"] = {
+                "inputs/request.txt": "sha256:" + hashlib.sha256(input_file.read_bytes()).hexdigest()
+            }
+            write(plan_path, canonical_json(attach_plan_digest(plan)) + "\n")
+            fake_codex = Path(output) / "fake-codex"
+            create_fake_codex(fake_codex)
+            artifacts = Path(output) / "artifacts"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "--codex-bin",
+                    str(fake_codex),
+                    "run",
+                    "--plan",
+                    str(plan_path),
+                    "--artifacts-dir",
+                    str(artifacts),
+                    "--execute",
+                    "--max-model-calls",
+                    "1",
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(2, result.returncode)
+            self.assertIn("unsafe case input path", result.stderr)
+            self.assertFalse(artifacts.exists())
+            self.assertEqual("Original input.\n", input_file.read_text(encoding="utf-8"))
+            self.assertEqual(original_timestamp, input_file.stat().st_mtime_ns)
 
     def test_run_rejects_invalid_candidate_manifest_entry(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:

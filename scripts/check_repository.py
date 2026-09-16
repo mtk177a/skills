@@ -9,7 +9,7 @@ import json
 import re
 import sys
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from urllib.parse import unquote
 
 
@@ -383,6 +383,22 @@ def contained(root: Path, target: Path) -> bool:
         return False
 
 
+def normalize_case_file_path(value: str) -> str | None:
+    relative = Path(value)
+    windows_path = PureWindowsPath(value)
+    if (
+        not value
+        or value == "."
+        or relative.is_absolute()
+        or bool(windows_path.drive)
+        or "\\" in value
+        or ".." in relative.parts
+    ):
+        return None
+    normalized = relative.as_posix()
+    return None if normalized == "." else normalized
+
+
 def check_markdown_links(root: Path, problems: list[Problem]) -> None:
     for path in sorted(root.rglob("*.md")):
         if ".git" in path.parts:
@@ -503,6 +519,22 @@ def check_json_assets(root: Path, problems: list[Problem], ignored_report_skill:
                         files = case.get("files", [])
                         if not isinstance(files, list) or not all(isinstance(value, str) for value in files):
                             add(problems, root, path, 1, f"official case `{case_id}` files must be a string array")
+                        else:
+                            normalized_files: list[str] = []
+                            for value in files:
+                                normalized = normalize_case_file_path(value)
+                                if normalized is None:
+                                    add(
+                                        problems,
+                                        root,
+                                        path,
+                                        1,
+                                        f"official case `{case_id}` has an unsafe repository-relative file path: `{value}`",
+                                    )
+                                else:
+                                    normalized_files.append(normalized)
+                            if len(set(normalized_files)) != len(normalized_files):
+                                add(problems, root, path, 1, f"official case `{case_id}` repeats a file path")
                         conditions = case.get("conditions")
                         if conditions is not None and (
                             not isinstance(conditions, list)

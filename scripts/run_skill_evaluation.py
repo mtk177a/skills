@@ -11,7 +11,7 @@ import subprocess
 import sys
 import tempfile
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Any
 
 
@@ -114,6 +114,33 @@ def resolve_base(root: Path, base_ref: str) -> str:
 def validate_skill_name(skill: str) -> None:
     if SKILL_NAME.fullmatch(skill) is None:
         raise EvaluationError(f"invalid Skill name: {skill}")
+
+
+def normalize_case_input_path(value: str, case_id: str) -> str:
+    relative = Path(value)
+    windows_path = PureWindowsPath(value)
+    if (
+        not value
+        or value == "."
+        or relative.is_absolute()
+        or bool(windows_path.drive)
+        or "\\" in value
+        or ".." in relative.parts
+    ):
+        raise EvaluationError(f"evaluation case `{case_id}` has an unsafe case input path: {value}")
+    normalized = relative.as_posix()
+    if normalized == ".":
+        raise EvaluationError(f"evaluation case `{case_id}` has an unsafe case input path: {value}")
+    return normalized
+
+
+def normalize_case_input_paths(values: Any, case_id: str) -> list[str]:
+    if not isinstance(values, list) or not all(isinstance(value, str) for value in values):
+        raise EvaluationError(f"evaluation case `{case_id}` files must be strings")
+    normalized = [normalize_case_input_path(value, case_id) for value in values]
+    if len(set(normalized)) != len(normalized):
+        raise EvaluationError(f"evaluation case `{case_id}` repeats a case input path")
+    return normalized
 
 
 def reject_absolute_path(value: str, label: str) -> None:
@@ -237,9 +264,7 @@ def normalize_case(case: Any, evaluation_path: str) -> dict[str, Any]:
         prompt = f"Conversation so far:\n\n{history}\n\nCurrent user request:\n{prompt}"
         input_mode = "conversation"
     requirements = normalize_assertions(case, normalized_id, evaluation_path)
-    files = case.get("files", [])
-    if not isinstance(files, list) or not all(isinstance(value, str) for value in files):
-        raise EvaluationError(f"evaluation case `{normalized_id}` files must be strings")
+    files = normalize_case_input_paths(case.get("files", []), normalized_id)
     inline_files: dict[str, str] = {}
     fixture = case.get("fixture")
     if isinstance(fixture, dict):
@@ -376,11 +401,12 @@ def skill_manifest(root: Path, skill: str) -> dict[str, dict[str, str]]:
 def case_file_manifest(root: Path, cases: list[dict[str, Any]]) -> dict[str, str]:
     bindings: dict[str, str] = {}
     for case in cases:
-        for name in case["files"]:
-            source = (root / name).resolve()
-            if not contained(root, source) or not source.is_file() or source.is_symlink():
+        for name in normalize_case_input_paths(case.get("files"), case["id"]):
+            unresolved = root / name
+            source = unresolved.resolve()
+            if not contained(root, source) or not unresolved.is_file() or unresolved.is_symlink():
                 raise EvaluationError(f"case input file must be a regular repository file: {name}")
-            bindings[source.relative_to(root).as_posix()] = sha256(source)
+            bindings[name] = sha256(source)
     return dict(sorted(bindings.items()))
 
 
@@ -573,6 +599,11 @@ def validate_plan(plan: dict[str, Any], root: Path) -> dict[str, Any]:
     case_ids = [case["id"] for case in cases]
     if len(set(case_ids)) != len(case_ids):
         raise EvaluationError("plan case ids must be unique")
+    for case in cases:
+        files = case.get("files")
+        normalized_files = normalize_case_input_paths(files, case["id"])
+        if files != normalized_files:
+            raise EvaluationError(f"plan case `{case['id']}` input paths must be normalized")
     executions = plan.get("executions")
     if not isinstance(executions, list):
         raise EvaluationError("plan executions must be an array")
@@ -679,11 +710,16 @@ def copy_baseline_skill(root: Path, skill: str, commit: str, destination: Path) 
 
 
 def copy_case_files(root: Path, case: dict[str, Any], fixture: Path) -> None:
-    for value in case.get("files", []):
-        source = (root / value).resolve()
-        if not contained(root, source) or not source.is_file():
+    case_id = case.get("id") if isinstance(case.get("id"), str) else "unknown"
+    inputs = fixture / "inputs"
+    for value in normalize_case_input_paths(case.get("files", []), case_id):
+        unresolved = root / value
+        source = unresolved.resolve()
+        if not contained(root, source) or not unresolved.is_file() or unresolved.is_symlink():
             raise EvaluationError(f"case file is missing or outside the repository: {value}")
-        destination = fixture / "inputs" / value
+        destination = (inputs / value).resolve()
+        if not contained(inputs, destination) or destination == source:
+            raise EvaluationError(f"evaluation case `{case_id}` has an unsafe case input path: {value}")
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(source.read_bytes())
     for value, content in case.get("inline_files", {}).items():
