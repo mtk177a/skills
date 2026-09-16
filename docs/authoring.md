@@ -181,6 +181,9 @@ When changing a Skill, identify the affected responsibility before selecting eva
 - Skill-level scenarios and checklists go in `skills/<skill-name>/evals/`
 - Multi-Skill flow evaluations go in `docs/` (see `evaluation.md`)
 - Follow the path-selection rules in `evaluation.md`; do not run all cases merely because `SKILL.md` changed
+- When a pull request first materially changes an existing Skill's instructions, runtime resources, discovery, responsibility, safety boundary, or evaluation definitions, migrate that Skill's complete `evals.json` and `triggers.json` set to the executable `{skill_name, evals}` format
+- Do not require migration for README, reference-translation, meaning-preserving documentation or metadata, or legacy-result-only changes, and do not migrate unrelated Skills
+- Treat definition migration and evaluation execution separately: after migrating the complete definition set, execute only cases needed for the changed responsibility
 - Use `scripts/run_skill_evaluation.py plan` before model-backed execution and inspect the estimated call count
 - If executable behavior, discovery, and responsibility boundaries are unaffected, use `static-only` and stop after deterministic validation
 - If runtime behavior changes, map only the affected responsibility to a plausible failure, a case that can expose it, and a grading method
@@ -188,7 +191,7 @@ When changing a Skill, identify the affected responsibility before selecting eva
 - Add baseline comparison or repetition only when an escalation condition in `evaluation.md` makes the additional evidence decision-relevant
 - Keep desired answers and grading criteria out of the executor input
 - Keep raw execution artifacts outside the repository and write `evals/report.json` only when a compact change-scoped record is useful for review
-- Do not refresh unrelated legacy `results.json` files or unselected cases
+- Do not refresh unrelated legacy `results.json` files, unselected cases, or reports for unchanged Skills
 
 The purpose of evaluation is to collect enough evidence for the current acceptance decision, not to maximize the number of runs.
 

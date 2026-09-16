@@ -193,6 +193,9 @@ Skill を変更するときは、評価証拠を選ぶ前に、影響を受け�
 - Skill 単位のシナリオとチェックリストは `skills/<skill-name>/evals/` に置く
 - 複数 Skill をまたぐフロー評価は `docs/` を参照 (`evaluation.md`)
 - `evaluation.md` の経路選択規則に従い、`SKILL.md` が変わったという理由だけで全ケースを実行しない
+- 既存 Skill の指示、runtime resource、発見方法、責務、安全境界、または評価定義を PR で初めて実質的に変更するとき、その Skill の `evals.json` と `triggers.json` 全体を実行可能な `{skill_name, evals}` 形式へ移行する
+- README、参考訳、意味を変えない文書や metadata、legacy result だけの変更では移行を要求せず、無関係な Skill を移行しない
+- 評価定義の移行と評価実行を分け、定義全体を移行した後も、変更した責務に必要なケースだけを実行する
 - model を使う前に `scripts/run_skill_evaluation.py plan` を実行し、呼び出し回数の見積もりを確認する
 - 実行時動作、発見方法、責務境界へ影響しない場合は `static-only` を選び、機械的検査の後で停止する
 - 実行時動作が変わる場合は、影響を受ける責務だけを、起こり得る失敗、それを露出できるケース、採点方法へ対応付ける
@@ -200,7 +203,7 @@ Skill を変更するときは、評価証拠を選ぶ前に、影響を受け�
 - `evaluation.md` の強化条件により追加証拠が判断に関係する場合だけ、baseline 比較または反復を追加する
 - 期待解と採点基準を executor の入力へ含めない
 - raw execution artifact はリポジトリ外に置き、レビューに簡潔な変更単位の記録が必要な場合だけ `evals/report.json` を書き込む
-- 無関係な legacy `results.json` や未選択ケースを更新しない
+- 無関係な legacy `results.json`、未選択ケース、変更していない Skill の report を更新しない
 
 評価の目的は、実行回数を最大化することではなく、現在の受け入れ判断に十分な証拠を集めることです。
 

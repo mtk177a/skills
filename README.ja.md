@@ -100,6 +100,7 @@ python3 scripts/run_skill_evaluation.py plan --help
 ```
 
 Runner は編集後に評価を自動実行せず、全ケースを暗黙に選択しません。\
+モデルを使う経路では実行可能な `{skill_name, evals}` 形式を使用します。既存の legacy asset は各 Skill を初めて実質的に変更するときに Skill 単位で移行し、移行前も `static-only` は使用できます。\
 経路の選択、実行、採点、簡潔な report の扱いは [docs/ja/evaluation.md](docs/ja/evaluation.md) を参照してください。
 
 ## リポジトリ構成

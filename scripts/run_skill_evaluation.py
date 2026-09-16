@@ -7,7 +7,6 @@ import argparse
 import hashlib
 import json
 import re
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -16,9 +15,10 @@ from pathlib import Path
 from typing import Any
 
 
-PLAN_VERSION = 1
-RUN_VERSION = 1
-REPORT_VERSION = 1
+PLAN_VERSION = 2
+RUN_VERSION = 2
+GRADES_VERSION = 2
+REPORT_VERSION = 2
 MODEL_PATHS = {
     "targeted-candidate",
     "targeted-routing",
@@ -29,6 +29,7 @@ PATHS = {"static-only", *MODEL_PATHS}
 CONDITIONS = {"candidate", "baseline", "without-skill"}
 STATUSES = {"pass", "fail", "inconclusive", "error"}
 SKILL_NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+ABSOLUTE_PATH = re.compile(r"(?<![A-Za-z0-9:])(?:/[A-Za-z0-9._-][^\s\"'`<>]*|[A-Za-z]:\\[^\s\"'`<>]+)")
 
 
 class EvaluationError(Exception):
@@ -54,6 +55,26 @@ def write_json(path: Path, document: dict[str, Any]) -> None:
 
 def sha256(path: Path) -> str:
     return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def canonical_json(value: Any) -> str:
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def document_digest(value: dict[str, Any]) -> str:
+    return "sha256:" + hashlib.sha256(canonical_json(value).encode("utf-8")).hexdigest()
+
+
+def attach_plan_digest(plan: dict[str, Any]) -> dict[str, Any]:
+    unsigned = {key: value for key, value in plan.items() if key != "plan_digest"}
+    return {**unsigned, "plan_digest": document_digest(unsigned)}
+
+
+def verify_plan_digest(plan: dict[str, Any]) -> None:
+    expected = plan.get("plan_digest")
+    unsigned = {key: value for key, value in plan.items() if key != "plan_digest"}
+    if not isinstance(expected, str) or expected != document_digest(unsigned):
+        raise EvaluationError("plan digest does not match the normalized plan")
 
 
 def contained(parent: Path, child: Path) -> bool:
@@ -93,6 +114,12 @@ def validate_skill_name(skill: str) -> None:
         raise EvaluationError(f"invalid Skill name: {skill}")
 
 
+def reject_absolute_path(value: str, label: str) -> None:
+    match = ABSOLUTE_PATH.search(value)
+    if match is not None:
+        raise EvaluationError(f"{label} must not contain an absolute path: {match.group(0)}")
+
+
 def format_turns(values: Any, label: str) -> str:
     if not isinstance(values, list) or not values:
         raise EvaluationError(f"{label} must be a non-empty array")
@@ -112,7 +139,71 @@ def format_turns(values: Any, label: str) -> str:
     return "\n\n".join(rendered)
 
 
-def normalize_case(case: Any, official: bool) -> dict[str, Any]:
+def normalize_assertions(case: dict[str, Any], case_id: str, evaluation_path: str) -> list[dict[str, Any]]:
+    raw_assertions = case.get("assertions", [])
+    if not isinstance(raw_assertions, list):
+        raise EvaluationError(f"evaluation case `{case_id}` assertions must be an array")
+    requirements: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for index, assertion in enumerate(raw_assertions, start=1):
+        if isinstance(assertion, str) and assertion.strip():
+            requirement = {"id": f"assertion-{index}", "text": assertion, "critical": True}
+        elif isinstance(assertion, dict):
+            requirement_id = assertion.get("id")
+            text = assertion.get("text")
+            critical = assertion.get("critical")
+            if (
+                not isinstance(requirement_id, str)
+                or not requirement_id
+                or not isinstance(text, str)
+                or not text.strip()
+                or not isinstance(critical, bool)
+            ):
+                raise EvaluationError(
+                    f"evaluation case `{case_id}` assertion objects require id, text, and boolean critical"
+                )
+            requirement = {"id": requirement_id, "text": text, "critical": critical}
+        else:
+            raise EvaluationError(f"evaluation case `{case_id}` assertions must be strings or objects")
+        if requirement["id"] in seen:
+            raise EvaluationError(f"evaluation case `{case_id}` assertion ids must be unique")
+        seen.add(requirement["id"])
+        requirements.append(requirement)
+    expected_output = case.get("expected_output")
+    if expected_output is not None and (not isinstance(expected_output, str) or not expected_output.strip()):
+        raise EvaluationError(f"evaluation case `{case_id}` expected_output must be a non-empty string")
+    if not requirements and isinstance(expected_output, str):
+        requirements.append({"id": "expected-output", "text": expected_output, "critical": True})
+    expected_handlers = case.get("expected_handlers")
+    if evaluation_path == "targeted-routing":
+        if not isinstance(expected_handlers, list) or not all(
+            isinstance(value, str) and SKILL_NAME.fullmatch(value) for value in expected_handlers
+        ):
+            raise EvaluationError(
+                f"routing case `{case_id}` requires expected_handlers as an array of Skill names"
+            )
+        if "routing-handlers" in seen:
+            raise EvaluationError(
+                f"routing case `{case_id}` reserves the assertion id `routing-handlers`"
+            )
+        requirements.append(
+            {
+                "id": "routing-handlers",
+                "text": "Directly observed Skill handlers match the expected handlers.",
+                "critical": True,
+                "expected_handlers": expected_handlers,
+            }
+        )
+    elif expected_handlers is not None:
+        raise EvaluationError(f"behavior case `{case_id}` must not define expected_handlers")
+    if not requirements:
+        raise EvaluationError(
+            f"evaluation case `{case_id}` requires assertions or expected_output for grading"
+        )
+    return requirements
+
+
+def normalize_case(case: Any, evaluation_path: str) -> dict[str, Any]:
     if not isinstance(case, dict):
         raise EvaluationError("every evaluation case must be an object")
     case_id = case.get("id")
@@ -124,8 +215,6 @@ def normalize_case(case: Any, official: bool) -> dict[str, Any]:
     input_mode = "single-turn"
     if isinstance(case.get("prompt"), str) and case["prompt"].strip():
         prompt = case["prompt"]
-    elif isinstance(case.get("input"), str) and case["input"].strip():
-        prompt = case["input"]
     elif "turns" in case:
         prompt = format_turns(case["turns"], f"evaluation case `{normalized_id}` turns")
         input_mode = "transcript"
@@ -137,23 +226,15 @@ def normalize_case(case: Any, official: bool) -> dict[str, Any]:
         prompt = f"Prior authoring conversation:\n\n{authoring}\n\nCurrent request:\n{case['request']}"
         input_mode = "authoring-transcript"
     else:
-        expected = "prompt" if official else "prompt, input, turns, or request with authoring_turns"
-        raise EvaluationError(f"evaluation case `{normalized_id}` requires {expected}")
+        raise EvaluationError(
+            f"evaluation case `{normalized_id}` requires prompt, turns, or request with authoring_turns"
+        )
     conversation = case.get("conversation")
     if conversation is not None:
         history = format_turns(conversation, f"evaluation case `{normalized_id}` conversation")
         prompt = f"Conversation so far:\n\n{history}\n\nCurrent user request:\n{prompt}"
         input_mode = "conversation"
-    assertions = case.get("assertions", case.get("assertion_ids", []))
-    if not isinstance(assertions, list) or not all(isinstance(value, str) for value in assertions):
-        raise EvaluationError(f"evaluation case `{normalized_id}` assertions must be strings")
-    additional = case.get("additional_requirement", case.get("additional_requirements", []))
-    if isinstance(additional, str):
-        additional_requirements = [additional]
-    elif isinstance(additional, list) and all(isinstance(value, str) for value in additional):
-        additional_requirements = additional
-    else:
-        raise EvaluationError(f"evaluation case `{normalized_id}` additional requirements must be strings")
+    requirements = normalize_assertions(case, normalized_id, evaluation_path)
     files = case.get("files", [])
     if not isinstance(files, list) or not all(isinstance(value, str) for value in files):
         raise EvaluationError(f"evaluation case `{normalized_id}` files must be strings")
@@ -186,37 +267,24 @@ def normalize_case(case: Any, official: bool) -> dict[str, Any]:
     ):
         raise EvaluationError(f"evaluation case `{normalized_id}` coexistence_skills must be strings")
     raw_conditions = case.get("conditions")
-    condition_aliases = {
-        "candidate": "candidate",
-        "candidate_isolation": "candidate",
-        "baseline": "baseline",
-        "current": "baseline",
-        "no_skill": "without-skill",
-    }
     allowed_conditions = None
     if raw_conditions is not None:
         if not isinstance(raw_conditions, list) or not all(
-            isinstance(value, str) and value in condition_aliases for value in raw_conditions
+            isinstance(value, str) and value in CONDITIONS for value in raw_conditions
         ):
             raise EvaluationError(f"evaluation case `{normalized_id}` has unsupported conditions")
-        allowed_conditions = sorted({condition_aliases[value] for value in raw_conditions})
+        allowed_conditions = sorted(set(raw_conditions))
     normalized = {
         "id": normalized_id,
         "prompt": prompt,
         "input_mode": input_mode,
-        "assertions": assertions,
-        "additional_requirements": additional_requirements,
+        "grading_requirements": requirements,
         "files": files,
         "inline_files": inline_files,
         "coexistence_skills": coexistence_skills,
     }
     if allowed_conditions is not None:
         normalized["allowed_conditions"] = allowed_conditions
-    expected = case.get("expected_output")
-    if expected is not None:
-        if not isinstance(expected, str):
-            raise EvaluationError(f"evaluation case `{normalized_id}` expected_output must be a string")
-        normalized["expected_output"] = expected
     return normalized
 
 
@@ -226,38 +294,29 @@ def load_case_asset(root: Path, skill: str, evaluation_path: str) -> tuple[Path,
     if not asset.is_file():
         raise EvaluationError(f"evaluation asset does not exist: {asset.relative_to(root)}")
     document = read_json(asset)
-    if "evals" in document or "skill_name" in document:
-        if document.get("skill_name") != skill:
-            raise EvaluationError(f"evaluation asset skill_name must be `{skill}`")
-        raw_cases = document.get("evals")
-        official = True
-    else:
-        if document.get("skill") != skill:
-            raise EvaluationError(f"evaluation asset skill must be `{skill}`")
-        raw_cases = document.get("cases")
-        official = False
+    if document.get("skill_name") != skill or not isinstance(document.get("evals"), list):
+        shape = "scenarios" if "scenarios" in document else "legacy {skill, cases}"
+        raise EvaluationError(
+            f"{asset.relative_to(root)} uses the unsupported {shape} evaluation format; "
+            "migrate the Skill's complete evals.json and triggers.json set to {skill_name, evals} "
+            "before using a model-backed path"
+        )
+    for sibling_name in ("evals.json", "triggers.json"):
+        sibling = asset.parent / sibling_name
+        if sibling == asset or not sibling.is_file():
+            continue
+        sibling_document = read_json(sibling)
+        if sibling_document.get("skill_name") != skill or not isinstance(sibling_document.get("evals"), list):
+            shape = "scenarios" if "scenarios" in sibling_document else "legacy {skill, cases}"
+            raise EvaluationError(
+                f"{sibling.relative_to(root)} uses the unsupported {shape} evaluation format; "
+                "migrate the Skill's complete evals.json and triggers.json set to {skill_name, evals} "
+                "before using a model-backed path"
+            )
+    raw_cases = document["evals"]
     if not isinstance(raw_cases, list):
         raise EvaluationError(f"evaluation cases must be an array: {asset.relative_to(root)}")
-    cases = [normalize_case(case, official) for case in raw_cases]
-    raw_assertions = document.get("assertions", document.get("candidate_assertions", []))
-    assertion_definitions: dict[str, dict[str, Any]] = {}
-    if isinstance(raw_assertions, list):
-        for assertion in raw_assertions:
-            if not isinstance(assertion, dict) or not isinstance(assertion.get("id"), str):
-                continue
-            requirement = assertion.get("requirement", assertion.get("statement"))
-            if not isinstance(requirement, str):
-                continue
-            assertion_definitions[assertion["id"]] = {
-                "id": assertion["id"],
-                "requirement": requirement,
-                "critical": assertion.get("critical") is True,
-            }
-    for case in cases:
-        case["grading_requirements"] = [
-            assertion_definitions.get(assertion_id, {"id": assertion_id})
-            for assertion_id in case["assertions"]
-        ]
+    cases = [normalize_case(case, evaluation_path) for case in raw_cases]
     ids = [case["id"] for case in cases]
     if len(set(ids)) != len(ids):
         raise EvaluationError(f"evaluation case ids must be unique: {asset.relative_to(root)}")
@@ -272,26 +331,62 @@ def default_conditions(evaluation_path: str) -> list[str]:
     return ["candidate"]
 
 
-def candidate_files(root: Path, skill: str, base_commit: str, asset: Path | None) -> dict[str, str]:
+def skill_manifest(root: Path, skill: str) -> dict[str, str]:
+    validate_skill_name(skill)
     skill_root = root / "skills" / skill
-    prefix = skill_root.relative_to(root).as_posix()
-    changed = set(filter(None, git(root, "diff", "--name-only", base_commit, "--", prefix).splitlines()))
-    changed.update(
-        filter(None, git(root, "ls-files", "--others", "--exclude-standard", "--", prefix).splitlines())
-    )
-    excluded = {
-        f"{prefix}/evals/report.json",
-        f"{prefix}/evals/results.json",
-    }
-    selected = {value for value in changed if value not in excluded}
-    if asset is not None:
-        selected.add(asset.relative_to(root).as_posix())
+    if not (skill_root / "SKILL.md").is_file():
+        raise EvaluationError(f"Skill does not exist: {skill}")
     bindings: dict[str, str] = {}
-    for relative in sorted(selected):
-        target = root / relative
+    for target in sorted(skill_root.rglob("*")):
+        relative = target.relative_to(skill_root)
+        if relative.parts and relative.parts[0] == "evals":
+            continue
+        if target.is_symlink():
+            raise EvaluationError(f"Skill execution trees must not contain symlinks: {target.relative_to(root)}")
         if target.is_file():
-            bindings[target.relative_to(skill_root).as_posix()] = sha256(target)
+            bindings[relative.as_posix()] = sha256(target)
     return bindings
+
+
+def case_file_manifest(root: Path, cases: list[dict[str, Any]]) -> dict[str, str]:
+    bindings: dict[str, str] = {}
+    for case in cases:
+        for name in case["files"]:
+            source = (root / name).resolve()
+            if not contained(root, source) or not source.is_file() or source.is_symlink():
+                raise EvaluationError(f"case input file must be a regular repository file: {name}")
+            bindings[source.relative_to(root).as_posix()] = sha256(source)
+    return dict(sorted(bindings.items()))
+
+
+def verify_file_manifest(base: Path, files: Any, label: str) -> None:
+    if not isinstance(files, dict) or not all(
+        isinstance(name, str) and isinstance(value, str) for name, value in files.items()
+    ):
+        raise EvaluationError(f"{label} manifest must map relative paths to hashes")
+    current: dict[str, str] = {}
+    if base.is_dir():
+        for target in sorted(base.rglob("*")):
+            relative = target.relative_to(base)
+            if relative.parts and relative.parts[0] == "evals" and label.endswith("Skill"):
+                continue
+            if target.is_symlink():
+                raise EvaluationError(f"{label} manifest changed after planning: {relative.as_posix()}")
+            if target.is_file():
+                current[relative.as_posix()] = sha256(target)
+    if current != files:
+        raise EvaluationError(f"{label} manifest changed after planning")
+
+
+def verify_root_file_manifest(root: Path, files: Any, label: str) -> None:
+    if not isinstance(files, dict):
+        raise EvaluationError(f"{label} manifest must be an object")
+    for name, expected in files.items():
+        if not isinstance(name, str) or not isinstance(expected, str):
+            raise EvaluationError(f"{label} manifest must map paths to hashes")
+        target = (root / name).resolve()
+        if not contained(root, target) or not target.is_file() or target.is_symlink() or sha256(target) != expected:
+            raise EvaluationError(f"{label} changed after planning: {name}")
 
 
 def make_plan(args: argparse.Namespace, root: Path) -> dict[str, Any]:
@@ -336,15 +431,14 @@ def make_plan(args: argparse.Namespace, root: Path) -> dict[str, Any]:
                         f"evaluation case `{case['id']}` does not support condition(s): "
                         + ", ".join(unsupported)
                     )
-        source = {
-            "file": asset.relative_to(skill_root).as_posix(),
-            "format": "official" if "evals" in document or "skill_name" in document else "legacy",
-        }
+        source = {"file": asset.relative_to(root).as_posix(), "format": "agent-skills"}
         execution_settings = document.get("execution", {})
-        if isinstance(execution_settings, dict):
-            coexistence = execution_settings.get("coexistence_skills", [])
-            if isinstance(coexistence, list) and all(isinstance(value, str) for value in coexistence):
-                coexistence_skills = coexistence
+        if not isinstance(execution_settings, dict):
+            raise EvaluationError("evaluation execution settings must be an object")
+        coexistence = execution_settings.get("coexistence_skills", [])
+        if not isinstance(coexistence, list) or not all(isinstance(value, str) for value in coexistence):
+            raise EvaluationError("evaluation execution coexistence_skills must be strings")
+        coexistence_skills = coexistence
         coexistence_skills = sorted(
             {
                 *coexistence_skills,
@@ -359,6 +453,8 @@ def make_plan(args: argparse.Namespace, root: Path) -> dict[str, Any]:
         for case in selected_cases
         for condition in conditions
     ]
+    companion_manifests = {skill: {"files": skill_manifest(root, skill)} for skill in coexistence_skills}
+    evaluation_files = {} if asset is None else {asset.relative_to(root).as_posix(): sha256(asset)}
     plan: dict[str, Any] = {
         "schema_version": PLAN_VERSION,
         "skill": args.skill,
@@ -374,19 +470,25 @@ def make_plan(args: argparse.Namespace, root: Path) -> dict[str, Any]:
         "cases": selected_cases,
         "executions": executions,
         "estimated_model_calls": len(executions),
-        "candidate": {"files": candidate_files(root, args.skill, base_commit, asset)},
+        "candidate": {"files": skill_manifest(root, args.skill)},
+        "inputs": {
+            "evaluation_files": evaluation_files,
+            "case_files": case_file_manifest(root, selected_cases),
+            "companions": companion_manifests,
+        },
         "coexistence_skills": coexistence_skills,
     }
     if source is not None:
         plan["source"] = source
-    return plan
+    return attach_plan_digest(plan)
 
 
 def command_plan(args: argparse.Namespace, root: Path) -> int:
     output = args.output.resolve()
     require_temporary_path(root, output, "plan output")
     plan = make_plan(args, root)
-    write_json(output, plan)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(canonical_json(plan) + "\n", encoding="utf-8")
     print(f"Plan written to {output}")
     print(f"Estimated model calls: {plan['estimated_model_calls']}")
     return 0
@@ -395,8 +497,13 @@ def command_plan(args: argparse.Namespace, root: Path) -> int:
 def load_plan(path: Path, root: Path) -> dict[str, Any]:
     require_temporary_path(root, path, "plan")
     plan = read_json(path)
+    return validate_plan(plan, root)
+
+
+def validate_plan(plan: dict[str, Any], root: Path) -> dict[str, Any]:
     if plan.get("schema_version") != PLAN_VERSION:
         raise EvaluationError(f"unsupported plan schema_version: {plan.get('schema_version')}")
+    verify_plan_digest(plan)
     skill = plan.get("skill")
     if not isinstance(skill, str):
         raise EvaluationError("plan references an unknown Skill")
@@ -423,11 +530,21 @@ def load_plan(path: Path, root: Path) -> dict[str, Any]:
         for field in ("model", "reasoning_effort")
     ):
         raise EvaluationError("plan model and reasoning effort must be non-empty strings")
+    base = plan.get("base")
+    if (
+        not isinstance(base, dict)
+        or not isinstance(base.get("ref"), str)
+        or not base["ref"].strip()
+        or not isinstance(base.get("commit"), str)
+        or re.fullmatch(r"[0-9a-f]{40,64}", base["commit"]) is None
+    ):
+        raise EvaluationError("plan base requires a ref and full commit id")
     cases = plan.get("cases")
     if not isinstance(cases, list) or not all(
         isinstance(case, dict)
         and isinstance(case.get("id"), str)
         and isinstance(case.get("prompt"), str)
+        and isinstance(case.get("grading_requirements"), list)
         for case in cases
     ):
         raise EvaluationError("plan cases are invalid")
@@ -464,32 +581,39 @@ def load_plan(path: Path, root: Path) -> dict[str, Any]:
         validate_skill_name(coexistence_skill)
     if plan.get("estimated_model_calls") != len(executions):
         raise EvaluationError("plan model-call estimate does not match executions")
+    candidate = plan.get("candidate")
+    inputs = plan.get("inputs")
+    if not isinstance(candidate, dict) or not isinstance(candidate.get("files"), dict):
+        raise EvaluationError("plan candidate.files must be an object")
+    if not isinstance(inputs, dict) or not all(
+        isinstance(inputs.get(field), dict) for field in ("evaluation_files", "case_files", "companions")
+    ):
+        raise EvaluationError("plan inputs manifests are invalid")
     return plan
 
 
 def verify_candidate_bindings(root: Path, plan: dict[str, Any]) -> None:
-    skill_root = root / "skills" / plan["skill"]
-    candidate = plan.get("candidate")
-    files = candidate.get("files") if isinstance(candidate, dict) else None
-    if not isinstance(files, dict):
-        raise EvaluationError("plan candidate.files must be an object")
-    for relative, expected in files.items():
-        if not isinstance(relative, str) or not isinstance(expected, str):
-            raise EvaluationError("plan candidate file bindings must be strings")
-        target = (skill_root / relative).resolve()
-        if not contained(skill_root, target) or not target.is_file():
-            raise EvaluationError(f"bound candidate file is missing or outside the Skill: {relative}")
-        actual = sha256(target)
-        if actual != expected:
-            raise EvaluationError(f"bound candidate file changed after planning: {relative}")
+    candidate = plan["candidate"]["files"]
+    verify_file_manifest(root / "skills" / plan["skill"], candidate, "candidate Skill")
+    inputs = plan["inputs"]
+    verify_root_file_manifest(root, inputs["evaluation_files"], "evaluation input")
+    verify_root_file_manifest(root, inputs["case_files"], "case input")
+    companions = inputs["companions"]
+    if set(companions) != set(plan["coexistence_skills"]):
+        raise EvaluationError("companion manifests do not match planned coexistence Skills")
+    for skill, manifest in companions.items():
+        files = manifest.get("files") if isinstance(manifest, dict) else None
+        verify_file_manifest(root / "skills" / skill, files, f"companion {skill} Skill")
 
 
-def copy_working_skill(root: Path, skill: str, destination: Path) -> None:
-    validate_skill_name(skill)
-    source = root / "skills" / skill
-    if not (source / "SKILL.md").is_file():
-        raise EvaluationError(f"coexistence Skill does not exist: {skill}")
-    shutil.copytree(source, destination, ignore=shutil.ignore_patterns("evals"))
+def copy_manifest(base: Path, files: dict[str, str], destination: Path) -> None:
+    for relative in sorted(files):
+        source = (base / relative).resolve()
+        if not contained(base, source) or not source.is_file() or source.is_symlink():
+            raise EvaluationError(f"manifest source is missing or unsafe: {relative}")
+        target = destination / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(source.read_bytes())
 
 
 def copy_baseline_skill(root: Path, skill: str, commit: str, destination: Path) -> None:
@@ -520,7 +644,7 @@ def copy_case_files(root: Path, case: dict[str, Any], fixture: Path) -> None:
             raise EvaluationError(f"case file is missing or outside the repository: {value}")
         destination = fixture / "inputs" / value
         destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, destination)
+        destination.write_bytes(source.read_bytes())
     for value, content in case.get("inline_files", {}).items():
         relative = Path(value)
         if relative.parts and relative.parts[0] in {".agents", ".git"}:
@@ -551,9 +675,21 @@ def direct_skill_load_observation(events: list[dict[str, Any]], skill: str) -> s
         item = event["item"]
         if item.get("type") == "command_execution" and item.get("exit_code") == 0 and visit(item):
             return "observed"
-        if item.get("type") in {"file_read", "tool_call"} and visit(item):
+        if (
+            item.get("type") in {"file_read", "tool_call"}
+            and item.get("status") not in {"error", "failed"}
+            and not item.get("error")
+            and visit(item)
+        ):
             return "observed"
     return "not_exposed"
+
+
+def observed_skill_handlers(events: list[dict[str, Any]], skills: list[str]) -> dict[str, Any]:
+    observed = sorted(skill for skill in skills if direct_skill_load_observation(events, skill) == "observed")
+    if not observed:
+        return {"status": "not_exposed", "handlers": []}
+    return {"status": "observed", "handlers": observed}
 
 
 def build_executor_prompt(plan: dict[str, Any], case: dict[str, Any]) -> str:
@@ -636,14 +772,18 @@ def execute_case(
     skills_directory.mkdir(parents=True)
     target = skills_directory / plan["skill"]
     if condition == "candidate":
-        copy_working_skill(root, plan["skill"], target)
+        copy_manifest(root / "skills" / plan["skill"], plan["candidate"]["files"], target)
     elif condition == "baseline":
         copy_baseline_skill(root, plan["skill"], plan["base"]["commit"], target)
     elif condition != "without-skill":
         raise EvaluationError(f"unsupported execution condition: {condition}")
     for coexistence_skill in plan.get("coexistence_skills", []):
         if coexistence_skill != plan["skill"]:
-            copy_working_skill(root, coexistence_skill, skills_directory / coexistence_skill)
+            copy_manifest(
+                root / "skills" / coexistence_skill,
+                plan["inputs"]["companions"][coexistence_skill]["files"],
+                skills_directory / coexistence_skill,
+            )
     copy_case_files(root, case, fixture)
     prompt = build_executor_prompt(plan, case)
     final_output = directory / "last-message.txt"
@@ -701,7 +841,8 @@ def execute_case(
         return record
     record["status"] = "completed"
     if plan["path"] == "targeted-routing":
-        record["skill_load"] = direct_skill_load_observation(events, plan["skill"])
+        installed = sorted({plan["skill"], *plan.get("coexistence_skills", [])})
+        record["routing_observation"] = observed_skill_handlers(events, installed)
     return record
 
 
@@ -728,7 +869,8 @@ def command_run(args: argparse.Namespace, root: Path, codex_bin: str) -> int:
     run: dict[str, Any] = {
         "schema_version": RUN_VERSION,
         "skill": plan["skill"],
-        "plan": str(args.plan.resolve()),
+        "plan_digest": plan["plan_digest"],
+        "plan": plan,
         "client": codex_version(codex_bin),
         "environment": plan["environment"],
         "static_check": run_static_check(root, artifacts, plan["skill"]),
@@ -761,16 +903,16 @@ def validate_grade_result(value: Any) -> dict[str, Any]:
         raise EvaluationError("every grade result must be an object")
     case_id = value.get("case_id")
     condition = value.get("condition")
-    status = value.get("status")
     evidence = value.get("evidence")
     if not isinstance(case_id, str) or not case_id:
         raise EvaluationError("every grade result requires a non-empty case_id")
     if condition not in CONDITIONS:
         raise EvaluationError(f"grade result `{case_id}` has an invalid condition")
-    if status not in STATUSES:
-        raise EvaluationError(f"grade result `{case_id}` has an invalid status")
+    if "status" in value:
+        raise EvaluationError(f"grade result `{case_id}` must not provide a case-level status")
     if not isinstance(evidence, str) or not evidence.strip():
         raise EvaluationError(f"grade result `{case_id}` requires concise evidence")
+    reject_absolute_path(evidence, f"grade result `{case_id}` evidence")
     requirements = value.get("requirements", [])
     if not isinstance(requirements, list):
         raise EvaluationError(f"grade result `{case_id}` requirements must be an array")
@@ -788,6 +930,10 @@ def validate_grade_result(value: Any) -> dict[str, Any]:
             raise EvaluationError(f"grade result `{case_id}` requirement `{requirement_id}` has an invalid status")
         if not isinstance(requirement_evidence, str) or not requirement_evidence.strip():
             raise EvaluationError(f"grade result `{case_id}` requirement `{requirement_id}` requires evidence")
+        reject_absolute_path(
+            requirement_evidence,
+            f"grade result `{case_id}` requirement `{requirement_id}` evidence",
+        )
         seen.add(requirement_id)
         normalized_requirements.append(
             {"id": requirement_id, "status": requirement_status, "evidence": requirement_evidence}
@@ -795,10 +941,19 @@ def validate_grade_result(value: Any) -> dict[str, Any]:
     return {
         "case_id": case_id,
         "condition": condition,
-        "status": status,
         "requirements": normalized_requirements,
         "evidence": evidence,
     }
+
+
+def derive_case_status(requirements: list[dict[str, Any]]) -> str:
+    if any(value["status"] == "error" for value in requirements):
+        return "error"
+    if any(value["critical"] and value["status"] == "fail" for value in requirements):
+        return "fail"
+    if any(value["status"] in {"fail", "inconclusive"} for value in requirements):
+        return "inconclusive"
+    return "pass"
 
 
 def aggregate_status(results: list[dict[str, Any]], static_status: str) -> str:
@@ -814,25 +969,42 @@ def aggregate_status(results: list[dict[str, Any]], static_status: str) -> str:
 
 def make_report(
     root: Path,
-    plan: dict[str, Any],
     run: dict[str, Any],
     grades: dict[str, Any] | None,
     stopping_reason: str,
     unverified: list[str],
 ) -> dict[str, Any]:
-    if run.get("schema_version") != RUN_VERSION or run.get("skill") != plan["skill"]:
-        raise EvaluationError("run record does not match the plan Skill or schema")
+    if not stopping_reason.strip():
+        raise EvaluationError("report requires a non-empty stopping reason")
+    reject_absolute_path(stopping_reason, "stopping reason")
+    for boundary in unverified:
+        if not boundary.strip():
+            raise EvaluationError("unverified boundaries must be non-empty")
+        reject_absolute_path(boundary, "unverified boundary")
+    if run.get("schema_version") != RUN_VERSION:
+        raise EvaluationError("run record has an unsupported schema")
+    raw_plan = run.get("plan")
+    if not isinstance(raw_plan, dict):
+        raise EvaluationError("run record requires an embedded plan")
+    plan = validate_plan(raw_plan, root)
+    if run.get("plan_digest") != plan["plan_digest"]:
+        raise EvaluationError("run plan digest does not match the embedded plan")
+    if run.get("skill") != plan["skill"] or run.get("environment") != plan["environment"]:
+        raise EvaluationError("run record does not match the embedded plan environment")
+    verify_candidate_bindings(root, plan)
     run_executions = run.get("executions")
     if not isinstance(run_executions, list):
         raise EvaluationError("run executions must be an array")
     completed: set[tuple[str, str]] = set()
     execution_errors: list[dict[str, Any]] = []
+    run_pairs: list[tuple[str, str]] = []
     for execution in run_executions:
         if not isinstance(execution, dict):
             raise EvaluationError("run executions must be objects")
         pair = (execution.get("case_id"), execution.get("condition"))
         if not all(isinstance(value, str) for value in pair):
             raise EvaluationError("run execution requires case_id and condition")
+        run_pairs.append(pair)
         if execution.get("status") == "completed":
             completed.add(pair)
         elif execution.get("status") == "error":
@@ -847,10 +1019,13 @@ def make_report(
             )
         else:
             raise EvaluationError(f"run execution `{pair[0]}` has an invalid status")
+    planned_pairs = [(value["case_id"], value["condition"]) for value in plan["executions"]]
+    if run_pairs != planned_pairs:
+        raise EvaluationError("run executions do not match the embedded plan")
     grade_results: list[dict[str, Any]] = []
     if grades is not None:
-        if grades.get("schema_version") != 1 or not isinstance(grades.get("results"), list):
-            raise EvaluationError("grades require schema_version 1 and a results array")
+        if grades.get("schema_version") != GRADES_VERSION or not isinstance(grades.get("results"), list):
+            raise EvaluationError(f"grades require schema_version {GRADES_VERSION} and a results array")
         grade_results = [validate_grade_result(value) for value in grades["results"]]
     grade_pairs = [(value["case_id"], value["condition"]) for value in grade_results]
     if len(set(grade_pairs)) != len(grade_pairs):
@@ -866,9 +1041,15 @@ def make_report(
         raise EvaluationError("grades do not match completed executions; " + "; ".join(details))
     cases_by_id = {case["id"]: case for case in plan["cases"]}
     for result in grade_results:
-        expected_assertions = set(cases_by_id[result["case_id"]].get("assertions", []))
+        case = cases_by_id[result["case_id"]]
+        definitions = {
+            requirement["id"]: requirement
+            for requirement in case["grading_requirements"]
+            if requirement["id"] != "routing-handlers"
+        }
+        expected_assertions = set(definitions)
         graded_assertions = {requirement["id"] for requirement in result["requirements"]}
-        if expected_assertions and graded_assertions != expected_assertions:
+        if graded_assertions != expected_assertions:
             missing = sorted(expected_assertions - graded_assertions)
             extra = sorted(graded_assertions - expected_assertions)
             details = []
@@ -880,13 +1061,45 @@ def make_report(
                 f"grades for case `{result['case_id']}` do not match assigned assertions; "
                 + "; ".join(details)
             )
-    execution_by_pair = {
-        (execution["case_id"], execution["condition"]): execution for execution in run_executions
-    }
-    if plan["path"] == "targeted-routing":
-        for result in grade_results:
-            execution = execution_by_pair[(result["case_id"], result["condition"])]
-            result["skill_load"] = execution.get("skill_load", "not_exposed")
+        normalized_requirements = []
+        for requirement in result["requirements"]:
+            definition = definitions[requirement["id"]]
+            normalized_requirements.append({**requirement, "critical": definition["critical"]})
+        if plan["path"] == "targeted-routing":
+            execution = next(
+                value
+                for value in run_executions
+                if value["case_id"] == result["case_id"] and value["condition"] == result["condition"]
+            )
+            observation = execution.get("routing_observation")
+            routing_definition = next(
+                value for value in case["grading_requirements"] if value["id"] == "routing-handlers"
+            )
+            expected_handlers = routing_definition["expected_handlers"]
+            if not isinstance(observation, dict) or observation.get("status") not in {"observed", "not_exposed"}:
+                raise EvaluationError("run routing observation is invalid")
+            if observation["status"] == "not_exposed":
+                if observation.get("handlers") != []:
+                    raise EvaluationError("run routing observation is invalid")
+                routing_status = "inconclusive"
+                routing_evidence = "Codex did not expose a completed Skill read."
+            else:
+                handlers = observation.get("handlers")
+                if not isinstance(handlers, list) or not all(isinstance(value, str) for value in handlers):
+                    raise EvaluationError("run routing observation is invalid")
+                routing_status = "pass" if sorted(handlers) == sorted(expected_handlers) else "fail"
+                routing_evidence = f"Observed handlers: {', '.join(handlers) if handlers else 'none'}."
+            normalized_requirements.append(
+                {
+                    "id": "routing-handlers",
+                    "status": routing_status,
+                    "evidence": routing_evidence,
+                    "critical": True,
+                }
+            )
+            result["routing_observation"] = observation
+        result["requirements"] = normalized_requirements
+        result["status"] = derive_case_status(normalized_requirements)
     results = grade_results + execution_errors
     static_check = run.get("static_check")
     static_status = static_check.get("status") if isinstance(static_check, dict) else None
@@ -914,6 +1127,10 @@ def make_report(
         "selection": {"path": plan["path"], "cases": selected_cases},
         "base": {"commit": plan["base"]["commit"]},
         "candidate": plan["candidate"],
+        "evaluation_inputs": {
+            "evaluation_files": plan["inputs"]["evaluation_files"],
+            "case_files": plan["inputs"]["case_files"],
+        },
         "environment": {
             "client": run.get("client", "unavailable"),
             "model": plan["environment"]["model"],
@@ -932,8 +1149,6 @@ def make_report(
 
 
 def command_report(args: argparse.Namespace, root: Path) -> int:
-    plan = load_plan(args.plan.resolve(), root)
-    verify_candidate_bindings(root, plan)
     run_path = args.run.resolve()
     require_temporary_path(root, run_path, "run record")
     run = read_json(run_path)
@@ -942,10 +1157,10 @@ def command_report(args: argparse.Namespace, root: Path) -> int:
         grades_path = args.grades.resolve()
         require_temporary_path(root, grades_path, "grades")
         grades = read_json(grades_path)
-    report = make_report(root, plan, run, grades, args.stopping_reason, args.unverified or [])
+    report = make_report(root, run, grades, args.stopping_reason, args.unverified or [])
     rendered = json.dumps(report, indent=2, ensure_ascii=False) + "\n"
     if args.write:
-        destination = root / "skills" / plan["skill"] / "evals" / "report.json"
+        destination = root / "skills" / report["skill"] / "evals" / "report.json"
         destination.write_text(rendered, encoding="utf-8")
         print(f"Report written to {destination.relative_to(root)}")
     else:
@@ -980,7 +1195,6 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--timeout-seconds", type=int, default=300)
 
     report = subparsers.add_parser("report", help="preview or write a compact evaluation report")
-    report.add_argument("--plan", type=Path, required=True)
     report.add_argument("--run", type=Path, required=True)
     report.add_argument("--grades", type=Path)
     report.add_argument("--stopping-reason", required=True)

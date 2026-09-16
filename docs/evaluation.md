@@ -1,6 +1,6 @@
 # Skill Evaluation
 
-This document defines how this repository selects, runs, records, and reviews Skill evaluations.
+This document defines how this repository selects, runs, records, migrates, and reviews Skill evaluations.
 
 The objective is to obtain the least evidence needed to decide whether a change is acceptable.\
 Evaluation is not an automatic action after every edit, and an ordinary Skill change does not require every case, a baseline, repeated runs, or a client matrix.
@@ -10,13 +10,14 @@ Evaluation is not an automatic action after every edit, and an ordinary Skill ch
 Use these steps for a Skill change:
 
 1. Identify the changed claim or responsibility.
-2. Select the least sufficient evaluation path from the table below.
-3. Select only cases that can expose the changed responsibility, a known regression, or a plausibly affected adjacent boundary.
-4. Generate a plan and inspect its model-call count before execution.
-5. Run the approved plan once.
-6. Grade only the planned case-condition results.
-7. Record the stopping reason and any unverified boundary.
-8. Add evidence only when the current result is not decision-ready.
+2. Decide whether the Skill's evaluation definitions must be migrated.
+3. Select the least sufficient evaluation path.
+4. Select only cases that can expose the changed responsibility, a known regression, or a plausibly affected adjacent boundary.
+5. Generate a plan and inspect its model-call count before execution.
+6. Run the approved plan once.
+7. Grade only the planned case-condition results.
+8. Record the stopping reason and any unverified boundary.
+9. Add evidence only when the current result is not decision-ready.
 
 Do not connect the Runner to a file watcher, post-edit hook, or other mechanism that automatically evaluates every revision.\
 The developer or reviewing agent invokes it explicitly when the selected path requires execution.
@@ -37,7 +38,22 @@ Repeat only when observed instability, conflicting evidence, or a material failu
 Package and distribution checks remain separate from routine Skill behavior evaluation.\
 Run them only when distribution behavior changes.
 
-## Evaluation assets
+## Migrate definitions when a Skill is first materially changed
+
+Existing evaluation assets are not migrated repository-wide.\
+For an existing Skill, migrate its complete `evals.json` and `triggers.json` set the first time a pull request materially changes its `SKILL.md`, runtime resources, discovery behavior, responsibility, safety boundary, or evaluation definition.
+
+README changes, reference-translation synchronization, meaning-preserving documentation or metadata changes, and legacy-result-only changes do not trigger migration.\
+If both `evals.json` and `triggers.json` exist for a Skill, migrate both in the same pull request so the Skill never has a mixed executable contract.
+
+Migrating definitions does not mean executing every migrated case.\
+After migration, run only the cases required by the responsibility changed in that pull request.
+
+Legacy `{skill, cases}` assets, `scenarios` assets, and legacy `triggers.json` remain valid repository history.\
+Model-backed paths reject them before invoking Codex and explain that complete per-Skill migration is required.\
+`static-only` does not read evaluation cases and remains available to an unmigrated Skill.
+
+## Evaluation assets and schema
 
 Reusable assets live with the Skill:
 
@@ -51,55 +67,52 @@ skills/<skill-name>/
     └── results.json    # optional legacy historical evidence
 ```
 
-Do not add a structured asset until it makes a repeated evaluation more reproducible.\
-Do not migrate existing assets merely to make their shapes uniform.
-
-### Behavior case formats
-
-The Runner accepts the repository's current case shape:
-
-```json
-{
-  "schema_version": 1,
-  "skill": "example-skill",
-  "cases": [
-    {
-      "id": "bounded-change",
-      "input": "Handle this request.",
-      "assertions": ["bounded-output"]
-    }
-  ]
-}
-```
-
-It also accepts the minimal official-style evaluation shape for `evals.json`:
+New executable definitions follow the [Agent Skills evaluation format](https://agentskills.io/skill-creation/evaluating-skills) with explicit repository extensions:
 
 ```json
 {
   "skill_name": "example-skill",
+  "execution": {
+    "coexistence_skills": ["adjacent-skill"]
+  },
   "evals": [
     {
       "id": 1,
       "prompt": "Handle this request.",
       "expected_output": "A bounded result.",
-      "files": []
+      "files": ["tests/fixtures/input.txt"],
+      "assertions": [
+        "The result states the boundary.",
+        {
+          "id": "no-expansion",
+          "text": "The result does not expand the task.",
+          "critical": false
+        }
+      ],
+      "fixture": {
+        "files": {
+          "notes/context.txt": "Fixture content."
+        }
+      },
+      "coexistence_skills": [],
+      "conditions": ["candidate"]
     }
   ]
 }
 ```
 
+The official fields consumed by the Runner are `id`, `prompt`, `expected_output`, and `files`.\
 String and integer IDs are normalized to strings.\
-The Runner currently consumes `prompt`, optional `expected_output`, and optional `files` from this shape.\
+A string assertion receives a stable positional ID such as `assertion-1` and is critical by default.
+
+Repository extensions are assertion objects with `id`, `text`, and `critical`; explicit `conditions`; inline `fixture.files`; case-level or top-level `coexistence_skills`; transcript inputs; and routing `expected_handlers`.\
 Keep executor input separate from assertions and expected output so the desired answer is not disclosed to the executor.
 
-For current repository cases, the adapter also accepts `input`, `turns`, conversation context, `assertion_ids`, and inline `fixture.files`.\
-It serializes multiple turns into one explicit transcript so one case-condition pair still consumes one executor call; this checks the final response with the supplied context and is not evidence for responses that would have occurred between turns.\
-Repository-relative `files` are copied under `inputs/`, while inline fixture files preserve their declared paths in the disposable fixture.\
-A named fixture without inline contents is rejected before execution because the Runner cannot reconstruct it safely.
+When a behavior case has no assertions, the Runner creates one critical `expected-output` requirement from `expected_output`.\
+Use `triggers.json` with the same top-level shape for routing cases, and give each selected routing case an `expected_handlers` array.
 
-Use `triggers.json` for routing cases in the repository's current `{skill, cases}` shape.\
-Routing evaluation counts a Skill load only from a path or command field exposed by Codex JSONL events.\
-When loading is not observable, record `not_exposed`; do not infer selection from the final response wording.
+Routing evaluation counts only successful read or tool events for installed Skills that Codex exposes in JSONL.\
+When loading is not observable, the Runner records `not_exposed` and grades routing as `inconclusive`; it never infers a handler from the final response wording.
 
 ## Plan before spending tokens
 
@@ -119,12 +132,13 @@ python3 scripts/run_skill_evaluation.py plan \
 ```
 
 `plan` does not invoke a model.\
-It resolves the base commit, records hashes for changed Skill files and the selected case asset, expands only explicitly selected cases and conditions, and prints the estimated model-call count.\
-The temporary plan retains the selected assertion definitions, expected output, and additional grading requirements for the caller, but the executor prompt contains only the normalized case input.
+It resolves the base commit, expands only explicitly selected cases and conditions, prints the estimated model-call count, and writes schema version 2 with a digest over canonical JSON.
 
-Model-backed paths require at least one `--case`.\
-There is no implicit all-cases option.
+The plan records every regular candidate file that the executor can receive, excluding `evals/`.\
+Evaluation assets, selected repository input files, and complete coexistence Skill manifests are recorded separately.\
+Symlinks are rejected, and files outside these manifests are never copied into the fixture.
 
+Model-backed paths require at least one `--case`; there is no implicit all-cases option.\
 The default condition is `candidate`.\
 `baseline-comparison` defaults to `candidate` plus `baseline` and may instead receive explicit `--condition` values, including `without-skill`.\
 Other paths do not accept comparison conditions.
@@ -144,20 +158,19 @@ python3 scripts/run_skill_evaluation.py run \
   --max-model-calls 1
 ```
 
-`run` refuses to start when the plan exceeds `--max-model-calls`.\
-The artifacts directory must not already exist, which prevents an earlier execution from being silently overwritten or mixed into the new result.
+`run` refuses to start when the plan exceeds `--max-model-calls` or any recorded candidate, evaluation input, case input, or coexistence Skill manifest has changed.\
+These checks happen before Codex is invoked.\
+The artifacts directory must not already exist.
 
 Every Codex invocation uses an ephemeral session, JSONL output, the planned model, reasoning effort, and sandbox, and a disposable fixture under the system temporary directory.\
-The candidate condition copies the working-tree Skill, the baseline condition materializes the Skill from the resolved base commit, and the without-Skill condition omits the target Skill.\
-Candidate, baseline, and companion copies exclude `evals/` so hidden assertions and expected outputs are not available to the executor.\
-Only companion Skills declared by the evaluation asset are copied alongside it.
+The candidate condition copies the manifest-bound working-tree Skill, the baseline condition materializes the Skill from the resolved base commit, and the without-Skill condition omits the target Skill.\
+Candidate and companion copies exclude `evals/`.
 
 Behavior evaluation explicitly tells the executor to use the target Skill.\
 Routing evaluation supplies the request without forcing Skill selection.
 
-The Runner executes the deterministic repository checker once before model calls.\
-During that check it ignores only the previous `report.json` for the Skill being evaluated, because that report is expected to become stale when the Skill changes.\
-Normal repository validation does not ignore the report.
+The schema version 2 `run.json` embeds the normalized plan and its digest instead of an absolute plan path.\
+It also records the actual execution pairs, environment, static-check outcome, routing observations, and raw-artifact locations within the temporary artifact directory.
 
 Raw JSONL, stderr, final responses, disposable fixtures, the plan, and the run record remain under the system temporary directory.\
 Do not commit them.
@@ -165,33 +178,38 @@ Do not commit them.
 ## Grade planned results
 
 The Runner does not use another model as an automatic grader.\
-The invoking Codex session or a human grades the planned outputs against the case assertions and writes a small temporary JSON file:
+The invoking Codex session or a human writes schema version 2 grades for the non-routing requirements:
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "results": [
     {
       "case_id": "bounded-change",
       "condition": "candidate",
-      "status": "pass",
       "requirements": [
         {
-          "id": "bounded-output",
+          "id": "expected-output",
           "status": "pass",
-          "evidence": "The result states the boundary and does not expand the task."
+          "evidence": "The result states the boundary without expanding the task."
         }
       ],
-      "evidence": "All selected requirements passed."
+      "evidence": "The selected requirement passed."
     }
   ]
 }
 ```
 
-Allowed statuses are `pass`, `fail`, `inconclusive`, and `error`.\
-Grades must exactly match completed case-condition pairs; missing, duplicate, and unplanned results are rejected.\
-When a case assigns assertion IDs, the grade must include each assigned assertion exactly once.\
-Executor failures become `error` results without requiring fabricated grading evidence.
+Do not provide a case-level status.\
+The Runner derives it from requirement statuses and the critical flags in the bound plan:
+
+1. An executor or requirement `error` produces `error`.
+2. A critical `fail` produces `fail`.
+3. A non-critical `fail` or any `inconclusive` produces `inconclusive`.
+4. All requirements passing produces `pass`.
+
+The Runner adds and grades the critical `routing-handlers` requirement from direct observations, so grades do not repeat it.\
+Grades must exactly match completed case-condition pairs and non-routing requirements; missing, duplicate, and unplanned results are rejected.
 
 Keep evidence concise and decision-relevant.\
 Do not paste a full prompt, response, trace, stderr, JSONL event, credential, or environment-specific absolute path into grades.
@@ -202,27 +220,23 @@ Preview the compact report before changing the repository:
 
 ```bash
 python3 scripts/run_skill_evaluation.py report \
-  --plan "$evaluation_tmp/plan.json" \
   --run "$evaluation_tmp/artifacts/run.json" \
   --grades "$evaluation_tmp/grades.json" \
   --stopping-reason "The selected case answered the acceptance question." \
   --unverified "Unselected responsibilities"
 ```
 
+`report` accepts no separate plan.\
+It uses the plan snapshot embedded in `run.json` as the only plan source and revalidates its digest, environment, execution pairs, candidate manifest, and evaluation inputs.
+
 Add `--write` only after reviewing the preview.\
-The command then replaces `skills/<skill-name>/evals/report.json`.
+The command then replaces `skills/<skill-name>/evals/report.json` with schema version 2.
 
-`report.json` records:
+The report records the evaluation purpose, affected responsibilities, selected path and pairs, base commit, candidate manifest, selected evaluation-input hashes, execution environment, derived results, stopping reason, and unverified boundaries.\
+It does not include the plan snapshot, raw prompts, responses, JSONL, absolute paths, credentials, or coexistence Skill manifests.
 
-- the evaluation purpose and affected responsibilities
-- the selected path, cases, and conditions
-- the resolved base commit and hashes of evaluated candidate files
-- the Codex client, model, reasoning effort, and sandbox
-- deterministic and graded results
-- the aggregate status, stopping reason, and unverified boundaries
-
-The aggregate status uses `error`, `fail`, `inconclusive`, then `pass` precedence.\
-The repository checker verifies that the summary matches the result statuses and that the evaluated file hashes remain current.
+The checker recomputes result and summary statuses and verifies that the target Skill and selected evaluation inputs remain current.\
+A later unrelated change to a coexistence Skill does not make the accepted report stale.
 
 The report describes one change-scoped evaluation, not the quality of the entire Skill.\
 It omits unselected cases rather than marking them stale or not executed.\
@@ -260,7 +274,7 @@ An evaluation-insufficiency finding must identify all of the following:
 - why the recorded checks cannot expose that failure
 - the smallest additional case, condition, or deterministic check that would resolve it
 
-Do not report insufficiency merely because an unselected case, unrelated suite, legacy `results.json`, or prior report was not refreshed.\
+Do not report insufficiency merely because an unselected case, unrelated suite, unmigrated Skill, legacy `results.json`, or prior report was not refreshed.\
 Do not require a fixed case count, baseline, repetition, Skill-without condition, or model matrix without connecting it to a decision-relevant failure.
 
 ## Repository checks
@@ -272,5 +286,5 @@ python3 scripts/check_repository.py
 python3 -m unittest discover -s tests
 ```
 
-The checker validates structure and record consistency without invoking an LLM.\
+The checker validates structure, mixed-format migration state, manifest freshness, and record consistency without invoking an LLM.\
 Passing static validation does not establish runtime quality, routing, or support in an untested client.

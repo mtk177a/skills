@@ -1,3 +1,4 @@
+import hashlib
 import json
 import subprocess
 import sys
@@ -5,7 +6,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.run_skill_evaluation import direct_skill_load_observation
+from scripts.run_skill_evaluation import (
+    EvaluationError,
+    attach_plan_digest,
+    canonical_json,
+    direct_skill_load_observation,
+    skill_manifest,
+    verify_file_manifest,
+)
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -33,11 +41,18 @@ license: MIT
         root / "skills" / "alpha-skill" / "evals" / "evals.json",
         json.dumps(
             {
-                "schema_version": 1,
-                "skill": "alpha-skill",
-                "cases": [
-                    {"id": "selected", "input": "Run the selected case."},
-                    {"id": "not-selected", "input": "Do not run this case."},
+                "skill_name": "alpha-skill",
+                "evals": [
+                    {
+                        "id": "selected",
+                        "prompt": "Run the selected case.",
+                        "expected_output": "A bounded result.",
+                    },
+                    {
+                        "id": "not-selected",
+                        "prompt": "Do not run this case.",
+                        "expected_output": "No execution.",
+                    },
                 ],
             }
         )
@@ -94,19 +109,61 @@ def create_manual_plan(root: Path, path: Path) -> None:
     write(
         path,
         json.dumps(
-            {
-                "schema_version": 1,
+            attach_plan_digest({
+                "schema_version": 2,
                 "skill": "alpha-skill",
                 "path": "targeted-candidate",
                 "purpose": "Check grade matching.",
                 "affected_responsibilities": ["grade matching"],
                 "base": {"ref": "HEAD", "commit": commit},
                 "environment": {"model": "test", "reasoning_effort": "test", "sandbox": "read-only"},
-                "cases": [{"id": "selected", "prompt": "Run it.", "assertions": [], "files": []}],
+                "cases": [
+                    {
+                        "id": "selected",
+                        "prompt": "Run it.",
+                        "grading_requirements": [
+                            {"id": "expected-output", "text": "A bounded result.", "critical": True}
+                        ],
+                        "files": [],
+                        "inline_files": {},
+                        "coexistence_skills": [],
+                        "input_mode": "single-turn",
+                    }
+                ],
                 "executions": [{"case_id": "selected", "condition": "candidate"}],
                 "estimated_model_calls": 1,
-                "candidate": {"files": {}},
+                "candidate": {
+                    "files": {
+                        "SKILL.md": "sha256:"
+                        + hashlib.sha256(
+                            (root / "skills" / "alpha-skill" / "SKILL.md").read_bytes()
+                        ).hexdigest()
+                    }
+                },
+                "inputs": {"evaluation_files": {}, "case_files": {}, "companions": {}},
                 "coexistence_skills": [],
+            })
+        )
+        + "\n",
+    )
+
+
+def create_manual_run(plan_path: Path, run_path: Path) -> None:
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    write(
+        run_path,
+        json.dumps(
+            {
+                "schema_version": 2,
+                "skill": plan["skill"],
+                "plan_digest": plan["plan_digest"],
+                "plan": plan,
+                "client": "codex-cli fake",
+                "environment": plan["environment"],
+                "static_check": {"status": "pass", "exit_code": 0},
+                "executions": [
+                    {"case_id": "selected", "condition": "candidate", "status": "completed"}
+                ],
             }
         )
         + "\n",
@@ -114,6 +171,258 @@ def create_manual_plan(root: Path, path: Path) -> None:
 
 
 class SkillEvaluationRunnerTests(unittest.TestCase):
+    def test_candidate_manifest_detects_changed_and_deleted_files(self) -> None:
+        for mutation in ("change", "delete"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as repository:
+                root = Path(repository)
+                create_repository(root)
+                skill_root = root / "skills" / "alpha-skill"
+                manifest = skill_manifest(root, "alpha-skill")
+                if mutation == "change":
+                    write(skill_root / "SKILL.md", "Changed after planning.\n")
+                else:
+                    (skill_root / "SKILL.md").unlink()
+
+                with self.assertRaisesRegex(EvaluationError, "manifest changed after planning"):
+                    verify_file_manifest(skill_root, manifest, "candidate Skill")
+
+    def test_run_rejects_candidate_file_added_after_planning(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            asset = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            write(
+                asset,
+                json.dumps(
+                    {
+                        "skill_name": "alpha-skill",
+                        "evals": [
+                            {
+                                "id": "selected",
+                                "prompt": "Run the selected case.",
+                                "expected_output": "A bounded result.",
+                            }
+                        ],
+                    }
+                )
+                + "\n",
+            )
+            plan_path = Path(output) / "plan.json"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "plan",
+                    "--skill",
+                    "alpha-skill",
+                    "--path",
+                    "targeted-candidate",
+                    "--purpose",
+                    "Bind the candidate tree.",
+                    "--affected",
+                    "candidate integrity",
+                    "--case",
+                    "selected",
+                    "--base-ref",
+                    "HEAD",
+                    "--output",
+                    str(plan_path),
+                ],
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            write(root / "skills" / "alpha-skill" / "NEW.md", "Unplanned file.\n")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "--codex-bin",
+                    "/bin/false",
+                    "run",
+                    "--plan",
+                    str(plan_path),
+                    "--artifacts-dir",
+                    str(Path(output) / "artifacts"),
+                    "--execute",
+                    "--max-model-calls",
+                    "1",
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(2, result.returncode)
+            self.assertIn("candidate Skill manifest changed after planning", result.stderr)
+            self.assertFalse((Path(output) / "artifacts").exists())
+
+    def test_run_rejects_changed_evaluation_and_case_inputs(self) -> None:
+        for changed_input, expected in (
+            ("evaluation", "evaluation input changed after planning"),
+            ("case", "case input changed after planning"),
+        ):
+            with self.subTest(changed_input=changed_input), tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+                root = Path(repository)
+                create_repository(root)
+                input_file = root / "inputs" / "request.txt"
+                write(input_file, "Original input.\n")
+                asset = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+                write(
+                    asset,
+                    json.dumps(
+                        {
+                            "skill_name": "alpha-skill",
+                            "evals": [
+                                {
+                                    "id": "selected",
+                                    "prompt": "Use the input.",
+                                    "expected_output": "A bounded result.",
+                                    "files": ["inputs/request.txt"],
+                                }
+                            ],
+                        }
+                    )
+                    + "\n",
+                )
+                plan_path = Path(output) / "plan.json"
+                subprocess.run(
+                    [
+                        sys.executable,
+                        str(RUNNER),
+                        "--root",
+                        str(root),
+                        "plan",
+                        "--skill",
+                        "alpha-skill",
+                        "--path",
+                        "targeted-candidate",
+                        "--purpose",
+                        "Bind evaluation inputs.",
+                        "--affected",
+                        "input integrity",
+                        "--case",
+                        "selected",
+                        "--base-ref",
+                        "HEAD",
+                        "--output",
+                        str(plan_path),
+                    ],
+                    check=True,
+                    text=True,
+                    capture_output=True,
+                )
+                if changed_input == "evaluation":
+                    write(asset, asset.read_text(encoding="utf-8") + "\n")
+                else:
+                    write(input_file, "Changed input.\n")
+
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(RUNNER),
+                        "--root",
+                        str(root),
+                        "--codex-bin",
+                        "/bin/false",
+                        "run",
+                        "--plan",
+                        str(plan_path),
+                        "--artifacts-dir",
+                        str(Path(output) / "artifacts"),
+                        "--execute",
+                        "--max-model-calls",
+                        "1",
+                    ],
+                    text=True,
+                    capture_output=True,
+                )
+
+                self.assertEqual(2, result.returncode)
+                self.assertIn(expected, result.stderr)
+                self.assertFalse((Path(output) / "artifacts").exists())
+
+    def test_run_rejects_changed_companion_skill(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            write(root / "skills" / "beta-skill" / "SKILL.md", "# Beta Skill\n")
+            asset = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            write(
+                asset,
+                json.dumps(
+                    {
+                        "skill_name": "alpha-skill",
+                        "execution": {"coexistence_skills": ["beta-skill"]},
+                        "evals": [
+                            {
+                                "id": "selected",
+                                "prompt": "Run with the companion.",
+                                "expected_output": "A bounded result.",
+                            }
+                        ],
+                    }
+                )
+                + "\n",
+            )
+            plan_path = Path(output) / "plan.json"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "plan",
+                    "--skill",
+                    "alpha-skill",
+                    "--path",
+                    "targeted-candidate",
+                    "--purpose",
+                    "Bind the companion.",
+                    "--affected",
+                    "coexistence",
+                    "--case",
+                    "selected",
+                    "--base-ref",
+                    "HEAD",
+                    "--output",
+                    str(plan_path),
+                ],
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            write(root / "skills" / "beta-skill" / "SKILL.md", "# Changed Beta Skill\n")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "--codex-bin",
+                    "/bin/false",
+                    "run",
+                    "--plan",
+                    str(plan_path),
+                    "--artifacts-dir",
+                    str(Path(output) / "artifacts"),
+                    "--execute",
+                    "--max-model-calls",
+                    "1",
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(2, result.returncode)
+            self.assertIn("companion beta-skill Skill manifest changed after planning", result.stderr)
+            self.assertFalse((Path(output) / "artifacts").exists())
+
     def test_routing_observation_requires_completed_successful_read(self) -> None:
         skill_path = "/tmp/fixture/.agents/skills/alpha-skill/SKILL.md"
         events = [
@@ -130,7 +439,7 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
         events[-1]["item"]["exit_code"] = 0
         self.assertEqual("observed", direct_skill_load_observation(events, "alpha-skill"))
 
-    def test_plan_selects_only_requested_legacy_case(self) -> None:
+    def test_plan_selects_only_requested_migrated_case(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
             root = Path(repository)
             create_repository(root)
@@ -164,6 +473,7 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
 
             self.assertEqual(0, result.returncode, result.stderr)
             plan = json.loads(plan_path.read_text(encoding="utf-8"))
+            self.assertEqual(canonical_json(plan) + "\n", plan_path.read_text(encoding="utf-8"))
             self.assertEqual(1, plan["estimated_model_calls"])
             self.assertEqual(
                 [{"case_id": "selected", "condition": "candidate"}],
@@ -223,11 +533,14 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
 
             self.assertEqual(0, result.returncode, result.stderr)
             plan = json.loads(plan_path.read_text(encoding="utf-8"))
-            self.assertEqual("official", plan["source"]["format"])
+            self.assertEqual("agent-skills", plan["source"]["format"])
             self.assertEqual("7", plan["cases"][0]["id"])
-            self.assertEqual("A bounded answer.", plan["cases"][0]["expected_output"])
+            self.assertEqual(
+                "A bounded answer.",
+                plan["cases"][0]["grading_requirements"][0]["text"],
+            )
 
-    def test_legacy_turns_and_inline_fixture_are_normalized_for_one_execution(self) -> None:
+    def test_migrated_turns_and_inline_fixture_are_normalized_for_one_execution(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
             root = Path(repository)
             create_repository(root)
@@ -235,13 +548,12 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 root / "skills" / "alpha-skill" / "evals" / "evals.json",
                 json.dumps(
                     {
-                        "schema_version": 1,
-                        "skill": "alpha-skill",
-                        "cases": [
+                        "skill_name": "alpha-skill",
+                        "evals": [
                             {
                                 "id": "turns",
                                 "turns": ["Start the request.", "Use the repository convention."],
-                                "assertions": ["uses-convention"],
+                                "assertions": ["Uses the repository convention."],
                                 "fixture": {"files": {"README.md": "Use the established convention.\n"}},
                             }
                         ],
@@ -318,9 +630,15 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 root / "skills" / "alpha-skill" / "evals" / "evals.json",
                 json.dumps(
                     {
-                        "schema_version": 1,
-                        "skill": "alpha-skill",
-                        "cases": [{"id": "named", "input": "Run it.", "fixture": "missing-fixture"}],
+                        "skill_name": "alpha-skill",
+                        "evals": [
+                            {
+                                "id": "named",
+                                "prompt": "Run it.",
+                                "expected_output": "A bounded result.",
+                                "fixture": "missing-fixture",
+                            }
+                        ],
                     }
                 )
                 + "\n",
@@ -440,7 +758,7 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             )
 
             self.assertEqual(2, result.returncode)
-            self.assertIn("invalid environment", result.stderr)
+            self.assertIn("plan digest does not match", result.stderr)
             self.assertFalse((Path(output) / "artifacts").exists())
 
     def test_run_isolates_candidate_baseline_and_without_skill(self) -> None:
@@ -609,14 +927,17 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 grades,
                 json.dumps(
                     {
-                        "schema_version": 1,
+                        "schema_version": 2,
                         "results": [
                             {
                                 "case_id": "selected",
                                 "condition": "candidate",
-                                "status": "pass",
                                 "requirements": [
-                                    {"id": "bounded", "status": "pass", "evidence": "The answer stayed bounded."}
+                                    {
+                                        "id": "expected-output",
+                                        "status": "pass",
+                                        "evidence": "The answer stayed bounded.",
+                                    }
                                 ],
                                 "evidence": "All selected requirements passed.",
                             }
@@ -632,8 +953,6 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 "--root",
                 str(root),
                 "report",
-                "--plan",
-                str(plan_path),
                 "--run",
                 str(artifacts / "run.json"),
                 "--grades",
@@ -731,9 +1050,14 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 root / "skills" / "alpha-skill" / "evals" / "triggers.json",
                 json.dumps(
                     {
-                        "schema_version": 1,
-                        "skill": "alpha-skill",
-                        "cases": [{"id": "route", "input": "Choose the appropriate Skill."}],
+                        "skill_name": "alpha-skill",
+                        "evals": [
+                            {
+                                "id": "route",
+                                "prompt": "Choose the appropriate Skill.",
+                                "expected_handlers": ["alpha-skill"],
+                            }
+                        ],
                     }
                 )
                 + "\n",
@@ -792,7 +1116,143 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
 
             self.assertEqual(0, result.returncode, result.stderr)
             run = json.loads((artifacts / "run.json").read_text(encoding="utf-8"))
-            self.assertEqual("not_exposed", run["executions"][0]["skill_load"])
+            self.assertEqual(
+                {"status": "not_exposed", "handlers": []},
+                run["executions"][0]["routing_observation"],
+            )
+
+    def test_routing_preserves_companions_and_derives_observed_handler_grade(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            write(
+                root / "skills" / "beta-skill" / "SKILL.md",
+                "---\nname: beta-skill\ndescription: Companion fixture.\nlicense: MIT\n---\n",
+            )
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "triggers.json",
+                json.dumps(
+                    {
+                        "skill_name": "alpha-skill",
+                        "execution": {"coexistence_skills": ["beta-skill"]},
+                        "evals": [
+                            {
+                                "id": "route",
+                                "prompt": "Choose the appropriate Skill.",
+                                "expected_handlers": ["alpha-skill"],
+                            }
+                        ],
+                    }
+                )
+                + "\n",
+            )
+            subprocess.run(["git", "-C", str(root), "add", "."], check=True)
+            subprocess.run(["git", "-C", str(root), "commit", "-qm", "routing fixture"], check=True)
+            fake_codex = Path(output) / "fake-codex"
+            create_fake_codex(fake_codex)
+            plan_path = Path(output) / "plan.json"
+            artifacts = Path(output) / "artifacts"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "plan",
+                    "--skill",
+                    "alpha-skill",
+                    "--path",
+                    "targeted-routing",
+                    "--purpose",
+                    "Check direct routing evidence.",
+                    "--affected",
+                    "Skill selection",
+                    "--case",
+                    "route",
+                    "--base-ref",
+                    "HEAD",
+                    "--output",
+                    str(plan_path),
+                ],
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            plan = json.loads(plan_path.read_text(encoding="utf-8"))
+            self.assertEqual(["beta-skill"], plan["coexistence_skills"])
+            self.assertIn("beta-skill", plan["inputs"]["companions"])
+            self.assertEqual(
+                ["alpha-skill"],
+                plan["cases"][0]["grading_requirements"][0]["expected_handlers"],
+            )
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "--codex-bin",
+                    str(fake_codex),
+                    "run",
+                    "--plan",
+                    str(plan_path),
+                    "--artifacts-dir",
+                    str(artifacts),
+                    "--execute",
+                    "--max-model-calls",
+                    "1",
+                ],
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            grades = Path(output) / "grades.json"
+            write(
+                grades,
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "results": [
+                            {
+                                "case_id": "route",
+                                "condition": "candidate",
+                                "requirements": [],
+                                "evidence": "Routing was observed directly.",
+                            }
+                        ],
+                    }
+                )
+                + "\n",
+            )
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "report",
+                    "--run",
+                    str(artifacts / "run.json"),
+                    "--grades",
+                    str(grades),
+                    "--stopping-reason",
+                    "The direct observation answered the routing question.",
+                ],
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            report = json.loads(result.stdout)
+            self.assertEqual("pass", report["results"][0]["status"])
+            self.assertEqual(
+                {
+                    "id": "routing-handlers",
+                    "status": "pass",
+                    "evidence": "Observed handlers: alpha-skill.",
+                    "critical": True,
+                },
+                report["results"][0]["requirements"][0],
+            )
 
     def test_report_rejects_missing_and_extra_grades(self) -> None:
         for results, expected in (
@@ -802,14 +1262,14 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                     {
                         "case_id": "selected",
                         "condition": "candidate",
-                        "status": "pass",
-                        "requirements": [],
+                        "requirements": [
+                            {"id": "expected-output", "status": "pass", "evidence": "Selected."}
+                        ],
                         "evidence": "Selected result.",
                     },
                     {
                         "case_id": "extra",
                         "condition": "candidate",
-                        "status": "pass",
                         "requirements": [],
                         "evidence": "Unplanned result.",
                     },
@@ -823,24 +1283,9 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 plan_path = Path(output) / "plan.json"
                 create_manual_plan(root, plan_path)
                 run_path = Path(output) / "run.json"
-                write(
-                    run_path,
-                    json.dumps(
-                        {
-                            "schema_version": 1,
-                            "skill": "alpha-skill",
-                            "client": "codex-cli fake",
-                            "environment": {},
-                            "static_check": {"status": "pass", "exit_code": 0},
-                            "executions": [
-                                {"case_id": "selected", "condition": "candidate", "status": "completed"}
-                            ],
-                        }
-                    )
-                    + "\n",
-                )
+                create_manual_run(plan_path, run_path)
                 grades = Path(output) / "grades.json"
-                write(grades, json.dumps({"schema_version": 1, "results": results}) + "\n")
+                write(grades, json.dumps({"schema_version": 2, "results": results}) + "\n")
 
                 result = subprocess.run(
                     [
@@ -849,8 +1294,6 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                         "--root",
                         str(root),
                         "report",
-                        "--plan",
-                        str(plan_path),
                         "--run",
                         str(run_path),
                         "--grades",
@@ -872,35 +1315,22 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             plan_path = Path(output) / "plan.json"
             create_manual_plan(root, plan_path)
             plan = json.loads(plan_path.read_text(encoding="utf-8"))
-            plan["cases"][0]["assertions"] = ["required-assertion"]
-            write(plan_path, json.dumps(plan) + "\n")
+            plan["cases"][0]["grading_requirements"] = [
+                {"id": "required-assertion", "text": "Required.", "critical": True}
+            ]
+            write(plan_path, json.dumps(attach_plan_digest(plan)) + "\n")
             run_path = Path(output) / "run.json"
-            write(
-                run_path,
-                json.dumps(
-                    {
-                        "schema_version": 1,
-                        "skill": "alpha-skill",
-                        "client": "codex-cli fake",
-                        "static_check": {"status": "pass"},
-                        "executions": [
-                            {"case_id": "selected", "condition": "candidate", "status": "completed"}
-                        ],
-                    }
-                )
-                + "\n",
-            )
+            create_manual_run(plan_path, run_path)
             grades = Path(output) / "grades.json"
             write(
                 grades,
                 json.dumps(
                     {
-                        "schema_version": 1,
+                        "schema_version": 2,
                         "results": [
                             {
                                 "case_id": "selected",
                                 "condition": "candidate",
-                                "status": "pass",
                                 "requirements": [],
                                 "evidence": "The case was graded incompletely.",
                             }
@@ -917,8 +1347,6 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                     "--root",
                     str(root),
                     "report",
-                    "--plan",
-                    str(plan_path),
                     "--run",
                     str(run_path),
                     "--grades",
@@ -932,6 +1360,248 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
 
             self.assertEqual(2, result.returncode)
             self.assertIn("missing requirement grades", result.stderr)
+
+    def test_report_rejects_tampered_embedded_plan_and_environment(self) -> None:
+        for mutation, expected in (
+            (
+                lambda run: run["plan"]["environment"].update({"model": "claimed-model"}),
+                "plan digest does not match",
+            ),
+            (
+                lambda run: run["environment"].update({"model": "claimed-model"}),
+                "does not match the embedded plan environment",
+            ),
+        ):
+            with self.subTest(expected=expected), tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+                root = Path(repository)
+                create_repository(root)
+                plan_path = Path(output) / "plan.json"
+                create_manual_plan(root, plan_path)
+                run_path = Path(output) / "run.json"
+                create_manual_run(plan_path, run_path)
+                run = json.loads(run_path.read_text(encoding="utf-8"))
+                mutation(run)
+                write(run_path, json.dumps(run) + "\n")
+                grades = Path(output) / "grades.json"
+                write(
+                    grades,
+                    json.dumps(
+                        {
+                            "schema_version": 2,
+                            "results": [
+                                {
+                                    "case_id": "selected",
+                                    "condition": "candidate",
+                                    "requirements": [
+                                        {
+                                            "id": "expected-output",
+                                            "status": "pass",
+                                            "evidence": "Passed.",
+                                        }
+                                    ],
+                                    "evidence": "Passed.",
+                                }
+                            ],
+                        }
+                    )
+                    + "\n",
+                )
+
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(RUNNER),
+                        "--root",
+                        str(root),
+                        "report",
+                        "--run",
+                        str(run_path),
+                        "--grades",
+                        str(grades),
+                        "--stopping-reason",
+                        "Stop.",
+                    ],
+                    text=True,
+                    capture_output=True,
+                )
+
+                self.assertEqual(2, result.returncode)
+                self.assertIn(expected, result.stderr)
+
+    def test_report_derives_case_status_from_requirement_criticality(self) -> None:
+        for critical, requirement_status, expected_status in (
+            (True, "fail", "fail"),
+            (False, "fail", "inconclusive"),
+            (True, "inconclusive", "inconclusive"),
+            (True, "error", "error"),
+            (True, "pass", "pass"),
+        ):
+            with self.subTest(status=requirement_status, critical=critical), tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+                root = Path(repository)
+                create_repository(root)
+                plan_path = Path(output) / "plan.json"
+                create_manual_plan(root, plan_path)
+                plan = json.loads(plan_path.read_text(encoding="utf-8"))
+                plan["cases"][0]["grading_requirements"] = [
+                    {"id": "graded", "text": "Grade this.", "critical": critical}
+                ]
+                write(plan_path, json.dumps(attach_plan_digest(plan)) + "\n")
+                run_path = Path(output) / "run.json"
+                create_manual_run(plan_path, run_path)
+                grades = Path(output) / "grades.json"
+                write(
+                    grades,
+                    json.dumps(
+                        {
+                            "schema_version": 2,
+                            "results": [
+                                {
+                                    "case_id": "selected",
+                                    "condition": "candidate",
+                                    "requirements": [
+                                        {"id": "graded", "status": requirement_status, "evidence": "Observed."}
+                                    ],
+                                    "evidence": "Graded.",
+                                }
+                            ],
+                        }
+                    )
+                    + "\n",
+                )
+
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(RUNNER),
+                        "--root",
+                        str(root),
+                        "report",
+                        "--run",
+                        str(run_path),
+                        "--grades",
+                        str(grades),
+                        "--stopping-reason",
+                        "Stop.",
+                    ],
+                    text=True,
+                    capture_output=True,
+                )
+
+                self.assertEqual(0, result.returncode, result.stderr)
+                report = json.loads(result.stdout)
+                self.assertEqual(expected_status, report["results"][0]["status"])
+                self.assertEqual(expected_status, report["summary"]["status"])
+
+    def test_model_backed_plan_rejects_legacy_case_shapes(self) -> None:
+        for asset_name, document, evaluation_path, case_id, shape in (
+            (
+                "triggers.json",
+                {
+                    "skill": "alpha-skill",
+                    "version": 1,
+                    "run_policy": {},
+                    "coexistence_skills": ["beta-skill"],
+                    "cases": [{"id": "route", "prompt": "Route.", "expected_handler": "alpha-skill"}],
+                },
+                "targeted-routing",
+                "route",
+                "legacy {skill, cases}",
+            ),
+            (
+                "evals.json",
+                {
+                    "skill": "alpha-skill",
+                    "schema_version": 1,
+                    "scenarios": [{"id": "A", "prompt": "Write.", "requirements": []}],
+                },
+                "targeted-candidate",
+                "A",
+                "scenarios",
+            ),
+        ):
+            with self.subTest(shape=shape), tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+                root = Path(repository)
+                create_repository(root)
+                write(root / "skills" / "alpha-skill" / "evals" / asset_name, json.dumps(document) + "\n")
+                plan_path = Path(output) / "plan.json"
+
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(RUNNER),
+                        "--root",
+                        str(root),
+                        "plan",
+                        "--skill",
+                        "alpha-skill",
+                        "--path",
+                        evaluation_path,
+                        "--purpose",
+                        "Reject legacy input.",
+                        "--affected",
+                        "migration boundary",
+                        "--case",
+                        case_id,
+                        "--base-ref",
+                        "HEAD",
+                        "--output",
+                        str(plan_path),
+                    ],
+                    text=True,
+                    capture_output=True,
+                )
+
+                self.assertEqual(2, result.returncode)
+                self.assertIn(f"unsupported {shape} evaluation format", result.stderr)
+                self.assertIn("migrate the Skill's complete", result.stderr)
+                self.assertFalse(plan_path.exists())
+
+    def test_model_backed_plan_rejects_a_legacy_sibling_asset(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "triggers.json",
+                json.dumps(
+                    {
+                        "skill": "alpha-skill",
+                        "version": 1,
+                        "cases": [{"id": "route", "prompt": "Route."}],
+                    }
+                )
+                + "\n",
+            )
+            plan_path = Path(output) / "plan.json"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "plan",
+                    "--skill",
+                    "alpha-skill",
+                    "--path",
+                    "targeted-candidate",
+                    "--purpose",
+                    "Reject partial migration.",
+                    "--affected",
+                    "migration boundary",
+                    "--case",
+                    "selected",
+                    "--base-ref",
+                    "HEAD",
+                    "--output",
+                    str(plan_path),
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(2, result.returncode)
+            self.assertIn("complete evals.json and triggers.json set", result.stderr)
+            self.assertFalse(plan_path.exists())
 
     def test_static_only_path_uses_no_model_and_needs_no_grades(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
@@ -993,8 +1663,6 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                     "--root",
                     str(root),
                     "report",
-                    "--plan",
-                    str(plan_path),
                     "--run",
                     str(artifacts / "run.json"),
                     "--stopping-reason",

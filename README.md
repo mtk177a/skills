@@ -93,6 +93,7 @@ python3 scripts/run_skill_evaluation.py plan --help
 ```
 
 The Runner does not evaluate automatically after an edit and does not select all cases implicitly.\
+Model-backed paths use the executable `{skill_name, evals}` format; existing legacy assets migrate per Skill when that Skill is first materially changed, while `static-only` remains available before migration.\
 See [docs/evaluation.md](docs/evaluation.md) for path selection, execution, grading, and compact report handling.
 
 ## Repository structure
