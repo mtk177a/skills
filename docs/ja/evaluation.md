@@ -143,7 +143,7 @@ symlink は拒否し、manifest にないファイルを fixture へコピーし
 `baseline-comparison` の既定は `candidate` と `baseline` で、`without-skill` を含む明示的な `--condition` も指定できます。\
 それ以外の経路では比較条件を指定できません。
 
-既定の model は `gpt-5.6-sol`、reasoning effort は `high`、sandbox は `read-only` です。\
+既定の model は `gpt-5.6-luna`、reasoning effort は `max`、sandbox は `read-only` です。\
 別の環境が評価上必要な場合は、これらを明示的に上書きします。
 
 ## 承認した計画を実行する

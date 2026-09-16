@@ -474,6 +474,14 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             plan = json.loads(plan_path.read_text(encoding="utf-8"))
             self.assertEqual(canonical_json(plan) + "\n", plan_path.read_text(encoding="utf-8"))
+            self.assertEqual(
+                {
+                    "model": "gpt-5.6-luna",
+                    "reasoning_effort": "max",
+                    "sandbox": "read-only",
+                },
+                plan["environment"],
+            )
             self.assertEqual(1, plan["estimated_model_calls"])
             self.assertEqual(
                 [{"case_id": "selected", "condition": "candidate"}],
@@ -539,6 +547,47 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 "A bounded answer.",
                 plan["cases"][0]["grading_requirements"][0]["text"],
             )
+
+    def test_plan_allows_explicit_model_and_reasoning_overrides(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            plan_path = Path(output) / "plan.json"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "plan",
+                    "--skill",
+                    "alpha-skill",
+                    "--path",
+                    "targeted-candidate",
+                    "--purpose",
+                    "Check explicit environment overrides.",
+                    "--affected",
+                    "execution environment",
+                    "--case",
+                    "selected",
+                    "--base-ref",
+                    "HEAD",
+                    "--model",
+                    "override-model",
+                    "--reasoning-effort",
+                    "low",
+                    "--output",
+                    str(plan_path),
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(0, result.returncode, result.stderr)
+            plan = json.loads(plan_path.read_text(encoding="utf-8"))
+            self.assertEqual("override-model", plan["environment"]["model"])
+            self.assertEqual("low", plan["environment"]["reasoning_effort"])
 
     def test_migrated_turns_and_inline_fixture_are_normalized_for_one_execution(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
@@ -864,6 +913,15 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             )
             self.assertTrue(all("--ephemeral" in invocation["argv"] for invocation in invocations))
             self.assertTrue(all("--json" in invocation["argv"] for invocation in invocations))
+            self.assertTrue(
+                all(
+                    invocation["argv"][invocation["argv"].index("--model") + 1] == "gpt-5.6-luna"
+                    for invocation in invocations
+                )
+            )
+            self.assertTrue(
+                all('model_reasoning_effort="max"' in invocation["argv"] for invocation in invocations)
+            )
             self.assertTrue(all("Use the `alpha-skill` Skill" in invocation["prompt"] for invocation in invocations))
             self.assertTrue(all("Do not run this case." not in invocation["prompt"] for invocation in invocations))
 
