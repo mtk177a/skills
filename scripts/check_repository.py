@@ -15,6 +15,7 @@ from urllib.parse import unquote
 
 KEBAB_CASE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
+FILE_MODES = {"100644", "100755"}
 REPORT_STATUSES = {"pass", "fail", "inconclusive", "error"}
 REPORT_CONDITIONS = {"candidate", "baseline", "without-skill"}
 REPORT_DATE = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
@@ -864,11 +865,11 @@ def check_evaluation_report(
     expected_counts = {status: statuses.count(status) for status in sorted(REPORT_STATUSES)}
     if counts != expected_counts:
         add(problems, root, path, 1, "report summary.counts do not match results")
-    check_candidate_hashes(root, path, document, problems)
+    check_candidate_manifest(root, path, document, problems)
     check_evaluation_input_hashes(root, path, document, problems)
 
 
-def check_candidate_hashes(root: Path, path: Path, document: dict[str, object], problems: list[Problem]) -> None:
+def check_candidate_manifest(root: Path, path: Path, document: dict[str, object], problems: list[Problem]) -> None:
     candidate = document.get("candidate")
     files = candidate.get("files") if isinstance(candidate, dict) else None
     if files is None:
@@ -879,23 +880,36 @@ def check_candidate_hashes(root: Path, path: Path, document: dict[str, object], 
     skill_root = path.parent.parent.resolve()
     skills_root = (root / "skills").resolve()
     results_text = path.read_text(encoding="utf-8")
-    current_files = {
-        target.relative_to(skill_root).as_posix()
-        for target in skill_root.rglob("*")
-        if target.is_file()
-        and not target.is_symlink()
-        and not (target.relative_to(skill_root).parts and target.relative_to(skill_root).parts[0] == "evals")
-    }
+    current_files: set[str] = set()
+    for target in skill_root.rglob("*"):
+        relative = target.relative_to(skill_root)
+        if relative.parts and relative.parts[0] == "evals":
+            continue
+        if target.is_symlink():
+            add(
+                problems,
+                root,
+                path,
+                1,
+                f"candidate Skill tree must not contain symlink `{relative.as_posix()}`",
+            )
+        elif target.is_file():
+            current_files.add(relative.as_posix())
     if set(files) != current_files:
         add(problems, root, path, 1, "candidate manifest does not match the current Skill tree")
-    for file_name, expected in sorted(files.items()):
+    for file_name, entry in sorted(files.items()):
         encoded_name = json.dumps(file_name)
         file_line = next(
             (index for index, value in enumerate(results_text.splitlines(), start=1) if encoded_name in value),
             1,
         )
-        if not isinstance(file_name, str) or not isinstance(expected, str):
-            add(problems, root, path, file_line, "candidate.files keys and hashes must be strings")
+        if not isinstance(file_name, str) or not isinstance(entry, dict) or set(entry) != {"sha256", "mode"}:
+            add(problems, root, path, file_line, "candidate.files entries require sha256 and mode")
+            continue
+        expected = entry.get("sha256")
+        expected_mode = entry.get("mode")
+        if not isinstance(expected, str):
+            add(problems, root, path, file_line, f"candidate hash for `{file_name}` must be a string")
             continue
         if not SHA256.fullmatch(expected):
             add(
@@ -906,9 +920,15 @@ def check_candidate_hashes(root: Path, path: Path, document: dict[str, object], 
                 f"candidate hash for `{file_name}` must use lowercase sha256:<64 hex>",
             )
             continue
-        target = (skill_root / file_name).resolve()
+        if expected_mode not in FILE_MODES:
+            add(problems, root, path, file_line, f"candidate mode for `{file_name}` must be `100644` or `100755`")
+            continue
+        unresolved = skill_root / file_name
+        target = unresolved.resolve()
         if not contained(skills_root, target):
             add(problems, root, path, file_line, f"candidate file escapes repository skills tree: `{file_name}`")
+        elif unresolved.is_symlink():
+            add(problems, root, path, file_line, f"candidate file must not be a symlink: `{file_name}`")
         elif not target.is_file():
             add(problems, root, path, file_line, f"candidate file does not exist: `{file_name}`")
         else:
@@ -920,6 +940,15 @@ def check_candidate_hashes(root: Path, path: Path, document: dict[str, object], 
                     path,
                     file_line,
                     f"candidate hash for `{file_name}` is stale: expected `{actual}`, found `{expected}`",
+                )
+            actual_mode = "100755" if target.stat().st_mode & 0o111 else "100644"
+            if actual_mode != expected_mode:
+                add(
+                    problems,
+                    root,
+                    path,
+                    file_line,
+                    f"candidate mode for `{file_name}` is stale: expected `{actual_mode}`, found `{expected_mode}`",
                 )
 
 

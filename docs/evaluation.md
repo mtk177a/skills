@@ -112,7 +112,9 @@ When a behavior case has no assertions, the Runner creates one critical `expecte
 Use `triggers.json` with the same top-level shape for routing cases, and give each selected routing case an `expected_handlers` array.
 
 Routing evaluation counts only successful read or tool events for installed Skills that Codex exposes in JSONL.\
-When loading is not observable, the Runner records `not_exposed` and grades routing as `inconclusive`; it never infers a handler from the final response wording.
+The Runner treats the routing event stream as complete only when it contains `turn.completed`.\
+A complete stream with no successful Skill read records `observed` with an empty handler array, which can pass a case whose `expected_handlers` is empty.\
+Without `turn.completed`, the Runner records `not_exposed` and grades routing as `inconclusive`; it never infers a handler from the final response wording.
 
 ## Plan before spending tokens
 
@@ -134,9 +136,9 @@ python3 scripts/run_skill_evaluation.py plan \
 `plan` does not invoke a model.\
 It resolves the base commit, expands only explicitly selected cases and conditions, prints the estimated model-call count, and writes schema version 2 with a digest over canonical JSON.
 
-The plan records every regular candidate file that the executor can receive, excluding `evals/`.\
-Evaluation assets, selected repository input files, and complete coexistence Skill manifests are recorded separately.\
-Symlinks are rejected, and files outside these manifests are never copied into the fixture.
+The plan records every regular candidate file that the executor can receive, excluding `evals/`, with its SHA-256 and normalized Git mode of `100644` or `100755`.\
+Evaluation files, selected repository input files, and complete coexistence Skill manifests are recorded separately.\
+Symlinks in Skill execution trees are rejected, and files outside these manifests are never copied into the fixture.
 
 Model-backed paths require at least one `--case`; there is no implicit all-cases option.\
 The default condition is `candidate`.\
@@ -158,12 +160,13 @@ python3 scripts/run_skill_evaluation.py run \
   --max-model-calls 1
 ```
 
-`run` refuses to start when the plan exceeds `--max-model-calls` or any recorded candidate, evaluation input, case input, or coexistence Skill manifest has changed.\
+`run` refuses to start when the plan exceeds `--max-model-calls` or any recorded candidate, evaluation input, case input, or coexistence Skill manifest has changed, including an executable-mode change.\
 These checks happen before Codex is invoked.\
 The artifacts directory must not already exist.
 
 Every Codex invocation uses an ephemeral session, JSONL output, the planned model, reasoning effort, and sandbox, and a disposable fixture under the system temporary directory.\
-The candidate condition copies the manifest-bound working-tree Skill, the baseline condition materializes the Skill from the resolved base commit, and the without-Skill condition omits the target Skill.\
+The candidate condition copies the manifest-bound working-tree Skill, the baseline condition materializes regular files from the resolved base commit, and both reproduce the normalized executable mode.\
+The baseline condition rejects symlinks and other unsupported Git tree entries, while the without-Skill condition omits the target Skill.\
 Candidate and companion copies exclude `evals/`.
 
 Behavior evaluation explicitly tells the executor to use the target Skill.\
@@ -232,7 +235,7 @@ It uses the plan snapshot embedded in `run.json` as the only plan source and rev
 Add `--write` only after reviewing the preview.\
 The command then replaces `skills/<skill-name>/evals/report.json` with schema version 2.
 
-The report records the evaluation purpose, affected responsibilities, selected path and pairs, base commit, candidate manifest, selected evaluation-input hashes, execution environment, derived results, stopping reason, and unverified boundaries.\
+The report records the evaluation purpose, affected responsibilities, selected path and pairs, base commit, candidate manifest with hashes and modes, selected evaluation-input hashes, execution environment, derived results, stopping reason, and unverified boundaries.\
 It does not include the plan snapshot, raw prompts, responses, JSONL, absolute paths, credentials, or coexistence Skill manifests.
 
 The checker recomputes result and summary statuses and verifies that the target Skill and selected evaluation inputs remain current.\
@@ -286,5 +289,5 @@ python3 scripts/check_repository.py
 python3 -m unittest discover -s tests
 ```
 
-The checker validates structure, mixed-format migration state, manifest freshness, and record consistency without invoking an LLM.\
+The checker validates structure, mixed-format migration state, manifest content and executable-mode freshness, symlink absence in the candidate execution tree, and record consistency without invoking an LLM.\
 Passing static validation does not establish runtime quality, routing, or support in an untested client.

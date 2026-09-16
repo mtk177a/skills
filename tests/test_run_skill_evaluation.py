@@ -10,7 +10,10 @@ from scripts.run_skill_evaluation import (
     EvaluationError,
     attach_plan_digest,
     canonical_json,
+    copy_baseline_skill,
+    copy_manifest,
     direct_skill_load_observation,
+    observed_skill_handlers,
     skill_manifest,
     verify_file_manifest,
 )
@@ -89,6 +92,9 @@ elif {mode!r} == "invalid-jsonl":
     print("not-json")
 elif {mode!r} == "unexposed":
     print(json.dumps({{"type": "item.completed", "item": {{"type": "agent_message", "text": "I used /skills/alpha-skill/SKILL.md"}}}}))
+elif {mode!r} == "non-trigger":
+    print(json.dumps({{"type": "item.completed", "item": {{"type": "agent_message", "text": "No Skill was needed."}}}}))
+    print(json.dumps({{"type": "turn.completed", "usage": {{"input_tokens": 1, "output_tokens": 1}}}}))
 else:
     print(json.dumps({{"type": "item.completed", "item": {{"type": "command_execution", "command": "read " + str(skill), "exit_code": 0}}}}))
     print(json.dumps({{"type": "turn.completed", "usage": {{"input_tokens": 1, "output_tokens": 1}}}}))
@@ -134,10 +140,13 @@ def create_manual_plan(root: Path, path: Path) -> None:
                 "estimated_model_calls": 1,
                 "candidate": {
                     "files": {
-                        "SKILL.md": "sha256:"
-                        + hashlib.sha256(
-                            (root / "skills" / "alpha-skill" / "SKILL.md").read_bytes()
-                        ).hexdigest()
+                        "SKILL.md": {
+                            "sha256": "sha256:"
+                            + hashlib.sha256(
+                                (root / "skills" / "alpha-skill" / "SKILL.md").read_bytes()
+                            ).hexdigest(),
+                            "mode": "100644",
+                        }
                     }
                 },
                 "inputs": {"evaluation_files": {}, "case_files": {}, "companions": {}},
@@ -186,80 +195,131 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 with self.assertRaisesRegex(EvaluationError, "manifest changed after planning"):
                     verify_file_manifest(skill_root, manifest, "candidate Skill")
 
-    def test_run_rejects_candidate_file_added_after_planning(self) -> None:
-        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+    def test_candidate_manifest_preserves_and_verifies_executable_mode(self) -> None:
+        with tempfile.TemporaryDirectory() as repository:
             root = Path(repository)
             create_repository(root)
-            asset = root / "skills" / "alpha-skill" / "evals" / "evals.json"
-            write(
-                asset,
-                json.dumps(
-                    {
-                        "skill_name": "alpha-skill",
-                        "evals": [
-                            {
-                                "id": "selected",
-                                "prompt": "Run the selected case.",
-                                "expected_output": "A bounded result.",
-                            }
-                        ],
-                    }
-                )
-                + "\n",
+            skill_root = root / "skills" / "alpha-skill"
+            helper = skill_root / "scripts" / "tool.sh"
+            write(helper, "#!/bin/sh\nexit 0\n")
+            helper.chmod(0o755)
+
+            manifest = skill_manifest(root, "alpha-skill")
+
+            self.assertEqual(
+                {"sha256": "sha256:" + hashlib.sha256(helper.read_bytes()).hexdigest(), "mode": "100755"},
+                manifest["scripts/tool.sh"],
             )
-            plan_path = Path(output) / "plan.json"
-            subprocess.run(
-                [
-                    sys.executable,
-                    str(RUNNER),
-                    "--root",
-                    str(root),
-                    "plan",
-                    "--skill",
-                    "alpha-skill",
-                    "--path",
-                    "targeted-candidate",
-                    "--purpose",
-                    "Bind the candidate tree.",
-                    "--affected",
-                    "candidate integrity",
-                    "--case",
-                    "selected",
-                    "--base-ref",
-                    "HEAD",
-                    "--output",
-                    str(plan_path),
-                ],
+            helper.chmod(0o644)
+            with self.assertRaisesRegex(EvaluationError, "manifest changed after planning"):
+                verify_file_manifest(skill_root, manifest, "candidate Skill")
+
+            helper.chmod(0o755)
+            destination = root / "fixture" / "alpha-skill"
+            copy_manifest(skill_root, manifest, destination)
+            self.assertEqual(0o755, (destination / "scripts" / "tool.sh").stat().st_mode & 0o777)
+
+    def test_baseline_copy_preserves_git_executable_mode(self) -> None:
+        with tempfile.TemporaryDirectory() as repository:
+            root = Path(repository)
+            create_repository(root)
+            helper = root / "skills" / "alpha-skill" / "scripts" / "tool.sh"
+            write(helper, "#!/bin/sh\nexit 0\n")
+            helper.chmod(0o755)
+            subprocess.run(["git", "-C", str(root), "add", "."], check=True)
+            subprocess.run(["git", "-C", str(root), "commit", "-qm", "add executable helper"], check=True)
+            commit = subprocess.run(
+                ["git", "-C", str(root), "rev-parse", "HEAD"],
                 check=True,
                 text=True,
                 capture_output=True,
-            )
-            write(root / "skills" / "alpha-skill" / "NEW.md", "Unplanned file.\n")
+            ).stdout.strip()
+            destination = root / "baseline" / "alpha-skill"
 
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(RUNNER),
-                    "--root",
-                    str(root),
-                    "--codex-bin",
-                    "/bin/false",
-                    "run",
-                    "--plan",
-                    str(plan_path),
-                    "--artifacts-dir",
-                    str(Path(output) / "artifacts"),
-                    "--execute",
-                    "--max-model-calls",
-                    "1",
-                ],
+            copy_baseline_skill(root, "alpha-skill", commit, destination)
+
+            self.assertEqual(0o755, (destination / "scripts" / "tool.sh").stat().st_mode & 0o777)
+            self.assertEqual(0o644, (destination / "SKILL.md").stat().st_mode & 0o777)
+
+    def test_baseline_copy_rejects_symlink(self) -> None:
+        with tempfile.TemporaryDirectory() as repository:
+            root = Path(repository)
+            create_repository(root)
+            link = root / "skills" / "alpha-skill" / "linked-skill.md"
+            link.symlink_to("SKILL.md")
+            subprocess.run(["git", "-C", str(root), "add", "."], check=True)
+            subprocess.run(["git", "-C", str(root), "commit", "-qm", "add symlink"], check=True)
+            commit = subprocess.run(
+                ["git", "-C", str(root), "rev-parse", "HEAD"],
+                check=True,
                 text=True,
                 capture_output=True,
-            )
+            ).stdout.strip()
 
-            self.assertEqual(2, result.returncode)
-            self.assertIn("candidate Skill manifest changed after planning", result.stderr)
-            self.assertFalse((Path(output) / "artifacts").exists())
+            with self.assertRaisesRegex(EvaluationError, "unsupported entry"):
+                copy_baseline_skill(root, "alpha-skill", commit, root / "baseline" / "alpha-skill")
+
+    def test_run_rejects_candidate_tree_changed_after_planning(self) -> None:
+        for mutation in ("add", "mode"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+                root = Path(repository)
+                create_repository(root)
+                plan_path = Path(output) / "plan.json"
+                subprocess.run(
+                    [
+                        sys.executable,
+                        str(RUNNER),
+                        "--root",
+                        str(root),
+                        "plan",
+                        "--skill",
+                        "alpha-skill",
+                        "--path",
+                        "targeted-candidate",
+                        "--purpose",
+                        "Bind the candidate tree.",
+                        "--affected",
+                        "candidate integrity",
+                        "--case",
+                        "selected",
+                        "--base-ref",
+                        "HEAD",
+                        "--output",
+                        str(plan_path),
+                    ],
+                    check=True,
+                    text=True,
+                    capture_output=True,
+                )
+                if mutation == "add":
+                    write(root / "skills" / "alpha-skill" / "NEW.md", "Unplanned file.\n")
+                else:
+                    (root / "skills" / "alpha-skill" / "SKILL.md").chmod(0o755)
+
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(RUNNER),
+                        "--root",
+                        str(root),
+                        "--codex-bin",
+                        "/bin/false",
+                        "run",
+                        "--plan",
+                        str(plan_path),
+                        "--artifacts-dir",
+                        str(Path(output) / "artifacts"),
+                        "--execute",
+                        "--max-model-calls",
+                        "1",
+                    ],
+                    text=True,
+                    capture_output=True,
+                )
+
+                self.assertEqual(2, result.returncode)
+                self.assertIn("candidate Skill manifest changed after planning", result.stderr)
+                self.assertFalse((Path(output) / "artifacts").exists())
 
     def test_run_rejects_changed_evaluation_and_case_inputs(self) -> None:
         for changed_input, expected in (
@@ -438,6 +498,24 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
         self.assertEqual("not_exposed", direct_skill_load_observation(events, "alpha-skill"))
         events[-1]["item"]["exit_code"] = 0
         self.assertEqual("observed", direct_skill_load_observation(events, "alpha-skill"))
+
+    def test_routing_observation_distinguishes_completed_empty_stream(self) -> None:
+        completed = [
+            {"type": "item.completed", "item": {"type": "agent_message", "text": "No Skill needed."}},
+            {"type": "turn.completed", "usage": {"input_tokens": 1, "output_tokens": 1}},
+        ]
+        incomplete = [
+            {"type": "item.completed", "item": {"type": "agent_message", "text": "No Skill needed."}},
+        ]
+
+        self.assertEqual(
+            {"status": "observed", "handlers": []},
+            observed_skill_handlers(completed, ["alpha-skill"]),
+        )
+        self.assertEqual(
+            {"status": "not_exposed", "handlers": []},
+            observed_skill_handlers(incomplete, ["alpha-skill"]),
+        )
 
     def test_plan_selects_only_requested_migrated_case(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
@@ -810,6 +888,42 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             self.assertIn("plan digest does not match", result.stderr)
             self.assertFalse((Path(output) / "artifacts").exists())
 
+    def test_run_rejects_invalid_candidate_manifest_entry(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            plan_path = Path(output) / "plan.json"
+            create_manual_plan(root, plan_path)
+            plan = json.loads(plan_path.read_text(encoding="utf-8"))
+            plan.pop("plan_digest")
+            plan["candidate"]["files"]["SKILL.md"]["mode"] = "100777"
+            write(plan_path, canonical_json(attach_plan_digest(plan)) + "\n")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "--codex-bin",
+                    "/bin/false",
+                    "run",
+                    "--plan",
+                    str(plan_path),
+                    "--artifacts-dir",
+                    str(Path(output) / "artifacts"),
+                    "--execute",
+                    "--max-model-calls",
+                    "1",
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(2, result.returncode)
+            self.assertIn("sha256 hash and mode 100644 or 100755", result.stderr)
+            self.assertFalse((Path(output) / "artifacts").exists())
+
     def test_run_isolates_candidate_baseline_and_without_skill(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
             root = Path(repository)
@@ -1179,6 +1293,137 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 run["executions"][0]["routing_observation"],
             )
 
+    def test_routing_completed_empty_observation_passes_non_trigger_case(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "triggers.json",
+                json.dumps(
+                    {
+                        "skill_name": "alpha-skill",
+                        "evals": [
+                            {
+                                "id": "non-trigger",
+                                "prompt": "Handle this without a Skill.",
+                                "expected_handlers": [],
+                            },
+                            {
+                                "id": "missing-trigger",
+                                "prompt": "Handle this with the Alpha Skill.",
+                                "expected_handlers": ["alpha-skill"],
+                            }
+                        ],
+                    }
+                )
+                + "\n",
+            )
+            fake_codex = Path(output) / "fake-codex"
+            create_fake_codex(fake_codex, "non-trigger")
+            plan_path = Path(output) / "plan.json"
+            artifacts = Path(output) / "artifacts"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "plan",
+                    "--skill",
+                    "alpha-skill",
+                    "--path",
+                    "targeted-routing",
+                    "--purpose",
+                    "Check non-trigger routing.",
+                    "--affected",
+                    "Skill selection",
+                    "--case",
+                    "non-trigger",
+                    "--case",
+                    "missing-trigger",
+                    "--base-ref",
+                    "HEAD",
+                    "--output",
+                    str(plan_path),
+                ],
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "--codex-bin",
+                    str(fake_codex),
+                    "run",
+                    "--plan",
+                    str(plan_path),
+                    "--artifacts-dir",
+                    str(artifacts),
+                    "--execute",
+                    "--max-model-calls",
+                    "2",
+                ],
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            run = json.loads((artifacts / "run.json").read_text(encoding="utf-8"))
+            self.assertEqual(2, len(run["executions"]))
+            for execution in run["executions"]:
+                self.assertEqual(
+                    {"status": "observed", "handlers": []},
+                    execution["routing_observation"],
+                )
+            grades = Path(output) / "grades.json"
+            write(
+                grades,
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "results": [
+                            {
+                                "case_id": "non-trigger",
+                                "condition": "candidate",
+                                "requirements": [],
+                                "evidence": "No Skill handler was observed.",
+                            },
+                            {
+                                "case_id": "missing-trigger",
+                                "condition": "candidate",
+                                "requirements": [],
+                                "evidence": "The expected Skill handler was not observed.",
+                            }
+                        ],
+                    }
+                )
+                + "\n",
+            )
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "report",
+                    "--run",
+                    str(artifacts / "run.json"),
+                    "--grades",
+                    str(grades),
+                    "--stopping-reason",
+                    "The completed observation answered the routing question.",
+                ],
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            report = json.loads(result.stdout)
+            statuses = {result["case_id"]: result["status"] for result in report["results"]}
+            self.assertEqual({"non-trigger": "pass", "missing-trigger": "fail"}, statuses)
+
     def test_routing_preserves_companions_and_derives_observed_handler_grade(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
             root = Path(repository)
@@ -1187,6 +1432,9 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 root / "skills" / "beta-skill" / "SKILL.md",
                 "---\nname: beta-skill\ndescription: Companion fixture.\nlicense: MIT\n---\n",
             )
+            companion_helper = root / "skills" / "beta-skill" / "scripts" / "tool.sh"
+            write(companion_helper, "#!/bin/sh\nexit 0\n")
+            companion_helper.chmod(0o755)
             write(
                 root / "skills" / "alpha-skill" / "evals" / "triggers.json",
                 json.dumps(
@@ -1240,6 +1488,10 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             self.assertEqual(["beta-skill"], plan["coexistence_skills"])
             self.assertIn("beta-skill", plan["inputs"]["companions"])
             self.assertEqual(
+                "100755",
+                plan["inputs"]["companions"]["beta-skill"]["files"]["scripts/tool.sh"]["mode"],
+            )
+            self.assertEqual(
                 ["alpha-skill"],
                 plan["cases"][0]["grading_requirements"][0]["expected_handlers"],
             )
@@ -1264,6 +1516,18 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 text=True,
                 capture_output=True,
             )
+            copied_helper = (
+                artifacts
+                / "executions"
+                / "001-candidate-route"
+                / "fixture"
+                / ".agents"
+                / "skills"
+                / "beta-skill"
+                / "scripts"
+                / "tool.sh"
+            )
+            self.assertEqual(0o755, copied_helper.stat().st_mode & 0o777)
             grades = Path(output) / "grades.json"
             write(
                 grades,

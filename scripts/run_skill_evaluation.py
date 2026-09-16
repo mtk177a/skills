@@ -29,6 +29,8 @@ PATHS = {"static-only", *MODEL_PATHS}
 CONDITIONS = {"candidate", "baseline", "without-skill"}
 STATUSES = {"pass", "fail", "inconclusive", "error"}
 SKILL_NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
+FILE_MODES = {"100644": 0o644, "100755": 0o755}
 ABSOLUTE_PATH = re.compile(r"(?<![A-Za-z0-9:])(?:/[A-Za-z0-9._-][^\s\"'`<>]*|[A-Za-z]:\\[^\s\"'`<>]+)")
 
 
@@ -331,12 +333,35 @@ def default_conditions(evaluation_path: str) -> list[str]:
     return ["candidate"]
 
 
-def skill_manifest(root: Path, skill: str) -> dict[str, str]:
+def regular_file_manifest_entry(path: Path) -> dict[str, str]:
+    mode = "100755" if path.stat().st_mode & 0o111 else "100644"
+    return {"sha256": sha256(path), "mode": mode}
+
+
+def validate_skill_manifest(files: Any, label: str) -> dict[str, dict[str, str]]:
+    if not isinstance(files, dict):
+        raise EvaluationError(f"{label} manifest must be an object")
+    for name, entry in files.items():
+        if (
+            not isinstance(name, str)
+            or not isinstance(entry, dict)
+            or set(entry) != {"sha256", "mode"}
+            or not isinstance(entry.get("sha256"), str)
+            or SHA256.fullmatch(entry["sha256"]) is None
+            or entry.get("mode") not in FILE_MODES
+        ):
+            raise EvaluationError(
+                f"{label} manifest entries must contain a sha256 hash and mode 100644 or 100755"
+            )
+    return files
+
+
+def skill_manifest(root: Path, skill: str) -> dict[str, dict[str, str]]:
     validate_skill_name(skill)
     skill_root = root / "skills" / skill
     if not (skill_root / "SKILL.md").is_file():
         raise EvaluationError(f"Skill does not exist: {skill}")
-    bindings: dict[str, str] = {}
+    bindings: dict[str, dict[str, str]] = {}
     for target in sorted(skill_root.rglob("*")):
         relative = target.relative_to(skill_root)
         if relative.parts and relative.parts[0] == "evals":
@@ -344,7 +369,7 @@ def skill_manifest(root: Path, skill: str) -> dict[str, str]:
         if target.is_symlink():
             raise EvaluationError(f"Skill execution trees must not contain symlinks: {target.relative_to(root)}")
         if target.is_file():
-            bindings[relative.as_posix()] = sha256(target)
+            bindings[relative.as_posix()] = regular_file_manifest_entry(target)
     return bindings
 
 
@@ -360,11 +385,8 @@ def case_file_manifest(root: Path, cases: list[dict[str, Any]]) -> dict[str, str
 
 
 def verify_file_manifest(base: Path, files: Any, label: str) -> None:
-    if not isinstance(files, dict) or not all(
-        isinstance(name, str) and isinstance(value, str) for name, value in files.items()
-    ):
-        raise EvaluationError(f"{label} manifest must map relative paths to hashes")
-    current: dict[str, str] = {}
+    validated = validate_skill_manifest(files, label)
+    current: dict[str, dict[str, str]] = {}
     if base.is_dir():
         for target in sorted(base.rglob("*")):
             relative = target.relative_to(base)
@@ -373,8 +395,8 @@ def verify_file_manifest(base: Path, files: Any, label: str) -> None:
             if target.is_symlink():
                 raise EvaluationError(f"{label} manifest changed after planning: {relative.as_posix()}")
             if target.is_file():
-                current[relative.as_posix()] = sha256(target)
-    if current != files:
+                current[relative.as_posix()] = regular_file_manifest_entry(target)
+    if current != validated:
         raise EvaluationError(f"{label} manifest changed after planning")
 
 
@@ -585,10 +607,17 @@ def validate_plan(plan: dict[str, Any], root: Path) -> dict[str, Any]:
     inputs = plan.get("inputs")
     if not isinstance(candidate, dict) or not isinstance(candidate.get("files"), dict):
         raise EvaluationError("plan candidate.files must be an object")
+    validate_skill_manifest(candidate["files"], "candidate Skill")
     if not isinstance(inputs, dict) or not all(
         isinstance(inputs.get(field), dict) for field in ("evaluation_files", "case_files", "companions")
     ):
         raise EvaluationError("plan inputs manifests are invalid")
+    companions = inputs["companions"]
+    if set(companions) != set(coexistence):
+        raise EvaluationError("companion manifests do not match planned coexistence Skills")
+    for companion_skill, manifest in companions.items():
+        files = manifest.get("files") if isinstance(manifest, dict) else None
+        validate_skill_manifest(files, f"companion {companion_skill} Skill")
     return plan
 
 
@@ -606,26 +635,37 @@ def verify_candidate_bindings(root: Path, plan: dict[str, Any]) -> None:
         verify_file_manifest(root / "skills" / skill, files, f"companion {skill} Skill")
 
 
-def copy_manifest(base: Path, files: dict[str, str], destination: Path) -> None:
-    for relative in sorted(files):
+def copy_manifest(base: Path, files: dict[str, dict[str, str]], destination: Path) -> None:
+    validated = validate_skill_manifest(files, "copy source")
+    for relative, entry in sorted(validated.items()):
         source = (base / relative).resolve()
         if not contained(base, source) or not source.is_file() or source.is_symlink():
             raise EvaluationError(f"manifest source is missing or unsafe: {relative}")
         target = destination / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(source.read_bytes())
+        target.chmod(FILE_MODES[entry["mode"]])
 
 
 def copy_baseline_skill(root: Path, skill: str, commit: str, destination: Path) -> None:
     prefix = f"skills/{skill}"
-    listing = git(root, "ls-tree", "-r", "--name-only", commit, "--", prefix)
-    files = [value for value in listing.splitlines() if value]
-    if f"{prefix}/SKILL.md" not in files:
+    listing = git(root, "ls-tree", "-r", commit, "--", prefix)
+    entries: list[tuple[str, str, str]] = []
+    for line in listing.splitlines():
+        metadata, separator, relative = line.partition("\t")
+        fields = metadata.split()
+        if not separator or len(fields) != 3:
+            raise EvaluationError("could not parse baseline Skill tree")
+        mode, object_type, _object_id = fields
+        entries.append((mode, object_type, relative))
+    if not any(relative == f"{prefix}/SKILL.md" for _, _, relative in entries):
         raise EvaluationError(f"baseline commit does not contain Skill `{skill}`")
-    for relative in files:
+    for mode, object_type, relative in entries:
         suffix = Path(relative).relative_to(prefix)
         if suffix.parts and suffix.parts[0] == "evals":
             continue
+        if object_type != "blob" or mode not in FILE_MODES:
+            raise EvaluationError(f"baseline Skill contains an unsupported entry: {relative} ({mode} {object_type})")
         target = destination / suffix
         target.parent.mkdir(parents=True, exist_ok=True)
         result = subprocess.run(
@@ -635,6 +675,7 @@ def copy_baseline_skill(root: Path, skill: str, commit: str, destination: Path) 
         if result.returncode != 0:
             raise EvaluationError(f"could not materialize baseline file: {relative}")
         target.write_bytes(result.stdout)
+        target.chmod(FILE_MODES[mode])
 
 
 def copy_case_files(root: Path, case: dict[str, Any], fixture: Path) -> None:
@@ -686,9 +727,9 @@ def direct_skill_load_observation(events: list[dict[str, Any]], skill: str) -> s
 
 
 def observed_skill_handlers(events: list[dict[str, Any]], skills: list[str]) -> dict[str, Any]:
-    observed = sorted(skill for skill in skills if direct_skill_load_observation(events, skill) == "observed")
-    if not observed:
+    if not any(event.get("type") == "turn.completed" for event in events):
         return {"status": "not_exposed", "handlers": []}
+    observed = sorted(skill for skill in skills if direct_skill_load_observation(events, skill) == "observed")
     return {"status": "observed", "handlers": observed}
 
 

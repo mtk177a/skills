@@ -24,6 +24,13 @@ def tree_hash(root: Path) -> str:
     return digest.hexdigest()
 
 
+def candidate_entry(path: Path, sha256_value: str | None = None, mode: str | None = None) -> dict[str, str]:
+    return {
+        "sha256": sha256_value or "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest(),
+        "mode": mode or ("100755" if path.stat().st_mode & 0o111 else "100644"),
+    }
+
+
 def create_valid_repository(root: Path) -> None:
     skill = root / "skills" / "alpha-skill"
     write(
@@ -109,9 +116,8 @@ def create_valid_report(root: Path) -> dict[str, object]:
         "base": {"commit": "a" * 40},
         "candidate": {
             "files": {
-                "SKILL-ja.md": "sha256:"
-                + hashlib.sha256((skill / "SKILL-ja.md").read_bytes()).hexdigest(),
-                "SKILL.md": "sha256:" + hashlib.sha256(source.read_bytes()).hexdigest(),
+                "SKILL-ja.md": candidate_entry(skill / "SKILL-ja.md"),
+                "SKILL.md": candidate_entry(source),
             }
         },
         "evaluation_inputs": {
@@ -317,13 +323,42 @@ class CheckerCliTests(unittest.TestCase):
     def test_stale_candidate_hash_is_detected(self) -> None:
         def mutate(root: Path) -> None:
             report = create_valid_report(root)
-            report["candidate"] = {"files": {"SKILL.md": "sha256:" + "0" * 64}}
+            source = root / "skills" / "alpha-skill" / "SKILL.md"
+            report["candidate"] = {"files": {"SKILL.md": candidate_entry(source, "sha256:" + "0" * 64)}}
             write(
                 root / "skills" / "alpha-skill" / "evals" / "report.json",
                 json.dumps(report),
             )
 
         self.assert_fixture_failure(mutate, "candidate hash for `SKILL.md` is stale")
+
+    def test_stale_candidate_mode_is_detected(self) -> None:
+        def mutate(root: Path) -> None:
+            report = create_valid_report(root)
+            source = root / "skills" / "alpha-skill" / "SKILL.md"
+            source.chmod(0o755)
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "report.json",
+                json.dumps(report),
+            )
+
+        self.assert_fixture_failure(mutate, "candidate mode for `SKILL.md` is stale")
+
+    def test_candidate_manifest_entry_requires_valid_hash_and_mode(self) -> None:
+        for field, value, expected in (
+            ("sha256", "invalid", "must use lowercase sha256"),
+            ("mode", "100777", "must be `100644` or `100755`"),
+        ):
+            def mutate(root: Path) -> None:
+                report = create_valid_report(root)
+                report["candidate"]["files"]["SKILL.md"][field] = value
+                write(
+                    root / "skills" / "alpha-skill" / "evals" / "report.json",
+                    json.dumps(report),
+                )
+
+            with self.subTest(field=field):
+                self.assert_fixture_failure(mutate, expected)
 
     def test_stale_legacy_result_hash_is_not_current_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -349,7 +384,8 @@ class CheckerCliTests(unittest.TestCase):
             root = Path(directory)
             create_valid_repository(root)
             report = create_valid_report(root)
-            report["candidate"] = {"files": {"SKILL.md": "sha256:" + "0" * 64}}
+            source = root / "skills" / "alpha-skill" / "SKILL.md"
+            report["candidate"] = {"files": {"SKILL.md": candidate_entry(source, "sha256:" + "0" * 64)}}
             write(
                 root / "skills" / "alpha-skill" / "evals" / "report.json",
                 json.dumps(report),
@@ -456,6 +492,27 @@ class CheckerCliTests(unittest.TestCase):
 
         self.assert_fixture_failure(mutate, "candidate manifest does not match the current Skill tree")
 
+    def test_report_candidate_manifest_rejects_symlinks(self) -> None:
+        for kind, target in (
+            ("file", "SKILL.md"),
+            ("broken", "missing.md"),
+            ("directory", "evals"),
+        ):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                create_valid_repository(root)
+                report = create_valid_report(root)
+                (root / "skills" / "alpha-skill" / f"{kind}-link").symlink_to(target)
+                write(
+                    root / "skills" / "alpha-skill" / "evals" / "report.json",
+                    json.dumps(report),
+                )
+
+                result = run_checker(root)
+
+                self.assertNotEqual(0, result.returncode)
+                self.assertIn("candidate Skill tree must not contain symlink", result.stderr)
+
     def test_report_result_must_match_selected_case_condition(self) -> None:
         def mutate(root: Path) -> None:
             report = create_valid_report(root)
@@ -521,9 +578,8 @@ class CheckerCliTests(unittest.TestCase):
     def test_candidate_manifest_may_not_use_adjacent_skill_paths(self) -> None:
         def mutate(root: Path) -> None:
             source = root / "skills" / "alpha-skill" / "SKILL.md"
-            expected = "sha256:" + hashlib.sha256(source.read_bytes()).hexdigest()
             report = create_valid_report(root)
-            report["candidate"] = {"files": {"../alpha-skill/SKILL.md": expected}}
+            report["candidate"] = {"files": {"../alpha-skill/SKILL.md": candidate_entry(source)}}
             write(root / "skills" / "alpha-skill" / "evals" / "report.json", json.dumps(report))
 
         self.assert_fixture_failure(mutate, "candidate manifest does not match the current Skill tree")
@@ -531,9 +587,8 @@ class CheckerCliTests(unittest.TestCase):
     def test_candidate_file_may_not_escape_skills_tree(self) -> None:
         def mutate(root: Path) -> None:
             source = root / "README.md"
-            expected = "sha256:" + hashlib.sha256(source.read_bytes()).hexdigest()
             report = create_valid_report(root)
-            report["candidate"] = {"files": {"../../README.md": expected}}
+            report["candidate"] = {"files": {"../../README.md": candidate_entry(source)}}
             write(
                 root / "skills" / "alpha-skill" / "evals" / "report.json",
                 json.dumps(report),
