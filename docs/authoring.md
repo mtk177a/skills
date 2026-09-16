@@ -176,25 +176,21 @@ Avoid scripts that break compatibility with both macOS M1 and Windows WSL unless
 
 ## Evaluation assets
 
-When iterating on a Skill, manage evaluation assets alongside the content.
+When changing a Skill, identify the affected responsibility before selecting evaluation evidence.
 
 - Skill-level scenarios and checklists go in `skills/<skill-name>/evals/`
 - Multi-Skill flow evaluations go in `docs/` (see `evaluation.md`)
-- Before editing, run gap diagnosis only when the decision to change behavior or its scope depends on establishing that current behavior is insufficient; state how each material result will change that decision
-- First identify the affected responsibility and whether executable behavior or a discovery or responsibility boundary changes; follow the selection policy in `evaluation.md`
-- Start with Iter 0: statically check that `description` and body are consistent, that output format is defined, and that the Skill is self-contained or has an approved companion relationship
-- If executable behavior, discovery, and responsibility boundaries are unaffected, run deterministic repository validation and stop without adding behavioral scenarios
-- If runtime behavior changes, map only the affected claim or responsibility to a plausible failure, an existing or new candidate case that can expose it, and a grading method
+- Follow the path-selection rules in `evaluation.md`; do not run all cases merely because `SKILL.md` changed
+- Use `scripts/run_skill_evaluation.py plan` before model-backed execution and inspect the estimated call count
+- If executable behavior, discovery, and responsibility boundaries are unaffected, use `static-only` and stop after deterministic validation
+- If runtime behavior changes, map only the affected responsibility to a plausible failure, a case that can expose it, and a grading method
 - Add routing, near-miss, or coexistence cases only when discovery or an adjacent responsibility boundary changes; do not add unrelated core, routing, or coexistence coverage automatically
 - Add baseline comparison or repetition only when an escalation condition in `evaluation.md` makes the additional evidence decision-relevant
-- Formalize scenarios and requirement checklists runnable by a blank-slate executor
 - Keep desired answers and grading criteria out of the executor input
-- Mark requirements `[critical]` only when violating them should make the scenario fail; do not make every observation critical by default
-- Do not make another agent or subagent a default behavior in Skill bodies
-- Suggest additional agents only when the user explicitly asks, or as an optional enhancement for high-risk or high-uncertainty cases
+- Keep raw execution artifacts outside the repository and write `evals/report.json` only when a compact change-scoped record is useful for review
+- Do not refresh unrelated legacy `results.json` files or unselected cases
 
-The purpose of evaluation is not the author's subjective judgment but verifying that another agent can reproduce the intended behavior without confusion.
-Prioritize reusable scenarios, decision criteria, and failure patterns over informal notes. Use repeated empirical prompt tuning only when observed failures, high impact, instability, or a substantial redesign justify the additional cost.
+The purpose of evaluation is to collect enough evidence for the current acceptance decision, not to maximize the number of runs.
 
 ## Notes on references/
 
@@ -226,8 +222,8 @@ Before opening a pull request for a new Skill:
 - [ ] No secrets, personal information, or internal URLs
 - [ ] Third-party provenance and capability risks have been reviewed when external material is included
 - [ ] `scripts/`, `references/`, `assets/` contain only what the Skill needs (empty directories removed)
-- [ ] `evals/README.md` Iter 0 static check is complete
-- [ ] The evaluation selection record identifies the affected responsibility, evaluation purpose and trigger, selected path and checks, result-to-decision rule, and any untested boundary; selected behavioral cases are complete only when the path requires them
+- [ ] The selected evaluation path covers the affected responsibility, and any unverified boundary is explicit
+- [ ] Any committed `evals/report.json` contains only the selected change-scoped evidence and passes repository validation
 
 ## Making a Codex-only Skill work across agents
 

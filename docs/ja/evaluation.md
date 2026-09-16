@@ -2,344 +2,277 @@
 
 # Skill の評価
 
-このドキュメントは、このリポジトリの Skill に使用する評価アプローチを説明します。
+この文書では、このリポジトリで Skill の評価を選択、実行、記録、レビューする方法を定めます。
 
-## 評価の意思決定フロー
+目的は、変更を受け入れられるか判断するために必要な最小限の証拠を得ることです。\
+編集のたびに評価を自動実行せず、通常の Skill 変更に全ケース、baseline、反復実行、クライアントの組み合わせ評価を求めません。
 
-評価には、次の 2 つの関門があります。
+## 評価手順
 
-1. **ギャップ診断**では、現行の挙動から変更の必要性が示されるかを判断します。この関門は、条件に該当する場合だけ使います。
-2. **候補版の受入評価**では、実装した変更を受け入れられるかを判断します。この関門では、後述する必要十分な最小の経路を使います。
+Skill を変更するときは、次の順序で進めます。
 
-この節の文章と表を規範とします。図は、Mermaid を表示できる読み手と client のために、同じフローを要約したものです。
+1. 変更された主張または責務を特定します。
+2. 後述の表から必要十分な評価経路を選びます。
+3. 変更された責務、既知の回帰、または影響を受ける可能性がある隣接境界を露出できるケースだけを選びます。
+4. 実行前に計画を生成し、モデル呼び出し回数を確認します。
+5. 承認した計画を 1 回実行します。
+6. 計画したケースと条件の結果だけを採点します。
+7. 停止理由と未検証の境界を記録します。
+8. 現在の結果だけでは判断できない場合に限り、証拠を追加します。
 
-```mermaid
-flowchart TD
-    A[変更要求] --> B{変更判断が現行の挙動に<br/>依存するか}
-    B -- いいえ --> E[変更を設計・実装する]
-    B -- はい --> C[現行版で最小の診断を実行する]
-    C --> D{診断結果}
-    D -- ギャップあり --> E
-    D -- ギャップ未確認 --> D1[挙動変更を中止する、または<br/>独立して必要な明文化へ目的を変更する]
-    D -- 判定不能 --> D2[Skill を編集せず<br/>ケースまたは grading を修正する]
-    E --> F[機械的検査を実行する]
-    F --> G{実行時動作、発見方法、<br/>責務境界が変わるか}
-    G -- いいえ --> K[静的な証拠から受入可否を判断する]
-    G -- はい --> H[影響を受ける候補版ケースを各 1 回実行する]
-    H --> I{結果から判断できるか}
-    I -- 合格 --> K
-    I -- 不合格 --> L[変更を修正または再設計する]
-    I -- 曖昧または矛盾 --> J[判断に必要な比較、反復、<br/>対象環境の証拠だけを追加する]
-    J --> M{受入条件を満たすか}
-    M -- はい --> K
-    M -- いいえ --> L
-```
+Runner をファイル監視、編集後 hook、その他の revision ごとに自動評価する仕組みへ接続しません。\
+選択した経路で実行が必要な場合に、開発者またはレビュー担当のエージェントが明示的に呼び出します。
 
-次の条件に 1 つ以上該当する場合だけ、編集前にギャップ診断を実行します。
+## 評価経路を選ぶ
 
-- 現行の挙動が不十分な場合だけ、挙動変更を許す要求である
-- 現行の挙動に対する改善の実証が受入条件である
-- 報告された regression、または現行 guidance の十分性がまだ確認されていない
-- 結果によって、編集するかどうか、または変更する挙動の範囲が変わる
-
-現行の挙動に依存しない明示的な新要件、機械的な証拠ですでに確認できる不具合、挙動改善を主張しない明文化、または意味を変えない機械的変更には、ギャップ診断を要求しません。
-
-診断を実行する前に、それぞれの結果が何を意味するかを定めます。
-
-| 現行版の結果 | 変更判断 |
-| --- | --- |
-| ギャップあり | 確認したギャップを解消する最小の変更へ進む |
-| ギャップ未確認 | 挙動変更を中止する。独立して承認された明文化へ進む場合は、編集前にその目的を明示し、挙動改善を主張しない |
-| 評価が判定不能または不備あり | ケースまたは grading を修正し、まだ Skill を編集しない |
-
-入力、環境、grading を引き続き適用できる場合は、変更前の診断ケースを、候補版の受入評価で条件を揃えた baseline として使えます。別の baseline 記録を作ることだけを目的に現行版を再実行せず、その証拠を再利用します。
-
-## 評価選択の原則
-
-変更を受け入れられるか判断するために必要な最小限の証拠を選びます。最初に機械的なリポジトリ検証を使います。実行時動作、発見方法、または責務境界が変わる場合だけ、モデルを使う動作評価を追加し、影響を受ける責務、既知の regression、または影響があり得る隣接境界を露出できるケースだけを選びます。
-
-`SKILL.md` が変更されたという事実だけでは、動作評価を要求しません。公開していること自体も、package 全体、model matrix、client matrix の評価を要求しません。
-
-次の表で評価経路を選びます。
-
-| 変更の形 | 選択する経路 | 必要な被覆 |
+| 変更内容 | 経路 | 必要な証拠 |
 | --- | --- | --- |
-| 文書、整形、意味を保つ表現修正、または発見方法へ影響しない機械的な metadata 変更 | **静的検証のみ** | 機械的なリポジトリ検査 |
-| 局所的な指示、出力、安全動作、その他の実行時責務の変更 | **対象を限定した候補版のみ** | 変更された責務、既知の regression、または影響があり得る隣接境界を露出する候補版ケースだけ。選択した各ケースを最初は 1 回実行する |
-| `name`、`description`、呼び出し動作、または隣接 Skill との責務境界の変更 | **対象を限定した routing または coexistence** | 関係する should-trigger、should-not-trigger または near-miss、曖昧、coexistence ケースだけ |
-| 既知の regression、大規模な再設計、分割・統合、主観的品質目標の変更、成功契約の変更、または候補版だけでは曖昧な結果 | **baseline 比較** | 判断に関係するケースについて条件を揃えた baseline と candidate の証拠 |
-| 観測された不安定性、矛盾する証拠、または重大な失敗影響 | **反復** | 受入上の問いを解決するために必要な追加観測だけ |
-| 明示的な環境対応の主張、環境固有の不具合、または client 固有の発見方法、権限、tool、hook、実行時動作の変更 | **model/client 固有** | 影響を受ける環境上での直接評価だけ |
-| 配布または catalog の動作変更 | **package 評価** | 影響を受ける配布・catalog の検査。通常の Skill 動作評価とは分離する |
+| 発見方法へ影響しない文書、書式、意味を変えない文言、機械的な metadata | `static-only` | repository checker のみ |
+| 局所的な指示、出力、安全性、その他の実行時責務 | `targeted-candidate` | 影響を受ける candidate ケースを最初に 1 回ずつ実行 |
+| `name`、`description`、呼び出し動作、隣接 Skill との責務境界 | `targeted-routing` | 関連する trigger、non-trigger、near-miss、曖昧、coexistence ケース |
+| 既知の回帰、大幅な再設計、成功条件の変更、candidate 単独では曖昧な結果 | `baseline-comparison` | 判断に必要なケースについて、candidate と `baseline` または `without-skill` を同じ条件で比較 |
+| 明示的な環境対応の主張または環境固有の失敗 | `target-environment` | 影響を受ける環境での直接実行 |
 
-通常の公開 Skill 変更では、package、model、client の matrix を要求しません。評価規模は、普遍的なケース数ではなく、選択した挙動の被覆から決めます。公式 guidance では、3 件または 3–5 件のシナリオが例や組織的な出発点として示されることがあります。このリポジトリでは、その数を普遍的な最小値・最大値として扱いません。
+反復は既定の経路ではなく、評価を強化する手段です。\
+観測済みの不安定性、矛盾する証拠、重大な失敗結果により、追加観測が判断へ影響する場合だけ反復します。
 
-## Companion Skill の例外
+package と配布の検査は、通常の Skill 動作評価から分けます。\
+配布動作が変わる場合だけ実行します。
 
-`docs/authoring.md` に承認済みの companion 関係を記録していない限り、Skill は自己完結していなければなりません。文書化されていない依存は static validation で失敗とします。文書化された関係も、一般的な依存機構にはしません。
+## 評価資産
 
-承認済みの関係では、static validation により、関係、理由、導入方法、companion 不在時の動作、provenance、評価場所が、一覧と影響を受ける Skill 資産の間で一致していることを確認します。関係またはその実行時動作が変わる場合、targeted behavioral evaluation では、変更の影響に応じて次のリスクの一方または両方を扱います。
-
-- **Coexistence:** 依存する Skill が指定順で companion を読み、適用される制約を維持する。
-- **Companion 不在:** 依存する Skill が文書化された停止または fallback の動作を守り、許可されていない部分的な成果を出さずに、サポートする導入方法を案内する。
-
-変更された Skill の責務、関係、導入方法、または companion 不在時の動作を被覆する確認だけを再実行します。この例外を、いずれかの Skill が文書化された関係から独立して動作する証拠として扱いません。
-
-## 評価の深さを選ぶ
-
-次の規則を順に適用します。
-
-1. 影響を受ける claim または責務と、実行時動作、発見方法、責務境界のどれが変わるかを特定する
-2. いずれも変わらない場合は、機械的なリポジトリ検証を実行して終了する
-3. 実行時動作が変わる場合は、影響を受ける候補版ケースだけを選ぶ。選択した各ケースについて 1 回の観測から始める
-4. 発見方法または責務境界が変わる場合は、関係する routing、near-miss、曖昧、coexistence ケースだけを追加する
-5. 表に示した条件により追加証拠が受入判断を変え得る場合だけ、baseline 比較、反復、model/client 固有評価、package 評価へ強化する
-
-無関係な core、capability、routing、coexistence の suite を自動的に追加しません。static check は runtime の挙動を証明しません。targeted regression は、未検証の client や model での挙動を証明しません。suite を機械的に広げず、その限界を明示します。
-
-## 評価選択記録
-
-次だけを記録します。
-
-- 影響を受ける claim または責務
-- 評価目的と、それを発火させた条件
-- 選択した経路、ケース、または機械的検査と、それで十分な理由
-- 重要な各結果が変更判断または受入判断をどう変えるか
-- 受入主張を限定する未検証境界
-
-既存の評価 README または変更記録を使います。繰り返し作業から追加構造の必要性が確認されるまでは、評価選択記録に共通 metadata schema を要求しません。
-
-## 証拠の再利用
-
-評価済みの内容、責務、環境との関係、要件が引き続き適用できる場合だけ、過去の証拠を再利用します。新しい対象限定の証拠は、実際に評価した revision へ結び付けます。現在の内容が変わった場合は、以前の合格を候補版全体の証拠とせず、どの過去要件が引き続き適用できるかを特定します。
-
-現在の判断に引き続き必要で、Git 履歴だけでは不十分な場合に限り、過去の結果を別に保持します。それ以外は Git 履歴を利用します。Skill の別の部分が変わったという理由や、合格状態を更新するだけの目的で、変更されていない証拠を再実行しません。
-
-## Skill ごとの評価資産
-
-各 Skill は `evals/` ディレクトリを持ちます。README は必須です。反復評価の再現性を高める場合は、任意の構造化資産を追加します。
+再利用する資産は Skill と同じ場所に置きます。
 
 ```text
 skills/<skill-name>/
 └── evals/
-    ├── README.md       # 目的、手順、結果要約、振り返り
-    ├── triggers.json   # 任意の trigger、non-trigger、near-miss ケース
-    ├── evals.json      # 任意の実課題、入力、assertion、baseline 条件
-    └── results.json    # 現在採用中の revision に対する任意の簡潔な evidence record
+    ├── README.md       # 人が読む評価契約
+    ├── evals.json      # 任意の動作ケース
+    ├── triggers.json   # 任意の routing ケース
+    ├── report.json     # 直近の評価対象変更に対する任意の記録
+    └── results.json    # 任意の legacy 履歴証拠
 ```
 
-この構造へ合わせるためだけに、既存 Skill を一括移行しません。他の Skill は、それぞれを次に大幅改訂するときに構造化資産へ移行できます。
+反復評価の再現性が高まる場合に限り、構造化資産を追加します。\
+形式を揃えることだけを目的に既存資産を移行しません。
 
-## 評価資産の責務
+### 動作ケースの形式
 
-### evals/README.md
+Runner は、このリポジトリで現在使っている形式を受け付けます。
 
-人が読む評価契約と結果の要約を保持します。
-
-- 目的と期待する挙動
-- 実行手順と環境
-- 静的確認とシナリオの概要
-- 結果、失敗、未実行項目の要約
-- iteration の記録と次の検証課題
-
-見出しは固定しません。README を raw evidence の代用にせず、raw trace を埋め込みません。
-
-### evals/triggers.json
-
-次の再利用可能なケースを置く任意資産です。
-
-- `should-trigger`
-- `should-not-trigger`
-- 対象責務に似ているが別の workflow に属する near-miss
-- 実行回数、observability 規則、合格基準
-
-trigger ケースは、実際の責務境界と起こり得る誤起動から選びます。隣接 Skill や似た依頼が合理的に競合し得る場合は near-miss が有用です。無関係な negative case は任意の control であり、必須被覆ではありません。
-
-普遍的な反復回数や合格閾値は使いません。観測された不安定な結果、矛盾する証拠、または重大な失敗影響により追加観測が判断を変え得る場合だけ反復します。固定回数を cost-bounded smoke test として使う場合は理由を記録し、統計的保証として扱いません。
-
-client が公開する evidence だけを trigger 判定に使います。Skill load が観測できない場合は `not exposed` と記録し、出力の文面から load event を推測しません。
-
-### evals/evals.json
-
-次を置く任意資産です。
-
-- 現実的な課題と入力
-- 行動 assertion と critical requirement
-- baseline 条件
-- isolation と coexistence の構成
-
-期待する答えを課題文へ埋め込まず、判断の誤りを露出できるだけの現実性を持たせます。executor の入力と採点基準を分離します。実際のユーザーが提供する証拠はシナリオに含められますが、採点を容易にするためだけに期待する finding や結論を名指ししません。
-
-### evals/results.json
-
-README の集計だけでは、一時 artifact の削除後に実行済み revision を監査できない場合に、この任意 asset を使います。次を記録します:
-
-- 確認する claim または変更と、評価した候補版 revision
-- 選択した経路、終了理由、実行した検査またはケース、結果、根拠
-- LLM を実行した場合の client、model、reasoning
-- 結論を限定する未検証範囲
-- 比較を実行した場合だけ、baseline の識別情報と一致させた条件
-
-raw trace、完全な response、credential、環境固有の absolute path はこのファイルへ保存しません。対応する README の結果要約から link します。
-
-`results.json` は、現在採用中の Skill revision に対する簡潔な evidence として扱います。実行ごとに日付付きファイルを追加せず、同じ candidate の再実行や修正結果を 1 つの record へ統合して更新します。過去に採用した result は、評価対象の Skill source とともに Git 履歴で保持します。
-
-採用とはリポジトリ上の revision を特定することであり、それだけでは behavior または trigger を実行して合格したことを意味しません。pass は、評価した revision と、引き続き適用できることを明示した未変更の requirement だけに適用します。採用中の Skill source が変わった場合は、`results.json` を更新するか、影響を受ける evidence を `superseded` または `unverified` と明示するか、ファイルを削除します。欠けている provenance を推測して補わず、古い candidate が現行 source であると誤解させる hash や pass claim を残しません。
-
-このリポジトリでは、共通の結果 schema を要求しません。既存のローカル schema が引き続き有用な場合は維持しますが、選択した評価経路に適用される項目だけを記録します。候補版だけの結果に、baseline、比較 matrix、trigger rate、利用量 metadata、grader 呼び出しを要求しません。
-
-## evals/README.md の構成例
-
-```markdown
-# <skill-name> evals
-
-## Iter 0 — Static check
-
-- description と本文が内部的に一致している
-- 出力フォーマットが定義されているか明確に示されている
-- Skill が自己完結しているか、承認済みの companion 関係を持つ
-- material claim と critical requirement が特定されている
-
-## Coverage map
-
-| Claim | Failure | Scenario | Grader |
-| --- | --- | --- | --- |
-| ... | ... | ... | ... |
-
-## Scenarios
-
-### Scenario A: <タイトル>
-
-<1文のコンテキスト>
-
-Requirements checklist:
-1. [critical] <違反時に scenario を fail とする要件>
-2. <その他の要件>
-
-## Failure Pattern Ledger
-
-- `<既知の失敗パターン>`
-
-## Iter N — YYYY-MM-DD
-
-### Changes
-
-- <前回からの変更内容>
-
-### Execution results
-
-| Scenario | Result | Evidence | Weak phase |
-| --- | --- | --- | --- |
-| A | pass / fail / unstable | ... | — |
-
-### Next validation question
-
-- <次の実行で判断が変わり得る問い>
+```json
+{
+  "schema_version": 1,
+  "skill": "example-skill",
+  "cases": [
+    {
+      "id": "bounded-change",
+      "input": "Handle this request.",
+      "assertions": ["bounded-output"]
+    }
+  ]
+}
 ```
 
-## 評価の実施方法
+`evals.json` では、最小限の公式方式に沿った形式も受け付けます。
 
-このリポジトリに共通の `/eval` command や必須の外部 framework はありません。各 runnable suite で使った正確な command、script、client workflow、manual procedure を記録します。反復実行の再現性が実質的に上がる場合だけ wrapper を追加します。
+```json
+{
+  "skill_name": "example-skill",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Handle this request.",
+      "expected_output": "A bounded result.",
+      "files": []
+    }
+  ]
+}
+```
 
-選択した要件を、機械的なリポジトリ検査、fixture の状態、正確な出力項目、hash、trace、その他の客観的な観測だけで確認できる場合は、LLM を使いません。
+文字列と整数の ID は文字列へ正規化します。\
+この形式から現在の Runner が利用する項目は、`prompt`、任意の `expected_output`、任意の `files` です。\
+期待する答えを executor へ知らせないように、executor の入力と assertion・期待出力を分けます。
 
-モデル実行が必要な通常のモデル非依存動作では、Codex、`gpt-5.6-luna`、max reasoning を基準環境として使います。選択した各ケースについて、候補版 1 回から始めます。これは低コストの基準環境であり、対応環境の一覧でも、別の model または client の証拠でもありません。
+このリポジトリの既存ケースについては、adapter が `input`、`turns`、conversation context、`assertion_ids`、inline `fixture.files` も受け付けます。\
+複数 turn は 1 件の明示的な transcript へ直列化するため、ケースと条件の 1 組が消費する executor 呼び出しは 1 回のままですが、この結果は supplied context に対する最終応答だけを検査し、turn 間で生成されたはずの応答の証拠にはなりません。\
+repository-relative な `files` は `inputs/` 配下へコピーし、inline fixture file は宣言された path を disposable fixture 内で保ちます。\
+内容を持たない名前だけの fixture は安全に再構築できないため、実行前に拒否します。
 
-受け入れる claim が別の model または client に実質的に依存する場合は、選択したケースをその対象環境で直接実行します。対象には、明示的な対応 claim、環境固有の不具合、client 固有の発見方法、権限、tool、hook、実行時動作が含まれます。対象環境で実行する前に、Luna の事前評価を要求しません。
+`triggers.json` には、このリポジトリの現在の `{skill, cases}` 形式で routing ケースを記録します。\
+routing 評価では、Codex の JSONL event が公開する path または command field だけを Skill 読み込みの証拠として数えます。\
+読み込みを観測できない場合は `not_exposed` と記録し、最終応答の文言から選択を推測しません。
 
-Luna の実行が失敗した場合、または結果が曖昧な場合は、まず、その結果だけで指示または fixture の不備が確認できるか判断します。Skill の失敗と model 能力の限界を区別することで受入判断が変わる場合だけ、別 model へ強化します。Luna の合格または失敗を、実行していない model や client の証拠として扱いません。
+## トークンを使う前に計画する
 
-behavioral evaluation は blank-slate executor で実行します。リポジトリの履歴を持たず、シナリオに必要な Skill と入力だけを受け取る agent または client session です。
+リポジトリの root で一時ディレクトリを作り、計画を生成します。
 
-**Blank-slate executor protocol:**
+```bash
+evaluation_tmp="$(mktemp -d)"
 
-1. リポジトリ context を持たない新しい executor を起動する
-2. `SKILL.md`、許可した補助ファイル、シナリオ入力、必要な環境を渡す
-3. 非公開 assertion、期待結論、grader note を executor の入力へ含めない
-4. executor 自身に pass/fail を宣言させず、結果と公開された trace を取得する
-5. 適用される各 requirement を採点し、判定根拠を記録する
+python3 scripts/run_skill_evaluation.py plan \
+  --skill example-skill \
+  --path targeted-candidate \
+  --purpose "Check the changed output boundary." \
+  --affected "output boundary" \
+  --case bounded-change \
+  --base-ref origin/main \
+  --output "$evaluation_tmp/plan.json"
+```
 
-適用される構成だけを選びます。
+`plan` はモデルを呼び出しません。\
+base commit を解決し、変更された Skill file と選択したケース資産の hash を記録し、明示的に選んだケースと条件だけを展開して、モデル呼び出し回数の見積もりを表示します。\
+一時 plan には呼び出し元が採点に使う選択済み assertion 定義、期待出力、追加の採点要件を残しますが、executor prompt には正規化したケース入力だけを含めます。
 
-- **Isolation:** 不足を隠しうる隣接 Skill を有効にせず、対象 Skill を単独で評価する
-- **Coexistence:** 起こり得る trigger、authority、workflow の競合がある場合に、隣接 Skill や instruction surface と一緒に評価する
+モデルを使う経路では、1 件以上の `--case` が必要です。\
+全ケースを暗黙に選ぶ option はありません。
 
-最初に十分となる採点方法を次の順で使います。
+既定の条件は `candidate` です。\
+`baseline-comparison` の既定条件は `candidate` と `baseline` であり、`without-skill` を含む `--condition` を明示することもできます。\
+他の経路では比較条件を指定できません。
 
-1. 客観的な要件には機械的 assertion を使う
-2. 判断を要する要件には、短い rubric に基づく maintainer の直接レビューを使う
-3. 反復可能または独立した model 判断が実質的に有用な場合だけ、別の blank-slate LLM grader を使う
+既定の model は `gpt-5.6-sol`、reasoning effort は `high`、sandbox は `read-only` です。\
+評価上の問いに別の環境が必要な場合は明示的に上書きします。
 
-LLM grader は任意であり、既定で executor より高性能な model である必要はありません。隠された正解と採点基準を executor の入力へ含めません。executor の self-report は混乱の診断には使えますが、独立して観測できる要件の唯一の証拠にはしません。
+## 承認した計画を実行する
 
-このアプローチは、[mizchi/skills](https://github.com/mizchi/skills) に記載されている empirical prompt-tuning 手法を参考にしています。`THIRD_PARTY_NOTICES.md` を参照してください。
+明示的な予算を付けて計画を実行します。
 
-## Iter 0 静的チェック
+```bash
+python3 scripts/run_skill_evaluation.py run \
+  --plan "$evaluation_tmp/plan.json" \
+  --artifacts-dir "$evaluation_tmp/artifacts" \
+  --execute \
+  --max-model-calls 1
+```
 
-シナリオを書く前に、Iter 0 の静的チェックを実施します。
+計画が `--max-model-calls` を超える場合、`run` は実行前に拒否します。\
+以前の実行結果を黙って上書きしたり混在させたりしないように、artifact directory は未作成でなければなりません。
 
-1. `description` と本文が内部的に一致している
-2. 出力フォーマットが定義されているか明確に示されている
-3. Skill が自己完結しているか、必要な Skill と companion 不在時の動作を記録した承認済みの companion 関係を持つ
-4. 違反時に scenario を fail とすべき箇所だけが critical requirement として特定されている
-5. 影響を受ける claim と変更した挙動が、起こり得る失敗と採点方法へ対応付けられている
+各 Codex 呼び出しでは、ephemeral session、JSONL 出力、計画した model・reasoning effort・sandbox、システムの一時ディレクトリに置いた disposable fixture を使います。\
+candidate 条件では作業ツリーの Skill、baseline 条件では解決済み base commit の Skill を配置し、without-Skill 条件では対象 Skill を配置しません。\
+hidden assertion と期待出力を executor から見えなくするため、candidate、baseline、companion のコピーから `evals/` を除外します。\
+評価資産で宣言した companion Skill だけを一緒に配置します。
 
-実行時動作、発見方法、責務境界へ影響しない場合は、機械的検証の後に終了します。それ以外の場合は、Iter 0 を通過してから、選択したシナリオだけを `evals/README.md` に整備します。
+動作評価では、対象 Skill を使うよう executor に明示します。\
+routing 評価では Skill の選択を強制せず、依頼だけを渡します。
 
-## ベースライン比較
+Runner はモデル呼び出しの前に、機械的な repository checker を 1 回実行します。\
+Skill の変更により以前の report が stale になることを考慮し、この検査中だけ、評価対象 Skill の以前の `report.json` を除外します。\
+通常の repository validation では report を除外しません。
 
-相対的な証拠が受入判断を変え得る場合だけ、baseline 比較を実行します。対象は、既知の regression、大規模な再設計・分割・統合、主観的品質目標の変更、成功契約の変更、候補版だけでは曖昧な結果です。Skill が公開されていること、Skill 本文が変わったこと、または変更を大幅と表現できることだけを理由に baseline を実行しません。
+raw JSONL、stderr、完全な最終応答、disposable fixture、計画、実行記録は、システムの一時ディレクトリだけに残します。\
+これらを commit しません。
 
-比較を選択した場合は、判断対象に応じて、前バージョンまたは Skill なしの状態を使います。baseline は commit、content hash、保持した snapshot のいずれかで特定します。両側で同じ task input、fixture、client、model、reasoning settings、sandbox、grading policy を使います。
+## 計画した結果を採点する
 
-隣接 surface が不足を隠すか、変更した挙動と競合し得る場合だけ coexistence を確認します。historical benchmark は文脈として保持できますが、通常の regression baseline は直前の挙動です。
+Runner は、別の model を自動 grader として使いません。\
+呼び出し元の Codex session または人間が、計画した出力をケースの assertion に照らして採点し、小さな一時 JSON file を作成します。
 
-対象 model または client が利用できない場合は `not executed` と記録します。利用可能な対象で新しい paired baseline/candidate run を追加できますが、異なる environment の結果を黙って統合しません。
+```json
+{
+  "schema_version": 1,
+  "results": [
+    {
+      "case_id": "bounded-change",
+      "condition": "candidate",
+      "status": "pass",
+      "requirements": [
+        {
+          "id": "bounded-output",
+          "status": "pass",
+          "evidence": "The result states the boundary and does not expand the task."
+        }
+      ],
+      "evidence": "All selected requirements passed."
+    }
+  ]
+}
+```
 
-選択した各条件について 1 回の観測から始めます。不安定な結果、矛盾する証拠、実行不備、または重大な失敗影響により、追加観測が受入判断に有用となった場合だけ反復します。
+使用できる status は `pass`、`fail`、`inconclusive`、`error` です。\
+grade は完了したケースと条件の組に正確に対応する必要があり、欠落、重複、未計画の結果は拒否されます。\
+ケースに assertion ID が割り当てられている場合、grade には割り当てられた各 assertion を 1 回ずつ含める必要があります。\
+executor の失敗は、作り上げた採点証拠を要求せず `error` result になります。
 
-## 停止規則
+evidence は短く、判断に関係する内容だけを記載します。\
+完全な prompt、response、trace、stderr、JSONL event、credential、環境固有の絶対 path を grade へ貼り付けません。
 
-次の条件を満たしたら、評価の拡張または再実行を止めます。
+## report を確認して書き込む
 
-- 影響を受ける claim、変更した挙動、既知の regression、関連する境界のすべてに採点経路がある
-- 残した各シナリオが固有のリスクを担う
-- 観測結果が現在の判断に十分な程度まで安定しているか、残る不安定性が明示されている
-- 追加の検査または実行をしても受入判断が変わらない
+リポジトリを変更する前に、簡潔な report を preview します。
 
-未採点の requirement がある、結果が競合する、高影響な境界が未検証である、次の実行で競合する説明を区別できる場合は、評価を継続または深掘りします。
+```bash
+python3 scripts/run_skill_evaluation.py report \
+  --plan "$evaluation_tmp/plan.json" \
+  --run "$evaluation_tmp/artifacts/run.json" \
+  --grades "$evaluation_tmp/grades.json" \
+  --stopping-reason "The selected case answered the acceptance question." \
+  --unverified "Unselected responsibilities"
+```
 
-## 結果 metadata と artifact の扱い
+preview を確認した後でのみ `--write` を追加します。\
+この command は `skills/<skill-name>/evals/report.json` を置き換えます。
 
-受け入れる結論の範囲を限定するために必要な最小限の証拠を記録します。
+`report.json` には、次の内容を記録します。
 
-- 確認する claim または変更
-- 選択した経路と終了理由
-- 実行した検査またはケースと結果
-- LLM を実行した場合の client、model、reasoning
-- 結論を限定する未検証範囲
-- 比較を実行した場合だけ、baseline の識別情報と一致させた条件
+- 評価目的と影響を受ける責務
+- 選択した経路、ケース、条件
+- 解決済み base commit と評価対象 candidate file の hash
+- Codex client、model、reasoning effort、sandbox
+- 機械的検査と採点結果
+- 集約 status、停止理由、未検証の境界
 
-token 数、model 呼び出し数、turn 数、tool 呼び出し数、所要時間は、client が公開し、現在のコストまたは受入判断に使う場合だけ記録します。取得できないデータを推測しません。
+集約 status には、`error`、`fail`、`inconclusive`、`pass` の優先順を使います。\
+repository checker は、summary と結果の status が一致し、評価対象 file の hash が現在も有効であることを確認します。
 
-リポジトリ全体の状態機械を導入せず、必要に応じて次の単純な evidence state を使います。
+report は、Skill 全体の品質ではなく、1 件の変更に対する評価を記述します。\
+未選択ケースを stale または未実行として記録せず、report から省きます。\
+次に評価する変更で同じ file を置き換え、以前に受け入れた記録は Git 履歴に残します。
 
-- `not executed`: 検査を省略した、または実行できなかった
-- `not exposed`: client が観測値を公開しなかった
-- `unverified`: 受け入れた claim に適用可能な証拠がない
-- `superseded`: 後の内容または証拠が以前の claim を置き換えた
+`results.json` は、legacy の履歴証拠として引き続き有効です。\
+repository checker は基本的な JSON の識別情報を検査しますが、candidate hash が現在の Skill と一致することは求めません。\
+Skill の別の部分が変わっただけで、legacy result を更新または移行しません。
 
-いずれの状態も pass ではありません。
+## 停止と評価の強化
 
-raw JSONL、認証情報、完全な session log は、リポジトリ外の一時ディレクトリまたは保持期間を制御した CI artifact だけに保存します。credential、raw session、未加工の trace を commit しません。現在採用中の revision に対する簡潔な evidence は `results.json` に残し、それ以前に採用した claim は、対応する Skill source とともに Git 履歴で監査します。
+選択した各 candidate ケースを 1 回観測した結果で受け入れ判断ができ、重要な選択要件をすべて採点し、残る未検証範囲を明示できたら停止します。
 
-## 情報源の解釈
+次のいずれかを解消する場合だけ、証拠を追加します。
 
-- [Anthropic Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) は evaluation-first の反復とシナリオ件数の例を示しています。
-- [Anthropic Skills for enterprise](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise) は組織向けの3–5 query 要件と、trigger、isolation、coexistence、instruction-following、output-quality、利用 model の被覆を推奨しています。
-- [OpenAI Build skills](https://learn.chatgpt.com/docs/build-skills) は Skill description に対する prompt test を推奨し、明示的・暗黙的な Skill invocation を説明しています。
-- [OpenAI Evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices) は、data、metric、比較方法を選ぶ前に、評価目的と成功条件を定義することを推奨しています。
-- [Anthropic Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) は、観測された失敗と手動確認から始め、曖昧でない成功条件を使い、挙動の positive case と negative case の両方を扱うことを推奨しています。
-- [NIST AI RMF Core](https://airc.nist.gov/airmf-resources/airmf/5-sec-core/) は、context mapping と measurement を、開発または deployment を進めるかどうかの判断へ接続しています。
+- 選択した要件が採点されていない
+- ケースまたは採点規則に欠陥がある
+- candidate の証拠が曖昧、または別の観測と矛盾する
+- 観測済みの不安定性により反復が判断へ影響する
+- 以前の Skill または Skill なしの動作との比較が受け入れ判断に必要である
+- 重要な環境固有の主張が未検証である
 
-このリポジトリでは、これらの情報源から挙動軸、evidence-first の方向性、measurement と判断の接続を採用し、suite の規模はローカルな責務と失敗被覆から決めます。例示されたケース数、組織上の役割、lifecycle process は普遍的な要件として採用しません。
+ケースまたは grader の欠陥を直すために Skill を編集しません。\
+先に評価入力を修正します。
+
+## 評価が十分かレビューする
+
+選択した証拠が変更された責務を扱っているかは、レビュワーが判断します。\
+checker は記録の整合性を確認できますが、意味上の十分性は判断できません。
+
+評価不足の指摘では、次のすべてを特定する必要があります。
+
+- 被覆されていない変更責務
+- 受け入れ判断に関係する、具体的に起こり得る失敗
+- 記録済みの検査でその失敗を露出できない理由
+- 解消に必要な最小の追加ケース、条件、または機械的検査
+
+未選択ケース、無関係な suite、legacy `results.json`、以前の report が更新されていないという理由だけで、評価不足を指摘しません。\
+判断に関係する失敗へ結び付けずに、固定のケース数、baseline、反復、Skill なし条件、model matrix を要求しません。
+
+## リポジトリの検査
+
+report の書き込み後、または評価資産の変更後に、機械的検査をすべて実行します。
+
+```bash
+python3 scripts/check_repository.py
+python3 -m unittest discover -s tests
+```
+
+checker は LLM を呼び出さずに、構造と記録の整合性を検査します。\
+静的検査の合格は、実行時の品質、routing、未検証 client への対応を証明しません。

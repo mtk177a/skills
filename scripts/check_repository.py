@@ -15,6 +15,30 @@ from urllib.parse import unquote
 
 KEBAB_CASE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
+REPORT_STATUSES = {"pass", "fail", "inconclusive", "error"}
+REPORT_CONDITIONS = {"candidate", "baseline", "without-skill"}
+REPORT_DATE = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+GIT_COMMIT = re.compile(r"^[0-9a-f]{40}(?:[0-9a-f]{24})?$")
+REPORT_PATHS = {
+    "static-only",
+    "targeted-candidate",
+    "targeted-routing",
+    "baseline-comparison",
+    "target-environment",
+}
+RAW_REPORT_FIELDS = {
+    "authentication",
+    "credentials",
+    "events",
+    "jsonl",
+    "prompt",
+    "raw_output",
+    "raw_response",
+    "response",
+    "session_log",
+    "stderr",
+    "stdout",
+}
 CATALOG_ROW = re.compile(r"^\|\s*`([a-z0-9-]+)`\s*\|", re.MULTILINE)
 INLINE_LINK = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 REFERENCE_LINK = re.compile(r"^\s*\[[^\]]+\]:\s*(\S+)", re.MULTILINE)
@@ -404,8 +428,10 @@ def check_localization_notices(root: Path, problems: list[Problem]) -> None:
             )
 
 
-def check_json_assets(root: Path, problems: list[Problem]) -> None:
+def check_json_assets(root: Path, problems: list[Problem], ignored_report_skill: str | None = None) -> None:
     for path in sorted((root / "skills").glob("*/evals/*.json")):
+        if path.name == "report.json" and path.parent.parent.name == ignored_report_skill:
+            continue
         text = path.read_text(encoding="utf-8")
         try:
             document = json.loads(text)
@@ -415,13 +441,18 @@ def check_json_assets(root: Path, problems: list[Problem]) -> None:
         if not isinstance(document, dict):
             add(problems, root, path, 1, "evaluation JSON top level must be an object")
             continue
+        if path.name == "report.json":
+            check_evaluation_report(root, path, document, problems)
+            continue
+        official = path.name == "evals.json" and ("skill_name" in document or "evals" in document)
         version = document.get("schema_version", document.get("version"))
-        if isinstance(version, bool) or not isinstance(version, int) or version < 1:
+        if not official and (isinstance(version, bool) or not isinstance(version, int) or version < 1):
             add(problems, root, path, 1, "evaluation JSON requires a positive integer schema_version or version")
         expected_skill = path.parent.parent.name
-        if document.get("skill") != expected_skill:
-            add(problems, root, path, 1, f"evaluation JSON skill must be `{expected_skill}`")
-        cases = document.get("cases")
+        skill_field = "skill_name" if official else "skill"
+        if document.get(skill_field) != expected_skill:
+            add(problems, root, path, 1, f"evaluation JSON {skill_field} must be `{expected_skill}`")
+        cases = document.get("evals" if official else "cases")
         if cases is not None:
             if not isinstance(cases, list):
                 add(problems, root, path, 1, "cases must be an array")
@@ -429,14 +460,239 @@ def check_json_assets(root: Path, problems: list[Problem]) -> None:
                 seen: set[str] = set()
                 for case in cases:
                     case_id = case.get("id") if isinstance(case, dict) else None
-                    if not isinstance(case_id, str) or not case_id.strip():
-                        add(problems, root, path, 1, "every case requires a non-empty string id")
-                    elif case_id in seen:
+                    if isinstance(case_id, bool) or not isinstance(case_id, (str, int)) or not str(case_id).strip():
+                        add(problems, root, path, 1, "every case requires a non-empty string or integer id")
+                    elif str(case_id) in seen:
                         add(problems, root, path, 1, f"duplicate case id `{case_id}`")
                     else:
-                        seen.add(case_id)
-        if path.name == "results.json":
-            check_candidate_hashes(root, path, document, problems)
+                        seen.add(str(case_id))
+                    if official and isinstance(case, dict):
+                        if not isinstance(case.get("prompt"), str) or not case["prompt"].strip():
+                            add(problems, root, path, 1, f"official case `{case_id}` requires a non-empty prompt")
+                        expected_output = case.get("expected_output")
+                        if expected_output is not None and not isinstance(expected_output, str):
+                            add(problems, root, path, 1, f"official case `{case_id}` expected_output must be a string")
+                        files = case.get("files", [])
+                        if not isinstance(files, list) or not all(isinstance(value, str) for value in files):
+                            add(problems, root, path, 1, f"official case `{case_id}` files must be a string array")
+
+
+def report_case_assertions(path: Path) -> dict[str, set[str] | None]:
+    if not path.is_file():
+        return {}
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    if not isinstance(document, dict):
+        return {}
+    raw_cases = document.get("evals" if "evals" in document or "skill_name" in document else "cases")
+    if not isinstance(raw_cases, list):
+        return {}
+    cases: dict[str, set[str] | None] = {}
+    for case in raw_cases:
+        if not isinstance(case, dict):
+            continue
+        case_id = case.get("id")
+        if isinstance(case_id, bool) or not isinstance(case_id, (str, int)):
+            continue
+        assertions = case.get("assertions", case.get("assertion_ids"))
+        cases[str(case_id)] = (
+            set(assertions)
+            if isinstance(assertions, list) and all(isinstance(value, str) for value in assertions)
+            else None
+        )
+    return cases
+
+
+def find_forbidden_report_field(value: object) -> str | None:
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if key in RAW_REPORT_FIELDS:
+                return key
+            found = find_forbidden_report_field(child)
+            if found is not None:
+                return found
+    elif isinstance(value, list):
+        for child in value:
+            found = find_forbidden_report_field(child)
+            if found is not None:
+                return found
+    return None
+
+
+def expected_report_status(statuses: list[str], repository_status: str) -> str:
+    if "error" in statuses:
+        return "error"
+    if repository_status == "fail" or "fail" in statuses:
+        return "fail"
+    if repository_status == "unavailable" or "inconclusive" in statuses:
+        return "inconclusive"
+    return "pass"
+
+
+def check_evaluation_report(
+    root: Path,
+    path: Path,
+    document: dict[str, object],
+    problems: list[Problem],
+) -> None:
+    expected_skill = path.parent.parent.name
+    if document.get("schema_version") != 1:
+        add(problems, root, path, 1, "report schema_version must be 1")
+    if document.get("skill") != expected_skill:
+        add(problems, root, path, 1, f"evaluation report skill must be `{expected_skill}`")
+    if not isinstance(document.get("evaluated_on"), str) or REPORT_DATE.fullmatch(document["evaluated_on"]) is None:
+        add(problems, root, path, 1, "report evaluated_on must use YYYY-MM-DD")
+    for field in ("purpose", "stopping_reason"):
+        if not isinstance(document.get(field), str) or not str(document[field]).strip():
+            add(problems, root, path, 1, f"report requires a non-empty `{field}`")
+    affected = document.get("affected_responsibilities")
+    if (
+        not isinstance(affected, list)
+        or not affected
+        or not all(isinstance(value, str) and value.strip() for value in affected)
+    ):
+        add(problems, root, path, 1, "report affected_responsibilities must be a non-empty string array")
+    unverified = document.get("unverified")
+    if not isinstance(unverified, list) or not all(isinstance(value, str) and value.strip() for value in unverified):
+        add(problems, root, path, 1, "report unverified must be a string array")
+
+    forbidden = find_forbidden_report_field(document)
+    if forbidden is not None:
+        add(problems, root, path, 1, f"report must not contain raw artifact field `{forbidden}`")
+
+    base = document.get("base")
+    commit = base.get("commit") if isinstance(base, dict) else None
+    if not isinstance(commit, str) or GIT_COMMIT.fullmatch(commit) is None:
+        add(problems, root, path, 1, "report base.commit must be a full Git object id")
+    candidate = document.get("candidate")
+    if not isinstance(candidate, dict) or not isinstance(candidate.get("files"), dict):
+        add(problems, root, path, 1, "report candidate.files must be an object")
+    environment = document.get("environment")
+    environment_fields = ("client", "model", "reasoning_effort", "sandbox")
+    if not isinstance(environment, dict) or not all(
+        isinstance(environment.get(field), str) and environment[field].strip()
+        for field in environment_fields
+    ):
+        add(problems, root, path, 1, "report environment fields must be non-empty strings")
+
+    selection = document.get("selection")
+    evaluation_path = selection.get("path") if isinstance(selection, dict) else None
+    raw_selected = selection.get("cases") if isinstance(selection, dict) else None
+    if evaluation_path not in REPORT_PATHS:
+        add(problems, root, path, 1, "report selection.path is invalid")
+    selected_pairs: set[tuple[str, str]] = set()
+    selected_ids: set[str] = set()
+    known_assertions: dict[str, set[str] | None] = {}
+    if not isinstance(raw_selected, list):
+        add(problems, root, path, 1, "report selection.cases must be an array")
+    else:
+        for selected in raw_selected:
+            case_id = selected.get("id") if isinstance(selected, dict) else None
+            conditions = selected.get("conditions") if isinstance(selected, dict) else None
+            if not isinstance(case_id, str) or not case_id or case_id in selected_ids:
+                add(problems, root, path, 1, "report selected case ids must be unique non-empty strings")
+                continue
+            selected_ids.add(case_id)
+            if not isinstance(conditions, list) or not conditions:
+                add(problems, root, path, 1, f"report selected case `{case_id}` requires conditions")
+                continue
+            for condition in conditions:
+                pair = (case_id, condition)
+                if condition not in REPORT_CONDITIONS or pair in selected_pairs:
+                    add(
+                        problems,
+                        root,
+                        path,
+                        1,
+                        f"report selected case `{case_id}` has invalid or duplicate conditions",
+                    )
+                else:
+                    selected_pairs.add(pair)
+    if evaluation_path == "static-only" and selected_pairs:
+        add(problems, root, path, 1, "static-only report must not select model-backed cases")
+    if evaluation_path not in {"static-only", "baseline-comparison"} and any(
+        condition != "candidate" for _, condition in selected_pairs
+    ):
+        add(problems, root, path, 1, "comparison conditions require the baseline-comparison path")
+    if evaluation_path == "baseline-comparison" and selected_pairs:
+        conditions = {condition for _, condition in selected_pairs}
+        if "candidate" not in conditions or not ({"baseline", "without-skill"} & conditions):
+            add(problems, root, path, 1, "baseline-comparison requires candidate and a comparison condition")
+    if evaluation_path in REPORT_PATHS - {"static-only"}:
+        asset_name = "triggers.json" if evaluation_path == "targeted-routing" else "evals.json"
+        known_assertions = report_case_assertions(path.parent / asset_name)
+        for case_id in sorted(selected_ids - set(known_assertions)):
+            add(problems, root, path, 1, f"report references unknown case id `{case_id}`")
+
+    results = document.get("results")
+    result_pairs: set[tuple[str, str]] = set()
+    statuses: list[str] = []
+    if not isinstance(results, list):
+        add(problems, root, path, 1, "report results must be an array")
+    else:
+        for result in results:
+            case_id = result.get("case_id") if isinstance(result, dict) else None
+            condition = result.get("condition") if isinstance(result, dict) else None
+            status = result.get("status") if isinstance(result, dict) else None
+            pair = (case_id, condition)
+            if not isinstance(case_id, str) or condition not in REPORT_CONDITIONS or pair in result_pairs:
+                add(problems, root, path, 1, "report result pairs must be unique valid case-condition values")
+            else:
+                result_pairs.add(pair)
+            if status not in REPORT_STATUSES:
+                add(problems, root, path, 1, f"report result `{case_id}` has an invalid status")
+            else:
+                statuses.append(status)
+            if (
+                not isinstance(result, dict)
+                or not isinstance(result.get("evidence"), str)
+                or not result["evidence"].strip()
+            ):
+                add(problems, root, path, 1, f"report result `{case_id}` requires concise evidence")
+            requirements = result.get("requirements") if isinstance(result, dict) else None
+            if not isinstance(requirements, list):
+                add(problems, root, path, 1, f"report result `{case_id}` requirements must be an array")
+            else:
+                requirement_ids: set[str] = set()
+                for requirement in requirements:
+                    requirement_id = requirement.get("id") if isinstance(requirement, dict) else None
+                    requirement_status = requirement.get("status") if isinstance(requirement, dict) else None
+                    requirement_evidence = requirement.get("evidence") if isinstance(requirement, dict) else None
+                    if (
+                        not isinstance(requirement_id, str)
+                        or not requirement_id
+                        or requirement_id in requirement_ids
+                    ):
+                        add(problems, root, path, 1, f"report result `{case_id}` has invalid requirement ids")
+                    else:
+                        requirement_ids.add(requirement_id)
+                    if requirement_status not in REPORT_STATUSES:
+                        add(problems, root, path, 1, f"report requirement `{requirement_id}` has an invalid status")
+                    if not isinstance(requirement_evidence, str) or not requirement_evidence.strip():
+                        add(problems, root, path, 1, f"report requirement `{requirement_id}` requires evidence")
+                expected_assertions = known_assertions.get(case_id)
+                if expected_assertions and requirement_ids != expected_assertions:
+                    add(problems, root, path, 1, f"report result `{case_id}` must grade every assigned assertion")
+    if result_pairs != selected_pairs:
+        add(problems, root, path, 1, "report results must exactly match selected case-condition pairs")
+
+    checks = document.get("checks")
+    repository_status = checks.get("repository") if isinstance(checks, dict) else None
+    if repository_status not in {"pass", "fail", "unavailable"}:
+        add(problems, root, path, 1, "report checks.repository has an invalid status")
+        repository_status = "unavailable"
+    summary = document.get("summary")
+    summary_status = summary.get("status") if isinstance(summary, dict) else None
+    expected_status = expected_report_status(statuses, repository_status)
+    if summary_status != expected_status:
+        add(problems, root, path, 1, f"report summary.status must be `{expected_status}`")
+    counts = summary.get("counts") if isinstance(summary, dict) else None
+    expected_counts = {status: statuses.count(status) for status in sorted(REPORT_STATUSES)}
+    if counts != expected_counts:
+        add(problems, root, path, 1, "report summary.counts do not match results")
+    check_candidate_hashes(root, path, document, problems)
 
 
 def check_candidate_hashes(root: Path, path: Path, document: dict[str, object], problems: list[Problem]) -> None:
@@ -552,14 +808,14 @@ def check_deployment_artifacts(root: Path, problems: list[Problem]) -> None:
                 add(problems, root, child, 1, "unexpected APM-deployed Skill; preserve only tracked repository-local exceptions")
 
 
-def check_repository(root: Path) -> list[Problem]:
+def check_repository(root: Path, ignored_report_skill: str | None = None) -> list[Problem]:
     root = root.resolve()
     problems: list[Problem] = []
     catalog = check_catalogs(root, problems)
     check_skill_packages(root, problems)
     check_markdown_links(root, problems)
     check_localization_notices(root, problems)
-    check_json_assets(root, problems)
+    check_json_assets(root, problems, ignored_report_skill)
     check_companion_relationships(root, problems, catalog)
     check_personal_paths(root, problems)
     check_deployment_artifacts(root, problems)
@@ -574,6 +830,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=Path(__file__).resolve().parents[1],
         help="repository root to inspect (defaults to the checker repository)",
     )
+    parser.add_argument(
+        "--ignore-report-for-skill",
+        help=argparse.SUPPRESS,
+    )
     return parser.parse_args(argv)
 
 
@@ -584,7 +844,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{root}:0: repository root is not a directory", file=sys.stderr)
         return 2
     try:
-        problems = check_repository(root)
+        problems = check_repository(root, args.ignore_report_for_skill)
     except (OSError, UnicodeError) as error:
         print(f"{root}:0: checker could not read repository: {error}", file=sys.stderr)
         return 2

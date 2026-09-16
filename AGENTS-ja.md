@@ -64,6 +64,9 @@ Skill を作成・編集する際は、責務の重複を解消し、判断が�
 
 - このリポジトリは、root の `skills/` directory を APM の native `SKILL_BUNDLE` として公開する。root に `apm.yml` や `apm.lock.yaml` を追加せず、consumer repository が manifest と lockfile を所有する。
 - public Skill の変更を commit する前に、関連する Skill eval、repository checker、repository unit test を実行する。
+- pull request で変更された責務に照らして評価の十分性をレビューし、普遍的なケース数や suite 更新規則に照らして判断しない。
+- 評価不足の指摘では、被覆されていない変更責務、受け入れ判断に関係する具体的な失敗、記録済み証拠でその失敗を露出できない理由、解消に必要な最小の追加評価を特定する。
+- 未選択ケース、無関係な suite、legacy `results.json`、以前の report が更新されていないという理由だけで、評価の欠陥を指摘しない。
 - 配布動作を変更する場合は、candidate source を commit・push してから、このリポジトリ外の disposable consumer directory で push 済みの完全な commit を検証する。
 - bundle 全体、影響を受ける `--skill` の選択導入経路、影響を受ける個別の `skills/<name>` 導入経路を検証する。生成された consumer lockfile に対して consumer 側の frozen install と audit を実行する。
 - このリポジトリでは、dry-run ではない `apm install` や `apm update` を実行しない。source checkout に consumer manifest、lockfile、deployment artifact が生成されるため。

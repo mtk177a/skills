@@ -91,6 +91,17 @@ python3 scripts/check_repository.py
 
 この checker は Skill 評価の静的検証層です。behavior、routing、比較、model-backed evaluation が必要な場合に、それらを置き換えるものではありません。
 
+## Skill 評価 Runner
+
+Codex を呼び出す前に、共通 Runner で対象を選択し、評価コストを確認します。
+
+```bash
+python3 scripts/run_skill_evaluation.py plan --help
+```
+
+Runner は編集後に評価を自動実行せず、全ケースを暗黙に選択しません。\
+経路の選択、実行、採点、簡潔な report の扱いは [docs/ja/evaluation.md](docs/ja/evaluation.md) を参照してください。
+
 ## リポジトリ構成
 
 ```text

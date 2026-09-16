@@ -62,6 +62,9 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 
 - This repository publishes the root `skills/` directory as a native APM `SKILL_BUNDLE`. Do not add a root `apm.yml` or `apm.lock.yaml`; consumer repositories own their manifests and lockfiles.
 - Before committing a public Skill change, run the relevant Skill evaluations, the repository checker, and the repository unit tests.
+- Review evaluation sufficiency against the responsibility changed by the pull request, not against a universal case count or suite-refresh rule.
+- An evaluation-insufficiency finding must identify the uncovered changed responsibility, a concrete acceptance-relevant failure, why the recorded evidence cannot expose it, and the smallest additional evaluation that would resolve it.
+- Do not report an evaluation defect merely because an unselected case, unrelated suite, legacy `results.json`, or prior report was not refreshed.
 - When distribution behavior changes, commit and push the candidate source, then verify the exact pushed commit from disposable consumer directories outside this repository.
 - Verify the full bundle, any affected `--skill` selection path, and any affected individual `skills/<name>` installation path. Run consumer-side frozen install and audit checks against the generated consumer lockfile.
 - Do not run a non-dry-run `apm install` or `apm update` in this repository. They create consumer manifests, lockfiles, and deployment artifacts in the source checkout.
