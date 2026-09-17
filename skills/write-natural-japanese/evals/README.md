@@ -8,7 +8,7 @@ The Skill and its wording reference are original MIT-licensed material and do no
 The behavior definitions live in evals.json and use the executable skill_name / evals format described in ../../../docs/evaluation.md.
 The routing definitions live in triggers.json and use the same format with expected_handlers for direct routing observations.
 The executor receives prompts without the assertions used for grading.
-The historical results.json is retained unchanged, and raw prompts, responses, JSONL events, and temporary fixtures remain outside the repository.
+No historical results.json is committed for this Skill, and raw prompts, responses, JSONL events, and temporary fixtures remain outside the repository.
 No report.json is committed for this change; the selected evidence is summarized here.
 
 ## Selection for Issue #47
@@ -45,7 +45,8 @@ Repetition was not performed because the executed cases completed without confli
 
 ## Executed evidence — 2026-09-17
 
-The evaluations ran in Codex CLI 0.155.0-alpha.2.6 with gpt-5.6-luna, max reasoning effort, and read-only execution.
+The evaluations were rerun after correcting the JSON newline escapes in I/J/K and adding a fenced code block and list to J.
+They ran in Codex CLI 0.155.0-alpha.2.6 with gpt-5.6-luna, max reasoning effort, and read-only execution.
 The candidate and baseline fixtures were isolated to the target Skill and the required wording reference.
 The repository static check embedded in each Runner execution passed.
 
@@ -56,7 +57,8 @@ The repository static check embedded in each Runner execution passed.
 | targeted-routing | D1, D2, D3 under candidate | Pass; all 3 routing observations matched |
 
 The direct routing observations were D1 with no handler, D2 with write-natural-japanese, and D3 with japanese-tech-writing plus write-natural-japanese.
-The candidate outputs preserved uncertainty and established terms in C, separated translation-source meaning from 正本 in I, preserved protected strings and conditions in J, and separated the completed prose from reasons in K.
+The candidate outputs preserved uncertainty and established terms in C, separated translation-source meaning from 正本 in I, preserved protected strings, conditions, code fences, and list structure in J, and separated the completed prose from reasons in K.
+The baseline comparison also passed the same I and J assertions, including the Markdown structure assertion.
 The H traces directly recorded reads of SKILL.md and the full wording reference for both candidate and baseline conditions.
 
 ## Acceptance scope and unverified boundaries
@@ -64,4 +66,4 @@ The H traces directly recorded reads of SKILL.md and the full wording reference 
 The selected evidence supports the Issue #47 responsibilities in the recorded Codex and Luna environment.
 It does not establish behavior for unselected cases, other clients, other models, other reasoning settings, or repeated-run stability.
 It does not establish that every possible long document or multi-document request will be semantically consistent.
-The existing results.json remains historical evidence for its recorded candidate and is not a current acceptance report.
+The selected acceptance evidence is summarized in this README; no current results.json report is committed.

@@ -259,7 +259,7 @@
     {
       "id": "I",
       "title": "Do not use 正本 for a translation source",
-      "prompt": "次の日本語の下書きを、意味と関係を変えずに自然な日本語へ整えてください。完成稿だけを返してください。\\n\\nこの章は英語版を参照して翻訳した説明です。下書きでは「英語正本を参照して翻訳した」と書かれていますが、ここで英語版は翻訳元であり、法的な正本でも唯一の参照元でもありません。公開版の確認には [Release notes](docs/release-notes.md) と https://example.com/api を使います。`docs/agent-tools.md` に記載した `auto-review` と `request-changes` は手順名として維持してください。",
+      "prompt": "次の日本語の下書きを、意味と関係を変えずに自然な日本語へ整えてください。完成稿だけを返してください。\n\nこの章は英語版を参照して翻訳した説明です。下書きでは「英語正本を参照して翻訳した」と書かれていますが、ここで英語版は翻訳元であり、法的な正本でも唯一の参照元でもありません。公開版の確認には [Release notes](docs/release-notes.md) と https://example.com/api を使います。`docs/agent-tools.md` に記載した `auto-review` と `request-changes` は手順名として維持してください。",
       "files": [],
       "coexistence_skills": [],
       "assertions": [
@@ -298,7 +298,7 @@
     {
       "id": "J",
       "title": "Recheck a related multi-document final artifact",
-      "prompt": "同じ依頼に含まれる、互いに関連する二つの文書を、意味と条件を変えずに自然な日本語へ書き直してください。二つの完成稿を文書 A と文書 B に分けて返し、理由や作業手順は追加しないでください。\\n\\n## 文書 A\\n\\n`permission profile` は、利用できる操作と確認が必要な操作を定めます。`context-mode` が `review` の場合、`auto-review` は変更候補を表示しますが、`request-changes` は実行しません。詳細は `docs/agent-tools.md` を参照してください。\\n\\n## 文書 B\\n\\n`permission profile` の説明では、同じ概念を文書 A と異なる日本語で呼ばないでください。`storage state` は保存状態を表し、`context-mode` が `apply` の場合だけ更新処理が実行されます。入力が同じなら判定結果が同じになる処理を deterministic と呼びます。",
+      "prompt": "同じ依頼に含まれる、互いに関連する二つの文書を、意味と条件を変えずに自然な日本語へ書き直してください。二つの完成稿を文書 A と文書 B に分けて返し、理由や作業手順は追加しないでください。\n\n## 文書 A\n\n`permission profile` は、利用できる操作と確認が必要な操作を定めます。`context-mode` が `review` の場合、`auto-review` は変更候補を表示しますが、`request-changes` は実行しません。詳細は `docs/agent-tools.md` を参照してください。\n\n```text\ncontext-mode=review\n```\n\n- `auto-review` は変更候補を表示します。\n- `request-changes` は実行しません。\n\n## 文書 B\n\n`permission profile` の説明では、同じ概念を文書 A と異なる日本語で呼ばないでください。`storage state` は保存状態を表し、`context-mode` が `apply` の場合だけ更新処理が実行されます。入力が同じなら判定結果が同じになる処理を deterministic と呼びます。",
       "files": [],
       "coexistence_skills": [],
       "assertions": [
@@ -323,6 +323,11 @@
           "critical": true
         },
         {
+          "id": "j-markdown-structure",
+          "text": "Preserve the fenced code block, list markers, and the code/list contents while naturalizing surrounding prose.",
+          "critical": true
+        },
+        {
           "id": "j-final-rescan",
           "text": "Review both completed documents for newly introduced mixed-language expressions, terminology drift, and semantic changes before returning them.",
           "critical": true
@@ -337,7 +342,7 @@
     {
       "id": "K",
       "title": "Separate requested reasons from the final artifact",
-      "prompt": "次の技術文書を、意味、確度、条件を変えずに自然な日本語へ整えてください。完成稿と、主な修正理由を分けて返してください。完成稿の中に理由や元の表現への批評を混ぜないでください。\\n\\n現時点では、起動直後の競合状態が原因である可能性があります。まず `storage state` を照合し、原因を切り分けます。設定キー `context-mode` の既定値は `review` です。",
+      "prompt": "次の技術文書を、意味、確度、条件を変えずに自然な日本語へ整えてください。完成稿と、主な修正理由を分けて返してください。完成稿の中に理由や元の表現への批評を混ぜないでください。\n\n現時点では、起動直後の競合状態が原因である可能性があります。まず `storage state` を照合し、原因を切り分けます。設定キー `context-mode` の既定値は `review` です。",
       "files": [],
       "coexistence_skills": [],
       "assertions": [
