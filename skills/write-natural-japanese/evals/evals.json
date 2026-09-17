@@ -1,287 +1,365 @@
 {
-  "schema_version": 1,
-  "skill": "write-natural-japanese",
-  "candidate_revision": "74eee2fad038e5f94ad495705d70114cb82424b7",
-  "executor_instruction": "依頼に従って完成した日本語だけを返してください。修正理由や作業手順は、依頼で求められていない限り追加しないでください。",
-  "scenarios": [
+  "skill_name": "write-natural-japanese",
+  "execution": {
+    "coexistence_skills": []
+  },
+  "evals": [
     {
       "id": "A",
       "title": "Remove source-language interference and unnecessary English",
-      "configuration": "isolation",
       "prompt": "次の技術説明を、意味と条件を変えずに、日本語の利用者向け文書として自然な文章へ書き直してください。\n\nこのコンポーネントは request validation の提供を行います。Invalid な payload の detection は submit の前に実行されます。`strict_mode` が `false` のケースでは、validation failure は warning として surface され、process は continue します。CloudShield Rules は policy evaluation を担当します。",
-      "requirements": [
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
         {
-          "critical": true,
-          "text": "Preserve validation timing, the strict_mode condition, warning behavior, continued processing, and the responsibility of CloudShield Rules."
+          "id": "a-assertion-1",
+          "text": "Preserve validation timing, the strict_mode condition, warning behavior, continued processing, and the responsibility of CloudShield Rules.",
+          "critical": true
         },
         {
-          "critical": false,
-          "text": "Replace unnecessary English generalities with context-appropriate Japanese."
+          "id": "a-assertion-2",
+          "text": "Replace unnecessary English generalities with context-appropriate Japanese.",
+          "critical": false
         },
         {
-          "critical": false,
-          "text": "Reconstruct the sentences instead of applying isolated word substitutions."
+          "id": "a-assertion-3",
+          "text": "Reconstruct the sentences instead of applying isolated word substitutions.",
+          "critical": false
         },
         {
-          "critical": false,
-          "text": "Preserve strict_mode and the formal product name CloudShield Rules."
+          "id": "a-assertion-4",
+          "text": "Preserve strict_mode and the formal product name CloudShield Rules.",
+          "critical": false
         },
         {
-          "critical": false,
-          "text": "Return only the revised reader-facing text."
+          "id": "a-assertion-5",
+          "text": "Return only the revised reader-facing text.",
+          "critical": false
         }
       ]
     },
     {
       "id": "B",
       "title": "Make an underspecified failure observable",
-      "configuration": "isolation",
       "prompt": "次の記述を運用手順書向けに書き直してください。確認されていない挙動は追加しないでください。\n\n`retry_limit` に未対応の値を指定しても、設定は黙って無視されます。設定ファイルの構文解析は成功し、警告も出ません。指定した値は実行時の再試行回数には使われません。",
-      "requirements": [
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
         {
-          "critical": true,
-          "text": "Preserve that parsing succeeds, no warning is produced, and the value is not used for the runtime retry count."
+          "id": "b-assertion-1",
+          "text": "Preserve that parsing succeeds, no warning is produced, and the value is not used for the runtime retry count.",
+          "critical": true
         },
         {
-          "critical": false,
-          "text": "State what is not reported and where the value ceases to affect processing."
+          "id": "b-assertion-2",
+          "text": "State what is not reported and where the value ceases to affect processing.",
+          "critical": false
         },
         {
-          "critical": false,
-          "text": "Do not invent logging, exception, persistence, fallback, or recovery behavior."
+          "id": "b-assertion-3",
+          "text": "Do not invent logging, exception, persistence, fallback, or recovery behavior.",
+          "critical": false
         },
         {
-          "critical": false,
-          "text": "Do not replace the flagged phrase with another vague phrase."
+          "id": "b-assertion-4",
+          "text": "Do not replace the flagged phrase with another vague phrase.",
+          "critical": false
         }
       ]
     },
     {
       "id": "C",
       "title": "Preserve established terms, quotation, and uncertainty",
-      "configuration": "isolation",
       "prompt": "次の調査メモを、意味と確度を変えずに読みやすく整えてください。\n\n`cache_mode` の既定値は `auto` です。現時点では、起動直後の競合状態がキャッシュ不整合の原因である可能性があります。まずログを照合して原因を切り分けます。なお、この文書では管理元を表す語として「正本」を引用しています。",
-      "requirements": [
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
         {
-          "critical": true,
-          "text": "Keep the race condition qualified as a possibility rather than a confirmed cause."
+          "id": "c-assertion-1",
+          "text": "Keep the race condition qualified as a possibility rather than a confirmed cause.",
+          "critical": true
         },
         {
-          "critical": false,
-          "text": "Preserve 既定値 and the established troubleshooting use of 原因を切り分ける."
+          "id": "c-assertion-2",
+          "text": "Preserve 既定値 and the established troubleshooting use of 原因を切り分ける.",
+          "critical": false
         },
         {
-          "critical": false,
-          "text": "Preserve 正本 as quoted language under discussion."
+          "id": "c-assertion-3",
+          "text": "Preserve 正本 as quoted language under discussion.",
+          "critical": false
         },
         {
-          "critical": false,
-          "text": "Preserve cache_mode, auto, cache, and the stated investigation sequence."
+          "id": "c-assertion-4",
+          "text": "Preserve cache_mode, auto, cache, and the stated investigation sequence.",
+          "critical": false
         },
         {
-          "critical": false,
-          "text": "Do not remove a listed expression merely because it appears in the wording reference."
-        }
-      ]
-    },
-    {
-      "id": "D1",
-      "title": "Do not trigger for ordinary Japanese debugging",
-      "configuration": "routing-negative",
-      "use_shared_executor_instruction": false,
-      "prompt": "Python の辞書から存在しないキーを読み取ったところ `KeyError` が発生しました。原因と、まず確認することを教えてください。",
-      "requirements": [
-        {
-          "critical": true,
-          "text": "Do not load write-natural-japanese merely because the debugging response is in Japanese."
-        },
-        {
-          "critical": false,
-          "text": "Answer the debugging question directly without turning it into a prose-editing task."
-        }
-      ]
-    },
-    {
-      "id": "D2",
-      "title": "Trigger for an explicit Japanese wording deliverable",
-      "configuration": "routing-positive",
-      "prompt": "次の製品説明を、意味と条件を変えずに自然な日本語へ書き直してください。完成稿だけを返してください。\n\nこの機能は設定変更の即時反映を提供します。Invalid な値の detection が行われたケースでは warning を surface し、更新処理を continue します。`reload_mode` が `manual` の場合は即時反映しません。",
-      "requirements": [
-        {
-          "critical": true,
-          "text": "Load write-natural-japanese when natural Japanese wording is an explicit deliverable, without naming the Skill in the request."
-        },
-        {
-          "critical": true,
-          "text": "Preserve the reload_mode condition and the behavior for invalid values."
-        },
-        {
-          "critical": false,
-          "text": "Replace unnecessary English generalities and source-language structure with natural Japanese."
-        },
-        {
-          "critical": false,
-          "text": "Preserve reload_mode and manual as identifiers."
-        },
-        {
-          "critical": false,
-          "text": "Return only the revised reader-facing text."
-        }
-      ]
-    },
-    {
-      "id": "D3",
-      "title": "Compose explicitly selected Japanese writing Skills",
-      "configuration": "coexistence-explicit",
-      "prompt": "利用可能な `write-natural-japanese` と `japanese-tech-writing` の両方を使用して、次の技術記事の断片について、語彙を自然な日本語へ整えるとともに、見出しと段落の関係が分かる構成へ書き直してください。`sync_mode` という識別子と、原因がまだ仮説であることは維持してください。完成稿だけを返してください。\n\n## 問題について\n\nこの変更は同期処理の安定性の改善を提供します。\n\n## 詳細について\n\n`sync_mode` を有効にすると更新が失敗することがあります。ログ上は同時実行された二つの処理が見えます。そのため競合状態が原因です。対策の前に再現条件を確認します。",
-      "requirements": [
-        {
-          "critical": true,
-          "text": "Load both write-natural-japanese and japanese-tech-writing after both are named for use, without making either a companion dependency."
-        },
-        {
-          "critical": true,
-          "text": "Preserve sync_mode and keep the race condition as a hypothesis rather than a confirmed cause."
-        },
-        {
-          "critical": false,
-          "text": "Use write-natural-japanese for linguistic realization and wording."
-        },
-        {
-          "critical": false,
-          "text": "Use japanese-tech-writing for headings, paragraphs, and argument structure."
-        },
-        {
-          "critical": false,
-          "text": "Return only the revised article fragment."
+          "id": "c-assertion-5",
+          "text": "Do not remove a listed expression merely because it appears in the wording reference.",
+          "critical": false
         }
       ]
     },
     {
       "id": "E",
       "title": "Preserve technical determinism",
-      "configuration": "isolation",
       "prompt": "次の技術メモを、意味を変えずに自然な日本語へ書き直してください。\n\n重複の検出は deterministic に動作します。同じ入力ファイルと同じ設定を与えた場合、検出結果は毎回同じになります。この性質は自動実行されるかどうかとは関係ありません。",
-      "requirements": [
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
         {
-          "critical": true,
-          "text": "Preserve the same-input and same-settings produce the same-result condition."
+          "id": "e-assertion-1",
+          "text": "Preserve the same-input and same-settings produce the same-result condition.",
+          "critical": true
         },
         {
-          "critical": true,
-          "text": "Do not reduce technical determinism to automatic, mechanical, or routine execution."
+          "id": "e-assertion-2",
+          "text": "Do not reduce technical determinism to automatic, mechanical, or routine execution.",
+          "critical": true
         },
         {
-          "critical": false,
-          "text": "Preserve deterministic when translation would lose the technical property, or explain the property accurately in Japanese."
+          "id": "e-assertion-3",
+          "text": "Preserve deterministic when translation would lose the technical property, or explain the property accurately in Japanese.",
+          "critical": false
         },
         {
-          "critical": false,
-          "text": "Do not add unsupported claims about randomness, implementation, or guarantees."
+          "id": "e-assertion-4",
+          "text": "Do not add unsupported claims about randomness, implementation, or guarantees.",
+          "critical": false
         }
       ]
     },
     {
       "id": "F1",
       "title": "Make generic contract wording concrete",
-      "configuration": "isolation",
       "prompt": "次の API 設計メモを、意味を変えずに自然な日本語へ書き直してください。\n\nこの API では、成功時に `result_id` を返すことを契約とします。旧版のクライアントから送られた `mode` を引き続き受け付けることも互換性の契約です。これらの条件は contract testing で確認します。",
-      "requirements": [
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
         {
-          "critical": true,
-          "text": "Preserve the result_id output requirement, continued acceptance of mode from older clients, and use of contract testing."
+          "id": "f1-assertion-1",
+          "text": "Preserve the result_id output requirement, continued acceptance of mode from older clients, and use of contract testing.",
+          "critical": true
         },
         {
-          "critical": true,
-          "text": "Express each generic Japanese contract use directly as the output behavior or requirement and the compatibility requirement it represents; leaving 契約 as the governing label does not satisfy this requirement."
+          "id": "f1-assertion-2",
+          "text": "Express each generic Japanese contract use directly as the output behavior or requirement and the compatibility requirement it represents; leaving 契約 as the governing label does not satisfy this requirement.",
+          "critical": true
         },
         {
-          "critical": false,
-          "text": "Preserve contract testing as an established technical term."
+          "id": "f1-assertion-3",
+          "text": "Preserve contract testing as an established technical term.",
+          "critical": false
         },
         {
-          "critical": false,
-          "text": "Do not invent legal force, parties, enforcement, or violation behavior."
+          "id": "f1-assertion-4",
+          "text": "Do not invent legal force, parties, enforcement, or violation behavior.",
+          "critical": false
         }
       ]
     },
     {
       "id": "F2",
       "title": "Preserve defined and established contract terminology",
-      "configuration": "isolation",
       "prompt": "次の技術説明を、意味と用語の役割を変えずに自然な日本語へ書き直してください。\n\nこのチームでは、利用側と提供側の期待が一致していることを contract testing で確認します。この手法は Design by Contract とは目的が異なります。公開仕様では、入出力について合意した内容を指す定義済みの用語として `API contract` を使用します。",
-      "requirements": [
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
         {
-          "critical": true,
-          "text": "Preserve that contract testing checks alignment between consumer and provider expectations and remains distinct from Design by Contract."
+          "id": "f2-assertion-1",
+          "text": "Preserve that contract testing checks alignment between consumer and provider expectations and remains distinct from Design by Contract.",
+          "critical": true
         },
         {
-          "critical": true,
-          "text": "Preserve contract testing, Design by Contract, and the explicitly defined term API contract as technical terms."
+          "id": "f2-assertion-2",
+          "text": "Preserve contract testing, Design by Contract, and the explicitly defined term API contract as technical terms.",
+          "critical": true
         },
         {
-          "critical": false,
-          "text": "Do not mechanically translate API contract into the generic Japanese phrase API の契約."
+          "id": "f2-assertion-3",
+          "text": "Do not mechanically translate API contract into the generic Japanese phrase API の契約.",
+          "critical": false
         },
         {
-          "critical": false,
-          "text": "Do not add requirements, enforcement behavior, or legal meaning."
+          "id": "f2-assertion-4",
+          "text": "Do not add requirements, enforcement behavior, or legal meaning.",
+          "critical": false
         }
       ]
     },
     {
       "id": "G",
       "title": "Distinguish gates from entrances, checks, and controls",
-      "configuration": "isolation",
       "prompt": "次のリリース手順を、各段階の役割が分かる自然な日本語へ書き直してください。正式名称は維持してください。\n\n申請フォームがリリース作業のゲートです。送信後、テストの門を通り、失敗した場合は先へ進めません。次のゲートでは担当者が結果を確認して承認します。本番環境へ接続できるかを決める権限ゲートもあります。品質判定には製品の正式機能名である DeployGuard Quality Gate を使います。",
-      "requirements": [
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
         {
-          "critical": true,
-          "text": "Preserve which step starts the process and which checks or decisions can prevent progress or production access."
+          "id": "g-assertion-1",
+          "text": "Preserve which step starts the process and which checks or decisions can prevent progress or production access.",
+          "critical": true
         },
         {
-          "critical": false,
-          "text": "Distinguish the starting point, automated test, human approval, and production access control."
+          "id": "g-assertion-2",
+          "text": "Distinguish the starting point, automated test, human approval, and production access control.",
+          "critical": false
         },
         {
-          "critical": false,
-          "text": "Preserve the formal product feature name DeployGuard Quality Gate."
+          "id": "g-assertion-3",
+          "text": "Preserve the formal product feature name DeployGuard Quality Gate.",
+          "critical": false
         },
         {
-          "critical": false,
-          "text": "Do not describe every entrance as a pass-fail control or replace every gate expression with one fixed word."
+          "id": "g-assertion-4",
+          "text": "Do not describe every entrance as a pass-fail control or replace every gate expression with one fixed word.",
+          "critical": false
         }
       ]
     },
     {
       "id": "H",
       "title": "Translate source-language wording through contextual guidance",
-      "configuration": "isolation",
       "prompt": "次の英語の技術説明を、意味と条件を変えずに自然な日本語へ翻訳してください。完成稿だけを返してください。\n\nThe API contract requires successful requests to return `result_id`. The API continues to accept `mode` from older clients. When an unsupported value is supplied, validation succeeds, no warning is emitted, and the value is not used at runtime; the setting silently fails to take effect. This repository is the source of truth for the published schema. The document informally calls required reviewer approval the final quality gate before production deployment; this is not the name of a product or pipeline stage. The release is also checked by the product feature DeployGuard Quality Gate.",
-      "requirements": [
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
         {
-          "critical": true,
-          "text": "Read references/wording-decisions.md from the source-language translation instruction; output wording alone is not evidence of the read."
+          "id": "h-assertion-1",
+          "text": "Read references/wording-decisions.md from the source-language translation instruction; output wording alone is not evidence of the read.",
+          "critical": true
         },
         {
-          "critical": true,
-          "text": "Preserve the result_id requirement, continued acceptance of mode from older clients, validation success, absence of a warning, non-use of the unsupported value at runtime, repository ownership of the published schema, reviewer approval before production deployment, and the additional product check."
+          "id": "h-assertion-2",
+          "text": "Preserve the result_id requirement, continued acceptance of mode from older clients, validation success, absence of a warning, non-use of the unsupported value at runtime, repository ownership of the published schema, reviewer approval before production deployment, and the additional product check.",
+          "critical": true
         },
         {
-          "critical": true,
-          "text": "Translate generic API contract, silently fails, source of truth, and quality gate according to their stated roles instead of mechanically producing API の契約, 静かに失敗する, 正本, or a generic ゲート label."
+          "id": "h-assertion-3",
+          "text": "Translate generic API contract, silently fails, source of truth, and quality gate according to their stated roles instead of mechanically producing API の契約, 静かに失敗する, 正本, or a generic ゲート label.",
+          "critical": true
         },
         {
-          "critical": true,
-          "text": "Preserve result_id and mode as identifiers and DeployGuard Quality Gate as the formal product feature name."
+          "id": "h-assertion-4",
+          "text": "Preserve result_id and mode as identifiers and DeployGuard Quality Gate as the formal product feature name.",
+          "critical": true
         },
         {
-          "critical": false,
-          "text": "Do not invent legal force, parties, warnings, exceptions, logging, validation failures, or deployment behavior not stated in the source."
+          "id": "h-assertion-5",
+          "text": "Do not invent legal force, parties, warnings, exceptions, logging, validation failures, or deployment behavior not stated in the source.",
+          "critical": false
         },
         {
-          "critical": false,
-          "text": "Return only the translated reader-facing text."
+          "id": "h-assertion-6",
+          "text": "Return only the translated reader-facing text.",
+          "critical": false
+        }
+      ]
+    },
+    {
+      "id": "I",
+      "title": "Do not use 正本 for a translation source",
+      "prompt": "次の日本語の下書きを、意味と関係を変えずに自然な日本語へ整えてください。完成稿だけを返してください。\\n\\nこの章は英語版を参照して翻訳した説明です。下書きでは「英語正本を参照して翻訳した」と書かれていますが、ここで英語版は翻訳元であり、法的な正本でも唯一の参照元でもありません。公開版の確認には [Release notes](docs/release-notes.md) と https://example.com/api を使います。`docs/agent-tools.md` に記載した `auto-review` と `request-changes` は手順名として維持してください。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {
+          "id": "i-translation-source",
+          "text": "Express that the English version is the translation source or reference without treating it as a formal or legally controlling 正本.",
+          "critical": true
+        },
+        {
+          "id": "i-no-uniqueness",
+          "text": "Do not add a claim that the English version is the sole or exclusive reference.",
+          "critical": true
+        },
+        {
+          "id": "i-preserve-relationship",
+          "text": "Preserve the relationship between the draft, the English source, the release notes, and the API reference.",
+          "critical": true
+        },
+        {
+          "id": "i-protected-strings",
+          "text": "Preserve the link destination, URL, path, auto-review, and request-changes exactly as protected strings.",
+          "critical": true
+        },
+        {
+          "id": "i-naturalize-context",
+          "text": "Rewrite the surrounding explanation naturally instead of applying a fixed replacement to 正本.",
+          "critical": false
+        },
+        {
+          "id": "i-final-only",
+          "text": "Return only the revised reader-facing text.",
+          "critical": false
+        }
+      ]
+    },
+    {
+      "id": "J",
+      "title": "Recheck a related multi-document final artifact",
+      "prompt": "同じ依頼に含まれる、互いに関連する二つの文書を、意味と条件を変えずに自然な日本語へ書き直してください。二つの完成稿を文書 A と文書 B に分けて返し、理由や作業手順は追加しないでください。\\n\\n## 文書 A\\n\\n`permission profile` は、利用できる操作と確認が必要な操作を定めます。`context-mode` が `review` の場合、`auto-review` は変更候補を表示しますが、`request-changes` は実行しません。詳細は `docs/agent-tools.md` を参照してください。\\n\\n## 文書 B\\n\\n`permission profile` の説明では、同じ概念を文書 A と異なる日本語で呼ばないでください。`storage state` は保存状態を表し、`context-mode` が `apply` の場合だけ更新処理が実行されます。入力が同じなら判定結果が同じになる処理を deterministic と呼びます。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {
+          "id": "j-document-facts",
+          "text": "Preserve the roles of permission profile, context-mode, auto-review, request-changes, storage state, the path, and the deterministic same-input condition.",
+          "critical": true
+        },
+        {
+          "id": "j-cross-document-consistency",
+          "text": "Use consistent Japanese wording for the same permission profile concept across both related documents while keeping distinct concepts separate.",
+          "critical": true
+        },
+        {
+          "id": "j-conditions-and-scope",
+          "text": "Preserve the review and apply conditions and do not expand the behavior beyond the supplied documents.",
+          "critical": true
+        },
+        {
+          "id": "j-protected-strings",
+          "text": "Preserve permission profile, context-mode, auto-review, request-changes, storage state, deterministic, and docs/agent-tools.md as protected technical strings.",
+          "critical": true
+        },
+        {
+          "id": "j-final-rescan",
+          "text": "Review both completed documents for newly introduced mixed-language expressions, terminology drift, and semantic changes before returning them.",
+          "critical": true
+        },
+        {
+          "id": "j-related-documents",
+          "text": "Apply the cross-document consistency pass because the request explicitly contains two related documents, without importing unrelated document content.",
+          "critical": false
+        }
+      ]
+    },
+    {
+      "id": "K",
+      "title": "Separate requested reasons from the final artifact",
+      "prompt": "次の技術文書を、意味、確度、条件を変えずに自然な日本語へ整えてください。完成稿と、主な修正理由を分けて返してください。完成稿の中に理由や元の表現への批評を混ぜないでください。\\n\\n現時点では、起動直後の競合状態が原因である可能性があります。まず `storage state` を照合し、原因を切り分けます。設定キー `context-mode` の既定値は `review` です。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {
+          "id": "k-certainty-and-sequence",
+          "text": "Preserve the possibility of the cause, the investigation sequence, and the context-mode default value.",
+          "critical": true
+        },
+        {
+          "id": "k-identifiers",
+          "text": "Preserve storage state, context-mode, and review as the relevant technical strings or values.",
+          "critical": false
+        },
+        {
+          "id": "k-separate-output",
+          "text": "Clearly separate the completed prose from the requested reasons, and keep reasons out of the completed prose.",
+          "critical": true
+        },
+        {
+          "id": "k-no-unsupported-explanation",
+          "text": "Do not add a confirmed cause, an unrequested remediation, or other unsupported behavior while explaining the edits.",
+          "critical": false
         }
       ]
     }
