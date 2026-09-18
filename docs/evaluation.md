@@ -46,6 +46,123 @@ For an existing Skill, migrate its complete `evals.json` and `triggers.json` set
 README changes, reference-translation synchronization, meaning-preserving documentation or metadata changes, and legacy-result-only changes do not trigger migration.\
 If both `evals.json` and `triggers.json` exist for a Skill, migrate both in the same pull request so the Skill never has a mixed executable contract.
 
+If only one of those definition files exists, migrate that file without creating the other one.\
+If a Skill does not need executable definitions, do not create them merely to perform a migration.
+
+### Migration examples
+
+If both definitions exist in the legacy format, migrate both in the same change.
+
+Before migration, `evals.json` may contain:
+
+```json
+{
+  "skill": "example-skill",
+  "version": 1,
+  "cases": [
+    {
+      "id": "behavior",
+      "prompt": "Handle this request."
+    }
+  ]
+}
+```
+
+Before migration, `triggers.json` may contain:
+
+```json
+{
+  "skill": "example-skill",
+  "version": 1,
+  "cases": [
+    {
+      "id": "route",
+      "prompt": "Handle this request.",
+      "expected_handler": "example-skill"
+    }
+  ]
+}
+```
+
+After migration, `evals.json` uses the executable behavior format:
+
+```json
+{
+  "skill_name": "example-skill",
+  "evals": [
+    {
+      "id": "behavior",
+      "prompt": "Handle this request.",
+      "expected_output": "A bounded result."
+    }
+  ]
+}
+```
+
+After migration, `triggers.json` uses the executable routing format:
+
+```json
+{
+  "skill_name": "example-skill",
+  "evals": [
+    {
+      "id": "route",
+      "prompt": "Handle this request.",
+      "expected_handlers": ["example-skill"]
+    }
+  ]
+}
+```
+
+If only a legacy `triggers.json` exists, migrate that file and do not create `evals.json`.
+
+Before migration:
+
+```json
+{
+  "skill": "example-skill",
+  "version": 1,
+  "cases": [
+    {
+      "id": "route",
+      "prompt": "Handle this request.",
+      "expected_handler": "example-skill"
+    }
+  ]
+}
+```
+
+After migration:
+
+```json
+{
+  "skill_name": "example-skill",
+  "evals": [
+    {
+      "id": "route",
+      "prompt": "Handle this request.",
+      "expected_handlers": ["example-skill"]
+    }
+  ]
+}
+```
+
+If the Skill has no executable definitions and does not need them, leave that state unchanged.
+
+Before migration:
+
+```text
+skills/example-skill/evals/
+└── README.md
+```
+
+After migration:
+
+```text
+skills/example-skill/evals/
+└── README.md
+```
+
 Migrating definitions does not mean executing every migrated case.\
 After migration, run only the cases required by the responsibility changed in that pull request.
 
@@ -67,6 +184,87 @@ skills/<skill-name>/
     └── results.json    # optional legacy historical evidence
 ```
 
+### What to record in `evals/README.md`
+
+Use `evals/README.md` to explain the evaluation's intent, scope, method, and evidence to a human reader.\
+Do not duplicate the case payloads or other machine-readable details already defined in JSON.
+
+The README should cover the applicable information below:
+
+1. The evaluation purpose and the Skill responsibility being examined.
+2. The role of each present asset, such as `evals.json`, `triggers.json`, `report.json`, or `results.json`.
+3. Static checks of the Skill instructions or bundled structure.
+4. A coverage map connecting each responsibility or boundary to a plausible failure, the case or check that can expose it, and the grading method.
+5. When needed, the execution and grading procedure, including isolation, comparison conditions, and repetition or stopping conditions.
+6. Current evidence, including the evaluated revision, environment, selected cases, results, and anything not executed.
+7. Unverified boundaries and the condition that would make further evaluation useful.
+
+The following is a suggested structure, not a required heading template:
+
+```markdown
+# <skill-name> evals
+
+## Purpose
+
+State the responsibility and evaluation decision this suite supports.
+
+## Assets
+
+Describe the role of each evaluation asset that exists.
+
+## Static checks
+
+List the instruction or package properties checked without model execution.
+
+## Coverage map
+
+| Responsibility or boundary | Plausible failure | Scenario or check | Grading |
+| --- | --- | --- | --- |
+| ... | ... | ... | ... |
+
+## Execution and grading
+
+Describe only the procedure, isolation, comparison, and stopping rules that apply.
+
+## Current evidence
+
+Record the revision, environment, selected cases, results, and unexecuted checks.
+
+## Unverified boundaries
+
+State what remains unverified and when another evaluation would be decision-relevant.
+```
+
+Use different headings when they better fit the evidence, and omit sections that do not apply.\
+A failure-pattern ledger or next-validation question is optional and should appear only when it helps interpret or extend the evidence.\
+The repository checker does not enforce README headings or structure.\
+Existing READMEs do not require bulk migration; apply this guidance when an evaluation definition or its README is materially updated.
+
+### Base fields and repository extensions
+
+The executable contract adopts the fields shown in the [Agent Skills evaluation guide](https://agentskills.io/skill-creation/evaluating-skills) and adds the repository-specific fields and forms listed below.\
+The required, conditional, and optional labels describe this repository's executable contract rather than a universal Agent Skills JSON schema.
+
+| Origin | Location | Field or form | Requirement in this repository | Purpose |
+| --- | --- | --- | --- | --- |
+| Agent Skills base | Top level | `skill_name` | Required | Identifies the Skill under evaluation. |
+| Agent Skills base | Top level | `evals` | Required | Contains the evaluation cases. |
+| Agent Skills base | Case | `id` | Required | Identifies the case and is normalized to a string. |
+| Agent Skills base | Case | `prompt` | Conditional | Supplies the request for the single-request form and the current request in the repository-specific `conversation` form. |
+| Agent Skills base | Case | `expected_output` | Optional; required for a behavior case when it has no assertions | Describes a successful result and supplies the default grading requirement. |
+| Agent Skills base | Case | `files` | Optional | Selects repository-relative input files. |
+| Agent Skills base | Case | String entries in `assertions` | Optional; behavior cases require `assertions` or `expected_output` | Defines grading statements in the base string representation. |
+| Repository extension | Top level | `execution.coexistence_skills` | Optional | Adds Skills that must be installed for every selected case. |
+| Repository extension | Case | `title` | Optional | Preserves a human-readable case title in the normalized plan. |
+| Repository extension | Case | `turns` | Conditional alternative input form | Supplies a complete conversation as the evaluation input. |
+| Repository extension | Case | `authoring_turns` plus `request` | Conditional alternative input form | Separates prior artifact-authoring history from the current request. |
+| Repository extension | Case | `conversation` plus `prompt` | Conditional alternative input form | Separates completed conversation context from the current request; `prompt` itself remains a base field. |
+| Repository extension | Case | Object entries in `assertions` with `id`, `text`, and `critical` | Optional | Adds stable assertion identity and criticality to the base assertion field. |
+| Repository extension | Case | `fixture` | Optional | Materializes inline fixture files. |
+| Repository extension | Case | `coexistence_skills` | Optional | Adds Skills for one case. |
+| Repository extension | Case | `conditions` | Optional | Restricts the case to selected `candidate`, `baseline`, or `without-skill` conditions. |
+| Repository extension | Routing definition | `triggers.json` with case-level `expected_handlers` | `expected_handlers` is required for every routing case | Reuses the executable envelope for routing expectations, including an empty handler list. |
+
 New executable definitions follow the [Agent Skills evaluation format](https://agentskills.io/skill-creation/evaluating-skills) with explicit repository extensions:
 
 ```json
@@ -78,6 +276,7 @@ New executable definitions follow the [Agent Skills evaluation format](https://a
   "evals": [
     {
       "id": 1,
+      "title": "Keep the change bounded",
       "prompt": "Handle this request.",
       "expected_output": "A bounded result.",
       "files": ["tests/fixtures/input.txt"],
@@ -101,18 +300,102 @@ New executable definitions follow the [Agent Skills evaluation format](https://a
 }
 ```
 
-The official fields consumed by the Runner are `id`, `prompt`, `expected_output`, and `files`.\
-String and integer IDs are normalized to strings.\
-A string assertion receives a stable positional ID such as `assertion-1` and is critical by default.
+The top level accepts only `skill_name`, `evals`, and the optional `execution` object.\
+`execution` accepts only `coexistence_skills`.\
+Every nested object is also closed: unknown fields are rejected instead of being ignored.
+
+A case accepts only `id`, `title`, the input fields described below, `expected_output`, `files`, `assertions`, `fixture`, `coexistence_skills`, `conditions`, and `expected_handlers`.\
+`id` is required, and string and integer IDs are normalized to strings.\
+`title` is optional descriptive metadata, must be a non-empty string, and is preserved in the normalized plan.
+
+## Case input forms
+
+Every case must use exactly one of these four input forms:
+
+| Form | Required input fields | Meaning |
+| --- | --- | --- |
+| Single request | `prompt` | One standalone current user request |
+| Whole transcript | `turns` | The complete conversation supplied as the evaluation input |
+| Authoring history and request | `authoring_turns` plus `request` | Prior artifact-authoring history kept distinct from the current request |
+| Conversation and prompt | `conversation` plus `prompt` | Prior completed context kept distinct from the current request |
+
+The following cases show the four forms without their grading fields:
+
+```json
+[
+  {
+    "id": "single",
+    "prompt": "Handle this request."
+  },
+  {
+    "id": "transcript",
+    "turns": [
+      {"role": "user", "content": "Start the task."},
+      {"role": "assistant", "content": "What should I preserve?"},
+      "Preserve the existing boundary."
+    ]
+  },
+  {
+    "id": "authoring",
+    "authoring_turns": ["Draft the document."],
+    "request": "Review it with fresh eyes."
+  },
+  {
+    "id": "continued",
+    "conversation": ["We selected option A."],
+    "prompt": "Continue the implementation."
+  }
+]
+```
+
+`turns`, `authoring_turns`, and `conversation` must be non-empty arrays.\
+Each entry is either a non-empty string, which represents a user turn, or an object containing exactly `role` and `content`.\
+The only accepted roles are `user` and `assistant`.
+
+Do not combine the forms or supply only one member of a required pair.\
+For example, `prompt` plus `turns`, `request` without `authoring_turns`, and `conversation` without `prompt` are invalid.
+
+## Case grading and execution fields
+
+A behavior case in `evals.json` requires at least one non-empty assertion or a non-empty `expected_output`.\
+When it has no assertions, the Runner creates one critical `expected-output` requirement from `expected_output`.
+
+An assertion is either a non-empty string or an object containing exactly a non-empty `id`, non-empty `text`, and boolean `critical`.\
+A string assertion receives a stable positional ID such as `assertion-1` and is critical by default.\
+Assertion IDs must be unique within the case.
+
+A routing case in `triggers.json` requires `expected_handlers` as an array of unique Skill names and must not use it in `evals.json`.\
+An empty `expected_handlers` array is valid and means that no Skill should handle the request.\
+Routing cases may also contain assertions or `expected_output` for their non-routing requirements.
+
+A minimal routing definition is:
+
+```json
+{
+  "skill_name": "example-skill",
+  "evals": [
+    {
+      "id": "non-trigger",
+      "prompt": "Answer an unrelated request.",
+      "expected_handlers": []
+    }
+  ]
+}
+```
+
+`conditions`, when present, contains unique values from `candidate`, `baseline`, and `without-skill`.\
+Execution-level and case-level `coexistence_skills` contain Skill names, with no duplicates within either array.\
+`fixture` contains exactly a `files` object that maps safe relative paths to string contents; named fixtures are not executable until their files are materialized inline.
 
 Each `files` entry must be a repository-relative path using `/` separators.\
-The Runner rejects empty paths, absolute or Windows drive paths, backslashes, and parent-directory traversal, then normalizes accepted paths before recording the plan.
+The shared contract rejects empty paths, NUL characters, absolute or Windows drive paths, backslashes, parent-directory traversal, and paths that collide after normalization.\
+Inline fixture paths additionally cannot target `.agents/` or `.git/`, or use one location as both a file and a directory.\
+`files` entries are materialized under `fixture/inputs/` and `fixture.files` entries under `fixture/`; combinations whose final destinations are equal or in an ancestor-descendant relationship are rejected.
 
-Repository extensions are assertion objects with `id`, `text`, and `critical`; explicit `conditions`; inline `fixture.files`; case-level or top-level `coexistence_skills`; transcript inputs; and routing `expected_handlers`.\
 Keep executor input separate from assertions and expected output so the desired answer is not disclosed to the executor.
 
-When a behavior case has no assertions, the Runner creates one critical `expected-output` requirement from `expected_output`.\
-Use `triggers.json` with the same top-level shape for routing cases, and give each selected routing case an `expected_handlers` array.
+The repository checker and Runner use this same contract.\
+Invalid definitions fail before a model is invoked, including unknown fields, unsupported input combinations, invalid nested objects, unsafe paths, normalized ID collisions, and duplicates in set-like arrays.
 
 Routing evaluation counts only successful read or tool events for installed Skills that Codex exposes in JSONL.\
 The Runner treats the routing event stream as complete only when it contains `turn.completed`.\

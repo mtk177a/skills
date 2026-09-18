@@ -624,6 +624,7 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                         "evals": [
                             {
                                 "id": 7,
+                                "title": "Official case metadata",
                                 "prompt": "Use the official-shaped case.",
                                 "expected_output": "A bounded answer.",
                                 "files": [],
@@ -665,10 +666,51 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             plan = json.loads(plan_path.read_text(encoding="utf-8"))
             self.assertEqual("agent-skills", plan["source"]["format"])
             self.assertEqual("7", plan["cases"][0]["id"])
+            self.assertEqual("Official case metadata", plan["cases"][0]["title"])
             self.assertEqual(
                 "A bounded answer.",
                 plan["cases"][0]["grading_requirements"][0]["text"],
             )
+
+    def test_plan_rejects_unknown_case_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            asset = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            document = json.loads(asset.read_text())
+            document["evals"][0]["unused"] = "ignored before the executable contract"
+            write(asset, json.dumps(document) + "\n")
+            plan_path = Path(output) / "plan.json"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "plan",
+                    "--skill",
+                    "alpha-skill",
+                    "--path",
+                    "targeted-candidate",
+                    "--purpose",
+                    "Check strict case loading.",
+                    "--affected",
+                    "case contract",
+                    "--case",
+                    "selected",
+                    "--base-ref",
+                    "HEAD",
+                    "--output",
+                    str(plan_path),
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(2, result.returncode)
+            self.assertIn("evaluation case contains unknown field(s): unused", result.stderr)
+            self.assertFalse(plan_path.exists())
 
     def test_plan_rejects_absolute_case_input_path(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
@@ -732,7 +774,7 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             (["."], "unsafe case input path"),
             (["../outside.txt"], "unsafe case input path"),
             ([r"C:\\fixtures\\input.txt"], "unsafe case input path"),
-            (["inputs/request.txt", "inputs//request.txt"], "repeats a case input path"),
+            (["inputs/request.txt", "inputs//request.txt"], "repeats a file path"),
         )
         for files, expected in unsafe_values:
             with (
@@ -791,6 +833,74 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
 
                 self.assertEqual(2, result.returncode)
                 self.assertIn(expected, result.stderr)
+                self.assertFalse(plan_path.exists())
+
+    def test_plan_rejects_paths_that_cannot_be_materialized(self) -> None:
+        invalid_cases = (
+            ({"files": ["inputs/bad\0name.txt"]}, "unsafe case input path"),
+            (
+                {"fixture": {"files": {"a": "file", "a/b": "nested"}}},
+                "fixture file paths conflict: `a` and `a/b`",
+            ),
+            (
+                {
+                    "files": ["source.txt"],
+                    "fixture": {"files": {"inputs/source.txt": "inline"}},
+                },
+                "case file `source.txt` and fixture file `inputs/source.txt` conflict",
+            ),
+            (
+                {
+                    "files": ["source.txt"],
+                    "fixture": {"files": {"inputs": "inline"}},
+                },
+                "case file `source.txt` and fixture file `inputs` conflict",
+            ),
+        )
+        for changes, expected in invalid_cases:
+            with (
+                self.subTest(changes=changes),
+                tempfile.TemporaryDirectory() as repository,
+                tempfile.TemporaryDirectory() as output,
+            ):
+                root = Path(repository)
+                create_repository(root)
+                write(root / "source.txt", "Repository input.\n")
+                asset = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+                document = json.loads(asset.read_text())
+                document["evals"][0].update(changes)
+                write(asset, json.dumps(document) + "\n")
+                plan_path = Path(output) / "plan.json"
+
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(RUNNER),
+                        "--root",
+                        str(root),
+                        "plan",
+                        "--skill",
+                        "alpha-skill",
+                        "--path",
+                        "targeted-candidate",
+                        "--purpose",
+                        "Reject a path that cannot be materialized.",
+                        "--affected",
+                        "fixture materialization",
+                        "--case",
+                        "selected",
+                        "--base-ref",
+                        "HEAD",
+                        "--output",
+                        str(plan_path),
+                    ],
+                    text=True,
+                    capture_output=True,
+                )
+
+                self.assertEqual(2, result.returncode, result.stderr)
+                self.assertIn(expected, result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
                 self.assertFalse(plan_path.exists())
 
     def test_plan_normalizes_safe_relative_case_input_path(self) -> None:
