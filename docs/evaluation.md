@@ -49,6 +49,120 @@ If both `evals.json` and `triggers.json` exist for a Skill, migrate both in the 
 If only one of those definition files exists, migrate that file without creating the other one.\
 If a Skill does not need executable definitions, do not create them merely to perform a migration.
 
+### Migration examples
+
+If both definitions exist in the legacy format, migrate both in the same change.
+
+Before migration, `evals.json` may contain:
+
+```json
+{
+  "skill": "example-skill",
+  "version": 1,
+  "cases": [
+    {
+      "id": "behavior",
+      "prompt": "Handle this request."
+    }
+  ]
+}
+```
+
+Before migration, `triggers.json` may contain:
+
+```json
+{
+  "skill": "example-skill",
+  "version": 1,
+  "cases": [
+    {
+      "id": "route",
+      "prompt": "Handle this request.",
+      "expected_handler": "example-skill"
+    }
+  ]
+}
+```
+
+After migration, `evals.json` uses the executable behavior format:
+
+```json
+{
+  "skill_name": "example-skill",
+  "evals": [
+    {
+      "id": "behavior",
+      "prompt": "Handle this request.",
+      "expected_output": "A bounded result."
+    }
+  ]
+}
+```
+
+After migration, `triggers.json` uses the executable routing format:
+
+```json
+{
+  "skill_name": "example-skill",
+  "evals": [
+    {
+      "id": "route",
+      "prompt": "Handle this request.",
+      "expected_handlers": ["example-skill"]
+    }
+  ]
+}
+```
+
+If only a legacy `triggers.json` exists, migrate that file and do not create `evals.json`.
+
+Before migration:
+
+```json
+{
+  "skill": "example-skill",
+  "version": 1,
+  "cases": [
+    {
+      "id": "route",
+      "prompt": "Handle this request.",
+      "expected_handler": "example-skill"
+    }
+  ]
+}
+```
+
+After migration:
+
+```json
+{
+  "skill_name": "example-skill",
+  "evals": [
+    {
+      "id": "route",
+      "prompt": "Handle this request.",
+      "expected_handlers": ["example-skill"]
+    }
+  ]
+}
+```
+
+If the Skill has no executable definitions and does not need them, leave that state unchanged.
+
+Before migration:
+
+```text
+skills/example-skill/evals/
+└── README.md
+```
+
+After migration:
+
+```text
+skills/example-skill/evals/
+└── README.md
+```
+
 Migrating definitions does not mean executing every migrated case.\
 After migration, run only the cases required by the responsibility changed in that pull request.
 
@@ -193,8 +307,8 @@ Execution-level and case-level `coexistence_skills` contain Skill names, with no
 `fixture` contains exactly a `files` object that maps safe relative paths to string contents; named fixtures are not executable until their files are materialized inline.
 
 Each `files` entry must be a repository-relative path using `/` separators.\
-The shared contract rejects empty paths, absolute or Windows drive paths, backslashes, parent-directory traversal, and paths that collide after normalization.\
-Inline fixture paths additionally cannot target `.agents/` or `.git/`.
+The shared contract rejects empty paths, NUL characters, absolute or Windows drive paths, backslashes, parent-directory traversal, and paths that collide after normalization.\
+Inline fixture paths additionally cannot target `.agents/` or `.git/`, or use one location as both a file and a directory.
 
 Keep executor input separate from assertions and expected output so the desired answer is not disclosed to the executor.
 

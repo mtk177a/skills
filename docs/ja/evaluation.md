@@ -51,6 +51,120 @@ README、参考訳の同期、意味を変えない文書やメタデータ、�
 どちらか一方の評価定義だけが存在する場合は、もう一方を新規作成せず、存在するファイルだけを移行します。\
 実行可能な評価定義を必要としない Skill では、移行だけを目的として新規作成しません。
 
+### 移行例
+
+旧形式の評価定義が両方ある場合は、同じ変更で両方を移行します。
+
+移行前の `evals.json` は、たとえば次のような形式です。
+
+```json
+{
+  "skill": "example-skill",
+  "version": 1,
+  "cases": [
+    {
+      "id": "behavior",
+      "prompt": "Handle this request."
+    }
+  ]
+}
+```
+
+移行前の `triggers.json` は、たとえば次のような形式です。
+
+```json
+{
+  "skill": "example-skill",
+  "version": 1,
+  "cases": [
+    {
+      "id": "route",
+      "prompt": "Handle this request.",
+      "expected_handler": "example-skill"
+    }
+  ]
+}
+```
+
+移行後の `evals.json` は、実行可能な挙動評価形式を使用します。
+
+```json
+{
+  "skill_name": "example-skill",
+  "evals": [
+    {
+      "id": "behavior",
+      "prompt": "Handle this request.",
+      "expected_output": "A bounded result."
+    }
+  ]
+}
+```
+
+移行後の `triggers.json` は、実行可能な呼び出し評価形式を使用します。
+
+```json
+{
+  "skill_name": "example-skill",
+  "evals": [
+    {
+      "id": "route",
+      "prompt": "Handle this request.",
+      "expected_handlers": ["example-skill"]
+    }
+  ]
+}
+```
+
+旧形式の `triggers.json` だけがある場合は、そのファイルだけを移行し、`evals.json` は新規作成しません。
+
+移行前は次の形式です。
+
+```json
+{
+  "skill": "example-skill",
+  "version": 1,
+  "cases": [
+    {
+      "id": "route",
+      "prompt": "Handle this request.",
+      "expected_handler": "example-skill"
+    }
+  ]
+}
+```
+
+移行後は次の形式です。
+
+```json
+{
+  "skill_name": "example-skill",
+  "evals": [
+    {
+      "id": "route",
+      "prompt": "Handle this request.",
+      "expected_handlers": ["example-skill"]
+    }
+  ]
+}
+```
+
+実行可能な評価定義がなく、必要もない場合は、その状態を維持します。
+
+移行前の構成は次のとおりです。
+
+```text
+skills/example-skill/evals/
+└── README.md
+```
+
+移行後も構成は変わりません。
+
+```text
+skills/example-skill/evals/
+└── README.md
+```
+
 評価定義の移行は、移行したすべてのケースを実行することではありません。\
 移行後も、その PR で変更した責務に必要なケースだけを実行します。
 
@@ -197,8 +311,8 @@ skills/<skill-name>/
 実行するには、ファイルの内容を `fixture.files` に直接記述します。
 
 `files` の各要素には、区切り文字として `/` を使ったリポジトリ相対パスを指定します。\
-共通の検証規則では、空のパス、絶対パス、Windows のドライブを含むパス、バックスラッシュ、親ディレクトリへの参照、正規化後に衝突するパスを拒否します。\
-インライン fixture のパスでは、さらに `.agents/` と `.git/` を対象にできません。
+共通の検証規則では、空のパス、NUL 文字を含むパス、絶対パス、Windows のドライブを含むパス、バックスラッシュ、親ディレクトリへの参照、正規化後に衝突するパスを拒否します。\
+インライン fixture のパスでは、さらに `.agents/` と `.git/` を対象にできず、一つの場所をファイルとディレクトリの両方として使用することもできません。
 
 期待する回答が実行担当エージェントに伝わらないよう、実行時の入力と `assertions`、`expected_output` を分離してください。
 

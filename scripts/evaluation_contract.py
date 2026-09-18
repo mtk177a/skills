@@ -73,6 +73,7 @@ def normalize_case_input_path(value: str, case_id: str) -> str:
     if (
         not value
         or value == "."
+        or "\0" in value
         or relative.is_absolute()
         or bool(windows_path.drive)
         or "\\" in value
@@ -98,6 +99,24 @@ def normalize_case_input_paths(values: Any, case_id: str) -> list[str]:
     if len(set(normalized)) != len(normalized):
         raise EvaluationContractError(f"evaluation case `{case_id}` repeats a file path")
     return normalized
+
+
+def _reject_fixture_path_conflicts(paths: list[str], case_id: str) -> None:
+    ordered = sorted(paths)
+    for index, left in enumerate(ordered):
+        left_parts = Path(left).parts
+        for right in ordered[index + 1 :]:
+            right_parts = Path(right).parts
+            if right_parts[: len(left_parts)] == left_parts:
+                raise EvaluationContractError(
+                    f"evaluation case `{case_id}` fixture file paths conflict: "
+                    f"`{left}` and `{right}`"
+                )
+            if left_parts[: len(right_parts)] == right_parts:
+                raise EvaluationContractError(
+                    f"evaluation case `{case_id}` fixture file paths conflict: "
+                    f"`{right}` and `{left}`"
+                )
 
 
 def _format_turns(values: Any, label: str) -> str:
@@ -235,6 +254,7 @@ def _normalize_fixture(case: dict[str, Any], case_id: str) -> dict[str, str]:
                 f"evaluation case `{case_id}` repeats a fixture file path"
             )
         normalized[path] = content
+    _reject_fixture_path_conflicts(list(normalized), case_id)
     return normalized
 
 

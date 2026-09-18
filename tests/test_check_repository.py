@@ -434,6 +434,65 @@ class CheckerCliTests(unittest.TestCase):
 
         self.assert_fixture_failure(mutate, "must migrate evals.json and triggers.json together")
 
+    def test_migrated_behavior_and_routing_definitions_may_coexist(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "triggers.json",
+                json.dumps(
+                    {
+                        "skill_name": "alpha-skill",
+                        "evals": [
+                            {
+                                "id": "route",
+                                "prompt": "Route this request.",
+                                "expected_handlers": ["alpha-skill"],
+                            }
+                        ],
+                    }
+                ),
+            )
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_migrated_routing_definition_does_not_require_behavior_definition(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            (root / "skills" / "alpha-skill" / "evals" / "evals.json").unlink()
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "triggers.json",
+                json.dumps(
+                    {
+                        "skill_name": "alpha-skill",
+                        "evals": [
+                            {
+                                "id": "route",
+                                "prompt": "Route this request.",
+                                "expected_handlers": ["alpha-skill"],
+                            }
+                        ],
+                    }
+                ),
+            )
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_skill_without_executable_definitions_remains_valid(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            (root / "skills" / "alpha-skill" / "evals" / "evals.json").unlink()
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
     def test_legacy_assets_remain_valid_until_the_skill_is_migrated(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -778,6 +837,29 @@ class CheckerCliTests(unittest.TestCase):
             path.write_text(json.dumps(document))
 
         self.assert_fixture_failure(mutate, "evaluation case `alpha-case` repeats a file path")
+
+    def test_official_eval_shape_rejects_paths_that_cannot_be_materialized(self) -> None:
+        invalid_cases = (
+            ({"files": ["inputs/bad\0name.txt"]}, "unsafe case input path"),
+            (
+                {"fixture": {"files": {"a": "file", "a/b": "nested"}}},
+                "fixture file paths conflict: `a` and `a/b`",
+            ),
+        )
+        for changes, expected in invalid_cases:
+            with self.subTest(changes=changes), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                create_valid_repository(root)
+                path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+                document = json.loads(path.read_text())
+                document["evals"][0].update(changes)
+                write(path, json.dumps(document))
+
+                result = run_checker(root)
+
+                self.assertEqual(1, result.returncode, result.stderr)
+                self.assertIn(expected, result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
 
     def test_companion_relationship_requires_skill_reference(self) -> None:
         def mutate(root: Path) -> None:

@@ -187,6 +187,33 @@ class EvaluationContractTests(unittest.TestCase):
                 with self.assertRaises(EvaluationContractError):
                     self.normalize(behavior_case(fixture=fixture))
 
+    def test_rejects_nul_in_case_and_fixture_paths(self) -> None:
+        cases = (
+            behavior_case(files=["inputs/bad\0name.txt"]),
+            behavior_case(fixture={"files": {"bad\0name.txt": "content"}}),
+        )
+        for case in cases:
+            with self.subTest(case=case):
+                with self.assertRaisesRegex(EvaluationContractError, "unsafe case input path"):
+                    self.normalize(case)
+
+    def test_rejects_fixture_file_and_directory_path_conflicts(self) -> None:
+        fixtures = (
+            {"files": {"a": "file", "a/b": "nested"}},
+            {"files": {"a/b": "nested", "a": "file"}},
+        )
+        for fixture in fixtures:
+            with self.subTest(fixture=fixture):
+                with self.assertRaisesRegex(
+                    EvaluationContractError, "fixture file paths conflict: `a` and `a/b`"
+                ):
+                    self.normalize(behavior_case(fixture=fixture))
+
+        normalized = self.normalize(
+            behavior_case(fixture={"files": {"a": "first", "ab": "second"}})
+        )
+        self.assertEqual({"a": "first", "ab": "second"}, normalized["cases"][0]["inline_files"])
+
     def test_behavior_requires_grading_and_forbids_expected_handlers(self) -> None:
         with self.assertRaisesRegex(EvaluationContractError, "requires assertions or expected_output"):
             self.normalize({"id": "case-1", "prompt": "Request."})
