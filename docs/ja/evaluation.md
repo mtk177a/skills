@@ -48,6 +48,9 @@ Runner をファイル監視、編集後に動くフック、その他すべて�
 README、参考訳の同期、意味を変えない文書やメタデータ、旧形式の評価結果だけの変更では移行を要求しません。\
 一つの Skill に `evals.json` と `triggers.json` の両方がある場合は、実行可能な評価定義の形式が新旧混在しないよう、同じ PR で両方を移行します。
 
+どちらか一方の評価定義だけが存在する場合は、もう一方を新規作成せず、存在するファイルだけを移行します。\
+実行可能な評価定義を必要としない Skill では、移行だけを目的として新規作成しません。
+
 評価定義の移行は、移行したすべてのケースを実行することではありません。\
 移行後も、その PR で変更した責務に必要なケースだけを実行します。
 
@@ -80,6 +83,7 @@ skills/<skill-name>/
   "evals": [
     {
       "id": 1,
+      "title": "Keep the change bounded",
       "prompt": "Handle this request.",
       "expected_output": "A bounded result.",
       "files": ["tests/fixtures/input.txt"],
@@ -103,22 +107,108 @@ skills/<skill-name>/
 }
 ```
 
-Runner が扱う公式フィールドは `id`、`prompt`、`expected_output`、`files` です。\
-文字列と整数の ID は文字列へ正規化します。\
-`assertions` の文字列要素には `assertion-1` のような位置に基づく安定した ID を与え、既定では重大な要件として扱います。
+最上位では `skill_name`、`evals`、任意の `execution` オブジェクトだけを受け付けます。\
+`execution` では `coexistence_skills` だけを受け付けます。\
+入れ子の各オブジェクトでも、定められたフィールド以外は認めず、未知のフィールドは拒否します。
+
+ケースでは `id`、`title`、後述する入力用フィールド、`expected_output`、`files`、`assertions`、`fixture`、`coexistence_skills`、`conditions`、`expected_handlers` だけを受け付けます。\
+`id` は必須で、文字列と整数の ID を文字列へ正規化します。\
+`title` は説明用の任意メタデータであり、空でない文字列を指定し、正規化済みの計画にも保持します。
+
+## ケースの入力形式
+
+各ケースでは、次の 4 形式のうち一つだけを使用します。
+
+| 形式 | 必須の入力用フィールド | 意味 |
+| --- | --- | --- |
+| 単一依頼 | `prompt` | 独立した現在のユーザー依頼を一つ渡す |
+| 会話全体 | `turns` | 評価入力となる会話全体を渡す |
+| 執筆履歴と依頼 | `authoring_turns` と `request` | 成果物を執筆した履歴と現在の依頼を分けて渡す |
+| 会話と依頼 | `conversation` と `prompt` | 完了済みの文脈と現在の依頼を分けて渡す |
+
+次のケースは、採点用フィールドを省略して 4 形式を示しています。
+
+```json
+[
+  {
+    "id": "single",
+    "prompt": "Handle this request."
+  },
+  {
+    "id": "transcript",
+    "turns": [
+      {"role": "user", "content": "Start the task."},
+      {"role": "assistant", "content": "What should I preserve?"},
+      "Preserve the existing boundary."
+    ]
+  },
+  {
+    "id": "authoring",
+    "authoring_turns": ["Draft the document."],
+    "request": "Review it with fresh eyes."
+  },
+  {
+    "id": "continued",
+    "conversation": ["We selected option A."],
+    "prompt": "Continue the implementation."
+  }
+]
+```
+
+`turns`、`authoring_turns`、`conversation` は、空でない配列にします。\
+各要素には、ユーザー発言を表す空でない文字列、または `role` と `content` だけを持つオブジェクトを指定します。\
+`role` に指定できる値は `user` と `assistant` だけです。
+
+複数の形式を組み合わせたり、対で必要なフィールドの片方だけを指定したりしないでください。\
+たとえば、`prompt` と `turns` の併用、`authoring_turns` のない `request`、`prompt` のない `conversation` は無効です。
+
+## ケースの採点用フィールドと実行用フィールド
+
+`evals.json` の挙動評価ケースには、空でない `assertions` の要素を一つ以上、または空でない `expected_output` が必要です。\
+`assertions` がなければ、Runner は `expected_output` から `expected-output` 要件を一つ生成し、`critical` を `true` にします。
+
+`assertions` の各要素には、空でない文字列、または空でない `id`、空でない `text`、真偽値の `critical` だけを持つオブジェクトを指定します。\
+文字列の要素には `assertion-1` のような位置に基づく安定した ID を与え、`critical` の既定値は `true` とします。\
+一つのケースの `assertions` 内で ID が重複してはいけません。
+
+`triggers.json` の呼び出し評価ケースには、一意な Skill 名を並べた `expected_handlers` 配列が必要であり、`evals.json` ではこのフィールドを使用できません。\
+空の `expected_handlers` 配列は有効で、どの Skill も依頼を処理すべきでないことを表します。\
+呼び出し評価ケースでも、呼び出し判定以外の要件として `assertions` または `expected_output` を指定できます。
+
+呼び出し評価の最小定義は次のとおりです。
+
+```json
+{
+  "skill_name": "example-skill",
+  "evals": [
+    {
+      "id": "non-trigger",
+      "prompt": "Answer an unrelated request.",
+      "expected_handlers": []
+    }
+  ]
+}
+```
+
+`conditions` を指定する場合は、`candidate`、`baseline`、`without-skill` から重複なく選びます。\
+`execution` とケース単位の `coexistence_skills` には Skill 名を指定し、それぞれの配列内で重複させません。\
+`fixture` には、安全な相対パスと文字列の内容を対応付ける `files` オブジェクトだけを含めます。\
+`fixture` を名前だけで参照する形式は実行できません。\
+実行するには、ファイルの内容を `fixture.files` に直接記述します。
 
 `files` の各要素には、区切り文字として `/` を使ったリポジトリ相対パスを指定します。\
-Runner は、空のパス、絶対パス、Windows のドライブを含むパス、バックスラッシュ、親ディレクトリへの参照を拒否し、受け付けたパスを正規化してから計画へ記録します。
+共通の検証規則では、空のパス、絶対パス、Windows のドライブを含むパス、バックスラッシュ、親ディレクトリへの参照、正規化後に衝突するパスを拒否します。\
+インライン fixture のパスでは、さらに `.agents/` と `.git/` を対象にできません。
 
-リポジトリ固有拡張は、`id`、`text`、`critical` を持つ `assertions` のオブジェクト要素、明示的な `conditions`、埋め込みの `fixture.files`、ケースまたは最上位の `coexistence_skills`、会話履歴の入力、呼び出し評価用の `expected_handlers` です。\
 期待する回答が実行担当エージェントに伝わらないよう、実行時の入力と `assertions`、`expected_output` を分離してください。
 
-挙動評価ケースに `assertions` がなければ、Runner は `expected_output` から重大な `expected-output` 要件を一つ生成します。\
-呼び出し評価ケースは、同じ最上位形式の `triggers.json` に置き、選択する各ケースへ `expected_handlers` 配列を指定します。
+リポジトリ検査と Runner は、この共通の検証規則を使用します。\
+未知のフィールド、未対応の入力の組み合わせ、不正な入れ子オブジェクト、安全でないパス、正規化後の ID 衝突、集合として扱う配列内の重複を含む不正な定義は、モデルを呼び出す前に拒否します。
 
 呼び出し評価では、Codex が JSONL に出力した、配置済み Skill に対する成功した読み取りイベントまたはツールイベントだけを数えます。\
 `turn.completed` が含まれる場合だけ、呼び出し評価のイベント列が最後まで出力されたものとして扱います。\
-イベント列が完了していて Skill の読み込みが一件もなければ、空の handler 配列を持つ `observed` を記録します。この結果は、`expected_handlers` が空のケースに合格できます。\
+イベント列が完了していて Skill の読み込みが一件もなければ、`handlers` が空の `observed` を記録します。\
+この結果は、`expected_handlers` が空のケースで合格となり得ます。\
 `turn.completed` がなければ `not_exposed` を記録し、呼び出し評価を `inconclusive` と判定します。最終応答の文面から処理した Skill を推測しません。
 
 ## トークンを使う前に計画する
@@ -141,7 +231,8 @@ python3 scripts/run_skill_evaluation.py plan \
 `plan` はモデルを呼び出しません。\
 基準とするコミットを確定し、明示的に選んだケースと条件だけを展開し、モデル呼び出し回数の見積もりを表示して、正規化した JSON のダイジェストを持つスキーマバージョン 2 の計画を書き出します。
 
-計画には、`candidate` となる Skill のうち、実行担当エージェントへ渡す可能性がある通常ファイルを、`evals/` を除いてすべて記録します。各ファイルには SHA-256 と、`100644` または `100755` に正規化した Git の mode を含めます。\
+計画には、`candidate` 条件で使用する Skill に含まれ、実行担当エージェントへ渡される可能性のある通常ファイルを、`evals/` を除いてすべて記録します。\
+各ファイルには SHA-256 と、`100644` または `100755` に正規化した Git の mode を含めます。\
 評価用ファイル、選択ケースが使うリポジトリ内の入力ファイル、共存させる Skill 全体のマニフェストは別々に記録します。\
 Skill の実行対象に含まれるシンボリックリンクは拒否し、マニフェストにないファイルを実行用ディレクトリへコピーしません。
 

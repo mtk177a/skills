@@ -728,6 +728,34 @@ class CheckerCliTests(unittest.TestCase):
 
             self.assertEqual(0, result.returncode, result.stderr)
 
+    def test_official_eval_shape_accepts_transcript_input(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            document = json.loads(path.read_text())
+            case = document["evals"][0]
+            case.pop("prompt")
+            case["turns"] = [
+                {"role": "user", "content": "Start the task."},
+                {"role": "assistant", "content": "What should I preserve?"},
+                "Preserve the existing boundary.",
+            ]
+            write(path, json.dumps(document))
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_official_eval_shape_rejects_unknown_case_fields(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            document = json.loads(path.read_text())
+            document["evals"][0]["unused"] = "ignored before the executable contract"
+            write(path, json.dumps(document))
+
+        self.assert_fixture_failure(mutate, "evaluation case contains unknown field(s): unused")
+
     def test_official_eval_files_require_safe_repository_relative_paths(self) -> None:
         for value in ("/tmp/input.txt", "../outside.txt", r"C:\fixtures\input.txt"):
             with self.subTest(value=value):
@@ -739,7 +767,7 @@ class CheckerCliTests(unittest.TestCase):
 
                 self.assert_fixture_failure(
                     mutate,
-                    "official case `alpha-case` has an unsafe repository-relative file path",
+                    "evaluation case `alpha-case` has an unsafe case input path",
                 )
 
     def test_official_eval_files_reject_duplicates_after_normalization(self) -> None:
@@ -749,7 +777,7 @@ class CheckerCliTests(unittest.TestCase):
             document["evals"][0]["files"] = ["inputs/request.txt", "inputs//request.txt"]
             path.write_text(json.dumps(document))
 
-        self.assert_fixture_failure(mutate, "official case `alpha-case` repeats a file path")
+        self.assert_fixture_failure(mutate, "evaluation case `alpha-case` repeats a file path")
 
     def test_companion_relationship_requires_skill_reference(self) -> None:
         def mutate(root: Path) -> None:

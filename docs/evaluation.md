@@ -46,6 +46,9 @@ For an existing Skill, migrate its complete `evals.json` and `triggers.json` set
 README changes, reference-translation synchronization, meaning-preserving documentation or metadata changes, and legacy-result-only changes do not trigger migration.\
 If both `evals.json` and `triggers.json` exist for a Skill, migrate both in the same pull request so the Skill never has a mixed executable contract.
 
+If only one of those definition files exists, migrate that file without creating the other one.\
+If a Skill does not need executable definitions, do not create them merely to perform a migration.
+
 Migrating definitions does not mean executing every migrated case.\
 After migration, run only the cases required by the responsibility changed in that pull request.
 
@@ -78,6 +81,7 @@ New executable definitions follow the [Agent Skills evaluation format](https://a
   "evals": [
     {
       "id": 1,
+      "title": "Keep the change bounded",
       "prompt": "Handle this request.",
       "expected_output": "A bounded result.",
       "files": ["tests/fixtures/input.txt"],
@@ -101,18 +105,101 @@ New executable definitions follow the [Agent Skills evaluation format](https://a
 }
 ```
 
-The official fields consumed by the Runner are `id`, `prompt`, `expected_output`, and `files`.\
-String and integer IDs are normalized to strings.\
-A string assertion receives a stable positional ID such as `assertion-1` and is critical by default.
+The top level accepts only `skill_name`, `evals`, and the optional `execution` object.\
+`execution` accepts only `coexistence_skills`.\
+Every nested object is also closed: unknown fields are rejected instead of being ignored.
+
+A case accepts only `id`, `title`, the input fields described below, `expected_output`, `files`, `assertions`, `fixture`, `coexistence_skills`, `conditions`, and `expected_handlers`.\
+`id` is required, and string and integer IDs are normalized to strings.\
+`title` is optional descriptive metadata, must be a non-empty string, and is preserved in the normalized plan.
+
+## Case input forms
+
+Every case must use exactly one of these four input forms:
+
+| Form | Required input fields | Meaning |
+| --- | --- | --- |
+| Single request | `prompt` | One standalone current user request |
+| Whole transcript | `turns` | The complete conversation supplied as the evaluation input |
+| Authoring history and request | `authoring_turns` plus `request` | Prior artifact-authoring history kept distinct from the current request |
+| Conversation and prompt | `conversation` plus `prompt` | Prior completed context kept distinct from the current request |
+
+The following cases show the four forms without their grading fields:
+
+```json
+[
+  {
+    "id": "single",
+    "prompt": "Handle this request."
+  },
+  {
+    "id": "transcript",
+    "turns": [
+      {"role": "user", "content": "Start the task."},
+      {"role": "assistant", "content": "What should I preserve?"},
+      "Preserve the existing boundary."
+    ]
+  },
+  {
+    "id": "authoring",
+    "authoring_turns": ["Draft the document."],
+    "request": "Review it with fresh eyes."
+  },
+  {
+    "id": "continued",
+    "conversation": ["We selected option A."],
+    "prompt": "Continue the implementation."
+  }
+]
+```
+
+`turns`, `authoring_turns`, and `conversation` must be non-empty arrays.\
+Each entry is either a non-empty string, which represents a user turn, or an object containing exactly `role` and `content`.\
+The only accepted roles are `user` and `assistant`.
+
+Do not combine the forms or supply only one member of a required pair.\
+For example, `prompt` plus `turns`, `request` without `authoring_turns`, and `conversation` without `prompt` are invalid.
+
+## Case grading and execution fields
+
+A behavior case in `evals.json` requires at least one non-empty assertion or a non-empty `expected_output`.\
+When it has no assertions, the Runner creates one critical `expected-output` requirement from `expected_output`.
+
+An assertion is either a non-empty string or an object containing exactly a non-empty `id`, non-empty `text`, and boolean `critical`.\
+A string assertion receives a stable positional ID such as `assertion-1` and is critical by default.\
+Assertion IDs must be unique within the case.
+
+A routing case in `triggers.json` requires `expected_handlers` as an array of unique Skill names and must not use it in `evals.json`.\
+An empty `expected_handlers` array is valid and means that no Skill should handle the request.\
+Routing cases may also contain assertions or `expected_output` for their non-routing requirements.
+
+A minimal routing definition is:
+
+```json
+{
+  "skill_name": "example-skill",
+  "evals": [
+    {
+      "id": "non-trigger",
+      "prompt": "Answer an unrelated request.",
+      "expected_handlers": []
+    }
+  ]
+}
+```
+
+`conditions`, when present, contains unique values from `candidate`, `baseline`, and `without-skill`.\
+Execution-level and case-level `coexistence_skills` contain Skill names, with no duplicates within either array.\
+`fixture` contains exactly a `files` object that maps safe relative paths to string contents; named fixtures are not executable until their files are materialized inline.
 
 Each `files` entry must be a repository-relative path using `/` separators.\
-The Runner rejects empty paths, absolute or Windows drive paths, backslashes, and parent-directory traversal, then normalizes accepted paths before recording the plan.
+The shared contract rejects empty paths, absolute or Windows drive paths, backslashes, parent-directory traversal, and paths that collide after normalization.\
+Inline fixture paths additionally cannot target `.agents/` or `.git/`.
 
-Repository extensions are assertion objects with `id`, `text`, and `critical`; explicit `conditions`; inline `fixture.files`; case-level or top-level `coexistence_skills`; transcript inputs; and routing `expected_handlers`.\
 Keep executor input separate from assertions and expected output so the desired answer is not disclosed to the executor.
 
-When a behavior case has no assertions, the Runner creates one critical `expected-output` requirement from `expected_output`.\
-Use `triggers.json` with the same top-level shape for routing cases, and give each selected routing case an `expected_handlers` array.
+The repository checker and Runner use this same contract.\
+Invalid definitions fail before a model is invoked, including unknown fields, unsupported input combinations, invalid nested objects, unsafe paths, normalized ID collisions, and duplicates in set-like arrays.
 
 Routing evaluation counts only successful read or tool events for installed Skills that Codex exposes in JSONL.\
 The Runner treats the routing event stream as complete only when it contains `turn.completed`.\
