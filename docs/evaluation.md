@@ -201,7 +201,7 @@ The README should cover the applicable information below:
 
 The following is a suggested structure, not a required heading template:
 
-~~~markdown
+```markdown
 # <skill-name> evals
 
 ## Purpose
@@ -233,7 +233,7 @@ Record the revision, environment, selected cases, results, and unexecuted checks
 ## Unverified boundaries
 
 State what remains unverified and when another evaluation would be decision-relevant.
-~~~
+```
 
 Use different headings when they better fit the evidence, and omit sections that do not apply.\
 A failure-pattern ledger or next-validation question is optional and should appear only when it helps interpret or extend the evidence.\
