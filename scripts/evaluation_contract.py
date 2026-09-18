@@ -119,6 +119,26 @@ def _reject_fixture_path_conflicts(paths: list[str], case_id: str) -> None:
                 )
 
 
+def _reject_case_fixture_path_conflicts(
+    case_paths: list[str], fixture_paths: list[str], case_id: str
+) -> None:
+    case_destinations = sorted(
+        ((Path("inputs") / path).as_posix(), path) for path in case_paths
+    )
+    for case_destination, case_path in case_destinations:
+        case_parts = Path(case_destination).parts
+        for fixture_path in sorted(fixture_paths):
+            fixture_parts = Path(fixture_path).parts
+            if (
+                fixture_parts[: len(case_parts)] == case_parts
+                or case_parts[: len(fixture_parts)] == fixture_parts
+            ):
+                raise EvaluationContractError(
+                    f"evaluation case `{case_id}` case file `{case_path}` and fixture file "
+                    f"`{fixture_path}` conflict after materialization"
+                )
+
+
 def _format_turns(values: Any, label: str) -> str:
     if not isinstance(values, list) or not values:
         raise EvaluationContractError(f"{label} must be a non-empty array")
@@ -300,13 +320,17 @@ def _normalize_case(case: Any, definition_kind: str) -> dict[str, Any]:
         prompt = f"Conversation so far:\n\n{history}\n\nCurrent user request:\n{current}"
         input_mode = "conversation"
 
+    files = normalize_case_input_paths(case.get("files", []), normalized_id)
+    inline_files = _normalize_fixture(case, normalized_id)
+    _reject_case_fixture_path_conflicts(files, list(inline_files), normalized_id)
+
     normalized: dict[str, Any] = {
         "id": normalized_id,
         "prompt": prompt,
         "input_mode": input_mode,
         "grading_requirements": _normalize_assertions(case, normalized_id, definition_kind),
-        "files": normalize_case_input_paths(case.get("files", []), normalized_id),
-        "inline_files": _normalize_fixture(case, normalized_id),
+        "files": files,
+        "inline_files": inline_files,
         "coexistence_skills": _skill_names(
             case.get("coexistence_skills", []),
             f"evaluation case `{normalized_id}` coexistence_skills",

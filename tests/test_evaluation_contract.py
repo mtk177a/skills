@@ -214,6 +214,72 @@ class EvaluationContractTests(unittest.TestCase):
         )
         self.assertEqual({"a": "first", "ab": "second"}, normalized["cases"][0]["inline_files"])
 
+    def test_rejects_case_and_fixture_files_with_the_same_materialized_path(self) -> None:
+        with self.assertRaisesRegex(
+            EvaluationContractError,
+            "case file `source.txt` and fixture file `inputs/source.txt` conflict",
+        ):
+            self.normalize(
+                behavior_case(
+                    files=["source.txt"],
+                    fixture={"files": {"inputs/source.txt": "inline"}},
+                )
+            )
+
+    def test_rejects_case_and_fixture_file_directory_conflicts(self) -> None:
+        cases = (
+            (
+                behavior_case(
+                    files=["source.txt"],
+                    fixture={"files": {"inputs": "inline"}},
+                ),
+                "case file `source.txt` and fixture file `inputs` conflict",
+            ),
+            (
+                behavior_case(
+                    files=["source.txt"],
+                    fixture={"files": {"inputs/source.txt/nested.txt": "inline"}},
+                ),
+                "case file `source.txt` and fixture file `inputs/source.txt/nested.txt` conflict",
+            ),
+        )
+        for case, expected in cases:
+            with self.subTest(case=case):
+                with self.assertRaisesRegex(EvaluationContractError, expected):
+                    self.normalize(case)
+
+    def test_case_and_fixture_conflict_diagnostic_is_stable(self) -> None:
+        cases = (
+            behavior_case(
+                files=["z.txt", "source.txt"],
+                fixture={"files": {"z-inline.txt": "other", "inputs/source.txt": "inline"}},
+            ),
+            behavior_case(
+                files=["source.txt", "z.txt"],
+                fixture={"files": {"inputs/source.txt": "inline", "z-inline.txt": "other"}},
+            ),
+        )
+        for case in cases:
+            with self.subTest(case=case):
+                with self.assertRaisesRegex(
+                    EvaluationContractError,
+                    "case file `source.txt` and fixture file `inputs/source.txt` conflict",
+                ):
+                    self.normalize(case)
+
+    def test_accepts_non_conflicting_case_and_fixture_path_prefixes(self) -> None:
+        normalized = self.normalize(
+            behavior_case(
+                files=["source.txt"],
+                fixture={"files": {"inputs/source.txt.bak": "inline"}},
+            )
+        )["cases"][0]
+
+        self.assertEqual(["source.txt"], normalized["files"])
+        self.assertEqual(
+            {"inputs/source.txt.bak": "inline"}, normalized["inline_files"]
+        )
+
     def test_behavior_requires_grading_and_forbids_expected_handlers(self) -> None:
         with self.assertRaisesRegex(EvaluationContractError, "requires assertions or expected_output"):
             self.normalize({"id": "case-1", "prompt": "Request."})

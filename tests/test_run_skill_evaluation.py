@@ -842,6 +842,20 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 {"fixture": {"files": {"a": "file", "a/b": "nested"}}},
                 "fixture file paths conflict: `a` and `a/b`",
             ),
+            (
+                {
+                    "files": ["source.txt"],
+                    "fixture": {"files": {"inputs/source.txt": "inline"}},
+                },
+                "case file `source.txt` and fixture file `inputs/source.txt` conflict",
+            ),
+            (
+                {
+                    "files": ["source.txt"],
+                    "fixture": {"files": {"inputs": "inline"}},
+                },
+                "case file `source.txt` and fixture file `inputs` conflict",
+            ),
         )
         for changes, expected in invalid_cases:
             with (
@@ -851,6 +865,7 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             ):
                 root = Path(repository)
                 create_repository(root)
+                write(root / "source.txt", "Repository input.\n")
                 asset = root / "skills" / "alpha-skill" / "evals" / "evals.json"
                 document = json.loads(asset.read_text())
                 document["evals"][0].update(changes)

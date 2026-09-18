@@ -308,7 +308,8 @@ Execution-level and case-level `coexistence_skills` contain Skill names, with no
 
 Each `files` entry must be a repository-relative path using `/` separators.\
 The shared contract rejects empty paths, NUL characters, absolute or Windows drive paths, backslashes, parent-directory traversal, and paths that collide after normalization.\
-Inline fixture paths additionally cannot target `.agents/` or `.git/`, or use one location as both a file and a directory.
+Inline fixture paths additionally cannot target `.agents/` or `.git/`, or use one location as both a file and a directory.\
+`files` entries are materialized under `fixture/inputs/` and `fixture.files` entries under `fixture/`; combinations whose final destinations are equal or in an ancestor-descendant relationship are rejected.
 
 Keep executor input separate from assertions and expected output so the desired answer is not disclosed to the executor.
 

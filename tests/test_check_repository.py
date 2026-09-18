@@ -845,6 +845,20 @@ class CheckerCliTests(unittest.TestCase):
                 {"fixture": {"files": {"a": "file", "a/b": "nested"}}},
                 "fixture file paths conflict: `a` and `a/b`",
             ),
+            (
+                {
+                    "files": ["source.txt"],
+                    "fixture": {"files": {"inputs/source.txt": "inline"}},
+                },
+                "case file `source.txt` and fixture file `inputs/source.txt` conflict",
+            ),
+            (
+                {
+                    "files": ["source.txt"],
+                    "fixture": {"files": {"inputs": "inline"}},
+                },
+                "case file `source.txt` and fixture file `inputs` conflict",
+            ),
         )
         for changes, expected in invalid_cases:
             with self.subTest(changes=changes), tempfile.TemporaryDirectory() as directory:
