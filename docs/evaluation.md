@@ -184,6 +184,87 @@ skills/<skill-name>/
     └── results.json    # optional legacy historical evidence
 ```
 
+### What to record in `evals/README.md`
+
+Use `evals/README.md` to explain the evaluation's intent, scope, method, and evidence to a human reader.\
+Do not duplicate the case payloads or other machine-readable details already defined in JSON.
+
+The README should cover the applicable information below:
+
+1. The evaluation purpose and the Skill responsibility being examined.
+2. The role of each present asset, such as `evals.json`, `triggers.json`, `report.json`, or `results.json`.
+3. Static checks of the Skill instructions or bundled structure.
+4. A coverage map connecting each responsibility or boundary to a plausible failure, the case or check that can expose it, and the grading method.
+5. When needed, the execution and grading procedure, including isolation, comparison conditions, and repetition or stopping conditions.
+6. Current evidence, including the evaluated revision, environment, selected cases, results, and anything not executed.
+7. Unverified boundaries and the condition that would make further evaluation useful.
+
+The following is a suggested structure, not a required heading template:
+
+~~~markdown
+# <skill-name> evals
+
+## Purpose
+
+State the responsibility and evaluation decision this suite supports.
+
+## Assets
+
+Describe the role of each evaluation asset that exists.
+
+## Static checks
+
+List the instruction or package properties checked without model execution.
+
+## Coverage map
+
+| Responsibility or boundary | Plausible failure | Scenario or check | Grading |
+| --- | --- | --- | --- |
+| ... | ... | ... | ... |
+
+## Execution and grading
+
+Describe only the procedure, isolation, comparison, and stopping rules that apply.
+
+## Current evidence
+
+Record the revision, environment, selected cases, results, and unexecuted checks.
+
+## Unverified boundaries
+
+State what remains unverified and when another evaluation would be decision-relevant.
+~~~
+
+Use different headings when they better fit the evidence, and omit sections that do not apply.\
+A failure-pattern ledger or next-validation question is optional and should appear only when it helps interpret or extend the evidence.\
+The repository checker does not enforce README headings or structure.\
+Existing READMEs do not require bulk migration; apply this guidance when an evaluation definition or its README is materially updated.
+
+### Base fields and repository extensions
+
+The executable contract adopts the fields shown in the [Agent Skills evaluation guide](https://agentskills.io/skill-creation/evaluating-skills) and adds the repository-specific fields and forms listed below.\
+The required, conditional, and optional labels describe this repository's executable contract rather than a universal Agent Skills JSON schema.
+
+| Origin | Location | Field or form | Requirement in this repository | Purpose |
+| --- | --- | --- | --- | --- |
+| Agent Skills base | Top level | `skill_name` | Required | Identifies the Skill under evaluation. |
+| Agent Skills base | Top level | `evals` | Required | Contains the evaluation cases. |
+| Agent Skills base | Case | `id` | Required | Identifies the case and is normalized to a string. |
+| Agent Skills base | Case | `prompt` | Conditional | Supplies the request for the single-request form and the current request in the repository-specific `conversation` form. |
+| Agent Skills base | Case | `expected_output` | Optional; required for a behavior case when it has no assertions | Describes a successful result and supplies the default grading requirement. |
+| Agent Skills base | Case | `files` | Optional | Selects repository-relative input files. |
+| Agent Skills base | Case | String entries in `assertions` | Optional; behavior cases require `assertions` or `expected_output` | Defines grading statements in the base string representation. |
+| Repository extension | Top level | `execution.coexistence_skills` | Optional | Adds Skills that must be installed for every selected case. |
+| Repository extension | Case | `title` | Optional | Preserves a human-readable case title in the normalized plan. |
+| Repository extension | Case | `turns` | Conditional alternative input form | Supplies a complete conversation as the evaluation input. |
+| Repository extension | Case | `authoring_turns` plus `request` | Conditional alternative input form | Separates prior artifact-authoring history from the current request. |
+| Repository extension | Case | `conversation` plus `prompt` | Conditional alternative input form | Separates completed conversation context from the current request; `prompt` itself remains a base field. |
+| Repository extension | Case | Object entries in `assertions` with `id`, `text`, and `critical` | Optional | Adds stable assertion identity and criticality to the base assertion field. |
+| Repository extension | Case | `fixture` | Optional | Materializes inline fixture files. |
+| Repository extension | Case | `coexistence_skills` | Optional | Adds Skills for one case. |
+| Repository extension | Case | `conditions` | Optional | Restricts the case to selected `candidate`, `baseline`, or `without-skill` conditions. |
+| Repository extension | Routing definition | `triggers.json` with case-level `expected_handlers` | `expected_handlers` is required for every routing case | Reuses the executable envelope for routing expectations, including an empty handler list. |
+
 New executable definitions follow the [Agent Skills evaluation format](https://agentskills.io/skill-creation/evaluating-skills) with explicit repository extensions:
 
 ```json
