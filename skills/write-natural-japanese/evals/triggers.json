@@ -1,0 +1,105 @@
+{
+  "skill_name": "write-natural-japanese",
+  "execution": {
+    "coexistence_skills": []
+  },
+  "evals": [
+    {
+      "id": "D1",
+      "title": "Do not trigger for ordinary Japanese debugging",
+      "prompt": "Python の辞書から存在しないキーを読み取ったところ `KeyError` が発生しました。原因と、まず確認することを教えてください。",
+      "files": [],
+      "coexistence_skills": [],
+      "expected_handlers": [],
+      "assertions": [
+        {
+          "id": "d1-assertion-1",
+          "text": "Do not load write-natural-japanese merely because the debugging response is in Japanese.",
+          "critical": true
+        },
+        {
+          "id": "d1-assertion-2",
+          "text": "Answer the debugging question directly without turning it into a prose-editing task.",
+          "critical": false
+        }
+      ]
+    },
+    {
+      "id": "D2",
+      "title": "Trigger for an explicit Japanese wording deliverable",
+      "prompt": "次の製品説明を、意味と条件を変えずに自然な日本語へ書き直してください。完成稿だけを返してください。\n\nこの機能は設定変更の即時反映を提供します。Invalid な値の detection が行われたケースでは warning を surface し、更新処理を continue します。`reload_mode` が `manual` の場合は即時反映しません。",
+      "files": [],
+      "coexistence_skills": [],
+      "expected_handlers": [
+        "write-natural-japanese"
+      ],
+      "assertions": [
+        {
+          "id": "d2-assertion-1",
+          "text": "Load write-natural-japanese when natural Japanese wording is an explicit deliverable, without naming the Skill in the request.",
+          "critical": true
+        },
+        {
+          "id": "d2-assertion-2",
+          "text": "Preserve the reload_mode condition and the behavior for invalid values.",
+          "critical": true
+        },
+        {
+          "id": "d2-assertion-3",
+          "text": "Replace unnecessary English generalities and source-language structure with natural Japanese.",
+          "critical": false
+        },
+        {
+          "id": "d2-assertion-4",
+          "text": "Preserve reload_mode and manual as identifiers.",
+          "critical": false
+        },
+        {
+          "id": "d2-assertion-5",
+          "text": "Return only the revised reader-facing text.",
+          "critical": false
+        }
+      ]
+    },
+    {
+      "id": "D3",
+      "title": "Compose explicitly selected Japanese writing Skills",
+      "prompt": "利用可能な `write-natural-japanese` と `japanese-tech-writing` の両方を使用して、次の技術記事の断片について、語彙を自然な日本語へ整えるとともに、見出しと段落の関係が分かる構成へ書き直してください。`sync_mode` という識別子と、原因がまだ仮説であることは維持してください。完成稿だけを返してください。\n\n## 問題について\n\nこの変更は同期処理の安定性の改善を提供します。\n\n## 詳細について\n\n`sync_mode` を有効にすると更新が失敗することがあります。ログ上は同時実行された二つの処理が見えます。そのため競合状態が原因です。対策の前に再現条件を確認します。",
+      "files": [],
+      "coexistence_skills": [
+        "japanese-tech-writing"
+      ],
+      "expected_handlers": [
+        "japanese-tech-writing",
+        "write-natural-japanese"
+      ],
+      "assertions": [
+        {
+          "id": "d3-assertion-1",
+          "text": "Load both write-natural-japanese and japanese-tech-writing after both are named for use, without making either a companion dependency.",
+          "critical": true
+        },
+        {
+          "id": "d3-assertion-2",
+          "text": "Preserve sync_mode and keep the race condition as a hypothesis rather than a confirmed cause.",
+          "critical": true
+        },
+        {
+          "id": "d3-assertion-3",
+          "text": "Use write-natural-japanese for linguistic realization and wording.",
+          "critical": false
+        },
+        {
+          "id": "d3-assertion-4",
+          "text": "Use japanese-tech-writing for headings, paragraphs, and argument structure.",
+          "critical": false
+        },
+        {
+          "id": "d3-assertion-5",
+          "text": "Return only the revised article fragment.",
+          "critical": false
+        }
+      ]
+    }
+  ]
+}
