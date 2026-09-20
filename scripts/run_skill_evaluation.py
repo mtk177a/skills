@@ -32,7 +32,7 @@ except ModuleNotFoundError:  # Imported as scripts.run_skill_evaluation in unit 
     )
 
 
-PLAN_VERSION = 2
+PLAN_VERSION = 3
 RUN_VERSION = 2
 GRADES_VERSION = 2
 REPORT_VERSION = 2
@@ -296,7 +296,7 @@ def make_plan(args: argparse.Namespace, root: Path) -> dict[str, Any]:
     selected_cases: list[dict[str, Any]] = []
     asset: Path | None = None
     source = None
-    coexistence_skills: list[str] = []
+    global_coexistence_skills: list[str] = []
     if args.path in MODEL_PATHS:
         if not args.case:
             raise EvaluationError("model-backed evaluation requires at least one --case")
@@ -318,21 +318,22 @@ def make_plan(args: argparse.Namespace, root: Path) -> dict[str, Any]:
                         + ", ".join(unsupported)
                     )
         source = {"file": asset.relative_to(root).as_posix(), "format": "agent-skills"}
-        coexistence_skills = document["execution"]["coexistence_skills"]
-        coexistence_skills = sorted(
-            {
-                *coexistence_skills,
-                *(value for case in selected_cases for value in case["coexistence_skills"]),
-            }
-        )
+        global_coexistence_skills = document["execution"]["coexistence_skills"]
     elif args.case or args.condition:
         raise EvaluationError("static-only does not accept cases or conditions")
 
     executions = [
-        {"case_id": case["id"], "condition": condition}
+        {
+            "case_id": case["id"],
+            "condition": condition,
+            "coexistence_skills": sorted({*global_coexistence_skills, *case["coexistence_skills"]}),
+        }
         for case in selected_cases
         for condition in conditions
     ]
+    coexistence_skills = sorted(
+        {skill for execution in executions for skill in execution["coexistence_skills"]}
+    )
     companion_manifests = {skill: {"files": skill_manifest(root, skill)} for skill in coexistence_skills}
     evaluation_files = {} if asset is None else {asset.relative_to(root).as_posix(): sha256(asset)}
     plan: dict[str, Any] = {
@@ -436,15 +437,30 @@ def validate_plan(plan: dict[str, Any], root: Path) -> dict[str, Any]:
         normalized_files = normalize_case_input_paths(files, case["id"])
         if files != normalized_files:
             raise EvaluationError(f"plan case `{case['id']}` input paths must be normalized")
+        skills = case.get("coexistence_skills")
+        if not isinstance(skills, list) or not all(
+            isinstance(skill, str) and SKILL_NAME.fullmatch(skill) for skill in skills
+        ) or len(skills) != len(set(skills)):
+            raise EvaluationError("plan case coexistence_skills must be unique Skill names")
+    cases_by_id = {case["id"]: case for case in cases}
     executions = plan.get("executions")
     if not isinstance(executions, list):
         raise EvaluationError("plan executions must be an array")
     execution_pairs: list[tuple[str, str]] = []
+    execution_coexistence: set[str] = set()
     for execution in executions:
         case_id = execution.get("case_id") if isinstance(execution, dict) else None
         condition = execution.get("condition") if isinstance(execution, dict) else None
         if case_id not in case_ids or condition not in CONDITIONS:
             raise EvaluationError("plan execution references an invalid case or condition")
+        skills = execution.get("coexistence_skills")
+        if not isinstance(skills, list) or not all(
+            isinstance(skill, str) and SKILL_NAME.fullmatch(skill) for skill in skills
+        ) or skills != sorted(set(skills)):
+            raise EvaluationError("plan execution coexistence_skills must be sorted unique Skill names")
+        if not set(cases_by_id[case_id]["coexistence_skills"]).issubset(skills):
+            raise EvaluationError("plan execution omits a case coexistence Skill")
+        execution_coexistence.update(skills)
         execution_pairs.append((case_id, condition))
     if len(set(execution_pairs)) != len(execution_pairs):
         raise EvaluationError("plan executions must be unique")
@@ -464,6 +480,8 @@ def validate_plan(plan: dict[str, Any], root: Path) -> dict[str, Any]:
         raise EvaluationError("plan coexistence_skills must be an array of Skill names")
     for coexistence_skill in coexistence:
         validate_skill_name(coexistence_skill)
+    if coexistence != sorted(execution_coexistence):
+        raise EvaluationError("plan coexistence_skills do not match its executions")
     if plan.get("estimated_model_calls") != len(executions):
         raise EvaluationError("plan model-call estimate does not match executions")
     candidate = plan.get("candidate")
@@ -667,7 +685,7 @@ def execute_case(
     artifacts: Path,
     plan: dict[str, Any],
     case: dict[str, Any],
-    execution: dict[str, str],
+    execution: dict[str, Any],
     index: int,
     codex_bin: str,
     timeout_seconds: int,
@@ -686,7 +704,7 @@ def execute_case(
         copy_baseline_skill(root, plan["skill"], plan["base"]["commit"], target)
     elif condition != "without-skill":
         raise EvaluationError(f"unsupported execution condition: {condition}")
-    for coexistence_skill in plan.get("coexistence_skills", []):
+    for coexistence_skill in execution["coexistence_skills"]:
         if coexistence_skill != plan["skill"]:
             copy_manifest(
                 root / "skills" / coexistence_skill,
@@ -750,7 +768,7 @@ def execute_case(
         return record
     record["status"] = "completed"
     if plan["path"] == "targeted-routing":
-        installed = sorted({plan["skill"], *plan.get("coexistence_skills", [])})
+        installed = sorted({plan["skill"], *execution["coexistence_skills"]})
         record["routing_observation"] = observed_skill_handlers(events, installed)
     return record
 

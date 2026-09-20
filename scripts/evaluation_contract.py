@@ -152,7 +152,7 @@ def _format_turns(values: Any, label: str) -> str:
             if set(value) != {"role", "content"}:
                 raise EvaluationContractError(f"{label} entry {index} requires role and content")
             role = value["role"]
-            if role not in TURN_ROLES:
+            if not isinstance(role, str) or role not in TURN_ROLES:
                 raise EvaluationContractError(
                     f"{label} entry {index} role must be user or assistant"
                 )
@@ -347,6 +347,10 @@ def _normalize_case(case: Any, definition_kind: str) -> dict[str, Any]:
         ):
             raise EvaluationContractError(
                 f"evaluation case `{normalized_id}` has unsupported conditions"
+            )
+        if "candidate" not in conditions:
+            raise EvaluationContractError(
+                f"evaluation case `{normalized_id}` conditions must include candidate"
             )
         normalized["allowed_conditions"] = sorted(
             _unique(conditions, f"evaluation case `{normalized_id}` conditions")

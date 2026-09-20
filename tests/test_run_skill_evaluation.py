@@ -17,6 +17,7 @@ from scripts.run_skill_evaluation import (
     direct_skill_load_observation,
     observed_skill_handlers,
     skill_manifest,
+    validate_plan,
     verify_file_manifest,
 )
 
@@ -99,6 +100,9 @@ elif {mode!r} == "non-trigger":
     print(json.dumps({{"type": "turn.completed", "usage": {{"input_tokens": 1, "output_tokens": 1}}}}))
 else:
     print(json.dumps({{"type": "item.completed", "item": {{"type": "command_execution", "command": "read " + str(skill), "exit_code": 0}}}}))
+    if {mode!r} == "beta-read":
+        beta = pathlib.Path.cwd() / ".agents" / "skills" / "beta-skill" / "SKILL.md"
+        print(json.dumps({{"type": "item.completed", "item": {{"type": "command_execution", "command": "read " + str(beta), "exit_code": 0}}}}))
     print(json.dumps({{"type": "turn.completed", "usage": {{"input_tokens": 1, "output_tokens": 1}}}}))
 log = pathlib.Path(sys.argv[sys.argv.index("-C") + 1]) / "invocation.json"
 log.write_text(json.dumps({{"argv": sys.argv[1:], "prompt": prompt, "state": state}}), encoding="utf-8")
@@ -118,7 +122,7 @@ def create_manual_plan(root: Path, path: Path) -> None:
         path,
         json.dumps(
             attach_plan_digest({
-                "schema_version": 2,
+                "schema_version": 3,
                 "skill": "alpha-skill",
                 "path": "targeted-candidate",
                 "purpose": "Check grade matching.",
@@ -138,7 +142,7 @@ def create_manual_plan(root: Path, path: Path) -> None:
                         "input_mode": "single-turn",
                     }
                 ],
-                "executions": [{"case_id": "selected", "condition": "candidate"}],
+                "executions": [{"case_id": "selected", "condition": "candidate", "coexistence_skills": []}],
                 "estimated_model_calls": 1,
                 "candidate": {
                     "files": {
@@ -606,10 +610,101 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             )
             self.assertEqual(1, plan["estimated_model_calls"])
             self.assertEqual(
-                [{"case_id": "selected", "condition": "candidate"}],
+                [{"case_id": "selected", "condition": "candidate", "coexistence_skills": []}],
                 plan["executions"],
             )
             self.assertNotIn("not-selected", plan_path.read_text(encoding="utf-8"))
+
+    def test_coexistence_skills_are_isolated_per_routing_execution(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            for skill in ("beta-skill", "gamma-skill"):
+                write(root / "skills" / skill / "SKILL.md", f"# {skill}\n")
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "triggers.json",
+                json.dumps(
+                    {
+                        "skill_name": "alpha-skill",
+                        "execution": {"coexistence_skills": ["gamma-skill"]},
+                        "evals": [
+                            {"id": "A", "prompt": "Route A.", "expected_handlers": ["alpha-skill"]},
+                            {
+                                "id": "B",
+                                "prompt": "Route B.",
+                                "expected_handlers": ["alpha-skill", "beta-skill"],
+                                "coexistence_skills": ["gamma-skill", "beta-skill"],
+                            },
+                        ],
+                    }
+                ) + "\n",
+            )
+            fake_codex = Path(output) / "fake-codex"
+            create_fake_codex(fake_codex, "beta-read")
+            plan_path = Path(output) / "plan.json"
+            artifacts = Path(output) / "artifacts"
+            result = subprocess.run(
+                [
+                    sys.executable, str(RUNNER), "--root", str(root), "plan",
+                    "--skill", "alpha-skill", "--path", "targeted-routing",
+                    "--purpose", "Check case isolation.", "--affected", "coexistence",
+                    "--case", "A", "--case", "B", "--base-ref", "HEAD",
+                    "--output", str(plan_path),
+                ],
+                text=True, capture_output=True,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            plan = json.loads(plan_path.read_text(encoding="utf-8"))
+            self.assertEqual(3, plan["schema_version"])
+            self.assertEqual(["beta-skill", "gamma-skill"], plan["coexistence_skills"])
+            self.assertEqual(
+                [
+                    {"case_id": "A", "condition": "candidate", "coexistence_skills": ["gamma-skill"]},
+                    {"case_id": "B", "condition": "candidate", "coexistence_skills": ["beta-skill", "gamma-skill"]},
+                ],
+                plan["executions"],
+            )
+            result = subprocess.run(
+                [
+                    sys.executable, str(RUNNER), "--root", str(root),
+                    "--codex-bin", str(fake_codex), "run", "--plan", str(plan_path),
+                    "--artifacts-dir", str(artifacts), "--execute", "--max-model-calls", "2",
+                ],
+                text=True, capture_output=True,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            run = json.loads((artifacts / "run.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                [["alpha-skill"], ["alpha-skill", "beta-skill"]],
+                [entry["routing_observation"]["handlers"] for entry in run["executions"]],
+            )
+            for index, case_id, has_beta in ((1, "A", False), (2, "B", True)):
+                fixture_skills = artifacts / "executions" / f"{index:03d}-candidate-{case_id}" / "fixture" / ".agents" / "skills"
+                self.assertTrue((fixture_skills / "gamma-skill" / "SKILL.md").is_file())
+                self.assertEqual(has_beta, (fixture_skills / "beta-skill" / "SKILL.md").is_file())
+
+    def test_plan_validates_execution_coexistence_skills(self) -> None:
+        mutations = (
+            (lambda plan: plan["executions"][0].pop("coexistence_skills"), "plan execution coexistence_skills"),
+            (lambda plan: plan["executions"][0].update(coexistence_skills=["Bad_Name"]), "plan execution coexistence_skills"),
+            (lambda plan: plan["executions"][0].update(coexistence_skills=["beta-skill", "beta-skill"]), "plan execution coexistence_skills"),
+            (lambda plan: plan["cases"][0].update(coexistence_skills=["beta-skill"]), "omits a case coexistence Skill"),
+            (lambda plan: plan.update(coexistence_skills=["beta-skill"]), "do not match its executions"),
+            (lambda plan: plan["inputs"]["companions"].update({"beta-skill": {"files": {}}}), "companion manifests do not match"),
+            (lambda plan: plan.update(schema_version=2), "unsupported plan schema_version"),
+        )
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            plan_path = Path(output) / "plan.json"
+            create_manual_plan(root, plan_path)
+            original = json.loads(plan_path.read_text(encoding="utf-8"))
+            for mutate, expected in mutations:
+                with self.subTest(expected=expected):
+                    plan = json.loads(json.dumps(original))
+                    mutate(plan)
+                    with self.assertRaisesRegex(EvaluationError, expected):
+                        validate_plan(attach_plan_digest(plan), root)
 
     def test_plan_accepts_official_case_shape_and_normalizes_numeric_id(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
@@ -711,6 +806,62 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             self.assertEqual(2, result.returncode)
             self.assertIn("evaluation case contains unknown field(s): unused", result.stderr)
             self.assertFalse(plan_path.exists())
+
+    def test_plan_rejects_invalid_turn_role_and_unexecutable_conditions(self) -> None:
+        invalid_cases = (
+            ({"prompt": None, "turns": [{"role": [], "content": "Hello."}]}, "role must be user or assistant"),
+            ({"conditions": []}, "conditions must include candidate"),
+            ({"conditions": ["baseline"]}, "conditions must include candidate"),
+        )
+        for changes, expected in invalid_cases:
+            with (
+                self.subTest(changes=changes),
+                tempfile.TemporaryDirectory() as repository,
+                tempfile.TemporaryDirectory() as output,
+            ):
+                root = Path(repository)
+                create_repository(root)
+                asset = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+                document = json.loads(asset.read_text())
+                case = document["evals"][0]
+                case.update(changes)
+                if case.get("prompt") is None:
+                    case.pop("prompt")
+                write(asset, json.dumps(document) + "\n")
+                plan_path = Path(output) / "plan.json"
+                result = subprocess.run(
+                    [
+                        sys.executable, str(RUNNER), "--root", str(root), "plan",
+                        "--skill", "alpha-skill", "--path", "targeted-candidate",
+                        "--purpose", "Reject an invalid definition.", "--affected", "contract",
+                        "--case", "selected", "--base-ref", "HEAD", "--output", str(plan_path),
+                    ],
+                    text=True, capture_output=True,
+                )
+                self.assertEqual(2, result.returncode)
+                self.assertIn(expected, result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+                self.assertFalse(plan_path.exists())
+
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            asset = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            document = json.loads(asset.read_text())
+            document["evals"][0]["conditions"] = ["candidate"]
+            write(asset, json.dumps(document) + "\n")
+            plan_path = Path(output) / "plan.json"
+            result = subprocess.run(
+                [
+                    sys.executable, str(RUNNER), "--root", str(root), "plan",
+                    "--skill", "alpha-skill", "--path", "targeted-candidate",
+                    "--purpose", "Plan a valid condition.", "--affected", "contract",
+                    "--case", "selected", "--base-ref", "HEAD", "--output", str(plan_path),
+                ],
+                text=True, capture_output=True,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertTrue(plan_path.is_file())
 
     def test_plan_rejects_absolute_case_input_path(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:

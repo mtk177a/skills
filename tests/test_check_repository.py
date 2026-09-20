@@ -806,6 +806,39 @@ class CheckerCliTests(unittest.TestCase):
 
             self.assertEqual(0, result.returncode, result.stderr)
 
+    def test_official_eval_shape_rejects_unhashable_turn_role(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            document = json.loads(path.read_text())
+            case = document["evals"][0]
+            case.pop("prompt")
+            case["turns"] = [{"role": [], "content": "Hello."}]
+            write(path, json.dumps(document))
+
+        stderr = self.assert_fixture_failure(mutate, "role must be user or assistant")
+        self.assertNotIn("Traceback", stderr)
+
+    def test_official_eval_shape_requires_candidate_in_explicit_conditions(self) -> None:
+        for conditions in ([], ["baseline"], ["without-skill"]):
+            with self.subTest(conditions=conditions):
+                def mutate(root: Path) -> None:
+                    path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+                    document = json.loads(path.read_text())
+                    document["evals"][0]["conditions"] = conditions
+                    write(path, json.dumps(document))
+
+                self.assert_fixture_failure(mutate, "conditions must include candidate")
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            document = json.loads(path.read_text())
+            document["evals"][0]["conditions"] = ["candidate", "without-skill"]
+            write(path, json.dumps(document))
+            result = run_checker(root)
+            self.assertEqual(0, result.returncode, result.stderr)
+
     def test_official_eval_shape_rejects_unknown_case_fields(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "skills" / "alpha-skill" / "evals" / "evals.json"

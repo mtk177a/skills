@@ -383,7 +383,7 @@ A minimal routing definition is:
 }
 ```
 
-`conditions`, when present, contains unique values from `candidate`, `baseline`, and `without-skill`.\
+`conditions`, when present, must include `candidate` and may also contain `baseline` and `without-skill`, with no duplicates.\
 Execution-level and case-level `coexistence_skills` contain Skill names, with no duplicates within either array.\
 `fixture` contains exactly a `files` object that maps safe relative paths to string contents; named fixtures are not executable until their files are materialized inline.
 
@@ -420,10 +420,11 @@ python3 scripts/run_skill_evaluation.py plan \
 ```
 
 `plan` does not invoke a model.\
-It resolves the base commit, expands only explicitly selected cases and conditions, prints the estimated model-call count, and writes schema version 2 with a digest over canonical JSON.
+It resolves the base commit, expands only explicitly selected cases and conditions, prints the estimated model-call count, and writes schema version 3 with a digest over canonical JSON.
 
 The plan records every regular candidate file that the executor can receive, excluding `evals/`, with its SHA-256 and normalized Git mode of `100644` or `100755`.\
 Evaluation files, selected repository input files, and complete coexistence Skill manifests are recorded separately.\
+Each planned execution records the union of execution-level and case-level `coexistence_skills`; the plan-level list is the union across selected executions and binds their manifests.\
 Symlinks in Skill execution trees are rejected, and files outside these manifests are never copied into the fixture.
 
 Model-backed paths require at least one `--case`; there is no implicit all-cases option.\
@@ -453,7 +454,8 @@ The artifacts directory must not already exist.
 Every Codex invocation uses an ephemeral session, JSONL output, the planned model, reasoning effort, and sandbox, and a disposable fixture under the system temporary directory.\
 The candidate condition copies the manifest-bound working-tree Skill, the baseline condition materializes regular files from the resolved base commit, and both reproduce the normalized executable mode.\
 The baseline condition rejects symlinks and other unsupported Git tree entries, while the without-Skill condition omits the target Skill.\
-Candidate and companion copies exclude `evals/`.
+Candidate and companion copies exclude `evals/`.\
+Each execution copies only its own planned coexistence Skills; routing observations use that same installed set.
 
 Selected case inputs are copied to `fixture/inputs/<repository-relative-path>`.\
 The Runner checks the source and destination again before copying, so a case input cannot overwrite its repository source.

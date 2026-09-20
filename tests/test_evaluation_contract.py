@@ -138,6 +138,8 @@ class EvaluationContractTests(unittest.TestCase):
     def test_rejects_invalid_turn_roles_and_empty_content(self) -> None:
         invalid_turns = (
             [{"role": "system", "content": "Instruction."}],
+            [{"role": [], "content": "Instruction."}],
+            [{"role": {}, "content": "Instruction."}],
             [{"role": "user", "content": ""}],
             [],
         )
@@ -172,6 +174,20 @@ class EvaluationContractTests(unittest.TestCase):
                 expected_skill="alpha-skill",
                 definition_kind="behavior",
             )
+
+    def test_explicit_conditions_require_candidate(self) -> None:
+        for conditions in ([], ["baseline"], ["without-skill"], ["baseline", "without-skill"]):
+            with self.subTest(conditions=conditions):
+                with self.assertRaisesRegex(EvaluationContractError, "must include candidate"):
+                    self.normalize(behavior_case(conditions=conditions))
+
+        for conditions in (["candidate"], ["candidate", "baseline"], ["candidate", "without-skill"]):
+            with self.subTest(conditions=conditions):
+                self.assertEqual(
+                    sorted(conditions),
+                    self.normalize(behavior_case(conditions=conditions))["cases"][0]["allowed_conditions"],
+                )
+        self.assertNotIn("allowed_conditions", self.normalize(behavior_case())["cases"][0])
 
     def test_rejects_unsafe_and_duplicate_normalized_paths(self) -> None:
         for files in (["../outside.txt"], ["input.txt", "folder/../input.txt"], ["a//b", "a/b"]):
