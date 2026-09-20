@@ -229,6 +229,33 @@ No baseline or repeated success run was needed for H, I, or J after the observed
 Automatic discovery from the Japanese description alone, other clients and models, and unselected historical scenarios remain unverified.\
 An isolated environment without a same-named personal Skill would make another routing observation decision-relevant.
 
+### Iter 4 — 2026-09-21
+
+Before this follow-up, a written plan selected one candidate execution of the K maintenance request and recorded one expected model call.\
+The first disposable fixture had no Git repository or visible English-file diff, and Codex reported that Skill descriptions had been shortened to fit its context budget.\
+The executor read the repository-local Skill but looked only in selected Skill directories, incorrectly reported the present repository companion as missing, and made no edit.\
+That run did not establish selection from the candidate description or translation behavior in the intended repository fixture.
+
+Before another model call, the plan was revised to one additional candidate execution, two calls in this follow-up overall.\
+The revised fixture was a disposable Git repository with a committed `may` version of the English document and an aligned Japanese reference; only the English document was then changed to `must`.\
+It contained the candidate repository-local Skill, the repository's `write-natural-japanese` Skill, and its wording reference.\
+The executor received the same English maintenance request without either Skill name or grading criteria.\
+Codex CLI 0.154.0 used `gpt-5.6-luna` with medium reasoning, normal authentication, and an ephemeral JSONL session.\
+Per-invocation configuration disabled personal same-name Skills and unrelated plugins and raised the Skill catalog budget to 10,000 tokens; no personal configuration or credentials were changed.
+
+The model-visible Skill catalog for that configuration contained the full candidate description at the disposable repository path and no personal `maintain-japanese-references` entry.\
+The completed turn read the repository-local Skill, `skills/write-natural-japanese/SKILL.md`, and the full `references/wording-decisions.md` before editing.\
+An initial attempt to open an absent personal Skill path failed without reading its contents; the executor then opened the repository candidate.\
+No personal same-name Skill was successfully read.\
+The English document remained byte-for-byte unchanged from the planned input, and only its Japanese reference was edited.\
+The Japanese result changed `更新してもよい` to `更新しなければならない` while preserving the condition and the deadline before merging the pull request.\
+The event stream contained `turn.completed`, and all selected critical requirements passed.
+
+K's Issue-only near-miss result from Iter 3 still applies because the candidate instructions did not change.\
+This direct observation supports selection from the Japanese candidate description in the tested Codex CLI environment.\
+It does not establish behavior in other models or clients, and no baseline or repeated successful run was needed for this acceptance decision.\
+The earlier H, I, and J results were not rerun; this follow-up does not claim that their original pre-execution planning can be reconstructed from the available record.
+
 ## Next validation question
 
 - If real use reveals a critical failure, correct the identified Skill, fixture, or grader defect and rerun the affected case before acceptance.
