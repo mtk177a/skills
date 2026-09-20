@@ -21,6 +21,7 @@ try:
         EvaluationContractError,
         normalize_case_input_paths as _normalize_case_input_paths,
         normalize_evaluation_document,
+        validate_evaluation_references,
     )
 except ModuleNotFoundError:  # Imported as scripts.run_skill_evaluation in unit tests.
     from scripts.evaluation_contract import (
@@ -29,6 +30,7 @@ except ModuleNotFoundError:  # Imported as scripts.run_skill_evaluation in unit 
         EvaluationContractError,
         normalize_case_input_paths as _normalize_case_input_paths,
         normalize_evaluation_document,
+        validate_evaluation_references,
     )
 
 
@@ -170,11 +172,12 @@ def load_case_asset(root: Path, skill: str, evaluation_path: str) -> tuple[Path,
                 "before using a model-backed path"
             )
         try:
-            normalize_evaluation_document(
+            sibling_normalized = normalize_evaluation_document(
                 sibling_document,
                 expected_skill=skill,
                 definition_kind="routing" if sibling_name == "triggers.json" else "behavior",
             )
+            validate_evaluation_references(sibling_normalized, root)
         except EvaluationContractError as error:
             raise EvaluationError(str(error)) from error
     try:
@@ -183,6 +186,7 @@ def load_case_asset(root: Path, skill: str, evaluation_path: str) -> tuple[Path,
             expected_skill=skill,
             definition_kind="routing" if evaluation_path == "targeted-routing" else "behavior",
         )
+        validate_evaluation_references(normalized, root)
     except EvaluationContractError as error:
         raise EvaluationError(str(error)) from error
     return asset, normalized, normalized["cases"]

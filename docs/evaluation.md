@@ -251,7 +251,7 @@ The required, conditional, and optional labels describe this repository's execut
 | Agent Skills base | Top level | `evals` | Required | Contains the evaluation cases. |
 | Agent Skills base | Case | `id` | Required | Identifies the case and is normalized to a string. |
 | Agent Skills base | Case | `prompt` | Conditional | Supplies the request for the single-request form and the current request in the repository-specific `conversation` form. |
-| Agent Skills base | Case | `expected_output` | Optional; required for a behavior case when it has no assertions | Describes a successful result and supplies the default grading requirement. |
+| Agent Skills base | Case | `expected_output` | Optional; required for a behavior case when it has no assertions | Describes a successful result; supplies the default grading requirement only when `assertions` is empty or absent. |
 | Agent Skills base | Case | `files` | Optional | Selects repository-relative input files. |
 | Agent Skills base | Case | String entries in `assertions` | Optional; behavior cases require `assertions` or `expected_output` | Defines grading statements in the base string representation. |
 | Repository extension | Top level | `execution.coexistence_skills` | Optional | Adds Skills that must be installed for every selected case. |
@@ -358,7 +358,8 @@ For example, `prompt` plus `turns`, `request` without `authoring_turns`, and `co
 ## Case grading and execution fields
 
 A behavior case in `evals.json` requires at least one non-empty assertion or a non-empty `expected_output`.\
-When it has no assertions, the Runner creates one critical `expected-output` requirement from `expected_output`.
+When `assertions` is empty or absent, the Runner creates one critical `expected-output` requirement from `expected_output`.\
+When both fields are present and `assertions` is non-empty, only `assertions` becomes grading requirements; `expected_output` remains a description of success in the definition.
 
 An assertion is either a non-empty string or an object containing exactly a non-empty `id`, non-empty `text`, and boolean `critical`.\
 A string assertion receives a stable positional ID such as `assertion-1` and is critical by default.\
@@ -395,7 +396,10 @@ Inline fixture paths additionally cannot target `.agents/` or `.git/`, or use on
 Keep executor input separate from assertions and expected output so the desired answer is not disclosed to the executor.
 
 The repository checker and Runner use this same contract.\
-Invalid definitions fail before a model is invoked, including unknown fields, unsupported input combinations, invalid nested objects, unsafe paths, normalized ID collisions, and duplicates in set-like arrays.
+Both statically check that every `files` entry and every top-level or case-level `coexistence_skills` reference exists, including references in unselected cases and in a sibling executable definition loaded by the Runner.\
+Referenced input files must be regular files inside the repository, and referenced Skills must have a regular `SKILL.md`; symlinked paths are rejected.\
+The Runner separately checks manifests and selected execution inputs when creating and loading a plan.\
+Invalid definitions fail before a model is invoked, including unknown fields, unsupported input combinations, invalid nested objects, unsafe paths, missing references, normalized ID collisions, and duplicates in set-like arrays.
 
 Routing evaluation counts only successful read or tool events for installed Skills that Codex exposes in JSONL.\
 The Runner treats the routing event stream as complete only when it contains `turn.completed`.\

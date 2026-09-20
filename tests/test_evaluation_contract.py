@@ -1,8 +1,11 @@
+import tempfile
 import unittest
+from pathlib import Path
 
 from scripts.evaluation_contract import (
     EvaluationContractError,
     normalize_evaluation_document,
+    validate_evaluation_references,
 )
 
 
@@ -29,6 +32,64 @@ class EvaluationContractTests(unittest.TestCase):
             expected_skill="alpha-skill",
             definition_kind=definition_kind,
         )
+
+    def test_expected_output_supplies_requirement_only_without_assertions(self) -> None:
+        expected_only = self.normalize(behavior_case())["cases"][0]["grading_requirements"]
+        assertions_only = behavior_case(assertions=["Check the result."])
+        assertions_only.pop("expected_output")
+        assertions = self.normalize(assertions_only)["cases"][0]["grading_requirements"]
+        combined = self.normalize(
+            behavior_case(assertions=["Check the result."])
+        )["cases"][0]["grading_requirements"]
+        empty_assertions = self.normalize(
+            behavior_case(assertions=[])
+        )["cases"][0]["grading_requirements"]
+
+        self.assertEqual(
+            [{"id": "expected-output", "text": "A bounded result.", "critical": True}],
+            expected_only,
+        )
+        self.assertEqual(
+            [{"id": "assertion-1", "text": "Check the result.", "critical": True}],
+            assertions,
+        )
+        self.assertEqual(assertions, combined)
+        self.assertEqual(expected_only, empty_assertions)
+
+    def test_reference_validation_checks_every_case_and_rejects_symlinks(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "skills" / "alpha-skill").mkdir(parents=True)
+            (root / "skills" / "alpha-skill" / "SKILL.md").write_text("# Skill\n")
+            (root / "input.txt").write_text("Input.\n")
+            document = {
+                "skill_name": "alpha-skill",
+                "execution": {"coexistence_skills": ["alpha-skill"]},
+                "evals": [
+                    behavior_case(files=["input.txt"]),
+                    behavior_case(id="other", files=["missing.txt"]),
+                ],
+            }
+            normalized = normalize_evaluation_document(
+                document, expected_skill="alpha-skill", definition_kind="behavior"
+            )
+            with self.assertRaisesRegex(EvaluationContractError, "case `other` input file.*missing.txt"):
+                validate_evaluation_references(normalized, root)
+
+            (root / "missing.txt").symlink_to(root / "input.txt")
+            with self.assertRaisesRegex(EvaluationContractError, "case `other` input file.*missing.txt"):
+                validate_evaluation_references(normalized, root)
+            (root / "missing.txt").unlink()
+            (root / "missing.txt").write_text("Second input.\n")
+            validate_evaluation_references(normalized, root)
+
+            (root / "linked").symlink_to(root, target_is_directory=True)
+            document["evals"][1]["files"] = ["linked/input.txt"]
+            linked = normalize_evaluation_document(
+                document, expected_skill="alpha-skill", definition_kind="behavior"
+            )
+            with self.assertRaisesRegex(EvaluationContractError, "case `other` input file.*linked/input.txt"):
+                validate_evaluation_references(linked, root)
 
     def test_normalizes_the_four_supported_input_forms(self) -> None:
         cases = (

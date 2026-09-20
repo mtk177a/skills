@@ -13,9 +13,9 @@ from pathlib import Path
 from urllib.parse import unquote
 
 try:
-    from evaluation_contract import EvaluationContractError, normalize_evaluation_document
+    from evaluation_contract import EvaluationContractError, normalize_evaluation_document, validate_evaluation_references
 except ModuleNotFoundError:  # Imported as scripts.check_repository in unit tests.
-    from scripts.evaluation_contract import EvaluationContractError, normalize_evaluation_document
+    from scripts.evaluation_contract import EvaluationContractError, normalize_evaluation_document, validate_evaluation_references
 
 
 KEBAB_CASE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -464,11 +464,12 @@ def check_json_assets(root: Path, problems: list[Problem], ignored_report_skill:
         expected_skill = path.parent.parent.name
         if official:
             try:
-                normalize_evaluation_document(
+                normalized = normalize_evaluation_document(
                     document,
                     expected_skill=expected_skill,
                     definition_kind="routing" if path.name == "triggers.json" else "behavior",
                 )
+                validate_evaluation_references(normalized, root)
             except EvaluationContractError as error:
                 add(problems, root, path, 1, str(error))
             continue

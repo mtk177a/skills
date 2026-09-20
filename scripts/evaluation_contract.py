@@ -101,6 +101,40 @@ def normalize_case_input_paths(values: Any, case_id: str) -> list[str]:
     return normalized
 
 
+def _regular_repository_file(root: Path, relative: Path) -> bool:
+    target = root / relative
+    current = root
+    for part in relative.parts:
+        current = current / part
+        if current.is_symlink():
+            return False
+    try:
+        target.resolve().relative_to(root.resolve())
+        return target.is_file()
+    except (OSError, RuntimeError, ValueError):
+        return False
+
+
+def validate_evaluation_references(definition: dict[str, Any], root: Path) -> None:
+    """Check every static file and Skill reference in a normalized definition."""
+    for skill in definition["execution"]["coexistence_skills"]:
+        if not _regular_repository_file(root, Path("skills") / skill / "SKILL.md"):
+            raise EvaluationContractError(
+                f"evaluation execution coexistence Skill must have a regular SKILL.md: {skill}"
+            )
+    for case in definition["cases"]:
+        for name in case["files"]:
+            if not _regular_repository_file(root, Path(name)):
+                raise EvaluationContractError(
+                    f"evaluation case `{case['id']}` input file must be a regular repository file: {name}"
+                )
+        for skill in case["coexistence_skills"]:
+            if not _regular_repository_file(root, Path("skills") / skill / "SKILL.md"):
+                raise EvaluationContractError(
+                    f"evaluation case `{case['id']}` coexistence Skill must have a regular SKILL.md: {skill}"
+                )
+
+
 def _reject_fixture_path_conflicts(paths: list[str], case_id: str) -> None:
     ordered = sorted(paths)
     for index, left in enumerate(ordered):

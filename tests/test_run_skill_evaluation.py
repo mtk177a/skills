@@ -186,6 +186,77 @@ def create_manual_run(plan_path: Path, run_path: Path) -> None:
 
 
 class SkillEvaluationRunnerTests(unittest.TestCase):
+    def test_plan_checks_references_in_full_definition_and_sibling(self) -> None:
+        for location, expected in (
+            ("selected-file", "case `selected` input file must be a regular repository file: missing.txt"),
+            ("unselected-file", "case `not-selected` input file must be a regular repository file: missing.txt"),
+            ("execution-skill", "execution coexistence Skill must have a regular SKILL.md: missing-skill"),
+            ("unselected-skill", "case `not-selected` coexistence Skill must have a regular SKILL.md: missing-skill"),
+            ("sibling-file", "case `routing` input file must be a regular repository file: missing.txt"),
+        ):
+            with self.subTest(location=location), tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+                root = Path(repository)
+                create_repository(root)
+                asset = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+                document = json.loads(asset.read_text())
+                if location == "selected-file":
+                    document["evals"][0]["files"] = ["missing.txt"]
+                elif location == "unselected-file":
+                    document["evals"][1]["files"] = ["missing.txt"]
+                elif location == "execution-skill":
+                    document["execution"] = {"coexistence_skills": ["missing-skill"]}
+                elif location == "unselected-skill":
+                    document["evals"][1]["coexistence_skills"] = ["missing-skill"]
+                else:
+                    write(
+                        asset.with_name("triggers.json"),
+                        json.dumps({"skill_name": "alpha-skill", "evals": [
+                            {"id": "routing", "prompt": "Route it.", "expected_handlers": [], "files": ["missing.txt"]}
+                        ]}),
+                    )
+                write(asset, json.dumps(document))
+                plan_path = Path(output) / "plan.json"
+
+                result = subprocess.run(
+                    [sys.executable, str(RUNNER), "--root", str(root), "plan",
+                     "--skill", "alpha-skill", "--path", "targeted-candidate",
+                     "--purpose", "Check static references.", "--affected", "definition references",
+                     "--case", "selected", "--base-ref", "HEAD", "--output", str(plan_path)],
+                    text=True, capture_output=True,
+                )
+
+                self.assertEqual(2, result.returncode, result.stderr)
+                self.assertIn(expected, result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+                self.assertFalse(plan_path.exists())
+
+    def test_plan_accepts_existing_references(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            write(root / "input.txt", "Input.\n")
+            write(root / "skills" / "beta-skill" / "SKILL.md", "# Beta\n")
+            asset = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            document = json.loads(asset.read_text())
+            document["execution"] = {"coexistence_skills": ["beta-skill"]}
+            document["evals"][1]["files"] = ["input.txt"]
+            document["evals"][1]["coexistence_skills"] = ["beta-skill"]
+            write(asset, json.dumps(document))
+            plan_path = Path(output) / "plan.json"
+
+            result = subprocess.run(
+                [sys.executable, str(RUNNER), "--root", str(root), "plan",
+                 "--skill", "alpha-skill", "--path", "targeted-candidate",
+                 "--purpose", "Check static references.", "--affected", "definition references",
+                 "--case", "selected", "--base-ref", "HEAD", "--output", str(plan_path)],
+                text=True, capture_output=True,
+            )
+
+            self.assertEqual(0, result.returncode, result.stderr)
+            plan = json.loads(plan_path.read_text())
+            self.assertEqual(["selected"], [case["id"] for case in plan["cases"]])
+            self.assertEqual(["beta-skill"], plan["coexistence_skills"])
+
     def test_case_file_copy_rejects_absolute_destination(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
             root = Path(repository)

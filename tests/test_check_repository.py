@@ -839,6 +839,59 @@ class CheckerCliTests(unittest.TestCase):
             result = run_checker(root)
             self.assertEqual(0, result.returncode, result.stderr)
 
+    def test_official_eval_rejects_missing_file_in_unselected_case(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            document = json.loads(path.read_text())
+            document["evals"].append(
+                {"id": "unselected", "prompt": "Run it.", "expected_output": "Result.", "files": ["missing.txt"]}
+            )
+            write(path, json.dumps(document))
+
+        self.assert_fixture_failure(mutate, "evaluation case `unselected` input file must be a regular repository file: missing.txt")
+
+    def test_official_routing_definition_rejects_missing_file(self) -> None:
+        def mutate(root: Path) -> None:
+            write(
+                root / "skills" / "alpha-skill" / "evals" / "triggers.json",
+                json.dumps({"skill_name": "alpha-skill", "evals": [
+                    {"id": "routing", "prompt": "Route it.", "expected_handlers": [], "files": ["missing.txt"]}
+                ]}),
+            )
+
+        self.assert_fixture_failure(mutate, "evaluation case `routing` input file must be a regular repository file: missing.txt")
+
+    def test_official_eval_rejects_missing_coexistence_skills(self) -> None:
+        for location, expected in (
+            ("execution", "evaluation execution coexistence Skill must have a regular SKILL.md: missing-skill"),
+            ("case", "evaluation case `alpha-case` coexistence Skill must have a regular SKILL.md: missing-skill"),
+        ):
+            with self.subTest(location=location):
+                def mutate(root: Path) -> None:
+                    path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+                    document = json.loads(path.read_text())
+                    if location == "execution":
+                        document["execution"] = {"coexistence_skills": ["missing-skill"]}
+                    else:
+                        document["evals"][0]["coexistence_skills"] = ["missing-skill"]
+                    write(path, json.dumps(document))
+
+                self.assert_fixture_failure(mutate, expected)
+
+    def test_official_eval_accepts_existing_file_and_coexistence_skill(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
+            document = json.loads(path.read_text())
+            document["execution"] = {"coexistence_skills": ["alpha-skill"]}
+            document["evals"][0]["files"] = ["README.md"]
+            document["evals"][0]["coexistence_skills"] = ["alpha-skill"]
+            write(path, json.dumps(document))
+
+            result = run_checker(root)
+            self.assertEqual(0, result.returncode, result.stderr)
+
     def test_official_eval_shape_rejects_unknown_case_fields(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "skills" / "alpha-skill" / "evals" / "evals.json"
