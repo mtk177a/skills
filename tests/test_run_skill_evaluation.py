@@ -16,6 +16,8 @@ from scripts.run_skill_evaluation import (
     copy_manifest,
     direct_skill_load_observation,
     observed_skill_handlers,
+    repository_local_catalog_check,
+    repository_local_config_args,
     skill_manifest,
     validate_plan,
     verify_file_manifest,
@@ -83,6 +85,22 @@ import time
 
 if "--version" in sys.argv:
     print("codex-cli fake")
+    raise SystemExit(0)
+if sys.argv[1:3] == ["debug", "prompt-input"]:
+    local = pathlib.Path.cwd() / ".agents" / "skills" / "maintain-japanese-references" / "SKILL.md"
+    if local.exists():
+        description = next((line.removeprefix("description: ") for line in local.read_text().splitlines() if line.startswith("description: ")), "")
+        catalog = "- `r0` = `" + str(local.parent.parent) + "`\\n- maintain-japanese-references: " + description + " (file: r0/maintain-japanese-references/SKILL.md)"
+    else:
+        catalog = ""
+    if {mode!r} == "duplicate-catalog":
+        catalog += "\\n- `r1` = `/tmp/personal-skills`\\n- maintain-japanese-references: Personal copy. (file: r1/maintain-japanese-references/SKILL.md)"
+    companion = pathlib.Path.cwd() / ".agents" / "skills" / "beta-skill" / "SKILL.md"
+    if companion.exists():
+        catalog += "\\n- beta-skill: Beta companion. (file: r0/beta-skill/SKILL.md)"
+    if {mode!r} == "personal-companion":
+        catalog += "\\n- `r2` = `/tmp/personal-skills`\\n- write-natural-japanese: Personal copy. (file: r2/write-natural-japanese/SKILL.md)"
+    print(json.dumps([{{"role": "developer", "content": [{{"text": catalog}}]}}]))
     raise SystemExit(0)
 output = pathlib.Path(sys.argv[sys.argv.index("--output-last-message") + 1])
 skill = pathlib.Path.cwd() / ".agents" / "skills" / "alpha-skill" / "SKILL.md"
@@ -186,6 +204,143 @@ def create_manual_run(plan_path: Path, run_path: Path) -> None:
 
 
 class SkillEvaluationRunnerTests(unittest.TestCase):
+    def test_repository_local_catalog_rejects_a_second_same_name_skill(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = Path(directory) / "fixture"
+            write(fixture / ".agents" / "skills" / "maintain-japanese-references" / "SKILL.md",
+                  "---\nname: maintain-japanese-references\ndescription: Fixture candidate.\nlicense: MIT\n---\n")
+            fake = Path(directory) / "codex"
+            create_fake_codex(fake, "duplicate-catalog")
+            result = repository_local_catalog_check(
+                str(fake), fixture, "maintain-japanese-references", "candidate",
+                repository_local_config_args("maintain-japanese-references", []),
+            )
+            self.assertIn("duplicated", result or "")
+
+    def test_repository_local_catalog_rejects_personal_companion_when_fixture_omits_it(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = Path(directory) / "fixture"
+            write(fixture / ".agents" / "skills" / "maintain-japanese-references" / "SKILL.md",
+                  "---\nname: maintain-japanese-references\ndescription: Fixture candidate.\nlicense: MIT\n---\n")
+            fake = Path(directory) / "codex"
+            create_fake_codex(fake, "personal-companion")
+            args = repository_local_config_args("maintain-japanese-references", [])
+            self.assertIn("write-natural-japanese", " ".join(args))
+            result = repository_local_catalog_check(
+                str(fake), fixture, "maintain-japanese-references", "candidate", args,
+            )
+            self.assertIn("without a fixture copy", result or "")
+
+    def test_repository_local_run_preflights_catalog_and_copies_companion_to_repository_path(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            create_repository(root)
+            local = root / ".agents" / "skills" / "maintain-japanese-references"
+            write(local / "SKILL.md", "---\nname: maintain-japanese-references\ndescription: Maintain Japanese references.\nlicense: MIT\n---\n")
+            write(local / "evals" / "evals.json", json.dumps({
+                "skill_name": "maintain-japanese-references",
+                "evals": [{"id": "H", "prompt": "Maintain the reference.",
+                           "coexistence_skills": ["beta-skill"], "expected_output": "Updated."}],
+            }) + "\n")
+            write(root / "skills" / "beta-skill" / "SKILL.md", "---\nname: beta-skill\ndescription: Beta companion.\nlicense: MIT\n---\n")
+            subprocess.run(["git", "-C", str(root), "add", ".agents/skills/maintain-japanese-references/SKILL.md"], check=True)
+            fake = Path(directory) / "codex"
+            create_fake_codex(fake)
+            plan_path = Path(directory) / "plan.json"
+            plan_command = [sys.executable, str(RUNNER), "--root", str(root), "plan",
+                            "--skill", "maintain-japanese-references", "--skill-source", "repository-local",
+                            "--path", "targeted-candidate", "--purpose", "Check local behavior.",
+                            "--affected", "reference maintenance", "--case", "H",
+                            "--base-ref", "HEAD", "--sandbox", "workspace-write", "--output", str(plan_path)]
+            planned = subprocess.run(plan_command, text=True, capture_output=True)
+            self.assertEqual(0, planned.returncode, planned.stderr)
+            artifacts = Path(directory) / "artifacts"
+            result = subprocess.run(
+                [sys.executable, str(RUNNER), "--root", str(root), "--codex-bin", str(fake),
+                 "run", "--plan", str(plan_path), "--artifacts-dir", str(artifacts),
+                 "--execute", "--max-model-calls", "1"],
+                text=True, capture_output=True,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            fixture = artifacts / "executions" / "001-candidate-H" / "fixture"
+            self.assertTrue((fixture / "skills" / "beta-skill" / "SKILL.md").is_file())
+            invocation = json.loads((fixture / "invocation.json").read_text())
+            self.assertNotIn("--ignore-user-config", invocation["argv"])
+            self.assertIn("features.plugins=false", invocation["argv"])
+
+    def test_plan_repository_local_skill_uses_tracked_source(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            create_repository(root)
+            local = root / ".agents" / "skills" / "maintain-japanese-references"
+            write(local / "SKILL.md", "# Local Skill\n")
+            write(local / "evals" / "evals.json", json.dumps({
+                "skill_name": "maintain-japanese-references",
+                "evals": [{"id": "H", "prompt": "Maintain the reference.", "expected_output": "Updated."}],
+            }) + "\n")
+            subprocess.run(["git", "-C", str(root), "add", ".agents/skills/maintain-japanese-references/SKILL.md"], check=True)
+            output = Path(directory) / "plan.json"
+            result = subprocess.run(
+                [sys.executable, str(RUNNER), "--root", str(root), "plan",
+                 "--skill", "maintain-japanese-references", "--skill-source", "repository-local",
+                 "--path", "targeted-candidate", "--purpose", "Check local behavior.",
+                 "--affected", "reference maintenance", "--case", "H",
+                 "--base-ref", "HEAD", "--output", str(output)],
+                text=True, capture_output=True,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            plan = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual("repository-local", plan["skill_source"])
+            self.assertEqual(".agents/skills/maintain-japanese-references/evals/evals.json", plan["source"]["file"])
+            write(local / "SKILL.md", "# Changed after planning\n")
+            artifacts = Path(directory) / "artifacts"
+            run = subprocess.run(
+                [sys.executable, str(RUNNER), "--root", str(root), "run",
+                 "--plan", str(output), "--artifacts-dir", str(artifacts),
+                 "--execute", "--max-model-calls", "1"],
+                text=True, capture_output=True,
+            )
+            self.assertEqual(2, run.returncode)
+            self.assertIn("candidate Skill manifest changed after planning", run.stderr)
+            self.assertFalse(artifacts.exists())
+
+    def test_plan_rejects_untracked_repository_local_skill(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            create_repository(root)
+            local = root / ".agents" / "skills" / "maintain-japanese-references"
+            write(local / "SKILL.md", "# Untracked local Skill\n")
+            result = subprocess.run(
+                [sys.executable, str(RUNNER), "--root", str(root), "plan",
+                 "--skill", "maintain-japanese-references", "--skill-source", "repository-local",
+                 "--path", "static-only", "--purpose", "Check source restriction.",
+                 "--affected", "source restriction", "--base-ref", "HEAD",
+                 "--output", str(Path(directory) / "plan.json")],
+                text=True, capture_output=True,
+            )
+            self.assertEqual(2, result.returncode)
+            self.assertIn("must be tracked by Git", result.stderr)
+
+    def test_case_baseline_produces_only_the_planned_document_diff(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            fixture = Path(directory) / "fixture"
+            fixture.mkdir()
+            create_repository(root)
+            case = {
+                "id": "H",
+                "files": [],
+                "inline_files": {"docs/authoring.md": "must update\n", "docs/ja/authoring.md": "may update\n"},
+                "baseline_files": {"docs/authoring.md": "may update\n", "docs/ja/authoring.md": "may update\n"},
+            }
+            copy_case_files(root, case, fixture)
+            diff = subprocess.run(
+                ["git", "-C", str(fixture), "diff", "--", "docs/authoring.md", "docs/ja/authoring.md"],
+                text=True, capture_output=True, check=True,
+            ).stdout
+            self.assertIn("+must update", diff)
+            self.assertNotIn("diff --git a/docs/ja/authoring.md", diff)
+
     def test_plan_checks_references_in_full_definition_and_sibling(self) -> None:
         for location, expected in (
             ("selected-file", "case `selected` input file must be a regular repository file: missing.txt"),

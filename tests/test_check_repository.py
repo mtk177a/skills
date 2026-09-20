@@ -419,6 +419,22 @@ class CheckerCliTests(unittest.TestCase):
 
             self.assertEqual(0, result.returncode, result.stderr)
 
+    def test_repository_local_evaluation_definitions_are_checked(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            local = root / ".agents" / "skills" / "maintain-japanese-references"
+            write(local / "SKILL.md", "# Local Skill\n")
+            definition = local / "evals" / "evals.json"
+            write(definition, json.dumps({
+                "skill_name": "wrong-name",
+                "evals": [{"id": "H", "prompt": "Maintain it.", "expected_output": "Updated."}],
+            }))
+            result = run_checker(root)
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn("maintain-japanese-references/evals/evals.json", result.stderr)
+            self.assertIn("skill_name", result.stderr)
+
     def test_migrated_and_legacy_assets_may_not_coexist_for_one_skill(self) -> None:
         def mutate(root: Path) -> None:
             write(

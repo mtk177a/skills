@@ -183,6 +183,7 @@ When changing a Skill, identify the affected responsibility before selecting eva
 - Multi-Skill flow evaluations go in `docs/` (see `evaluation.md`)
 - Follow the path-selection rules in `evaluation.md`; do not run all cases merely because `SKILL.md` changed
 - When a pull request first materially changes an existing Skill's instructions, runtime resources, discovery, responsibility, safety boundary, or evaluation definitions, migrate that Skill's complete `evals.json` and `triggers.json` set to the executable `{skill_name, evals}` format
+- If model-backed evaluation is needed and no executable definition covers the changed responsibility, create the needed definition in that format before execution
 - Do not require migration for README, reference-translation, meaning-preserving documentation or metadata, or legacy-result-only changes, and do not migrate unrelated Skills
 - Treat definition migration and evaluation execution separately: after migrating the complete definition set, execute only cases needed for the changed responsibility
 - Use `scripts/run_skill_evaluation.py plan` before model-backed execution and inspect the estimated call count

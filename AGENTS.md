@@ -62,7 +62,9 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 
 - This repository publishes the root `skills/` directory as a native APM `SKILL_BUNDLE`. Do not add a root `apm.yml` or `apm.lock.yaml`; consumer repositories own their manifests and lockfiles.
 - Before committing a public Skill change, run the relevant Skill evaluations, the repository checker, and the repository unit tests.
-- When a pull request first materially changes an existing Skill's instructions, runtime resources, discovery, responsibility, safety boundary, or evaluation definitions, migrate that Skill's complete `evals.json` and `triggers.json` set to the executable `{skill_name, evals}` format. Do not require migration for README, reference-translation, meaning-preserving documentation or metadata, or legacy-result-only changes.
+- When a pull request first materially changes an existing Skill's instructions, runtime resources, discovery, responsibility, safety boundary, or evaluation definitions, migrate its existing `evals.json` and `triggers.json` set to the executable `{skill_name, evals}` format.\
+  If model-backed evaluation is needed and the Skill has no executable definition for the affected responsibility, create the needed definition in that format.\
+  Do not require migration for README, reference-translation, meaning-preserving documentation or metadata, or legacy-result-only changes.
 - Definition migration does not require executing every migrated case; run only the cases needed for the changed responsibility.
 - Review evaluation sufficiency against the responsibility changed by the pull request, not against a universal case count or suite-refresh rule.
 - An evaluation-insufficiency finding must identify the uncovered changed responsibility, a concrete acceptance-relevant failure, why the recorded evidence cannot expose it, and the smallest additional evaluation that would resolve it.
