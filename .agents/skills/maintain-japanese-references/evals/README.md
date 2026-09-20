@@ -24,7 +24,7 @@ The case prompts, fixtures, expected handlers, and assertions live in the JSON d
 | Meaning-preserving source edit | Rewrites an aligned reference or skips the companion | J | Both Skill reads, Git diff, and no-update reason. |
 | English maintenance request | Fails to select the candidate or edits beyond the changed pair | K maintenance | Complete event stream, observed handlers, successful reads, and document diff. |
 | Issue authoring exclusion | Applies reference maintenance to an Issue draft | K Issue-only | Complete event stream with no candidate read and no file edit. |
-| Package and definition consistency | Malformed metadata, links, or evaluation definitions | Repository checker | `python3 -B scripts/check_repository.py`. |
+| Evaluation definitions and relative links | Malformed evaluation definitions or broken relative Markdown links | Repository checker | `python3 -B scripts/check_repository.py`. |
 
 Historical manual cases A–F covered normative meaning, no-op edits, Japanese-canonical exclusion, tracker authoring, edit scope, and established terminology.\
 Historical case G covered optional coexistence before #77 made the companion mandatory.\
