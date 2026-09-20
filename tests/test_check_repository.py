@@ -975,6 +975,30 @@ class CheckerCliTests(unittest.TestCase):
 
         self.assert_fixture_failure(mutate, "companion Skill reference `../alpha-skill/SKILL.md` is missing")
 
+    def test_repository_local_companion_relationship(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            local_skill = root / ".agents" / "skills" / "maintain-japanese-references" / "SKILL.md"
+            write(local_skill, "Read skills/alpha-skill/SKILL.md before deciding.\n")
+            write(
+                root / "docs" / "authoring.md",
+                """# Authoring
+
+| Relationship | Rationale | Installation | Provenance | Evaluation |
+| --- | --- | --- | --- | --- |
+| `maintain-japanese-references` → `alpha-skill` | test | Read both repository files | [#42](https://github.com/mtk177a/skills/pull/42) | `evals/README.md` |
+""",
+            )
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+            write(local_skill, "Do the work without the companion.\n")
+            result = run_checker(root)
+            self.assertEqual(1, result.returncode, result.stderr)
+            self.assertIn("companion Skill reference `skills/alpha-skill/SKILL.md` is missing", result.stderr)
+
     def test_diagnostics_have_stable_path_order(self) -> None:
         def mutate(root: Path) -> None:
             write(root / "docs" / "z.md", "Use `/home/z/private`.\n")

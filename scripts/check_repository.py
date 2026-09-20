@@ -918,18 +918,28 @@ def check_companion_relationships(root: Path, problems: list[Problem], catalog: 
         dependent, companion, remainder = match.groups()
         line = line_number(text, match.start())
         for name in (dependent, companion):
-            if name not in catalog:
+            if name not in catalog and name not in TRACKED_REPOSITORY_LOCAL_SKILLS:
                 add(problems, root, registry, line, f"companion relationship references uncataloged Skill `{name}`")
-        dependent_skill = root / "skills" / dependent / "SKILL.md"
+        dependent_skill = (
+            root / ".agents" / "skills" / dependent / "SKILL.md"
+            if dependent in TRACKED_REPOSITORY_LOCAL_SKILLS
+            else root / "skills" / dependent / "SKILL.md"
+        )
         if dependent_skill.is_file():
             body = dependent_skill.read_text(encoding="utf-8")
-            reference = f"../{companion}/SKILL.md"
-            command = f"apm install mtk177a/skills --skill {dependent} --skill {companion}"
+            local_dependent = dependent in TRACKED_REPOSITORY_LOCAL_SKILLS
+            reference = f"skills/{companion}/SKILL.md" if local_dependent else f"../{companion}/SKILL.md"
             if reference not in body:
                 add(problems, root, dependent_skill, 1, f"companion Skill reference `{reference}` is missing")
-            if command not in body:
-                add(problems, root, dependent_skill, 1, "supported companion installation command is missing")
-        if "UPSTREAM.md" not in remainder:
+            if not local_dependent:
+                command = f"apm install mtk177a/skills --skill {dependent} --skill {companion}"
+                if command not in body:
+                    add(problems, root, dependent_skill, 1, "supported companion installation command is missing")
+        else:
+            add(problems, root, dependent_skill, 1, "companion relationship dependent Skill is missing")
+        if "UPSTREAM.md" not in remainder and not re.search(
+            r"https://github\.com/mtk177a/skills/(?:pull|issues)/[0-9]+", remainder
+        ):
             add(problems, root, registry, line, "companion registry row must reference provenance")
         if "evals/" not in remainder:
             add(problems, root, registry, line, "companion registry row must reference evaluation coverage")

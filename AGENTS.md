@@ -43,7 +43,7 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 - Repository-local operational Skills may live under `.agents/skills/<skill-name>/` only when they are exclusively for maintaining this repository itself and should not be distributed as part of the public Skill catalog.
 - These repo-local Skills are source files, not APM deployment output, when they are explicitly tracked by git.
 - Do not add repo-local Skills to the public Skill catalog or distribution bundle.
-- Keep repo-local Skill names kebab-case and include `SKILL.md`, `SKILL-ja.md`, and minimal supporting files only when needed.
+- Keep repo-local Skill names kebab-case and include `SKILL.md`. Include `SKILL-ja.md` when that `SKILL.md` is in English; omit the duplicate for a documented Japanese writing/editing exception. Add supporting files only when needed.
 - The current tracked repo-local Skill exceptions are:
   - `.agents/skills/maintain-japanese-references/`
 

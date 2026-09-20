@@ -1,61 +1,71 @@
 ---
 name: maintain-japanese-references
-description: Use in the mtk177a/skills repository when an English canonical README, agent-guidance file, repository document, public Skill, or tracked repository-local Skill is added or changed and its maintained Japanese reference translation must be created, reviewed, synchronized, or explicitly left unchanged. Preserve canonical meaning and repository terminology; not for Japanese-canonical Skills, Issue or pull-request authoring, general translation, or changing the English canonical source.
+description: mtk177a/skills リポジトリで、英語版の README、エージェント向け指示、リポジトリ文書、公開 Skill、または追跡対象のリポジトリ内 Skill が追加・変更されたときに、日本語参考訳の更新要否を判断し、必要なら同期する。原文との意味の一致と編集範囲を守り、write-natural-japanese を必ず併用して日本語を確認する。日本語で要件を定める Skill、Issue や pull request の作成、対象外の翻訳、英語版の変更には使用しない。
 license: MIT
 ---
 
-# Maintain Japanese References
+# 日本語参考訳を保守する
 
-## Objective
+## 目的
 
-- Keep maintained Japanese reference translations aligned with English canonical files when the canonical meaning changes.
-- Avoid no-op translation edits when an English change does not affect Japanese meaning.
-- Preserve English as the public and normative canonical source while maintaining a reusable comprehension and review aid for the primary maintainer.
+- 英語版の変更で日本語参考訳に反映すべき内容が変わった場合に、対応する訳文を更新する。
+- 英語版の変更が訳文で伝える内容に影響しなければ、日本語ファイルを編集しない。
+- 公開文書と要件判断の基準は英語版とし、保守者が内容を理解・確認するための日本語参考訳を維持する。
 
-## Maintained pairs
+## 対象の組み合わせ
 
 - `README.md` → `README.ja.md`
 - `AGENTS.md` → `AGENTS-ja.md`
 - `CLAUDE.md` → `CLAUDE-ja.md`
 - `docs/<name>.md` → `docs/ja/<name>.md`
-- `skills/<skill-name>/SKILL.md` → `skills/<skill-name>/SKILL-ja.md` when English is canonical
-- `.agents/skills/<tracked-skill>/SKILL.md` → `.agents/skills/<tracked-skill>/SKILL-ja.md`
+- 英語で書かれた `skills/<skill-name>/SKILL.md` → `skills/<skill-name>/SKILL-ja.md`
+- 英語で書かれた `.agents/skills/<tracked-skill>/SKILL.md` → `.agents/skills/<tracked-skill>/SKILL-ja.md`
 
-Do not create a translation for a documented Japanese-canonical Skill.
+日本語の `SKILL.md` で要件を定める Skill は対象外とし、重複する `SKILL-ja.md` を作らない。
 
-## Workflow
+## 必須の併用
 
-1. Inspect the request and current diff to identify added or changed English canonical files in the maintained pairs.
-2. Read each changed canonical section, its surrounding context, and the current Japanese counterpart when one exists.
-3. Decide whether the canonical change affects meaning that the Japanese reader needs.\
-   Treat requirements, scope, exceptions, permissions, prohibitions, safety conditions, procedures, validation, links, and document structure as meaning-bearing when they affect correct use.
-4. If meaning changes, create or update the corresponding Japanese reference in the same change.\
-   Edit the smallest coherent sections that preserve the canonical document's relationships and intent.
-5. If meaning does not change, leave the Japanese file untouched and record the reason for that decision.
-6. Check the resulting pair for semantic alignment, repository terminology, translation notices, Markdown structure, and unintended changes.
+この Skill を使用するときは、最初に同じリポジトリの `skills/write-natural-japanese/SKILL.md` を読み、その指示と必要な参照資料を適用する。
+英語から日本語へ訳す場合は、`skills/write-natural-japanese/references/wording-decisions.md` も最初から最後まで読む。
+日本語ファイルを変更しないと判断する場合も、併用先の Skill 本文を読む。
+指定したリポジトリ内のファイルが存在しない、または読めない場合は、個人環境の同名 Skill で代用しない。
+この Skill による判断と編集を止め、利用できなかったファイルを報告する。
 
-Preserve normative force such as `must`, `should`, and `may`, along with exclusions, authorization boundaries, failure conditions, and uncertainty.\
-Preserve frontmatter fields, headings, links, code, commands, identifiers, tables, and formatting constraints unless the canonical change requires their corresponding update.
+この Skill は変更対象、原文との意味の一致、編集範囲を判断する。
+`write-natural-japanese` は、その範囲内で日本語の語彙と文の組み立てを確認する。
+読みやすさのために原文の要件や適用条件を変えない。
 
-Prefer terminology already used in the repository's Japanese references.\
-Do not add explanations, policy, examples, or claims that are absent from the canonical source.\
-If the canonical meaning or an established translation is materially ambiguous, report the affected pair and ambiguity instead of guessing; continue with independent pairs when possible.
+## 手順
 
-## Reporting
+1. 必須の併用先を読み、依頼と現在の差分から、追加または変更された英語版と対応する日本語参考訳を特定する。
+2. 英語版の変更箇所とその前後、既存の日本語参考訳があれば対応箇所を読む。
+3. 英語版の変更によって、日本語の読者に伝える内容が変わるか判断する。\
+   要件、対象範囲、例外、許可、禁止、安全上の条件、手順、検証方法、リンク、文書構造が正しい利用に影響する場合は、訳文へ反映する。
+4. 伝える内容が変わる場合は、同じ変更内で対応する日本語参考訳を作成または更新する。\
+   英語版にある記述間の関係と意図を保ち、必要な箇所をまとまりとして編集する。
+5. 伝える内容が変わらない場合は日本語ファイルを編集せず、その理由を記録する。
+6. 更新後の日本語参考訳を最初から読み直し、英語版との意味の一致、自然な表現、既存の用語、英語版を基準とする旨の注記、Markdown 構造、意図しない変更を確認する。
 
-Report:
+原文の `must`、`should`、`may` が表す義務・推奨・許可の違いを保つ。
+除外、承認条件、失敗条件、不確実性も省かない。
+英語版の変更に対応する場合を除き、frontmatter の項目、見出し、リンク、コード、コマンド、識別子、表、整形上の制約を保つ。
 
-- every maintained pair reviewed
-- whether each Japanese reference was created, updated, or left unchanged
-- the semantic reason for each unchanged translation
-- checks performed and their results
-- unresolved ambiguities or unverified pairs
+リポジトリの日本語参考訳で定着している用語を確認する。
+原文にない説明、方針、例、主張は追加しない。
+原文の意味や既存の訳語に、訳文が変わるほどの曖昧さがある場合は推測せず、対象ファイルと曖昧な点を報告する。
+他の組み合わせについては、独立して判断できる範囲で作業を続ける。
 
-## Boundaries
+## 報告内容
 
-- Do not edit the English canonical source as part of translation maintenance.
-- Do not use this Skill for Japanese-canonical Skills, Issue or pull-request authoring, or general translation outside the maintained pairs.
-- Do not use an external translation service or introduce dependencies.
-- Do not commit, push, post tracker content, change the selected model, or start subagents unless the user's request or applicable instructions authorize that action.
-- This Skill does not require `write-natural-japanese`.\
-  When both Skills are used, this Skill controls fidelity and scope, while `write-natural-japanese` improves Japanese expression within those limits.
+- 確認した英語版と日本語参考訳の組み合わせ
+- 各日本語参考訳を作成、更新、または無変更とした結果
+- 無変更と判断した場合は、訳文で伝える内容が変わらない理由
+- 実行した検証とその結果
+- 解消していない曖昧さと未確認の組み合わせ
+
+## 境界
+
+- 翻訳の保守を理由に英語版を編集しない。
+- 日本語の `SKILL.md` で要件を定める Skill、Issue や pull request の作成、対象外の翻訳には使用しない。
+- 外部翻訳サービスを使用せず、新たな依存を追加しない。
+- ユーザーの依頼や適用される指示で許可されていない限り、コミット、プッシュ、課題管理ツールへの投稿、使用するモデルの変更、サブエージェントの起動を行わない。

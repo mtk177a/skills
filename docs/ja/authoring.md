@@ -70,6 +70,7 @@ Skill は原則として自己完結させます。併用関係は、一方の S
 | 関係 | 理由 | 導入方法と併用 Skill がない場合の動作 | 出典 | 評価 |
 | --- | --- | --- | --- | --- |
 | `cognitive-rhythm-writing` → `japanese-tech-writing` | 緩急の規範は、日本語技術文書の規範を置き換えず、その制約を前提に拡張する。 | `apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing` で両方を導入する。併用 Skill がない場合、`cognitive-rhythm-writing` は規範を適用せず停止する。 | [`skills/cognitive-rhythm-writing/UPSTREAM.md`](../../skills/cognitive-rhythm-writing/UPSTREAM.md)、[`skills/japanese-tech-writing/UPSTREAM.md`](../../skills/japanese-tech-writing/UPSTREAM.md)、[`THIRD_PARTY_NOTICES.md`](../../THIRD_PARTY_NOTICES.md) が Unlicense の出典とローカルでの改変内容を保持する。 | [`skills/cognitive-rhythm-writing/evals/README.md`](../../skills/cognitive-rhythm-writing/evals/README.md) が必須の読み込み順と、併用 Skill がない場合の経路を扱う。 |
+| `maintain-japanese-references` → `write-natural-japanese` | 英語版に書かれた内容を保ちながら、文脈に合う日本語で参考訳を書くため、両方を使用する。 | 両 Skill はこのリポジトリで管理する。リポジトリ内 Skill を使う前に `skills/write-natural-japanese/SKILL.md` と必要な参照資料を読む。リポジトリ内のファイルを読めない場合は、個人環境の同名 Skill で代用せず作業を止め、対象ファイルを報告する。 | 両 Skill はこのリポジトリで作成した。[#42](https://github.com/mtk177a/skills/pull/42) で日本語参考訳の保守用 Skill を追加し、[#77](https://github.com/mtk177a/skills/issues/77) に必須の併用関係と日本語で要件を定める例外を記録する。 | [リポジトリ内 Skill の評価記録](../../.agents/skills/maintain-japanese-references/evals/README.md) で、必須の併用、訳文の品質、併用先を読めない場合を確認する。どちらかの Skill または併用関係を変更したときは、この記録を見直す。 |
 
 ## description の書き方
 

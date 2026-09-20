@@ -45,7 +45,7 @@ Skill を作成・編集する際は、責務の重複を解消し、判断が�
 - このリポジトリ自体の保守専用で、公開 Skill カタログに配布しない運用 Skill に限り、`.agents/skills/<skill-name>/` に配置できる
 - Git で明示的に追跡しているリポジトリローカル Skill はソースファイルであり、APM が配備時に生成するファイルとして扱わない
 - リポジトリローカル Skill を公開 Skill カタログや配布バンドルに追加しない
-- リポジトリローカル Skill 名は kebab-case とし、必要な場合に限り `SKILL.md`、`SKILL-ja.md`、最小限の補助ファイルを含める
+- リポジトリ内 Skill の名前は kebab-case とし、`SKILL.md` を置く。英語の `SKILL.md` には `SKILL-ja.md` を付ける。日本語の執筆・推敲用 Skill を日本語で書く例外を文書化した場合は、重複する `SKILL-ja.md` を置かない。補助ファイルは必要な場合だけ追加する
 - 現在追跡しているリポジトリローカル Skill の例外は次のとおり
   - `.agents/skills/maintain-japanese-references/`
 
