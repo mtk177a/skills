@@ -16,7 +16,7 @@ Keep requirements and grading notes out of the executor input.
 
 - The `description` identifies the repository, maintained inputs, intended decisions, and adjacent exclusions.
 - The body defines maintained pairs, semantic-impact criteria, preservation requirements, ambiguity handling, output information, and authority boundaries.
-- The Skill is self-contained and does not require `japanese-tech-writing` or another companion Skill.
+- The Skill is self-contained and does not require another Skill.
 - Violations marked `[critical]` below would produce an incorrect translation, an unauthorized change, or a responsibility-boundary failure.
 
 ## Coverage map
@@ -29,6 +29,7 @@ Keep requirements and grading notes out of the executor input.
 | Tracker authoring does not activate this workflow | Executor drafts or translates tracker content | D | Output inspection |
 | Changed pairs constrain the edit scope | Unrelated translations are modified | E | Diff inspection |
 | Established terminology is preserved | Executor replaces an established term without evidence | F | Pair comparison and report inspection |
+| Coexistence with Japanese wording support preserves each responsibility | Wording edits weaken canonical meaning or expand the edit scope | G | Pair comparison and report inspection |
 
 ## Scenarios
 
@@ -92,6 +93,17 @@ Requirements checklist:
 1. [critical] The established term is retained unless the canonical meaning requires a different term.
 2. If the evidence supports multiple materially different translations, the executor reports the ambiguity instead of choosing silently.
 
+### Scenario G: Explicit use with `write-natural-japanese`
+
+Provide an English canonical document change that strengthens a requirement, its outdated Japanese reference, and both Skills.\
+Ask the executor to synchronize the reference while making the Japanese sentence natural.
+
+Requirements checklist:
+
+1. [critical] The Japanese result preserves the strengthened requirement and changes only the affected pair.
+2. [critical] Natural wording does not add or remove policy, exceptions, or uncertainty.
+3. The executor treats natural wording as subordinate to source fidelity and does not treat either Skill as a required companion.
+
 ## Results
 
 ### Iter 1 — 2026-09-08
@@ -111,6 +123,21 @@ The executor received `SKILL.md` and the six scenario inputs, did not receive th
 Maintainer review found no critical or non-critical requirement failure.\
 These results accept the candidate for the six mapped responsibilities and boundaries without requiring a baseline or repetition.\
 Deterministic repository validation checks structure, frontmatter, translation notices, links, and repository-local artifact boundaries but does not establish behavior on other models or clients.
+
+### Iter 2 — 2026-09-21
+
+Scenario G was evaluated once with the candidate `SKILL.md` and `write-natural-japanese` in a disposable fixture by Codex CLI 0.154.0 using `gpt-5.6-luna` with medium reasoning.\
+The fixture contained only the two Skill sources from this public repository, the wording reference, and a synthetic English/Japanese document pair.\
+The executor received the request and fixture, not the requirements checklist.
+
+| Scenario | Result | Evidence | Decision effect |
+| --- | --- | --- | --- |
+| G | pass | Loaded both Skills; changed only the Japanese pair's `更新してもよい` to `更新する必要があります`; preserved the condition, scope, `pull request`, and Markdown structure | Supports coexistence without weakening canonical meaning or expanding the edit scope |
+
+All critical requirements passed.\
+One initial CLI invocation using `--ignore-user-config` returned 401 before a model response; the successful run used the normal configuration.\
+The common evaluation Runner currently selects `skills/<name>`, so this repository-local Skill was evaluated in a disposable directory rather than through that Runner.\
+No baseline, repeated run, or other client was needed to resolve this change's acceptance question; those paths remain unverified.
 
 ## Next validation question
 

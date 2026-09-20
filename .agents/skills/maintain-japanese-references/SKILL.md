@@ -56,6 +56,6 @@ Report:
 - Do not edit the English canonical source as part of translation maintenance.
 - Do not use this Skill for Japanese-canonical Skills, Issue or pull-request authoring, or general translation outside the maintained pairs.
 - Do not use an external translation service or introduce dependencies.
-- Do not commit, push, post tracker content, change the selected model, or start subagents unless separately authorized.
-- This Skill does not depend on `japanese-tech-writing`.\
-  When both Skills are explicitly used, this Skill controls fidelity and scope, while `japanese-tech-writing` controls expression within those limits.
+- Do not commit, push, post tracker content, change the selected model, or start subagents unless the user's request or applicable instructions authorize that action.
+- This Skill does not require `write-natural-japanese`.\
+  When both Skills are used, this Skill controls fidelity and scope, while `write-natural-japanese` improves Japanese expression within those limits.
