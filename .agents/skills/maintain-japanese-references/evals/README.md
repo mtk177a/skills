@@ -80,8 +80,31 @@ Plans, raw events, and grading files remain outside the repository; this README 
 
 On 2026-09-08, six manual A–F scenarios passed with an uncommitted candidate for [PR #42](https://github.com/mtk177a/skills/pull/42), `gpt-5.6-luna`, and medium reasoning.\
 On 2026-09-21, manual G passed with candidate `900594f5effbfbc5a93e026438aa55d0a2ad9767`, and manual H, I, J, and K work used medium reasoning before the executable definitions existed.\
+The recorded observations for A–G were:
+
+| Case | Earlier result | Observed evidence |
+| --- | --- | --- |
+| A | Pass | Preserved `must`, the explicit-request condition, and risk disclosure without changing English content. |
+| B | Pass | Left the Japanese reference unchanged for source-line reflow and explained why. |
+| C | Pass | Excluded a Japanese-canonical Skill without proposing a duplicate `SKILL-ja.md`. |
+| D | Pass | Declined Issue authoring as outside this workflow and made no repository change. |
+| E | Pass | Updated only the translation paired with a semantic change, reported the no-op pair, and left an unrelated pair untouched. |
+| F | Pass | Retained the established term `pull request` and reported no ambiguity. |
+| G | Pass | Read both Skills and changed only the Japanese pair from permission to obligation while preserving the condition and Markdown structure. |
+
 The first manual H missed the wording reference and the first manual I used a personal replacement; the Skill instructions were corrected and affected cases subsequently passed.\
 A later isolated manual K maintenance run read the repository candidate and companion and updated only Japanese; its prior no-Git attempt had been inconclusive.\
+H and J used candidate SHA-256 `d08754c2b81fb6056d3dcf7f8f1bc075228623ee98969d604557f6c5df426ab0`, while I and K used `30eb36bf5df84d48b4d326b18891553de526d073b2ab85d1b92a1fe41938105c`.\
+The later Skill change clarified that a missing repository companion could not be replaced by a personal copy.
+
+| Manual case | Earlier result | Observed evidence |
+| --- | --- | --- |
+| H | Pass after correction | Read both Skills and the full wording reference; updated only Japanese with the stronger obligation and pre-merge condition. |
+| I | Pass after correction | With the repository companion absent, reported the missing file and made no edit. |
+| J | Pass | Read both Skills, made no Japanese edit, and explained the meaning-preserving reflow. |
+| K maintenance | Pass after an inconclusive setup | In an isolated Git fixture, read the candidate, companion, and reference, then changed only Japanese. |
+| K Issue-only | Pass | Completed an Issue draft without reading the maintenance Skill. |
+
 Those observations informed the new cases, but there is no preserved evidence that the earlier H, I, and J runs had pre-execution plans.\
 The new plans do not retroactively establish those earlier procedures.
 
