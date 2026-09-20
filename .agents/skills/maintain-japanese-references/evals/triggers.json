@@ -1,0 +1,35 @@
+{
+  "skill_name": "maintain-japanese-references",
+  "evals": [
+    {
+      "id": "K-maintenance",
+      "title": "English maintenance request selects the Japanese Skill",
+      "prompt": "The English authoring document now requires a Japanese-reference update before merging. Please synchronize docs/ja/authoring.md with docs/authoring.md, preserving its condition and deadline.",
+      "fixture": {
+        "files": {
+          "docs/authoring.md": "If an English requirement changes, maintainers must update its Japanese reference before merging the pull request.\n",
+          "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新してもよい。\n"
+        }
+      },
+      "baseline_files": {
+        "docs/authoring.md": "If an English requirement changes, maintainers may update its Japanese reference before merging the pull request.\n",
+        "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新してもよい。\n"
+      },
+      "coexistence_skills": ["write-natural-japanese"],
+      "expected_handlers": ["maintain-japanese-references", "write-natural-japanese"],
+      "assertions": [
+        {"id": "candidate-attribution", "text": "The completed event stream shows successful reads of the repository candidate and companion before editing, with no personal same-name Skill read.", "critical": true},
+        {"id": "bounded-translation", "text": "Only the Japanese reference changes; it preserves the stronger obligation, condition, and pre-merge deadline in natural Japanese.", "critical": true}
+      ]
+    },
+    {
+      "id": "K-issue-only",
+      "title": "Issue authoring does not select reference maintenance",
+      "prompt": "Draft a Japanese body for an Issue titled 'Improve setup guidance'. The Summary is 'Clarify the setup steps for new users.' No repository file has changed. Do not edit files.",
+      "expected_handlers": [],
+      "assertions": [
+        {"id": "tracker-boundary", "text": "Answer the Issue-body request without applying maintain-japanese-references or editing repository files.", "critical": true}
+      ]
+    }
+  ]
+}

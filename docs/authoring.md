@@ -75,6 +75,7 @@ assets together.
 | Relationship | Rationale | Installation and missing-companion behavior | Provenance | Evaluation |
 | --- | --- | --- | --- | --- |
 | `cognitive-rhythm-writing` → `japanese-tech-writing` | The pacing rules extend, rather than replace, the Japanese technical-writing constraints. | Install both with `apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing`. `cognitive-rhythm-writing` stops without applying its rules when the companion is unavailable. | [`skills/cognitive-rhythm-writing/UPSTREAM.md`](../skills/cognitive-rhythm-writing/UPSTREAM.md), [`skills/japanese-tech-writing/UPSTREAM.md`](../skills/japanese-tech-writing/UPSTREAM.md), and [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md) preserve the Unlicense sources and local adaptations. | [`skills/cognitive-rhythm-writing/evals/README.md`](../skills/cognitive-rhythm-writing/evals/README.md) covers the required read order and missing-companion path. |
+| `maintain-japanese-references` → `write-natural-japanese` | Translation maintenance needs both fidelity to the English source and context-appropriate Japanese wording. | Both Skills are tracked in this repository. Read `skills/write-natural-japanese/SKILL.md` and its required references before applying the repository-local Skill; stop and report a missing repository file without substituting a personal copy. | Both Skills are original repository material; the repository-local Skill began in [#42](https://github.com/mtk177a/skills/pull/42), and [#77](https://github.com/mtk177a/skills/issues/77) records the required relationship and Japanese-canonical exception. | [The repository-local evaluation record](../.agents/skills/maintain-japanese-references/evals/README.md) covers required use, translation quality, and the missing-companion path. Review it when either Skill or this relationship changes. |
 
 ## Writing the description
 
@@ -182,6 +183,7 @@ When changing a Skill, identify the affected responsibility before selecting eva
 - Multi-Skill flow evaluations go in `docs/` (see `evaluation.md`)
 - Follow the path-selection rules in `evaluation.md`; do not run all cases merely because `SKILL.md` changed
 - When a pull request first materially changes an existing Skill's instructions, runtime resources, discovery, responsibility, safety boundary, or evaluation definitions, migrate that Skill's complete `evals.json` and `triggers.json` set to the executable `{skill_name, evals}` format
+- If model-backed evaluation is needed and no executable definition covers the changed responsibility, create the needed definition in that format before execution
 - Do not require migration for README, reference-translation, meaning-preserving documentation or metadata, or legacy-result-only changes, and do not migrate unrelated Skills
 - Treat definition migration and evaluation execution separately: after migrating the complete definition set, execute only cases needed for the changed responsibility
 - Use `scripts/run_skill_evaluation.py plan` before model-backed execution and inspect the estimated call count

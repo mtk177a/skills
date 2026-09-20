@@ -1,0 +1,66 @@
+{
+  "skill_name": "maintain-japanese-references",
+  "evals": [
+    {
+      "id": "H",
+      "title": "Required companion and natural Japanese",
+      "prompt": "The English docs/authoring.md changed its requirement from 'may update' to 'must update'. Update the corresponding Japanese reference before the pull request is merged. Preserve the condition and deadline, and make the Japanese sentence natural.",
+      "fixture": {
+        "files": {
+          "docs/authoring.md": "If an English requirement changes, maintainers must update its Japanese reference before merging the pull request.\n",
+          "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳の更新を提供してもよい。\n"
+        }
+      },
+      "baseline_files": {
+        "docs/authoring.md": "If an English requirement changes, maintainers may update its Japanese reference before merging the pull request.\n",
+        "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳の更新を提供してもよい。\n"
+      },
+      "coexistence_skills": ["write-natural-japanese"],
+      "assertions": [
+        {"id": "required-reads", "text": "Read the repository-local Skill, the repository copy of write-natural-japanese, and its full wording reference before making the translation decision.", "critical": true},
+        {"id": "faithful-natural-update", "text": "Edit only the Japanese counterpart; express must as an obligation in natural Japanese while preserving the condition and pre-merge deadline.", "critical": true},
+        {"id": "report", "text": "Identify the changed pair, why the update was needed, and the checks performed.", "critical": false}
+      ]
+    },
+    {
+      "id": "I",
+      "title": "Missing repository companion stops maintenance",
+      "prompt": "The English docs/authoring.md changed 'may update' to 'must update'. Please synchronize docs/ja/authoring.md before merging the pull request.",
+      "fixture": {
+        "files": {
+          "docs/authoring.md": "If an English requirement changes, maintainers must update its Japanese reference before merging the pull request.\n",
+          "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新してもよい。\n"
+        }
+      },
+      "baseline_files": {
+        "docs/authoring.md": "If an English requirement changes, maintainers may update its Japanese reference before merging the pull request.\n",
+        "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新してもよい。\n"
+      },
+      "assertions": [
+        {"id": "stop-without-companion", "text": "Do not decide or edit the translation when the repository copy of write-natural-japanese is absent, and do not substitute a personal Skill.", "critical": true},
+        {"id": "identify-missing-file", "text": "Identify the missing repository companion file in the response.", "critical": true}
+      ]
+    },
+    {
+      "id": "J",
+      "title": "No-op decision still reads the companion",
+      "prompt": "Only the line wrapping of docs/authoring.md changed; the requirement and its meaning stayed the same. Check whether docs/ja/authoring.md needs an update.",
+      "fixture": {
+        "files": {
+          "docs/authoring.md": "If an English requirement changes, maintainers must update its Japanese reference before merging the pull request.\n",
+          "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新しなければならない。\n"
+        }
+      },
+      "baseline_files": {
+        "docs/authoring.md": "If an English requirement changes,\nmaintainers must update its Japanese reference before merging the pull request.\n",
+        "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新しなければならない。\n"
+      },
+      "coexistence_skills": ["write-natural-japanese"],
+      "assertions": [
+        {"id": "read-before-decision", "text": "Read both repository Skill files before deciding that no Japanese update is needed.", "critical": true},
+        {"id": "unchanged-reference", "text": "Leave the aligned Japanese file byte-for-byte unchanged.", "critical": true},
+        {"id": "no-op-reason", "text": "Explain that source-line reflow does not change the meaning conveyed by the Japanese reference.", "critical": false}
+      ]
+    }
+  ]
+}

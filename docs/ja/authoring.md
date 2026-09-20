@@ -70,6 +70,7 @@ Skill は原則として自己完結させます。併用関係は、一方の S
 | 関係 | 理由 | 導入方法と併用 Skill がない場合の動作 | 出典 | 評価 |
 | --- | --- | --- | --- | --- |
 | `cognitive-rhythm-writing` → `japanese-tech-writing` | 緩急の規範は、日本語技術文書の規範を置き換えず、その制約を前提に拡張する。 | `apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing` で両方を導入する。併用 Skill がない場合、`cognitive-rhythm-writing` は規範を適用せず停止する。 | [`skills/cognitive-rhythm-writing/UPSTREAM.md`](../../skills/cognitive-rhythm-writing/UPSTREAM.md)、[`skills/japanese-tech-writing/UPSTREAM.md`](../../skills/japanese-tech-writing/UPSTREAM.md)、[`THIRD_PARTY_NOTICES.md`](../../THIRD_PARTY_NOTICES.md) が Unlicense の出典とローカルでの改変内容を保持する。 | [`skills/cognitive-rhythm-writing/evals/README.md`](../../skills/cognitive-rhythm-writing/evals/README.md) が必須の読み込み順と、併用 Skill がない場合の経路を扱う。 |
+| `maintain-japanese-references` → `write-natural-japanese` | 英語版に書かれた内容を保ちながら、文脈に合う日本語で参考訳を書くため、両方を使用する。 | 両 Skill はこのリポジトリで管理する。リポジトリ内 Skill を使う前に `skills/write-natural-japanese/SKILL.md` と必要な参照資料を読む。リポジトリ内のファイルを読めない場合は、個人環境の同名 Skill で代用せず作業を止め、対象ファイルを報告する。 | 両 Skill はこのリポジトリで作成した。[#42](https://github.com/mtk177a/skills/pull/42) で日本語参考訳の保守用 Skill を追加し、[#77](https://github.com/mtk177a/skills/issues/77) に必須の併用関係と日本語で要件を定める例外を記録する。 | [リポジトリ内 Skill の評価記録](../../.agents/skills/maintain-japanese-references/evals/README.md) で、必須の併用、訳文の品質、併用先を読めない場合を確認する。どちらかの Skill または併用関係を変更したときは、この記録を見直す。 |
 
 ## description の書き方
 
@@ -177,6 +178,7 @@ Skill を変更するときは、評価証拠を選ぶ前に、影響を受け�
 - 複数の Skill をまたぐ一連の処理の評価については、`docs/` の `evaluation.md` を参照する
 - `evaluation.md` の経路選択規則に従い、`SKILL.md` が変わったという理由だけで全ケースを実行しない
 - 既存 Skill の指示、実行時リソース、発見方法、責務、安全境界、または評価定義を PR で初めて実質的に変更するとき、その Skill の `evals.json` と `triggers.json` 全体を実行可能な `{skill_name, evals}` 形式へ移行する
+- モデルを使う評価が必要で、変更した責務に対応する実行可能な定義がない場合は、必要な定義を新形式で作ってから実行する
 - README、参考訳、意味を変えない文書やメタデータ、旧形式の評価結果だけの変更では移行を要求せず、無関係な Skill を移行しない
 - 評価定義の移行と評価実行を分け、定義全体を移行した後も、変更した責務に必要なケースだけを実行する
 - モデルを使う前に `scripts/run_skill_evaluation.py plan` を実行し、呼び出し回数の見積もりを確認する

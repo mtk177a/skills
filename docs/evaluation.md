@@ -10,7 +10,7 @@ Evaluation is not an automatic action after every edit, and an ordinary Skill ch
 Use these steps for a Skill change:
 
 1. Identify the changed claim or responsibility.
-2. Decide whether the Skill's evaluation definitions must be migrated.
+2. Decide whether the Skill needs new executable evaluation definitions or has definitions that must be migrated.
 3. Select the least sufficient evaluation path.
 4. Select only cases that can expose the changed responsibility, a known regression, or a plausibly affected adjacent boundary.
 5. Generate a plan and inspect its model-call count before execution.
@@ -46,8 +46,9 @@ For an existing Skill, migrate its complete `evals.json` and `triggers.json` set
 README changes, reference-translation synchronization, meaning-preserving documentation or metadata changes, and legacy-result-only changes do not trigger migration.\
 If both `evals.json` and `triggers.json` exist for a Skill, migrate both in the same pull request so the Skill never has a mixed executable contract.
 
-If only one of those definition files exists, migrate that file without creating the other one.\
-If a Skill does not need executable definitions, do not create them merely to perform a migration.
+If only one of those definition files exists, migrate that file and create another only when the changed responsibility needs its evaluation path.\
+When a material change requires model-backed evaluation and the Skill has no executable definitions, create the needed behavior or routing definitions in the executable format before running the evaluation.\
+If a Skill does not need model-backed evaluation, do not create definitions merely to perform a migration.
 
 ### Migration examples
 
@@ -147,7 +148,7 @@ After migration:
 }
 ```
 
-If the Skill has no executable definitions and does not need them, leave that state unchanged.
+If the Skill has no executable definitions and the change needs only static validation, leave that state unchanged.
 
 Before migration:
 
@@ -253,6 +254,7 @@ The required, conditional, and optional labels describe this repository's execut
 | Agent Skills base | Case | `prompt` | Conditional | Supplies the request for the single-request form and the current request in the repository-specific `conversation` form. |
 | Agent Skills base | Case | `expected_output` | Optional; required for a behavior case when it has no assertions | Describes a successful result; supplies the default grading requirement only when `assertions` is empty or absent. |
 | Agent Skills base | Case | `files` | Optional | Selects repository-relative input files. |
+| Repository extension | Case | `baseline_files` | Optional | Commits previous text for selected inline fixture files in a disposable Git repository before writing their current versions. |
 | Agent Skills base | Case | String entries in `assertions` | Optional; behavior cases require `assertions` or `expected_output` | Defines grading statements in the base string representation. |
 | Repository extension | Top level | `execution.coexistence_skills` | Optional | Adds Skills that must be installed for every selected case. |
 | Repository extension | Case | `title` | Optional | Preserves a human-readable case title in the normalized plan. |
@@ -391,7 +393,8 @@ Execution-level and case-level `coexistence_skills` contain Skill names, with no
 Each `files` entry must be a repository-relative path using `/` separators.\
 The shared contract rejects empty paths, NUL characters, absolute or Windows drive paths, backslashes, parent-directory traversal, and paths that collide after normalization.\
 Inline fixture paths additionally cannot target `.agents/` or `.git/`, or use one location as both a file and a directory.\
-`files` entries are materialized under `fixture/inputs/` and `fixture.files` entries under `fixture/`; combinations whose final destinations are equal or in an ancestor-descendant relationship are rejected.
+`files` entries are materialized under `fixture/inputs/` and `fixture.files` entries under `fixture/`; combinations whose final destinations are equal or in an ancestor-descendant relationship are rejected.\
+For repository-local evaluations, a `fixture.files` path is also rejected if it equals, falls inside, or is an ancestor of an installed companion's `skills/<skill-name>/` directory, whether the companion is declared for the whole definition or for one case.
 
 Keep executor input separate from assertions and expected output so the desired answer is not disclosed to the executor.
 
@@ -407,6 +410,13 @@ A complete stream with no successful Skill read records `observed` with an empty
 Without `turn.completed`, the Runner records `not_exposed` and grades routing as `inconclusive`; it never infers a handler from the final response wording.
 
 ## Plan before spending tokens
+
+The default `--skill-source public` reads `skills/<skill-name>/`.\
+For an explicitly tracked repository-local Skill, use `--skill-source repository-local` to read `.agents/skills/<skill-name>/`; the Runner rejects untracked directories.\
+Its companion Skills remain public `skills/<skill-name>/` sources and are copied both to Codex's Skill directory and to their repository paths in the disposable fixture.\
+Before a repository-local model call, the Runner checks that the full candidate and installed companion descriptions are visible only at their fixture paths.\
+It also rejects a personal required companion when the fixture intentionally omits it.\
+The check uses the normal authentication context with per-invocation configuration that disables personal same-name Skills and plugins; it does not change personal configuration or credentials.
 
 Create a temporary directory and generate a plan from the repository root:
 

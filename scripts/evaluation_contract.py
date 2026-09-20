@@ -9,6 +9,8 @@ from typing import Any
 
 CONDITIONS = {"candidate", "baseline", "without-skill"}
 SKILL_NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+TRACKED_REPOSITORY_LOCAL_SKILLS = {"maintain-japanese-references"}
+REPOSITORY_LOCAL_COMPANIONS = {"maintain-japanese-references": {"write-natural-japanese"}}
 TURN_ROLES = {"assistant", "user"}
 TOP_LEVEL_FIELDS = {"skill_name", "execution", "evals"}
 EXECUTION_FIELDS = {"coexistence_skills"}
@@ -24,6 +26,7 @@ CASE_FIELDS = {
     "files",
     "assertions",
     "fixture",
+    "baseline_files",
     "coexistence_skills",
     "conditions",
     "expected_handlers",
@@ -115,7 +118,9 @@ def _regular_repository_file(root: Path, relative: Path) -> bool:
         return False
 
 
-def validate_evaluation_references(definition: dict[str, Any], root: Path) -> None:
+def validate_evaluation_references(
+    definition: dict[str, Any], root: Path, *, repository_local: bool = False
+) -> None:
     """Check every static file and Skill reference in a normalized definition."""
     for skill in definition["execution"]["coexistence_skills"]:
         if not _regular_repository_file(root, Path("skills") / skill / "SKILL.md"):
@@ -132,6 +137,26 @@ def validate_evaluation_references(definition: dict[str, Any], root: Path) -> No
             if not _regular_repository_file(root, Path("skills") / skill / "SKILL.md"):
                 raise EvaluationContractError(
                     f"evaluation case `{case['id']}` coexistence Skill must have a regular SKILL.md: {skill}"
+                )
+        if repository_local:
+            reject_repository_local_companion_fixture_paths(
+                case,
+                {*definition["execution"]["coexistence_skills"], *case["coexistence_skills"]},
+            )
+
+
+def reject_repository_local_companion_fixture_paths(
+    case: dict[str, Any], companions: set[str]
+) -> None:
+    """Keep inline case files out of installed companions' repository paths."""
+    for path in sorted(case["inline_files"]):
+        parts = Path(path).parts
+        for skill in sorted(companions):
+            protected = ("skills", skill)
+            if parts[: len(protected)] == protected or protected[: len(parts)] == parts:
+                raise EvaluationContractError(
+                    f"evaluation case `{case['id']}` fixture file `{path}` "
+                    f"conflicts with companion Skill `{skill}`"
                 )
 
 
@@ -312,6 +337,26 @@ def _normalize_fixture(case: dict[str, Any], case_id: str) -> dict[str, str]:
     return normalized
 
 
+def _normalize_baseline_files(case: dict[str, Any], case_id: str, current_paths: set[str]) -> dict[str, str]:
+    if "baseline_files" not in case:
+        return {}
+    files = case["baseline_files"]
+    if not isinstance(files, dict) or not files or not all(
+        isinstance(name, str) and isinstance(content, str) for name, content in files.items()
+    ):
+        raise EvaluationContractError(f"evaluation case `{case_id}` baseline_files must map paths to strings")
+    normalized: dict[str, str] = {}
+    for name, content in files.items():
+        path = normalize_case_input_path(name, case_id)
+        if path not in current_paths:
+            raise EvaluationContractError(
+                f"evaluation case `{case_id}` baseline file has no current counterpart: {path}"
+            )
+        normalized[path] = content
+    _reject_fixture_path_conflicts(list(normalized), case_id)
+    return normalized
+
+
 def _normalize_case(case: Any, definition_kind: str) -> dict[str, Any]:
     if not isinstance(case, dict):
         raise EvaluationContractError("every evaluation case must be an object")
@@ -357,6 +402,7 @@ def _normalize_case(case: Any, definition_kind: str) -> dict[str, Any]:
     files = normalize_case_input_paths(case.get("files", []), normalized_id)
     inline_files = _normalize_fixture(case, normalized_id)
     _reject_case_fixture_path_conflicts(files, list(inline_files), normalized_id)
+    baseline_files = _normalize_baseline_files(case, normalized_id, set(inline_files))
 
     normalized: dict[str, Any] = {
         "id": normalized_id,
@@ -365,6 +411,7 @@ def _normalize_case(case: Any, definition_kind: str) -> dict[str, Any]:
         "grading_requirements": _normalize_assertions(case, normalized_id, definition_kind),
         "files": files,
         "inline_files": inline_files,
+        "baseline_files": baseline_files,
         "coexistence_skills": _skill_names(
             case.get("coexistence_skills", []),
             f"evaluation case `{normalized_id}` coexistence_skills",

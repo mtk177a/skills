@@ -18,18 +18,24 @@ try:
     from evaluation_contract import (
         CONDITIONS,
         SKILL_NAME,
+        TRACKED_REPOSITORY_LOCAL_SKILLS,
+        REPOSITORY_LOCAL_COMPANIONS,
         EvaluationContractError,
         normalize_case_input_paths as _normalize_case_input_paths,
         normalize_evaluation_document,
+        reject_repository_local_companion_fixture_paths,
         validate_evaluation_references,
     )
 except ModuleNotFoundError:  # Imported as scripts.run_skill_evaluation in unit tests.
     from scripts.evaluation_contract import (
         CONDITIONS,
         SKILL_NAME,
+        TRACKED_REPOSITORY_LOCAL_SKILLS,
+        REPOSITORY_LOCAL_COMPANIONS,
         EvaluationContractError,
         normalize_case_input_paths as _normalize_case_input_paths,
         normalize_evaluation_document,
+        reject_repository_local_companion_fixture_paths,
         validate_evaluation_references,
     )
 
@@ -140,15 +146,36 @@ def validate_skill_name(skill: str) -> None:
         raise EvaluationError(f"invalid Skill name: {skill}")
 
 
+def candidate_prefix(skill: str, skill_source: str = "public") -> Path:
+    validate_skill_name(skill)
+    if skill_source == "public":
+        return Path("skills") / skill
+    if skill_source == "repository-local" and skill in TRACKED_REPOSITORY_LOCAL_SKILLS:
+        return Path(".agents") / "skills" / skill
+    raise EvaluationError(f"unsupported Skill source or untracked repository-local Skill: {skill_source}/{skill}")
+
+
+def require_tracked_repository_local_skill(root: Path, skill: str, skill_source: str) -> None:
+    if skill_source != "repository-local":
+        return
+    source = candidate_prefix(skill, skill_source) / "SKILL.md"
+    result = subprocess.run(
+        ["git", "-C", str(root), "ls-files", "--error-unmatch", "--", source.as_posix()],
+        text=True, capture_output=True,
+    )
+    if result.returncode != 0:
+        raise EvaluationError(f"repository-local Skill must be tracked by Git: {source}")
+
+
 def reject_absolute_path(value: str, label: str) -> None:
     match = ABSOLUTE_PATH.search(value)
     if match is not None:
         raise EvaluationError(f"{label} must not contain an absolute path: {match.group(0)}")
 
 
-def load_case_asset(root: Path, skill: str, evaluation_path: str) -> tuple[Path, dict[str, Any], list[dict[str, Any]]]:
+def load_case_asset(root: Path, skill: str, evaluation_path: str, skill_source: str = "public") -> tuple[Path, dict[str, Any], list[dict[str, Any]]]:
     asset_name = "triggers.json" if evaluation_path == "targeted-routing" else "evals.json"
-    asset = root / "skills" / skill / "evals" / asset_name
+    asset = root / candidate_prefix(skill, skill_source) / "evals" / asset_name
     if not asset.is_file():
         raise EvaluationError(f"evaluation asset does not exist: {asset.relative_to(root)}")
     document = read_json(asset)
@@ -177,7 +204,7 @@ def load_case_asset(root: Path, skill: str, evaluation_path: str) -> tuple[Path,
                 expected_skill=skill,
                 definition_kind="routing" if sibling_name == "triggers.json" else "behavior",
             )
-            validate_evaluation_references(sibling_normalized, root)
+            validate_evaluation_references(sibling_normalized, root, repository_local=skill_source == "repository-local")
         except EvaluationContractError as error:
             raise EvaluationError(str(error)) from error
     try:
@@ -186,7 +213,7 @@ def load_case_asset(root: Path, skill: str, evaluation_path: str) -> tuple[Path,
             expected_skill=skill,
             definition_kind="routing" if evaluation_path == "targeted-routing" else "behavior",
         )
-        validate_evaluation_references(normalized, root)
+        validate_evaluation_references(normalized, root, repository_local=skill_source == "repository-local")
     except EvaluationContractError as error:
         raise EvaluationError(str(error)) from error
     return asset, normalized, normalized["cases"]
@@ -223,9 +250,8 @@ def validate_skill_manifest(files: Any, label: str) -> dict[str, dict[str, str]]
     return files
 
 
-def skill_manifest(root: Path, skill: str) -> dict[str, dict[str, str]]:
-    validate_skill_name(skill)
-    skill_root = root / "skills" / skill
+def skill_manifest(root: Path, skill: str, skill_source: str = "public") -> dict[str, dict[str, str]]:
+    skill_root = root / candidate_prefix(skill, skill_source)
     if not (skill_root / "SKILL.md").is_file():
         raise EvaluationError(f"Skill does not exist: {skill}")
     bindings: dict[str, dict[str, str]] = {}
@@ -280,8 +306,9 @@ def verify_root_file_manifest(root: Path, files: Any, label: str) -> None:
 
 
 def make_plan(args: argparse.Namespace, root: Path) -> dict[str, Any]:
-    validate_skill_name(args.skill)
-    skill_root = root / "skills" / args.skill
+    skill_source = args.skill_source
+    skill_root = root / candidate_prefix(args.skill, skill_source)
+    require_tracked_repository_local_skill(root, args.skill, skill_source)
     if not (skill_root / "SKILL.md").is_file():
         raise EvaluationError(f"Skill does not exist: {args.skill}")
     base_commit = resolve_base(root, args.base_ref)
@@ -304,7 +331,7 @@ def make_plan(args: argparse.Namespace, root: Path) -> dict[str, Any]:
     if args.path in MODEL_PATHS:
         if not args.case:
             raise EvaluationError("model-backed evaluation requires at least one --case")
-        asset, document, available = load_case_asset(root, args.skill, args.path)
+        asset, document, available = load_case_asset(root, args.skill, args.path, skill_source)
         by_id = {case["id"]: case for case in available}
         missing = [case_id for case_id in args.case if case_id not in by_id]
         if missing:
@@ -343,6 +370,7 @@ def make_plan(args: argparse.Namespace, root: Path) -> dict[str, Any]:
     plan: dict[str, Any] = {
         "schema_version": PLAN_VERSION,
         "skill": args.skill,
+        "skill_source": skill_source,
         "path": args.path,
         "purpose": args.purpose,
         "affected_responsibilities": args.affected,
@@ -355,7 +383,7 @@ def make_plan(args: argparse.Namespace, root: Path) -> dict[str, Any]:
         "cases": selected_cases,
         "executions": executions,
         "estimated_model_calls": len(executions),
-        "candidate": {"files": skill_manifest(root, args.skill)},
+        "candidate": {"files": skill_manifest(root, args.skill, skill_source)},
         "inputs": {
             "evaluation_files": evaluation_files,
             "case_files": case_file_manifest(root, selected_cases),
@@ -392,8 +420,10 @@ def validate_plan(plan: dict[str, Any], root: Path) -> dict[str, Any]:
     skill = plan.get("skill")
     if not isinstance(skill, str):
         raise EvaluationError("plan references an unknown Skill")
-    validate_skill_name(skill)
-    if not (root / "skills" / skill / "SKILL.md").is_file():
+    skill_source = plan.get("skill_source", "public")
+    skill_root = root / candidate_prefix(skill, skill_source)
+    require_tracked_repository_local_skill(root, skill, skill_source)
+    if not (skill_root / "SKILL.md").is_file():
         raise EvaluationError("plan references an unknown Skill")
     if plan.get("path") not in PATHS:
         raise EvaluationError("plan has an invalid evaluation path")
@@ -441,6 +471,21 @@ def validate_plan(plan: dict[str, Any], root: Path) -> dict[str, Any]:
         normalized_files = normalize_case_input_paths(files, case["id"])
         if files != normalized_files:
             raise EvaluationError(f"plan case `{case['id']}` input paths must be normalized")
+        inline_files = case.get("inline_files")
+        baseline_files = case.get("baseline_files", {})
+        if not isinstance(inline_files, dict) or not all(
+            isinstance(name, str) and isinstance(content, str) for name, content in inline_files.items()
+        ):
+            raise EvaluationError(f"plan case `{case['id']}` inline files are invalid")
+        if not isinstance(baseline_files, dict) or not all(
+            isinstance(name, str) and isinstance(content, str) for name, content in baseline_files.items()
+        ):
+            raise EvaluationError(f"plan case `{case['id']}` baseline files are invalid")
+        for name in {*inline_files, *baseline_files}:
+            if name.split("/")[0] in {".agents", ".git"} or normalize_case_input_paths([name], case["id"]) != [name]:
+                raise EvaluationError(f"plan case `{case['id']}` has an unsafe fixture path: {name}")
+        if not set(baseline_files).issubset(inline_files):
+            raise EvaluationError(f"plan case `{case['id']}` baseline files lack current counterparts")
         skills = case.get("coexistence_skills")
         if not isinstance(skills, list) or not all(
             isinstance(skill, str) and SKILL_NAME.fullmatch(skill) for skill in skills
@@ -464,6 +509,11 @@ def validate_plan(plan: dict[str, Any], root: Path) -> dict[str, Any]:
             raise EvaluationError("plan execution coexistence_skills must be sorted unique Skill names")
         if not set(cases_by_id[case_id]["coexistence_skills"]).issubset(skills):
             raise EvaluationError("plan execution omits a case coexistence Skill")
+        if skill_source == "repository-local":
+            try:
+                reject_repository_local_companion_fixture_paths(cases_by_id[case_id], set(skills))
+            except EvaluationContractError as error:
+                raise EvaluationError(str(error)) from error
         execution_coexistence.update(skills)
         execution_pairs.append((case_id, condition))
     if len(set(execution_pairs)) != len(execution_pairs):
@@ -508,7 +558,7 @@ def validate_plan(plan: dict[str, Any], root: Path) -> dict[str, Any]:
 
 def verify_candidate_bindings(root: Path, plan: dict[str, Any]) -> None:
     candidate = plan["candidate"]["files"]
-    verify_file_manifest(root / "skills" / plan["skill"], candidate, "candidate Skill")
+    verify_file_manifest(root / candidate_prefix(plan["skill"], plan.get("skill_source", "public")), candidate, "candidate Skill")
     inputs = plan["inputs"]
     verify_root_file_manifest(root, inputs["evaluation_files"], "evaluation input")
     verify_root_file_manifest(root, inputs["case_files"], "case input")
@@ -532,8 +582,8 @@ def copy_manifest(base: Path, files: dict[str, dict[str, str]], destination: Pat
         target.chmod(FILE_MODES[entry["mode"]])
 
 
-def copy_baseline_skill(root: Path, skill: str, commit: str, destination: Path) -> None:
-    prefix = f"skills/{skill}"
+def copy_baseline_skill(root: Path, skill: str, commit: str, destination: Path, skill_source: str = "public") -> None:
+    prefix = candidate_prefix(skill, skill_source).as_posix()
     listing = git(root, "ls-tree", "-r", commit, "--", prefix)
     entries: list[tuple[str, str, str]] = []
     for line in listing.splitlines():
@@ -566,6 +616,22 @@ def copy_baseline_skill(root: Path, skill: str, commit: str, destination: Path) 
 def copy_case_files(root: Path, case: dict[str, Any], fixture: Path) -> None:
     case_id = case.get("id") if isinstance(case.get("id"), str) else "unknown"
     inputs = fixture / "inputs"
+    baseline_files = case.get("baseline_files", {})
+    if baseline_files:
+        for value, content in baseline_files.items():
+            destination = fixture / value
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_text(content, encoding="utf-8")
+        for arguments in (
+            ["git", "init", "-q", str(fixture)],
+            ["git", "-C", str(fixture), "config", "user.name", "Evaluation Fixture"],
+            ["git", "-C", str(fixture), "config", "user.email", "evaluation@example.invalid"],
+            ["git", "-C", str(fixture), "add", "--", *baseline_files],
+            ["git", "-C", str(fixture), "commit", "-qm", "baseline fixture"],
+        ):
+            result = subprocess.run(arguments, text=True, capture_output=True)
+            if result.returncode != 0:
+                raise EvaluationError(f"could not prepare Git baseline for case `{case_id}`: {result.stderr.strip()}")
     for value in normalize_case_input_paths(case.get("files", []), case_id):
         unresolved = root / value
         source = unresolved.resolve()
@@ -684,6 +750,73 @@ def codex_version(codex_bin: str) -> str:
     return (result.stdout.strip() or result.stderr.strip() or "unavailable").splitlines()[0]
 
 
+def repository_local_config_args(skill: str, companions: list[str]) -> list[str]:
+    names = sorted({skill, *companions, *REPOSITORY_LOCAL_COMPANIONS.get(skill, set())})
+    disabled = [
+        f'{{path={json.dumps(str(Path.home() / directory / name / "SKILL.md"))},enabled=false}}'
+        for directory in (".agents/skills", ".codex/skills")
+        for name in names
+    ]
+    return [
+        "-c", "features.plugins=false",
+        "-c", "skills.max_context_tokens=10000",
+        "-c", "skills.config=[" + ",".join(disabled) + "]",
+    ]
+
+
+def repository_local_catalog_check(
+    codex_bin: str,
+    fixture: Path,
+    skill: str,
+    condition: str,
+    config_args: list[str],
+    companions: list[str] | None = None,
+) -> str | None:
+    try:
+        result = subprocess.run(
+            [codex_bin, "debug", "prompt-input", *config_args],
+            cwd=fixture, text=True, capture_output=True, timeout=30,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return "could not inspect the model-visible Skill catalog"
+    if result.returncode != 0:
+        return "could not inspect the model-visible Skill catalog"
+    try:
+        entries = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return "model-visible Skill catalog was not JSON"
+    if not isinstance(entries, list):
+        return "model-visible Skill catalog was not a list"
+    developer_text = "\n".join(
+        content.get("text", "")
+        for entry in entries if isinstance(entry, dict) and entry.get("role") == "developer"
+        for content in entry.get("content", []) if isinstance(content, dict)
+    )
+    roots = dict(re.findall(r"^- `(?P<alias>r\d+)` = `(?P<path>[^`]+)`$", developer_text, re.MULTILINE))
+    for name in sorted({skill, *REPOSITORY_LOCAL_COMPANIONS.get(skill, set()), *(companions or [])}):
+        pattern = rf"^- {re.escape(name)}: (?P<description>.+) \(file: (?P<alias>r\d+)/{re.escape(name)}/SKILL\.md\)$"
+        matches = list(re.finditer(pattern, developer_text, re.MULTILINE))
+        source = fixture / ".agents" / "skills" / name / "SKILL.md"
+        if not source.is_file() or (name == skill and condition == "without-skill"):
+            if matches:
+                return f"personal or same-name {name} Skill was visible without a fixture copy"
+            continue
+        descriptions = [
+            line.removeprefix("description: ")
+            for line in source.read_text(encoding="utf-8").splitlines()
+            if line.startswith("description: ")
+        ]
+        if len(descriptions) != 1 or len(matches) != 1:
+            return f"{name} Skill description was absent, duplicated, or shortened in the catalog"
+        match = matches[0]
+        if match.group("description") != descriptions[0]:
+            return f"{name} Skill description was shortened or changed in the catalog"
+        catalog_root = roots.get(match.group("alias"))
+        if catalog_root is None or Path(catalog_root).resolve() != source.parent.parent.resolve():
+            return f"same-name {name} Skill in the catalog was not the fixture copy"
+    return None
+
+
 def execute_case(
     root: Path,
     artifacts: Path,
@@ -703,9 +836,9 @@ def execute_case(
     skills_directory.mkdir(parents=True)
     target = skills_directory / plan["skill"]
     if condition == "candidate":
-        copy_manifest(root / "skills" / plan["skill"], plan["candidate"]["files"], target)
+        copy_manifest(root / candidate_prefix(plan["skill"], plan.get("skill_source", "public")), plan["candidate"]["files"], target)
     elif condition == "baseline":
-        copy_baseline_skill(root, plan["skill"], plan["base"]["commit"], target)
+        copy_baseline_skill(root, plan["skill"], plan["base"]["commit"], target, plan.get("skill_source", "public"))
     elif condition != "without-skill":
         raise EvaluationError(f"unsupported execution condition: {condition}")
     for coexistence_skill in execution["coexistence_skills"]:
@@ -715,21 +848,30 @@ def execute_case(
                 plan["inputs"]["companions"][coexistence_skill]["files"],
                 skills_directory / coexistence_skill,
             )
+            if plan.get("skill_source", "public") == "repository-local":
+                copy_manifest(
+                    root / "skills" / coexistence_skill,
+                    plan["inputs"]["companions"][coexistence_skill]["files"],
+                    fixture / "skills" / coexistence_skill,
+                )
     copy_case_files(root, case, fixture)
     prompt = build_executor_prompt(plan, case)
     final_output = directory / "last-message.txt"
+    local_source = plan.get("skill_source", "public") == "repository-local"
+    config_args = repository_local_config_args(plan["skill"], execution["coexistence_skills"]) if local_source else []
     command = [
         codex_bin,
         "exec",
         "--ephemeral",
         "--json",
-        "--ignore-user-config",
+        *([] if local_source else ["--ignore-user-config"]),
         "--ignore-rules",
         "--skip-git-repo-check",
         "--sandbox",
         plan["environment"]["sandbox"],
         "--model",
         plan["environment"]["model"],
+        *config_args,
         "-c",
         f'model_reasoning_effort="{plan["environment"]["reasoning_effort"]}"',
         "-C",
@@ -743,6 +885,15 @@ def execute_case(
         "condition": condition,
         "artifact_directory": relative_directory.as_posix(),
     }
+    if local_source:
+        preflight_error = repository_local_catalog_check(
+            codex_bin, fixture, plan["skill"], condition, config_args,
+            execution["coexistence_skills"],
+        )
+        if preflight_error is not None:
+            record.update({"status": "error", "error": preflight_error, "preflight_failed": True})
+            return record
+        record["catalog_preflight"] = "pass"
     try:
         result = subprocess.run(
             command,
@@ -800,6 +951,7 @@ def command_run(args: argparse.Namespace, root: Path, codex_bin: str) -> int:
     run: dict[str, Any] = {
         "schema_version": RUN_VERSION,
         "skill": plan["skill"],
+        "skill_source": plan.get("skill_source", "public"),
         "plan_digest": plan["plan_digest"],
         "plan": plan,
         "client": codex_version(codex_bin),
@@ -809,18 +961,19 @@ def command_run(args: argparse.Namespace, root: Path, codex_bin: str) -> int:
     }
     cases = {case["id"]: case for case in plan["cases"]}
     for index, execution in enumerate(plan["executions"], start=1):
-        run["executions"].append(
-            execute_case(
-                root,
-                artifacts,
-                plan,
-                cases[execution["case_id"]],
-                execution,
-                index,
-                codex_bin,
-                args.timeout_seconds,
-            )
+        execution_record = execute_case(
+            root,
+            artifacts,
+            plan,
+            cases[execution["case_id"]],
+            execution,
+            index,
+            codex_bin,
+            args.timeout_seconds,
         )
+        run["executions"].append(execution_record)
+        if execution_record.get("preflight_failed"):
+            break
     write_json(artifacts / "run.json", run)
     print(f"Run record written to {artifacts / 'run.json'}")
     failed = run["static_check"]["status"] == "fail" or any(
@@ -1052,6 +1205,7 @@ def make_report(
     return {
         "schema_version": REPORT_VERSION,
         "skill": plan["skill"],
+        "skill_source": plan.get("skill_source", "public"),
         "evaluated_on": datetime.now(timezone.utc).date().isoformat(),
         "purpose": plan["purpose"],
         "affected_responsibilities": plan["affected_responsibilities"],
@@ -1091,7 +1245,7 @@ def command_report(args: argparse.Namespace, root: Path) -> int:
     report = make_report(root, run, grades, args.stopping_reason, args.unverified or [])
     rendered = json.dumps(report, indent=2, ensure_ascii=False) + "\n"
     if args.write:
-        destination = root / "skills" / report["skill"] / "evals" / "report.json"
+        destination = root / candidate_prefix(report["skill"], report.get("skill_source", "public")) / "evals" / "report.json"
         destination.write_text(rendered, encoding="utf-8")
         print(f"Report written to {destination.relative_to(root)}")
     else:
@@ -1107,6 +1261,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     plan = subparsers.add_parser("plan", help="create a zero-model-call evaluation plan")
     plan.add_argument("--skill", required=True)
+    plan.add_argument("--skill-source", choices=("public", "repository-local"), default="public")
     plan.add_argument("--path", required=True, choices=sorted(PATHS))
     plan.add_argument("--purpose", required=True)
     plan.add_argument("--affected", action="append", required=True)

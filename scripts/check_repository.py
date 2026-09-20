@@ -13,9 +13,9 @@ from pathlib import Path
 from urllib.parse import unquote
 
 try:
-    from evaluation_contract import EvaluationContractError, normalize_evaluation_document, validate_evaluation_references
+    from evaluation_contract import EvaluationContractError, TRACKED_REPOSITORY_LOCAL_SKILLS, normalize_evaluation_document, validate_evaluation_references
 except ModuleNotFoundError:  # Imported as scripts.check_repository in unit tests.
-    from scripts.evaluation_contract import EvaluationContractError, normalize_evaluation_document, validate_evaluation_references
+    from scripts.evaluation_contract import EvaluationContractError, TRACKED_REPOSITORY_LOCAL_SKILLS, normalize_evaluation_document, validate_evaluation_references
 
 
 KEBAB_CASE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -63,11 +63,6 @@ PERSONAL_PATH_EXCLUSIONS = {
     "scripts/check_repository.py",
     "tests/test_check_repository.py",
 }
-TRACKED_REPOSITORY_LOCAL_SKILLS = {
-    "maintain-japanese-references",
-}
-
-
 @dataclass(frozen=True, order=True)
 class Problem:
     path: str
@@ -439,8 +434,14 @@ def check_localization_notices(root: Path, problems: list[Problem]) -> None:
 
 
 def check_json_assets(root: Path, problems: list[Problem], ignored_report_skill: str | None = None) -> None:
-    migration_states: dict[str, dict[str, bool]] = {}
-    for path in sorted((root / "skills").glob("*/evals/*.json")):
+    migration_states: dict[Path, dict[str, bool]] = {}
+    public_assets = (root / "skills").glob("*/evals/*.json")
+    local_assets = (
+        path
+        for skill in TRACKED_REPOSITORY_LOCAL_SKILLS
+        for path in (root / ".agents" / "skills" / skill / "evals").glob("*.json")
+    )
+    for path in sorted([*public_assets, *local_assets]):
         if path.name == "report.json" and path.parent.parent.name == ignored_report_skill:
             continue
         text = path.read_text(encoding="utf-8")
@@ -457,7 +458,7 @@ def check_json_assets(root: Path, problems: list[Problem], ignored_report_skill:
             continue
         if path.name in {"evals.json", "triggers.json"}:
             migrated = "skill_name" in document or "evals" in document
-            migration_states.setdefault(path.parent.parent.name, {})[path.name] = migrated
+            migration_states.setdefault(path.parent.parent, {})[path.name] = migrated
         official = path.name == "evals.json" and ("skill_name" in document or "evals" in document)
         if path.name == "triggers.json" and ("skill_name" in document or "evals" in document):
             official = True
@@ -469,7 +470,9 @@ def check_json_assets(root: Path, problems: list[Problem], ignored_report_skill:
                     expected_skill=expected_skill,
                     definition_kind="routing" if path.name == "triggers.json" else "behavior",
                 )
-                validate_evaluation_references(normalized, root)
+                validate_evaluation_references(
+                    normalized, root, repository_local=path.parent.parent.parent.parent == root / ".agents"
+                )
             except EvaluationContractError as error:
                 add(problems, root, path, 1, str(error))
             continue
@@ -492,9 +495,9 @@ def check_json_assets(root: Path, problems: list[Problem], ignored_report_skill:
                         add(problems, root, path, 1, f"duplicate case id `{case_id}`")
                     else:
                         seen.add(str(case_id))
-    for skill, states in sorted(migration_states.items()):
+    for skill_root, states in sorted(migration_states.items()):
         if len(states) > 1 and len(set(states.values())) > 1:
-            path = root / "skills" / skill / "evals" / sorted(states)[0]
+            path = skill_root / "evals" / sorted(states)[0]
             add(problems, root, path, 1, "must migrate evals.json and triggers.json together")
 
 
@@ -604,6 +607,9 @@ def check_evaluation_report(
     problems: list[Problem],
 ) -> None:
     expected_skill = path.parent.parent.name
+    expected_source = "repository-local" if path.parent.parent.parent.parent == root / ".agents" else "public"
+    if document.get("skill_source", "public") != expected_source:
+        add(problems, root, path, 1, f"evaluation report skill_source must be `{expected_source}`")
     if document.get("schema_version") != 2:
         add(problems, root, path, 1, "report schema_version must be 2")
     if document.get("skill") != expected_skill:
@@ -809,7 +815,7 @@ def check_candidate_manifest(root: Path, path: Path, document: dict[str, object]
         add(problems, root, path, 1, "candidate.files must be an object")
         return
     skill_root = path.parent.parent.resolve()
-    skills_root = (root / "skills").resolve()
+    skills_root = skill_root.parent.resolve()
     results_text = path.read_text(encoding="utf-8")
     current_files: set[str] = set()
     for target in skill_root.rglob("*"):
@@ -918,18 +924,28 @@ def check_companion_relationships(root: Path, problems: list[Problem], catalog: 
         dependent, companion, remainder = match.groups()
         line = line_number(text, match.start())
         for name in (dependent, companion):
-            if name not in catalog:
+            if name not in catalog and name not in TRACKED_REPOSITORY_LOCAL_SKILLS:
                 add(problems, root, registry, line, f"companion relationship references uncataloged Skill `{name}`")
-        dependent_skill = root / "skills" / dependent / "SKILL.md"
+        dependent_skill = (
+            root / ".agents" / "skills" / dependent / "SKILL.md"
+            if dependent in TRACKED_REPOSITORY_LOCAL_SKILLS
+            else root / "skills" / dependent / "SKILL.md"
+        )
         if dependent_skill.is_file():
             body = dependent_skill.read_text(encoding="utf-8")
-            reference = f"../{companion}/SKILL.md"
-            command = f"apm install mtk177a/skills --skill {dependent} --skill {companion}"
+            local_dependent = dependent in TRACKED_REPOSITORY_LOCAL_SKILLS
+            reference = f"skills/{companion}/SKILL.md" if local_dependent else f"../{companion}/SKILL.md"
             if reference not in body:
                 add(problems, root, dependent_skill, 1, f"companion Skill reference `{reference}` is missing")
-            if command not in body:
-                add(problems, root, dependent_skill, 1, "supported companion installation command is missing")
-        if "UPSTREAM.md" not in remainder:
+            if not local_dependent:
+                command = f"apm install mtk177a/skills --skill {dependent} --skill {companion}"
+                if command not in body:
+                    add(problems, root, dependent_skill, 1, "supported companion installation command is missing")
+        else:
+            add(problems, root, dependent_skill, 1, "companion relationship dependent Skill is missing")
+        if "UPSTREAM.md" not in remainder and not re.search(
+            r"https://github\.com/mtk177a/skills/(?:pull|issues)/[0-9]+", remainder
+        ):
             add(problems, root, registry, line, "companion registry row must reference provenance")
         if "evals/" not in remainder:
             add(problems, root, registry, line, "companion registry row must reference evaluation coverage")

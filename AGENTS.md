@@ -43,7 +43,7 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 - Repository-local operational Skills may live under `.agents/skills/<skill-name>/` only when they are exclusively for maintaining this repository itself and should not be distributed as part of the public Skill catalog.
 - These repo-local Skills are source files, not APM deployment output, when they are explicitly tracked by git.
 - Do not add repo-local Skills to the public Skill catalog or distribution bundle.
-- Keep repo-local Skill names kebab-case and include `SKILL.md`, `SKILL-ja.md`, and minimal supporting files only when needed.
+- Keep repo-local Skill names kebab-case and include `SKILL.md`. Include `SKILL-ja.md` when that `SKILL.md` is in English; omit the duplicate for a documented Japanese writing/editing exception. Add supporting files only when needed.
 - The current tracked repo-local Skill exceptions are:
   - `.agents/skills/maintain-japanese-references/`
 
@@ -62,7 +62,9 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 
 - This repository publishes the root `skills/` directory as a native APM `SKILL_BUNDLE`. Do not add a root `apm.yml` or `apm.lock.yaml`; consumer repositories own their manifests and lockfiles.
 - Before committing a public Skill change, run the relevant Skill evaluations, the repository checker, and the repository unit tests.
-- When a pull request first materially changes an existing Skill's instructions, runtime resources, discovery, responsibility, safety boundary, or evaluation definitions, migrate that Skill's complete `evals.json` and `triggers.json` set to the executable `{skill_name, evals}` format. Do not require migration for README, reference-translation, meaning-preserving documentation or metadata, or legacy-result-only changes.
+- When a pull request first materially changes an existing Skill's instructions, runtime resources, discovery, responsibility, safety boundary, or evaluation definitions, migrate its existing `evals.json` and `triggers.json` set to the executable `{skill_name, evals}` format.\
+  If model-backed evaluation is needed and the Skill has no executable definition for the affected responsibility, create the needed definition in that format.\
+  Do not require migration for README, reference-translation, meaning-preserving documentation or metadata, or legacy-result-only changes.
 - Definition migration does not require executing every migrated case; run only the cases needed for the changed responsibility.
 - Review evaluation sufficiency against the responsibility changed by the pull request, not against a universal case count or suite-refresh rule.
 - An evaluation-insufficiency finding must identify the uncovered changed responsibility, a concrete acceptance-relevant failure, why the recorded evidence cannot expose it, and the smallest additional evaluation that would resolve it.

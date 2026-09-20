@@ -419,6 +419,94 @@ class CheckerCliTests(unittest.TestCase):
 
             self.assertEqual(0, result.returncode, result.stderr)
 
+    def test_repository_local_evaluation_definitions_are_checked(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            local = root / ".agents" / "skills" / "maintain-japanese-references"
+            write(local / "SKILL.md", "# Local Skill\n")
+            definition = local / "evals" / "evals.json"
+            write(definition, json.dumps({
+                "skill_name": "wrong-name",
+                "evals": [{"id": "H", "prompt": "Maintain it.", "expected_output": "Updated."}],
+            }))
+            result = run_checker(root)
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn("maintain-japanese-references/evals/evals.json", result.stderr)
+            self.assertIn("skill_name", result.stderr)
+
+    def test_repository_local_fixture_cannot_replace_companion(self) -> None:
+        for path, location in (
+            ("skills/alpha-skill/SKILL.md", "case"),
+            ("skills/alpha-skill/reference.md", "execution"),
+            ("skills/alpha-skill", "case"),
+            ("skills", "execution"),
+        ):
+            with self.subTest(path=path, location=location), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                create_valid_repository(root)
+                local = root / ".agents" / "skills" / "maintain-japanese-references"
+                write(local / "SKILL.md", "# Local Skill\n")
+                definition = local / "evals" / "evals.json"
+                document = {
+                    "skill_name": "maintain-japanese-references",
+                    "evals": [
+                        {"id": "selected", "prompt": "Maintain it.", "expected_output": "Updated."},
+                        {"id": "not-selected", "prompt": "Maintain it.", "expected_output": "Updated.",
+                         "fixture": {"files": {path: "replacement"}}},
+                    ],
+                }
+                if location == "execution":
+                    document["execution"] = {"coexistence_skills": ["alpha-skill"]}
+                else:
+                    document["evals"][1]["coexistence_skills"] = ["alpha-skill"]
+                write(definition, json.dumps(document))
+
+                result = run_checker(root)
+                self.assertNotEqual(0, result.returncode)
+                self.assertIn(
+                    f"fixture file `{path}` conflicts with companion Skill `alpha-skill`",
+                    result.stderr,
+                )
+
+    def test_repository_local_fixture_without_companion_collision_is_valid(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            local = root / ".agents" / "skills" / "maintain-japanese-references"
+            write(local / "SKILL.md", "# Local Skill\n")
+            write(local / "evals" / "evals.json", json.dumps({
+                "skill_name": "maintain-japanese-references",
+                "execution": {"coexistence_skills": ["alpha-skill"]},
+                "evals": [{"id": "safe", "prompt": "Maintain it.", "expected_output": "Updated.",
+                           "fixture": {"files": {"skills/other-skill/SKILL.md": "fixture"}}}],
+            }))
+            result = run_checker(root)
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_companion_fixture_restriction_preserves_public_and_uninstalled_cases(self) -> None:
+        for source in ("public", "repository-local"):
+            with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                create_valid_repository(root)
+                if source == "repository-local":
+                    skill = root / ".agents" / "skills" / "maintain-japanese-references"
+                    write(skill / "SKILL.md", "# Local Skill\n")
+                    skill_name = "maintain-japanese-references"
+                    execution = {}
+                else:
+                    skill = root / "skills" / "alpha-skill"
+                    skill_name = "alpha-skill"
+                    execution = {"coexistence_skills": ["alpha-skill"]}
+                write(skill / "evals" / "evals.json", json.dumps({
+                    "skill_name": skill_name,
+                    "execution": execution,
+                    "evals": [{"id": "safe", "prompt": "Maintain it.", "expected_output": "Updated.",
+                               "fixture": {"files": {"skills/alpha-skill/SKILL.md": "fixture"}}}],
+                }))
+                result = run_checker(root)
+                self.assertEqual(0, result.returncode, result.stderr)
+
     def test_migrated_and_legacy_assets_may_not_coexist_for_one_skill(self) -> None:
         def mutate(root: Path) -> None:
             write(
@@ -974,6 +1062,30 @@ class CheckerCliTests(unittest.TestCase):
             )
 
         self.assert_fixture_failure(mutate, "companion Skill reference `../alpha-skill/SKILL.md` is missing")
+
+    def test_repository_local_companion_relationship(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            local_skill = root / ".agents" / "skills" / "maintain-japanese-references" / "SKILL.md"
+            write(local_skill, "Read skills/alpha-skill/SKILL.md before deciding.\n")
+            write(
+                root / "docs" / "authoring.md",
+                """# Authoring
+
+| Relationship | Rationale | Installation | Provenance | Evaluation |
+| --- | --- | --- | --- | --- |
+| `maintain-japanese-references` → `alpha-skill` | test | Read both repository files | [#42](https://github.com/mtk177a/skills/pull/42) | `evals/README.md` |
+""",
+            )
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+            write(local_skill, "Do the work without the companion.\n")
+            result = run_checker(root)
+            self.assertEqual(1, result.returncode, result.stderr)
+            self.assertIn("companion Skill reference `skills/alpha-skill/SKILL.md` is missing", result.stderr)
 
     def test_diagnostics_have_stable_path_order(self) -> None:
         def mutate(root: Path) -> None:

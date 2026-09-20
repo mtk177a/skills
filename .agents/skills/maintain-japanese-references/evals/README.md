@@ -1,118 +1,113 @@
 # maintain-japanese-references evals
 
-## Evaluation selection
+## Purpose and assets
 
-The Skill adds a translation-maintenance responsibility and a discovery boundary beside Japanese-canonical Skills and tracker authoring.\
-Use targeted candidate-only behavior checks for semantic decisions and targeted routing checks for the adjacent boundaries.\
-Start with one candidate run per selected case, and require every critical requirement to pass before accepting the candidate.\
-A critical failure blocks acceptance: correct the Skill or a defective fixture or grader, then rerun the affected case.\
-Gather only the additional evidence needed to resolve an ambiguous, conflicting, or unstable result; add a baseline only when relative evidence can change acceptance, and compare another model only when distinguishing a Skill failure from a model limitation can change acceptance.
+This repository-local Skill maintains Japanese references when English repository files change, and it requires the repository's `write-natural-japanese` before a translation decision.\
+[#77](https://github.com/mtk177a/skills/issues/77) covers its Japanese `SKILL.md`, required companion, and discovery boundary.
 
-Reference environment: Codex with `gpt-5.6-luna`, medium reasoning, and a blank-slate single executor.\
-Give the executor only `SKILL.md`, the scenario request, and the listed fixture files.\
-Keep requirements and grading notes out of the executor input.
+| Asset | Role |
+| --- | --- |
+| `evals.json` | Executable behavior cases H, I, and J. |
+| `triggers.json` | Executable routing cases for K maintenance and Issue-only authoring. |
+| `README.md` | Coverage, method, results, and limits across the evaluation paths. |
 
-## Iter 0 — Static check
+There is no `report.json` because behavior, routing, and the focused I retry have separate plans and reports.\
+There is no `results.json`; earlier manual observations are recorded below.\
+The case prompts, fixtures, expected handlers, and assertions live in the JSON definitions.
 
-- The `description` identifies the repository, maintained inputs, intended decisions, and adjacent exclusions.
-- The body defines maintained pairs, semantic-impact criteria, preservation requirements, ambiguity handling, output information, and authority boundaries.
-- The Skill is self-contained and does not require `japanese-tech-writing` or another companion Skill.
-- Violations marked `[critical]` below would produce an incorrect translation, an unauthorized change, or a responsibility-boundary failure.
+## Coverage and grading
 
-## Coverage map
-
-| Claim | Plausible failure | Scenario | Grader |
+| Responsibility or boundary | Failure to expose | Case or check | Evidence |
 | --- | --- | --- | --- |
-| Normative meaning is preserved | Translation weakens a requirement or drops an exception | A | Maintainer review against the canonical diff |
-| Non-semantic edits do not create churn | Japanese file receives a no-op rewrite | B | Diff inspection and report check |
-| Japanese-canonical Skills are excluded | Executor creates a duplicate `SKILL-ja.md` | C | File and report inspection |
-| Tracker authoring does not activate this workflow | Executor drafts or translates tracker content | D | Output inspection |
-| Changed pairs constrain the edit scope | Unrelated translations are modified | E | Diff inspection |
-| Established terminology is preserved | Executor replaces an established term without evidence | F | Pair comparison and report inspection |
+| Required companion and faithful Japanese | Skips the companion or weakens an obligation | H | Completed reads of both repository Skills and the full wording reference before editing; English unchanged; Japanese diff. |
+| Missing companion | Uses a personal replacement or edits anyway | I | Catalog isolation, candidate read, no Japanese edit, and missing-file response. |
+| Meaning-preserving source edit | Rewrites an aligned reference or skips the companion | J | Both Skill reads, Git diff, and no-update reason. |
+| English maintenance request | Fails to select the candidate or edits beyond the changed pair | K maintenance | Complete event stream, observed handlers, successful reads, and document diff. |
+| Issue authoring exclusion | Applies reference maintenance to an Issue draft | K Issue-only | Complete event stream with no candidate read and no file edit. |
+| Evaluation definitions and relative links | Malformed evaluation definitions or broken relative Markdown links | Repository checker | `python3 -B scripts/check_repository.py`. |
 
-## Scenarios
+Historical manual cases A–F covered normative meaning, no-op edits, Japanese-canonical exclusion, tracker authoring, edit scope, and established terminology.\
+Historical case G covered optional coexistence before #77 made the companion mandatory.\
+The new model run selected H, I, J, and K because they directly cover the changed responsibilities.
 
-### Scenario A: Normative semantic change
+## Execution and stopping rule
 
-Provide an English canonical Skill diff that changes a `should` to `must` and narrows an exception, together with its current Japanese reference.\
-Ask the executor to maintain the Japanese reference.
+Plan behavior and routing separately with `--skill-source repository-local`, the needed `--case` values, `gpt-5.6-luna`, and `--reasoning-effort max`; inspect the model-call count before `run --execute`.\
+The Runner binds the candidate, definitions, case files, and companion files by hash, then creates a disposable fixture for each case.\
+For H, I, J, and K maintenance, the fixture commits the previous document text and applies the current text so the executor can inspect a real Git diff.\
+It places the `write-natural-japanese` package only in cases that require the companion; its bundled reference is available there.\
+It keeps normal Codex authentication, disables personal copies of the candidate and required companion plus plugins for the invocation, and checks the model-visible Skill catalog before a model call.\
+A missing, shortened, duplicated, or wrongly located candidate description, or a visible personal companion without a fixture copy, stops execution.
 
-Requirements checklist:
+The model receives the case request and fixture, not the grading requirements.\
+Grade the planned requirements from completed events, successful reads, the final response, and file diffs.\
+A missing `turn.completed` or incomplete read evidence is inconclusive; a critical failure is not a pass.\
+Correct an observed fixture, isolation, or Skill defect and plan only the affected retry before another model call.
 
-1. [critical] The Japanese result preserves the stronger requirement and narrowed exception.
-2. [critical] No English canonical content is changed and no new policy is invented.
-3. The report identifies the pair and the semantic reason for the update.
+## Current evidence: 2026-09-21
 
-### Scenario B: Non-semantic canonical edit
+The [PR #84](https://github.com/mtk177a/skills/pull/84) candidate was evaluated from branch head `cd6e95acf6b3c383b6f77f3d215762e84f954cac` with uncommitted Runner and definition changes.\
+The candidate `SKILL.md` hash was `sha256:30eb36bf5df84d48b4d326b18891553de526d073b2ab85d1b92a1fe41938105c` in all three plans.\
+The environment was Codex CLI 0.154.0, `gpt-5.6-luna` with `max` reasoning, normal authentication, and one disposable workspace per execution.\
+The behavior plan selected H, I, and J for three calls with digest `sha256:e169a98025107496bf3a3555268ce532b1afbade31a00ddc5b53e5fbeba86959`.\
+The routing plan selected K maintenance and K Issue-only for two calls with digest `sha256:3bd5ee3d0412c1389dc406f98f759ea4951789df4a8096e78dc809a04feaf22d`.\
+Requirements, call counts, candidate hash, and stopping conditions were recorded before any model execution.
 
-Provide a canonical diff limited to whitespace or source-line reflow that leaves rendered content and meaning unchanged, together with an aligned Japanese reference.
+The first behavior launch stopped before a model call because the sandbox could not inspect the Codex Skill catalog.\
+The same plan then produced complete H, I, and J turns.\
+H and J passed.\
+The first I turn stopped without editing, but read a personal `write-natural-japanese` because the isolation setting only disabled companions present in that fixture; it failed isolation.\
+The Runner was corrected to disable that personal Skill even when absent from the fixture and to reject its presence during catalog preflight.\
+A one-call I retry plan with digest `sha256:e6914eac53fce32ba9f2cde22654e4de6fba65b1c7e306dfb880c40b1e4de85a` was recorded before the retry.\
+The completed retry passed: the personal companion was absent from the catalog, no personal copy was read, the Japanese file stayed unchanged, and the missing repository file was reported.\
+The routing plan then ran once per case and both cases passed.\
+Six model calls were made in total: the original five plus the focused I retry.
 
-Requirements checklist:
+| Case | Result | Observed evidence |
+| --- | --- | --- |
+| H | Pass | Read the candidate, companion, and entire wording reference before editing; changed only the Japanese document from permission to obligation while retaining the condition and pre-merge deadline. |
+| I, first run | Fail | Stopped without editing but read a personal companion that was visible in the catalog. |
+| I, retry | Pass | No personal companion was visible or read; reported the missing repository file and made no Japanese edit. |
+| J | Pass | Read both Skills, left the aligned Japanese document unchanged, and explained that source-line reflow did not change meaning. |
+| K maintenance | Pass | `turn.completed` and successful reads identified the fixture candidate and companion; the full wording reference was read; only the Japanese document was edited. |
+| K Issue-only | Pass | `turn.completed` showed no maintenance Skill read; the executor drafted an Issue body without editing files. |
 
-1. [critical] The Japanese reference remains byte-for-byte unchanged.
-2. The report records why no translation update was needed.
+The temporary machine-graded reports record H/J as pass and initial I as fail, I retry as pass, and both K cases as pass.\
+The repository checker passed during each completed run.\
+Plans, raw events, and grading files remain outside the repository; this README preserves their decision-relevant results without combining distinct paths into one report.
 
-### Scenario C: Japanese-canonical Skill
+## Earlier evidence and limits
 
-Provide a documented Japanese-canonical writing Skill whose `SKILL.md` changes and has no `SKILL-ja.md`.\
-Ask the executor to synchronize translations affected by the diff.
+On 2026-09-08, six manual A–F scenarios passed with an uncommitted candidate for [PR #42](https://github.com/mtk177a/skills/pull/42), `gpt-5.6-luna`, and medium reasoning.\
+On 2026-09-21, manual G passed with candidate `900594f5effbfbc5a93e026438aa55d0a2ad9767`, and manual H, I, J, and K work used medium reasoning before the executable definitions existed.\
+The recorded observations for A–G were:
 
-Requirements checklist:
+| Case | Earlier result | Observed evidence |
+| --- | --- | --- |
+| A | Pass | Preserved `must`, the explicit-request condition, and risk disclosure without changing English content. |
+| B | Pass | Left the Japanese reference unchanged for source-line reflow and explained why. |
+| C | Pass | Excluded a Japanese-canonical Skill without proposing a duplicate `SKILL-ja.md`. |
+| D | Pass | Declined Issue authoring as outside this workflow and made no repository change. |
+| E | Pass | Updated only the translation paired with a semantic change, reported the no-op pair, and left an unrelated pair untouched. |
+| F | Pass | Retained the established term `pull request` and reported no ambiguity. |
+| G | Pass | Read both Skills and changed only the Japanese pair from permission to obligation while preserving the condition and Markdown structure. |
 
-1. [critical] No `SKILL-ja.md` is created or proposed.
-2. The report identifies the Skill as outside this workflow.
+The first manual H missed the wording reference and the first manual I used a personal replacement; the Skill instructions were corrected and affected cases subsequently passed.\
+A later isolated manual K maintenance run read the repository candidate and companion and updated only Japanese; its prior no-Git attempt had been inconclusive.\
+H and J used candidate SHA-256 `d08754c2b81fb6056d3dcf7f8f1bc075228623ee98969d604557f6c5df426ab0`, while I and K used `30eb36bf5df84d48b4d326b18891553de526d073b2ab85d1b92a1fe41938105c`.\
+The later Skill change clarified that a missing repository companion could not be replaced by a personal copy.
 
-### Scenario D: Tracker near-miss
+| Manual case | Earlier result | Observed evidence |
+| --- | --- | --- |
+| H | Pass after correction | Read both Skills and the full wording reference; updated only Japanese with the stronger obligation and pre-merge condition. |
+| I | Pass after correction | With the repository companion absent, reported the missing file and made no edit. |
+| J | Pass | Read both Skills, made no Japanese edit, and explained the meaning-preserving reflow. |
+| K maintenance | Pass after an inconclusive setup | In an isolated Git fixture, read the candidate, companion, and reference, then changed only Japanese. |
+| K Issue-only | Pass | Completed an Issue draft without reading the maintenance Skill. |
 
-Ask for a Japanese body for an Issue that already has an English title and `Summary`, without providing a changed maintained file.
+Those observations informed the new cases, but there is no preserved evidence that the earlier H, I, and J runs had pre-execution plans.\
+The new plans do not retroactively establish those earlier procedures.
 
-Requirements checklist:
-
-1. [critical] The executor does not apply this Skill to author or translate the Issue.
-2. The response routes the request outside this workflow without changing repository files.
-
-### Scenario E: Multiple changed files
-
-Provide changed English canonical files for one document and one public Skill, aligned translations for both, and an unrelated translation pair.\
-Make one canonical change semantic and the other non-semantic.
-
-Requirements checklist:
-
-1. [critical] Only the translation paired with the semantic change is modified.
-2. Both changed pairs are reported, including the no-update reason.
-3. The unrelated pair is not edited.
-
-### Scenario F: Established terminology
-
-Provide a canonical change, its Japanese counterpart, and nearby Japanese references that consistently retain an English technical term.\
-Ask the executor to synchronize the pair.
-
-Requirements checklist:
-
-1. [critical] The established term is retained unless the canonical meaning requires a different term.
-2. If the evidence supports multiple materially different translations, the executor reports the ambiguity instead of choosing silently.
-
-## Results
-
-### Iter 1 — 2026-09-08
-
-The uncommitted working-tree candidate was evaluated once per scenario by one blank-slate Codex executor using `gpt-5.6-luna` with medium reasoning.\
-The executor received `SKILL.md` and the six scenario inputs, did not receive the requirements or grading notes, and did not edit repository files.
-
-| Scenario | Result | Evidence | Decision effect |
-| --- | --- | --- | --- |
-| A | pass | Preserved `must`, the explicit-request condition, and the requirement to disclose risk without changing canonical content | Supports acceptance of normative-meaning preservation |
-| B | pass | Left the Japanese reference unchanged and reported source-line reflow as non-semantic | Supports acceptance of no-op handling |
-| C | pass | Excluded the documented Japanese-canonical Skill and did not propose `SKILL-ja.md` | Supports acceptance of the Japanese-canonical exclusion |
-| D | pass | Declined Issue authoring as outside the workflow and made no repository change | Supports acceptance of the tracker-authoring boundary |
-| E | pass | Updated only the semantically affected translation, reported the reflow-only pair unchanged, and left the unrelated pair untouched | Supports acceptance of pair-scoped editing |
-| F | pass | Preserved the established term `pull request` and reported no ambiguity | Supports acceptance of established-terminology preservation |
-
-Maintainer review found no critical or non-critical requirement failure.\
-These results accept the candidate for the six mapped responsibilities and boundaries without requiring a baseline or repetition.\
-Deterministic repository validation checks structure, frontmatter, translation notices, links, and repository-local artifact boundaries but does not establish behavior on other models or clients.
-
-## Next validation question
-
-- If real use reveals a critical failure, correct the identified Skill, fixture, or grader defect and rerun the affected case before acceptance.
-- If a result is ambiguous, conflicting, or unstable, gather only the additional evidence needed to resolve the acceptance decision; compare models only when model-specific support or a Skill-versus-model distinction is material.
+The current results cover this candidate and these fixtures in Codex CLI with Luna max.\
+Other models and clients, a baseline comparison, repeated successful runs, and unselected historical cases remain unverified.\
+New evidence is needed if real use reveals a critical failure, an environment-specific issue, or instability that would change acceptance.
