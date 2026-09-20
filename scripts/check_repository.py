@@ -419,20 +419,25 @@ def check_localization_notices(root: Path, problems: list[Problem]) -> None:
                 add(problems, root, path, 1, "translation frontmatter has no closing delimiter")
                 continue
             start = closing + 1
-        notice_lines = [value.strip() for value in lines[start:] if value.strip()][:4]
+        notice_start = next((index for index in range(start, len(lines)) if lines[index].strip()), len(lines))
+        notice_lines = []
+        for value in lines[notice_start:]:
+            if not value.strip():
+                break
+            notice_lines.append(value.strip())
         notice = " ".join(notice_lines)
-        has_english_basis = "基準" in notice and "英語版を優先" in notice
-        has_canonical = "SKILL.md" in notice and (
-            "canonical source" in notice.lower() or "正本" in notice or has_english_basis
+        starts_with_heading = bool(notice_lines) and notice_lines[0].startswith("#")
+        has_english_source = "SKILL.md" in notice and (
+            "英語版" in notice or "english" in notice.lower()
         )
         has_reference = "reference" in notice.lower() or "参考" in notice
-        if not (has_canonical and has_reference):
+        if starts_with_heading or not (has_english_source and has_reference):
             add(
                 problems,
                 root,
                 path,
-                start + 1,
-                "Japanese translation must begin with a notice that SKILL.md is canonical and this file is reference-only",
+                notice_start + 1,
+                "Japanese translation must begin with a notice identifying English SKILL.md and this file as a reference translation",
             )
 
 
