@@ -435,6 +435,78 @@ class CheckerCliTests(unittest.TestCase):
             self.assertIn("maintain-japanese-references/evals/evals.json", result.stderr)
             self.assertIn("skill_name", result.stderr)
 
+    def test_repository_local_fixture_cannot_replace_companion(self) -> None:
+        for path, location in (
+            ("skills/alpha-skill/SKILL.md", "case"),
+            ("skills/alpha-skill/reference.md", "execution"),
+            ("skills/alpha-skill", "case"),
+            ("skills", "execution"),
+        ):
+            with self.subTest(path=path, location=location), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                create_valid_repository(root)
+                local = root / ".agents" / "skills" / "maintain-japanese-references"
+                write(local / "SKILL.md", "# Local Skill\n")
+                definition = local / "evals" / "evals.json"
+                document = {
+                    "skill_name": "maintain-japanese-references",
+                    "evals": [
+                        {"id": "selected", "prompt": "Maintain it.", "expected_output": "Updated."},
+                        {"id": "not-selected", "prompt": "Maintain it.", "expected_output": "Updated.",
+                         "fixture": {"files": {path: "replacement"}}},
+                    ],
+                }
+                if location == "execution":
+                    document["execution"] = {"coexistence_skills": ["alpha-skill"]}
+                else:
+                    document["evals"][1]["coexistence_skills"] = ["alpha-skill"]
+                write(definition, json.dumps(document))
+
+                result = run_checker(root)
+                self.assertNotEqual(0, result.returncode)
+                self.assertIn(
+                    f"fixture file `{path}` conflicts with companion Skill `alpha-skill`",
+                    result.stderr,
+                )
+
+    def test_repository_local_fixture_without_companion_collision_is_valid(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            local = root / ".agents" / "skills" / "maintain-japanese-references"
+            write(local / "SKILL.md", "# Local Skill\n")
+            write(local / "evals" / "evals.json", json.dumps({
+                "skill_name": "maintain-japanese-references",
+                "execution": {"coexistence_skills": ["alpha-skill"]},
+                "evals": [{"id": "safe", "prompt": "Maintain it.", "expected_output": "Updated.",
+                           "fixture": {"files": {"skills/other-skill/SKILL.md": "fixture"}}}],
+            }))
+            result = run_checker(root)
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_companion_fixture_restriction_preserves_public_and_uninstalled_cases(self) -> None:
+        for source in ("public", "repository-local"):
+            with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                create_valid_repository(root)
+                if source == "repository-local":
+                    skill = root / ".agents" / "skills" / "maintain-japanese-references"
+                    write(skill / "SKILL.md", "# Local Skill\n")
+                    skill_name = "maintain-japanese-references"
+                    execution = {}
+                else:
+                    skill = root / "skills" / "alpha-skill"
+                    skill_name = "alpha-skill"
+                    execution = {"coexistence_skills": ["alpha-skill"]}
+                write(skill / "evals" / "evals.json", json.dumps({
+                    "skill_name": skill_name,
+                    "execution": execution,
+                    "evals": [{"id": "safe", "prompt": "Maintain it.", "expected_output": "Updated.",
+                               "fixture": {"files": {"skills/alpha-skill/SKILL.md": "fixture"}}}],
+                }))
+                result = run_checker(root)
+                self.assertEqual(0, result.returncode, result.stderr)
+
     def test_migrated_and_legacy_assets_may_not_coexist_for_one_skill(self) -> None:
         def mutate(root: Path) -> None:
             write(

@@ -470,7 +470,9 @@ def check_json_assets(root: Path, problems: list[Problem], ignored_report_skill:
                     expected_skill=expected_skill,
                     definition_kind="routing" if path.name == "triggers.json" else "behavior",
                 )
-                validate_evaluation_references(normalized, root)
+                validate_evaluation_references(
+                    normalized, root, repository_local=path.parent.parent.parent.parent == root / ".agents"
+                )
             except EvaluationContractError as error:
                 add(problems, root, path, 1, str(error))
             continue

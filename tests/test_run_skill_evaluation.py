@@ -268,6 +268,54 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             self.assertNotIn("--ignore-user-config", invocation["argv"])
             self.assertIn("features.plugins=false", invocation["argv"])
 
+    def test_repository_local_plan_and_run_reject_companion_fixture_collision(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            create_repository(root)
+            local = root / ".agents" / "skills" / "maintain-japanese-references"
+            write(local / "SKILL.md", "# Local Skill\n")
+            definition = local / "evals" / "evals.json"
+            document = {
+                "skill_name": "maintain-japanese-references",
+                "execution": {"coexistence_skills": ["alpha-skill"]},
+                "evals": [{"id": "selected", "prompt": "Maintain it.", "expected_output": "Updated."}],
+            }
+            write(definition, json.dumps(document) + "\n")
+            subprocess.run(["git", "-C", str(root), "add", ".agents/skills/maintain-japanese-references/SKILL.md"], check=True)
+            plan_path = Path(directory) / "plan.json"
+            plan_command = [
+                sys.executable, str(RUNNER), "--root", str(root), "plan",
+                "--skill", "maintain-japanese-references", "--skill-source", "repository-local",
+                "--path", "targeted-candidate", "--purpose", "Check fixture safety.",
+                "--affected", "companion integrity", "--case", "selected",
+                "--base-ref", "HEAD", "--output", str(plan_path),
+            ]
+
+            document["evals"][0]["fixture"] = {"files": {"skills/alpha-skill/SKILL.md": "replacement"}}
+            write(definition, json.dumps(document) + "\n")
+            rejected = subprocess.run(plan_command, text=True, capture_output=True)
+            self.assertEqual(2, rejected.returncode)
+            self.assertIn("conflicts with companion Skill `alpha-skill`", rejected.stderr)
+            self.assertFalse(plan_path.exists())
+
+            del document["evals"][0]["fixture"]
+            write(definition, json.dumps(document) + "\n")
+            planned = subprocess.run(plan_command, text=True, capture_output=True)
+            self.assertEqual(0, planned.returncode, planned.stderr)
+            plan = json.loads(plan_path.read_text(encoding="utf-8"))
+            plan["cases"][0]["inline_files"]["skills/alpha-skill/SKILL.md"] = "replacement"
+            write(plan_path, canonical_json(attach_plan_digest(plan)) + "\n")
+            artifacts = Path(directory) / "artifacts"
+            run = subprocess.run(
+                [sys.executable, str(RUNNER), "--root", str(root), "--codex-bin", "/missing/codex",
+                 "run", "--plan", str(plan_path), "--artifacts-dir", str(artifacts),
+                 "--execute", "--max-model-calls", "1"],
+                text=True, capture_output=True,
+            )
+            self.assertEqual(2, run.returncode)
+            self.assertIn("conflicts with companion Skill `alpha-skill`", run.stderr)
+            self.assertFalse(artifacts.exists())
+
     def test_plan_repository_local_skill_uses_tracked_source(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory) / "repository"

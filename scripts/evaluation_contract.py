@@ -118,7 +118,9 @@ def _regular_repository_file(root: Path, relative: Path) -> bool:
         return False
 
 
-def validate_evaluation_references(definition: dict[str, Any], root: Path) -> None:
+def validate_evaluation_references(
+    definition: dict[str, Any], root: Path, *, repository_local: bool = False
+) -> None:
     """Check every static file and Skill reference in a normalized definition."""
     for skill in definition["execution"]["coexistence_skills"]:
         if not _regular_repository_file(root, Path("skills") / skill / "SKILL.md"):
@@ -135,6 +137,26 @@ def validate_evaluation_references(definition: dict[str, Any], root: Path) -> No
             if not _regular_repository_file(root, Path("skills") / skill / "SKILL.md"):
                 raise EvaluationContractError(
                     f"evaluation case `{case['id']}` coexistence Skill must have a regular SKILL.md: {skill}"
+                )
+        if repository_local:
+            reject_repository_local_companion_fixture_paths(
+                case,
+                {*definition["execution"]["coexistence_skills"], *case["coexistence_skills"]},
+            )
+
+
+def reject_repository_local_companion_fixture_paths(
+    case: dict[str, Any], companions: set[str]
+) -> None:
+    """Keep inline case files out of installed companions' repository paths."""
+    for path in sorted(case["inline_files"]):
+        parts = Path(path).parts
+        for skill in sorted(companions):
+            protected = ("skills", skill)
+            if parts[: len(protected)] == protected or protected[: len(parts)] == parts:
+                raise EvaluationContractError(
+                    f"evaluation case `{case['id']}` fixture file `{path}` "
+                    f"conflicts with companion Skill `{skill}`"
                 )
 
 

@@ -23,6 +23,7 @@ try:
         EvaluationContractError,
         normalize_case_input_paths as _normalize_case_input_paths,
         normalize_evaluation_document,
+        reject_repository_local_companion_fixture_paths,
         validate_evaluation_references,
     )
 except ModuleNotFoundError:  # Imported as scripts.run_skill_evaluation in unit tests.
@@ -34,6 +35,7 @@ except ModuleNotFoundError:  # Imported as scripts.run_skill_evaluation in unit 
         EvaluationContractError,
         normalize_case_input_paths as _normalize_case_input_paths,
         normalize_evaluation_document,
+        reject_repository_local_companion_fixture_paths,
         validate_evaluation_references,
     )
 
@@ -202,7 +204,7 @@ def load_case_asset(root: Path, skill: str, evaluation_path: str, skill_source: 
                 expected_skill=skill,
                 definition_kind="routing" if sibling_name == "triggers.json" else "behavior",
             )
-            validate_evaluation_references(sibling_normalized, root)
+            validate_evaluation_references(sibling_normalized, root, repository_local=skill_source == "repository-local")
         except EvaluationContractError as error:
             raise EvaluationError(str(error)) from error
     try:
@@ -211,7 +213,7 @@ def load_case_asset(root: Path, skill: str, evaluation_path: str, skill_source: 
             expected_skill=skill,
             definition_kind="routing" if evaluation_path == "targeted-routing" else "behavior",
         )
-        validate_evaluation_references(normalized, root)
+        validate_evaluation_references(normalized, root, repository_local=skill_source == "repository-local")
     except EvaluationContractError as error:
         raise EvaluationError(str(error)) from error
     return asset, normalized, normalized["cases"]
@@ -507,6 +509,11 @@ def validate_plan(plan: dict[str, Any], root: Path) -> dict[str, Any]:
             raise EvaluationError("plan execution coexistence_skills must be sorted unique Skill names")
         if not set(cases_by_id[case_id]["coexistence_skills"]).issubset(skills):
             raise EvaluationError("plan execution omits a case coexistence Skill")
+        if skill_source == "repository-local":
+            try:
+                reject_repository_local_companion_fixture_paths(cases_by_id[case_id], set(skills))
+            except EvaluationContractError as error:
+                raise EvaluationError(str(error)) from error
         execution_coexistence.update(skills)
         execution_pairs.append((case_id, condition))
     if len(set(execution_pairs)) != len(execution_pairs):
