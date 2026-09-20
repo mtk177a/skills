@@ -421,7 +421,10 @@ def check_localization_notices(root: Path, problems: list[Problem]) -> None:
             start = closing + 1
         notice_lines = [value.strip() for value in lines[start:] if value.strip()][:4]
         notice = " ".join(notice_lines)
-        has_canonical = "SKILL.md" in notice and ("canonical source" in notice.lower() or "正本" in notice)
+        has_english_basis = "基準" in notice and "英語版を優先" in notice
+        has_canonical = "SKILL.md" in notice and (
+            "canonical source" in notice.lower() or "正本" in notice or has_english_basis
+        )
         has_reference = "reference" in notice.lower() or "参考" in notice
         if not (has_canonical and has_reference):
             add(

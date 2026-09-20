@@ -753,6 +753,33 @@ class CheckerCliTests(unittest.TestCase):
 
         self.assert_fixture_failure(mutate, "Japanese translation must begin with a notice")
 
+    def test_reference_notice_can_name_english_version_as_basis(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            path = root / "skills" / "alpha-skill" / "SKILL-ja.md"
+            path.write_text(path.read_text().replace(
+                "> **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳です。",
+                "> **注記:** この Skill の内容は英語版 (`SKILL.md`) を基準とします。\n"
+                "> このファイルは参考訳です。\n"
+                "> 内容に差異がある場合は英語版を優先してください。",
+            ))
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_english_basis_notice_still_requires_reference_status(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills" / "alpha-skill" / "SKILL-ja.md"
+            path.write_text(path.read_text().replace(
+                "> **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳です。",
+                "> **注記:** この Skill の内容は英語版 (`SKILL.md`) を基準とします。\n"
+                "> 内容に差異がある場合は英語版を優先してください。",
+            ))
+
+        self.assert_fixture_failure(mutate, "Japanese translation must begin with a notice")
+
     def test_tracked_repository_local_skills_are_allowed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
