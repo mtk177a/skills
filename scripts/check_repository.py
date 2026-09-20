@@ -9,8 +9,13 @@ import json
 import re
 import sys
 from dataclasses import dataclass
-from pathlib import Path, PureWindowsPath
+from pathlib import Path
 from urllib.parse import unquote
+
+try:
+    from evaluation_contract import EvaluationContractError, normalize_evaluation_document, validate_evaluation_references
+except ModuleNotFoundError:  # Imported as scripts.check_repository in unit tests.
+    from scripts.evaluation_contract import EvaluationContractError, normalize_evaluation_document, validate_evaluation_references
 
 
 KEBAB_CASE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -383,22 +388,6 @@ def contained(root: Path, target: Path) -> bool:
         return False
 
 
-def normalize_case_file_path(value: str) -> str | None:
-    relative = Path(value)
-    windows_path = PureWindowsPath(value)
-    if (
-        not value
-        or value == "."
-        or relative.is_absolute()
-        or bool(windows_path.drive)
-        or "\\" in value
-        or ".." in relative.parts
-    ):
-        return None
-    normalized = relative.as_posix()
-    return None if normalized == "." else normalized
-
-
 def check_markdown_links(root: Path, problems: list[Problem]) -> None:
     for path in sorted(root.rglob("*.md")):
         if ".git" in path.parts:
@@ -472,23 +461,24 @@ def check_json_assets(root: Path, problems: list[Problem], ignored_report_skill:
         official = path.name == "evals.json" and ("skill_name" in document or "evals" in document)
         if path.name == "triggers.json" and ("skill_name" in document or "evals" in document):
             official = True
-        version = document.get("schema_version", document.get("version"))
-        if not official and (isinstance(version, bool) or not isinstance(version, int) or version < 1):
-            add(problems, root, path, 1, "evaluation JSON requires a positive integer schema_version or version")
         expected_skill = path.parent.parent.name
-        skill_field = "skill_name" if official else "skill"
-        if document.get(skill_field) != expected_skill:
-            add(problems, root, path, 1, f"evaluation JSON {skill_field} must be `{expected_skill}`")
-        cases = document.get("evals" if official else "cases")
         if official:
-            execution = document.get("execution", {})
-            coexistence = execution.get("coexistence_skills", []) if isinstance(execution, dict) else None
-            if not isinstance(execution, dict):
-                add(problems, root, path, 1, "official execution settings must be an object")
-            elif not isinstance(coexistence, list) or not all(
-                isinstance(value, str) and KEBAB_CASE.fullmatch(value) for value in coexistence
-            ):
-                add(problems, root, path, 1, "official execution coexistence_skills must be Skill names")
+            try:
+                normalized = normalize_evaluation_document(
+                    document,
+                    expected_skill=expected_skill,
+                    definition_kind="routing" if path.name == "triggers.json" else "behavior",
+                )
+                validate_evaluation_references(normalized, root)
+            except EvaluationContractError as error:
+                add(problems, root, path, 1, str(error))
+            continue
+        version = document.get("schema_version", document.get("version"))
+        if isinstance(version, bool) or not isinstance(version, int) or version < 1:
+            add(problems, root, path, 1, "evaluation JSON requires a positive integer schema_version or version")
+        if document.get("skill") != expected_skill:
+            add(problems, root, path, 1, f"evaluation JSON skill must be `{expected_skill}`")
+        cases = document.get("cases")
         if cases is not None:
             if not isinstance(cases, list):
                 add(problems, root, path, 1, "cases must be an array")
@@ -502,98 +492,6 @@ def check_json_assets(root: Path, problems: list[Problem], ignored_report_skill:
                         add(problems, root, path, 1, f"duplicate case id `{case_id}`")
                     else:
                         seen.add(str(case_id))
-                    if official and isinstance(case, dict):
-                        if not isinstance(case.get("prompt"), str) or not case["prompt"].strip():
-                            add(problems, root, path, 1, f"official case `{case_id}` requires a non-empty prompt")
-                        expected_output = case.get("expected_output")
-                        if expected_output is not None and (
-                            not isinstance(expected_output, str) or not expected_output.strip()
-                        ):
-                            add(
-                                problems,
-                                root,
-                                path,
-                                1,
-                                f"official case `{case_id}` expected_output must be a non-empty string",
-                            )
-                        files = case.get("files", [])
-                        if not isinstance(files, list) or not all(isinstance(value, str) for value in files):
-                            add(problems, root, path, 1, f"official case `{case_id}` files must be a string array")
-                        else:
-                            normalized_files: list[str] = []
-                            for value in files:
-                                normalized = normalize_case_file_path(value)
-                                if normalized is None:
-                                    add(
-                                        problems,
-                                        root,
-                                        path,
-                                        1,
-                                        f"official case `{case_id}` has an unsafe repository-relative file path: `{value}`",
-                                    )
-                                else:
-                                    normalized_files.append(normalized)
-                            if len(set(normalized_files)) != len(normalized_files):
-                                add(problems, root, path, 1, f"official case `{case_id}` repeats a file path")
-                        conditions = case.get("conditions")
-                        if conditions is not None and (
-                            not isinstance(conditions, list)
-                            or not all(isinstance(value, str) and value in REPORT_CONDITIONS for value in conditions)
-                        ):
-                            add(problems, root, path, 1, f"official case `{case_id}` conditions are invalid")
-                        coexistence = case.get("coexistence_skills", [])
-                        if not isinstance(coexistence, list) or not all(
-                            isinstance(value, str) and KEBAB_CASE.fullmatch(value) for value in coexistence
-                        ):
-                            add(problems, root, path, 1, f"official case `{case_id}` coexistence_skills are invalid")
-                        assertions = case.get("assertions", [])
-                        if not isinstance(assertions, list):
-                            add(problems, root, path, 1, f"official case `{case_id}` assertions must be an array")
-                        else:
-                            assertion_ids: set[str] = set()
-                            for index, assertion in enumerate(assertions, start=1):
-                                if isinstance(assertion, str) and assertion.strip():
-                                    assertion_id = f"assertion-{index}"
-                                elif (
-                                    isinstance(assertion, dict)
-                                    and isinstance(assertion.get("id"), str)
-                                    and assertion["id"]
-                                    and isinstance(assertion.get("text"), str)
-                                    and assertion["text"].strip()
-                                    and isinstance(assertion.get("critical"), bool)
-                                ):
-                                    assertion_id = assertion["id"]
-                                else:
-                                    add(
-                                        problems,
-                                        root,
-                                        path,
-                                        1,
-                                        f"official case `{case_id}` assertions must be strings or id-text-critical objects",
-                                    )
-                                    continue
-                                if assertion_id in assertion_ids:
-                                    add(problems, root, path, 1, f"official case `{case_id}` assertion ids must be unique")
-                                assertion_ids.add(assertion_id)
-                            if path.name == "evals.json" and not assertion_ids and not (
-                                isinstance(expected_output, str) and expected_output.strip()
-                            ):
-                                add(
-                                    problems,
-                                    root,
-                                    path,
-                                    1,
-                                    f"behavior case `{case_id}` requires assertions or expected_output",
-                                )
-                        expected_handlers = case.get("expected_handlers")
-                        if path.name == "triggers.json" and (
-                            not isinstance(expected_handlers, list)
-                            or not all(
-                                isinstance(value, str) and KEBAB_CASE.fullmatch(value)
-                                for value in expected_handlers
-                            )
-                        ):
-                            add(problems, root, path, 1, f"routing case `{case_id}` requires expected_handlers")
     for skill, states in sorted(migration_states.items()):
         if len(states) > 1 and len(set(states.values())) > 1:
             path = root / "skills" / skill / "evals" / sorted(states)[0]
@@ -610,7 +508,23 @@ def report_case_assertions(path: Path) -> dict[str, dict[str, bool] | None]:
     if not isinstance(document, dict):
         return {}
     migrated = "evals" in document and "skill_name" in document
-    raw_cases = document.get("evals" if migrated else "cases")
+    if migrated:
+        try:
+            normalized = normalize_evaluation_document(
+                document,
+                expected_skill=path.parent.parent.name,
+                definition_kind="routing" if path.name == "triggers.json" else "behavior",
+            )
+        except EvaluationContractError:
+            return {}
+        return {
+            case["id"]: {
+                requirement["id"]: requirement["critical"]
+                for requirement in case["grading_requirements"]
+            }
+            for case in normalized["cases"]
+        }
+    raw_cases = document.get("cases")
     if not isinstance(raw_cases, list):
         return {}
     cases: dict[str, dict[str, bool] | None] = {}
@@ -620,27 +534,12 @@ def report_case_assertions(path: Path) -> dict[str, dict[str, bool] | None]:
         case_id = case.get("id")
         if isinstance(case_id, bool) or not isinstance(case_id, (str, int)):
             continue
-        if not migrated:
-            assertions = case.get("assertions", case.get("assertion_ids"))
-            cases[str(case_id)] = (
-                {value: True for value in assertions}
-                if isinstance(assertions, list) and all(isinstance(value, str) for value in assertions)
-                else None
-            )
-            continue
-        requirements: dict[str, bool] = {}
-        assertions = case.get("assertions", [])
-        if isinstance(assertions, list):
-            for index, assertion in enumerate(assertions, start=1):
-                if isinstance(assertion, str) and assertion.strip():
-                    requirements[f"assertion-{index}"] = True
-                elif isinstance(assertion, dict) and isinstance(assertion.get("id"), str):
-                    requirements[assertion["id"]] = assertion.get("critical") is True
-        if not requirements and isinstance(case.get("expected_output"), str):
-            requirements["expected-output"] = True
-        if path.name == "triggers.json":
-            requirements["routing-handlers"] = True
-        cases[str(case_id)] = requirements
+        assertions = case.get("assertions", case.get("assertion_ids"))
+        cases[str(case_id)] = (
+            {value: True for value in assertions}
+            if isinstance(assertions, list) and all(isinstance(value, str) for value in assertions)
+            else None
+        )
     return cases
 
 

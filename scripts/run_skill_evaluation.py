@@ -11,11 +11,30 @@ import subprocess
 import sys
 import tempfile
 from datetime import datetime, timezone
-from pathlib import Path, PureWindowsPath
+from pathlib import Path
 from typing import Any
 
+try:
+    from evaluation_contract import (
+        CONDITIONS,
+        SKILL_NAME,
+        EvaluationContractError,
+        normalize_case_input_paths as _normalize_case_input_paths,
+        normalize_evaluation_document,
+        validate_evaluation_references,
+    )
+except ModuleNotFoundError:  # Imported as scripts.run_skill_evaluation in unit tests.
+    from scripts.evaluation_contract import (
+        CONDITIONS,
+        SKILL_NAME,
+        EvaluationContractError,
+        normalize_case_input_paths as _normalize_case_input_paths,
+        normalize_evaluation_document,
+        validate_evaluation_references,
+    )
 
-PLAN_VERSION = 2
+
+PLAN_VERSION = 3
 RUN_VERSION = 2
 GRADES_VERSION = 2
 REPORT_VERSION = 2
@@ -26,9 +45,7 @@ MODEL_PATHS = {
     "target-environment",
 }
 PATHS = {"static-only", *MODEL_PATHS}
-CONDITIONS = {"candidate", "baseline", "without-skill"}
 STATUSES = {"pass", "fail", "inconclusive", "error"}
-SKILL_NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
 FILE_MODES = {"100644": 0o644, "100755": 0o755}
 ABSOLUTE_PATH = re.compile(r"(?<![A-Za-z0-9:])(?:/[A-Za-z0-9._-][^\s\"'`<>]*|[A-Za-z]:\\[^\s\"'`<>]+)")
@@ -36,6 +53,13 @@ ABSOLUTE_PATH = re.compile(r"(?<![A-Za-z0-9:])(?:/[A-Za-z0-9._-][^\s\"'`<>]*|[A-
 
 class EvaluationError(Exception):
     """A user-facing evaluation configuration or execution error."""
+
+
+def normalize_case_input_paths(values: Any, case_id: str) -> list[str]:
+    try:
+        return _normalize_case_input_paths(values, case_id)
+    except EvaluationContractError as error:
+        raise EvaluationError(str(error)) from error
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -116,203 +140,10 @@ def validate_skill_name(skill: str) -> None:
         raise EvaluationError(f"invalid Skill name: {skill}")
 
 
-def normalize_case_input_path(value: str, case_id: str) -> str:
-    relative = Path(value)
-    windows_path = PureWindowsPath(value)
-    if (
-        not value
-        or value == "."
-        or relative.is_absolute()
-        or bool(windows_path.drive)
-        or "\\" in value
-        or ".." in relative.parts
-    ):
-        raise EvaluationError(f"evaluation case `{case_id}` has an unsafe case input path: {value}")
-    normalized = relative.as_posix()
-    if normalized == ".":
-        raise EvaluationError(f"evaluation case `{case_id}` has an unsafe case input path: {value}")
-    return normalized
-
-
-def normalize_case_input_paths(values: Any, case_id: str) -> list[str]:
-    if not isinstance(values, list) or not all(isinstance(value, str) for value in values):
-        raise EvaluationError(f"evaluation case `{case_id}` files must be strings")
-    normalized = [normalize_case_input_path(value, case_id) for value in values]
-    if len(set(normalized)) != len(normalized):
-        raise EvaluationError(f"evaluation case `{case_id}` repeats a case input path")
-    return normalized
-
-
 def reject_absolute_path(value: str, label: str) -> None:
     match = ABSOLUTE_PATH.search(value)
     if match is not None:
         raise EvaluationError(f"{label} must not contain an absolute path: {match.group(0)}")
-
-
-def format_turns(values: Any, label: str) -> str:
-    if not isinstance(values, list) or not values:
-        raise EvaluationError(f"{label} must be a non-empty array")
-    rendered = []
-    for index, value in enumerate(values, start=1):
-        if isinstance(value, str) and value.strip():
-            rendered.append(f"User turn {index}:\n{value}")
-        elif (
-            isinstance(value, dict)
-            and isinstance(value.get("role"), str)
-            and isinstance(value.get("content"), str)
-            and value["content"].strip()
-        ):
-            rendered.append(f"{value['role'].capitalize()} turn {index}:\n{value['content']}")
-        else:
-            raise EvaluationError(f"{label} entries must be strings or role-content objects")
-    return "\n\n".join(rendered)
-
-
-def normalize_assertions(case: dict[str, Any], case_id: str, evaluation_path: str) -> list[dict[str, Any]]:
-    raw_assertions = case.get("assertions", [])
-    if not isinstance(raw_assertions, list):
-        raise EvaluationError(f"evaluation case `{case_id}` assertions must be an array")
-    requirements: list[dict[str, Any]] = []
-    seen: set[str] = set()
-    for index, assertion in enumerate(raw_assertions, start=1):
-        if isinstance(assertion, str) and assertion.strip():
-            requirement = {"id": f"assertion-{index}", "text": assertion, "critical": True}
-        elif isinstance(assertion, dict):
-            requirement_id = assertion.get("id")
-            text = assertion.get("text")
-            critical = assertion.get("critical")
-            if (
-                not isinstance(requirement_id, str)
-                or not requirement_id
-                or not isinstance(text, str)
-                or not text.strip()
-                or not isinstance(critical, bool)
-            ):
-                raise EvaluationError(
-                    f"evaluation case `{case_id}` assertion objects require id, text, and boolean critical"
-                )
-            requirement = {"id": requirement_id, "text": text, "critical": critical}
-        else:
-            raise EvaluationError(f"evaluation case `{case_id}` assertions must be strings or objects")
-        if requirement["id"] in seen:
-            raise EvaluationError(f"evaluation case `{case_id}` assertion ids must be unique")
-        seen.add(requirement["id"])
-        requirements.append(requirement)
-    expected_output = case.get("expected_output")
-    if expected_output is not None and (not isinstance(expected_output, str) or not expected_output.strip()):
-        raise EvaluationError(f"evaluation case `{case_id}` expected_output must be a non-empty string")
-    if not requirements and isinstance(expected_output, str):
-        requirements.append({"id": "expected-output", "text": expected_output, "critical": True})
-    expected_handlers = case.get("expected_handlers")
-    if evaluation_path == "targeted-routing":
-        if not isinstance(expected_handlers, list) or not all(
-            isinstance(value, str) and SKILL_NAME.fullmatch(value) for value in expected_handlers
-        ):
-            raise EvaluationError(
-                f"routing case `{case_id}` requires expected_handlers as an array of Skill names"
-            )
-        if "routing-handlers" in seen:
-            raise EvaluationError(
-                f"routing case `{case_id}` reserves the assertion id `routing-handlers`"
-            )
-        requirements.append(
-            {
-                "id": "routing-handlers",
-                "text": "Directly observed Skill handlers match the expected handlers.",
-                "critical": True,
-                "expected_handlers": expected_handlers,
-            }
-        )
-    elif expected_handlers is not None:
-        raise EvaluationError(f"behavior case `{case_id}` must not define expected_handlers")
-    if not requirements:
-        raise EvaluationError(
-            f"evaluation case `{case_id}` requires assertions or expected_output for grading"
-        )
-    return requirements
-
-
-def normalize_case(case: Any, evaluation_path: str) -> dict[str, Any]:
-    if not isinstance(case, dict):
-        raise EvaluationError("every evaluation case must be an object")
-    case_id = case.get("id")
-    if isinstance(case_id, bool) or not isinstance(case_id, (str, int)):
-        raise EvaluationError("every evaluation case requires a string or integer id")
-    normalized_id = str(case_id).strip()
-    if not normalized_id:
-        raise EvaluationError("every evaluation case requires a non-empty id")
-    input_mode = "single-turn"
-    if isinstance(case.get("prompt"), str) and case["prompt"].strip():
-        prompt = case["prompt"]
-    elif "turns" in case:
-        prompt = format_turns(case["turns"], f"evaluation case `{normalized_id}` turns")
-        input_mode = "transcript"
-    elif isinstance(case.get("request"), str) and case["request"].strip() and "authoring_turns" in case:
-        authoring = format_turns(
-            case["authoring_turns"],
-            f"evaluation case `{normalized_id}` authoring_turns",
-        )
-        prompt = f"Prior authoring conversation:\n\n{authoring}\n\nCurrent request:\n{case['request']}"
-        input_mode = "authoring-transcript"
-    else:
-        raise EvaluationError(
-            f"evaluation case `{normalized_id}` requires prompt, turns, or request with authoring_turns"
-        )
-    conversation = case.get("conversation")
-    if conversation is not None:
-        history = format_turns(conversation, f"evaluation case `{normalized_id}` conversation")
-        prompt = f"Conversation so far:\n\n{history}\n\nCurrent user request:\n{prompt}"
-        input_mode = "conversation"
-    requirements = normalize_assertions(case, normalized_id, evaluation_path)
-    files = normalize_case_input_paths(case.get("files", []), normalized_id)
-    inline_files: dict[str, str] = {}
-    fixture = case.get("fixture")
-    if isinstance(fixture, dict):
-        raw_inline_files = fixture.get("files", {})
-        if not isinstance(raw_inline_files, dict) or not all(
-            isinstance(name, str) and isinstance(content, str)
-            for name, content in raw_inline_files.items()
-        ):
-            raise EvaluationError(f"evaluation case `{normalized_id}` fixture.files must map paths to strings")
-        for name in raw_inline_files:
-            relative = Path(name)
-            if not name or relative == Path(".") or relative.is_absolute() or ".." in relative.parts or (
-                relative.parts and relative.parts[0] in {".agents", ".git"}
-            ):
-                raise EvaluationError(f"evaluation case `{normalized_id}` has an unsafe fixture path: {name}")
-        inline_files = raw_inline_files
-    elif fixture is not None and not isinstance(fixture, str):
-        raise EvaluationError(f"evaluation case `{normalized_id}` fixture must be an object or name")
-    if isinstance(fixture, str):
-        raise EvaluationError(
-            f"evaluation case `{normalized_id}` names fixture `{fixture}` without inline files; "
-            "materialize the fixture before using the common Runner"
-        )
-    coexistence_skills = case.get("coexistence_skills", [])
-    if not isinstance(coexistence_skills, list) or not all(
-        isinstance(value, str) for value in coexistence_skills
-    ):
-        raise EvaluationError(f"evaluation case `{normalized_id}` coexistence_skills must be strings")
-    raw_conditions = case.get("conditions")
-    allowed_conditions = None
-    if raw_conditions is not None:
-        if not isinstance(raw_conditions, list) or not all(
-            isinstance(value, str) and value in CONDITIONS for value in raw_conditions
-        ):
-            raise EvaluationError(f"evaluation case `{normalized_id}` has unsupported conditions")
-        allowed_conditions = sorted(set(raw_conditions))
-    normalized = {
-        "id": normalized_id,
-        "prompt": prompt,
-        "input_mode": input_mode,
-        "grading_requirements": requirements,
-        "files": files,
-        "inline_files": inline_files,
-        "coexistence_skills": coexistence_skills,
-    }
-    if allowed_conditions is not None:
-        normalized["allowed_conditions"] = allowed_conditions
-    return normalized
 
 
 def load_case_asset(root: Path, skill: str, evaluation_path: str) -> tuple[Path, dict[str, Any], list[dict[str, Any]]]:
@@ -321,7 +152,7 @@ def load_case_asset(root: Path, skill: str, evaluation_path: str) -> tuple[Path,
     if not asset.is_file():
         raise EvaluationError(f"evaluation asset does not exist: {asset.relative_to(root)}")
     document = read_json(asset)
-    if document.get("skill_name") != skill or not isinstance(document.get("evals"), list):
+    if "skill_name" not in document and "evals" not in document:
         shape = "scenarios" if "scenarios" in document else "legacy {skill, cases}"
         raise EvaluationError(
             f"{asset.relative_to(root)} uses the unsupported {shape} evaluation format; "
@@ -333,21 +164,32 @@ def load_case_asset(root: Path, skill: str, evaluation_path: str) -> tuple[Path,
         if sibling == asset or not sibling.is_file():
             continue
         sibling_document = read_json(sibling)
-        if sibling_document.get("skill_name") != skill or not isinstance(sibling_document.get("evals"), list):
+        if "skill_name" not in sibling_document and "evals" not in sibling_document:
             shape = "scenarios" if "scenarios" in sibling_document else "legacy {skill, cases}"
             raise EvaluationError(
                 f"{sibling.relative_to(root)} uses the unsupported {shape} evaluation format; "
                 "migrate the Skill's complete evals.json and triggers.json set to {skill_name, evals} "
                 "before using a model-backed path"
             )
-    raw_cases = document["evals"]
-    if not isinstance(raw_cases, list):
-        raise EvaluationError(f"evaluation cases must be an array: {asset.relative_to(root)}")
-    cases = [normalize_case(case, evaluation_path) for case in raw_cases]
-    ids = [case["id"] for case in cases]
-    if len(set(ids)) != len(ids):
-        raise EvaluationError(f"evaluation case ids must be unique: {asset.relative_to(root)}")
-    return asset, document, cases
+        try:
+            sibling_normalized = normalize_evaluation_document(
+                sibling_document,
+                expected_skill=skill,
+                definition_kind="routing" if sibling_name == "triggers.json" else "behavior",
+            )
+            validate_evaluation_references(sibling_normalized, root)
+        except EvaluationContractError as error:
+            raise EvaluationError(str(error)) from error
+    try:
+        normalized = normalize_evaluation_document(
+            document,
+            expected_skill=skill,
+            definition_kind="routing" if evaluation_path == "targeted-routing" else "behavior",
+        )
+        validate_evaluation_references(normalized, root)
+    except EvaluationContractError as error:
+        raise EvaluationError(str(error)) from error
+    return asset, normalized, normalized["cases"]
 
 
 def default_conditions(evaluation_path: str) -> list[str]:
@@ -458,7 +300,7 @@ def make_plan(args: argparse.Namespace, root: Path) -> dict[str, Any]:
     selected_cases: list[dict[str, Any]] = []
     asset: Path | None = None
     source = None
-    coexistence_skills: list[str] = []
+    global_coexistence_skills: list[str] = []
     if args.path in MODEL_PATHS:
         if not args.case:
             raise EvaluationError("model-backed evaluation requires at least one --case")
@@ -480,27 +322,22 @@ def make_plan(args: argparse.Namespace, root: Path) -> dict[str, Any]:
                         + ", ".join(unsupported)
                     )
         source = {"file": asset.relative_to(root).as_posix(), "format": "agent-skills"}
-        execution_settings = document.get("execution", {})
-        if not isinstance(execution_settings, dict):
-            raise EvaluationError("evaluation execution settings must be an object")
-        coexistence = execution_settings.get("coexistence_skills", [])
-        if not isinstance(coexistence, list) or not all(isinstance(value, str) for value in coexistence):
-            raise EvaluationError("evaluation execution coexistence_skills must be strings")
-        coexistence_skills = coexistence
-        coexistence_skills = sorted(
-            {
-                *coexistence_skills,
-                *(value for case in selected_cases for value in case["coexistence_skills"]),
-            }
-        )
+        global_coexistence_skills = document["execution"]["coexistence_skills"]
     elif args.case or args.condition:
         raise EvaluationError("static-only does not accept cases or conditions")
 
     executions = [
-        {"case_id": case["id"], "condition": condition}
+        {
+            "case_id": case["id"],
+            "condition": condition,
+            "coexistence_skills": sorted({*global_coexistence_skills, *case["coexistence_skills"]}),
+        }
         for case in selected_cases
         for condition in conditions
     ]
+    coexistence_skills = sorted(
+        {skill for execution in executions for skill in execution["coexistence_skills"]}
+    )
     companion_manifests = {skill: {"files": skill_manifest(root, skill)} for skill in coexistence_skills}
     evaluation_files = {} if asset is None else {asset.relative_to(root).as_posix(): sha256(asset)}
     plan: dict[str, Any] = {
@@ -604,15 +441,30 @@ def validate_plan(plan: dict[str, Any], root: Path) -> dict[str, Any]:
         normalized_files = normalize_case_input_paths(files, case["id"])
         if files != normalized_files:
             raise EvaluationError(f"plan case `{case['id']}` input paths must be normalized")
+        skills = case.get("coexistence_skills")
+        if not isinstance(skills, list) or not all(
+            isinstance(skill, str) and SKILL_NAME.fullmatch(skill) for skill in skills
+        ) or len(skills) != len(set(skills)):
+            raise EvaluationError("plan case coexistence_skills must be unique Skill names")
+    cases_by_id = {case["id"]: case for case in cases}
     executions = plan.get("executions")
     if not isinstance(executions, list):
         raise EvaluationError("plan executions must be an array")
     execution_pairs: list[tuple[str, str]] = []
+    execution_coexistence: set[str] = set()
     for execution in executions:
         case_id = execution.get("case_id") if isinstance(execution, dict) else None
         condition = execution.get("condition") if isinstance(execution, dict) else None
         if case_id not in case_ids or condition not in CONDITIONS:
             raise EvaluationError("plan execution references an invalid case or condition")
+        skills = execution.get("coexistence_skills")
+        if not isinstance(skills, list) or not all(
+            isinstance(skill, str) and SKILL_NAME.fullmatch(skill) for skill in skills
+        ) or skills != sorted(set(skills)):
+            raise EvaluationError("plan execution coexistence_skills must be sorted unique Skill names")
+        if not set(cases_by_id[case_id]["coexistence_skills"]).issubset(skills):
+            raise EvaluationError("plan execution omits a case coexistence Skill")
+        execution_coexistence.update(skills)
         execution_pairs.append((case_id, condition))
     if len(set(execution_pairs)) != len(execution_pairs):
         raise EvaluationError("plan executions must be unique")
@@ -632,6 +484,8 @@ def validate_plan(plan: dict[str, Any], root: Path) -> dict[str, Any]:
         raise EvaluationError("plan coexistence_skills must be an array of Skill names")
     for coexistence_skill in coexistence:
         validate_skill_name(coexistence_skill)
+    if coexistence != sorted(execution_coexistence):
+        raise EvaluationError("plan coexistence_skills do not match its executions")
     if plan.get("estimated_model_calls") != len(executions):
         raise EvaluationError("plan model-call estimate does not match executions")
     candidate = plan.get("candidate")
@@ -835,7 +689,7 @@ def execute_case(
     artifacts: Path,
     plan: dict[str, Any],
     case: dict[str, Any],
-    execution: dict[str, str],
+    execution: dict[str, Any],
     index: int,
     codex_bin: str,
     timeout_seconds: int,
@@ -854,7 +708,7 @@ def execute_case(
         copy_baseline_skill(root, plan["skill"], plan["base"]["commit"], target)
     elif condition != "without-skill":
         raise EvaluationError(f"unsupported execution condition: {condition}")
-    for coexistence_skill in plan.get("coexistence_skills", []):
+    for coexistence_skill in execution["coexistence_skills"]:
         if coexistence_skill != plan["skill"]:
             copy_manifest(
                 root / "skills" / coexistence_skill,
@@ -918,7 +772,7 @@ def execute_case(
         return record
     record["status"] = "completed"
     if plan["path"] == "targeted-routing":
-        installed = sorted({plan["skill"], *plan.get("coexistence_skills", [])})
+        installed = sorted({plan["skill"], *execution["coexistence_skills"]})
         record["routing_observation"] = observed_skill_handlers(events, installed)
     return record
 
