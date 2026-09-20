@@ -122,7 +122,8 @@ The executor received `SKILL.md` and the six scenario inputs, did not receive th
 
 Maintainer review found no critical or non-critical requirement failure.\
 These results accept the candidate for the six mapped responsibilities and boundaries without requiring a baseline or repetition.\
-Deterministic repository validation checks structure, frontmatter, translation notices, links, and repository-local artifact boundaries but does not establish behavior on other models or clients.
+Deterministic repository validation checks public Skill structure and frontmatter, this repository-local Skill's translation notice and artifact boundary, and links.\
+It does not validate this Skill's frontmatter or establish behavior on other models or clients.
 
 ### Iter 2 — 2026-09-21
 
@@ -137,6 +138,7 @@ The executor received the request and fixture, not the requirements checklist.
 All critical requirements passed.\
 One initial CLI invocation using `--ignore-user-config` returned 401 before a model response; the successful run used the normal configuration.\
 The common evaluation Runner currently selects `skills/<name>`, so this repository-local Skill was evaluated in a disposable directory rather than through that Runner.\
+The canonical and Japanese frontmatter were checked directly for required fields, name/directory match, and field lengths.\
 No baseline, repeated run, or other client was needed to resolve this change's acceptance question; those paths remain unverified.
 
 ## Next validation question
