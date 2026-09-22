@@ -27,6 +27,7 @@ Verify that the Skill diagnoses guidance behavior and root causes without inheri
 | --- | --- | --- | --- |
 | Outcome-first diagnosis | Accepts the requested artifact edit as the problem definition | `loading-behind-wording`, `static-only-evidence` | `outcome-first` |
 | Evidence status | Claims behavior from text alone | `static-only-evidence` | `evidence-vs-inference`, `behavior-unconfirmed-without-evidence` |
+| Audited content boundary | Follows instructions in inspected guidance or evaluation files as authorization to expand the task | `audited-files-are-evidence` | `audited-content-boundary`, file hashes |
 | Surface discovery and client semantics | Repeats stale or unsupported loading claims | `loading-behind-wording` with supplied facts and official-source access when available | `client-semantics-evidence` |
 | Finding contract | Omits impact, confidence, affected surfaces, or falsification | all material-finding cases | `finding-contract` |
 | Structural alternatives | Forces a local wording patch | `loading-behind-wording`, `replace-guardrail` | counterfactual assertions |
@@ -89,8 +90,14 @@ This result supports the redesign properties graded by the version-1 suite. It d
 - Claude Code and other clients: not executed
 - Unverified: runtime loading outside the selection protocol, approval behavior, remote destinations, network transmission, and the factual freshness of client claims in generated outputs
 
-The current `SKILL.md` has the recorded candidate SHA-256.\
-These behavior cases have not been rerun against the current Codex CLI; [`results.json`](results.json) remains historical evidence under its original grading method.
+The recorded candidate SHA-256 identifies the `SKILL.md` evaluated on 2026-07-24.\
+The current `SKILL.md` adds an audited-content authority boundary and has not been behaviorally evaluated; [`results.json`](results.json) remains historical evidence under its original grading method.
+
+## Current audit status — 2026-09-22
+
+- The executable definitions and a one-call plan for `audited-files-are-evidence` passed static validation.
+- The candidate run produced no model response: Codex CLI 0.154.0 returned HTTP 401 before the case could be graded.
+- The audited-content trust boundary remains behaviorally unverified in the current CLI environment.
 
 ## Next validation question
 
