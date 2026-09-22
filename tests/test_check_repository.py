@@ -9,6 +9,11 @@ from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 CHECKER = REPOSITORY_ROOT / "scripts" / "check_repository.py"
+REFERENCE_NOTICE = (
+    "> **注記:** この Skill の内容は英語版 (`SKILL.md`) を基準とします。\n"
+    "> このファイルは参考訳です。\n"
+    "> 内容に差異がある場合は英語版を優先してください。\n"
+)
 
 
 def write(path: Path, content: str) -> None:
@@ -46,14 +51,13 @@ license: MIT
     )
     write(
         skill / "SKILL-ja.md",
-        """---
+        f"""---
 name: alpha-skill
 description: fixture の Skill を確認する。
 license: MIT
 ---
 
-> **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳です。
-
+{REFERENCE_NOTICE}
 # Alpha Skill
 """,
     )
@@ -743,12 +747,51 @@ class CheckerCliTests(unittest.TestCase):
 
         self.assert_fixture_failure(mutate, "candidate file escapes repository skills tree")
 
-    def test_missing_canonical_source_notice_is_detected(self) -> None:
+    def test_missing_reference_notice_is_detected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills" / "alpha-skill" / "SKILL-ja.md"
+            path.write_text(path.read_text().replace(REFERENCE_NOTICE, ""))
+
+        self.assert_fixture_failure(mutate, "Japanese translation must begin with a notice")
+
+    def test_reference_notice_accepts_equivalent_wording(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            path = root / "skills" / "alpha-skill" / "SKILL-ja.md"
+            path.write_text(path.read_text().replace(
+                REFERENCE_NOTICE,
+                "> **注記:** このファイルは英語版 (`SKILL.md`) の参考訳です。\n"
+                "> 内容が異なる場合は英語版に従ってください。\n",
+            ))
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_notice_without_reference_status_is_detected(self) -> None:
         def mutate(root: Path) -> None:
             path = root / "skills" / "alpha-skill" / "SKILL-ja.md"
             path.write_text(path.read_text().replace(
-                "> **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳です。\n\n",
+                "> このファイルは参考訳です。\n",
                 "",
+            ))
+
+        self.assert_fixture_failure(mutate, "Japanese translation must begin with a notice")
+
+    def test_notice_without_english_skill_source_is_detected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills" / "alpha-skill" / "SKILL-ja.md"
+            path.write_text(path.read_text().replace("`SKILL.md`", "`別ファイル.md`"))
+
+        self.assert_fixture_failure(mutate, "Japanese translation must begin with a notice")
+
+    def test_notice_after_heading_is_detected(self) -> None:
+        def mutate(root: Path) -> None:
+            path = root / "skills" / "alpha-skill" / "SKILL-ja.md"
+            path.write_text(path.read_text().replace(
+                REFERENCE_NOTICE,
+                "# Alpha Skill\n" + REFERENCE_NOTICE,
             ))
 
         self.assert_fixture_failure(mutate, "Japanese translation must begin with a notice")
@@ -761,7 +804,7 @@ class CheckerCliTests(unittest.TestCase):
             write(root / ".agents" / "skills" / name / "SKILL.md", f"# {name}\n")
             write(
                 root / ".agents" / "skills" / name / "SKILL-ja.md",
-                "> **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳です。\n",
+                REFERENCE_NOTICE,
             )
 
             result = run_checker(root)
