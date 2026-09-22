@@ -1,91 +1,99 @@
 {
-  "skill": "audit-agent-guidance",
-  "version": 2,
-  "run_policy": {
-    "protocol": "Wrap each query as a trigger-selection task: choose matching repository Skills from name and description, open each selected SKILL.md so loading is observable, report the selected names, and do not solve the underlying task.",
-    "count_only_observed_skill_loads": true,
-    "unobservable_result": "not exposed",
-    "repetition_rule": "Run each retained case under the target condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant. Use matched repetitions for baseline and candidate.",
-    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every observed condition. Mixed observed results are unstable, not a pass."
+  "skill_name": "audit-agent-guidance",
+  "execution": {
+    "coexistence_skills": [
+      "design-skill",
+      "design-agent-instructions",
+      "review-changes"
+    ]
   },
-  "cases": [
+  "evals": [
     {
       "id": "cross-surface-system-audit",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Audit our AGENTS.md and Skills as one guidance system. Explain why approval behavior differs across clients, and use loading order, precedence, and execution evidence before proposing revisions."
+      "prompt": "Audit our AGENTS.md and Skills as one guidance system. Explain why approval behavior differs across clients, and use loading order, precedence, and execution evidence before proposing revisions.",
+      "expected_handlers": [
+        "audit-agent-guidance"
+      ]
     },
     {
       "id": "single-skill-root-cause",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Review this existing SKILL.md as durable agent guidance. Go beyond wording issues and identify the root cause of its inconsistent behavior, with evidence and a validation plan."
+      "prompt": "Review this existing SKILL.md as durable agent guidance. Go beyond wording issues and identify the root cause of its inconsistent behavior, with evidence and a validation plan.",
+      "expected_handlers": [
+        "audit-agent-guidance"
+      ]
     },
     {
       "id": "reference-not-applied",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "The agent-facing reference docs contain the right policy, but agents do not follow it. Diagnose whether loading, authority, triggers, or distribution explains the gap."
+      "prompt": "The agent-facing reference docs contain the right policy, but agents do not follow it. Diagnose whether loading, authority, triggers, or distribution explains the gap.",
+      "expected_handlers": [
+        "audit-agent-guidance"
+      ]
     },
     {
       "id": "catalog-trigger-context",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Audit this Skill catalog for trigger conflicts, coexistence problems, and context cost. Separate what the files suggest from what runtime evidence confirms."
+      "prompt": "Audit this Skill catalog for trigger conflicts, coexistence problems, and context cost. Separate what the files suggest from what runtime evidence confirms.",
+      "expected_handlers": [
+        "audit-agent-guidance"
+      ]
     },
     {
       "id": "approval-precedence-surfaces",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Audit approval boundaries and precedence across AGENTS.md, CLAUDE.md, SKILL.md, and relevant client policy surfaces. Compare the current system with structural alternatives."
+      "prompt": "Audit approval boundaries and precedence across AGENTS.md, CLAUDE.md, SKILL.md, and relevant client policy surfaces. Compare the current system with structural alternatives.",
+      "expected_handlers": [
+        "audit-agent-guidance"
+      ]
     },
     {
       "id": "third-party-skill-trust-boundary",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Audit this imported Skill as agent guidance. Trace its remote instructions, scripts, filesystem reads, network destinations, and permission controls as one trust and data-flow boundary before we adopt it."
+      "prompt": "Audit this imported Skill as agent guidance. Trace its remote instructions, scripts, filesystem reads, network destinations, and permission controls as one trust and data-flow boundary before we adopt it.",
+      "expected_handlers": [
+        "audit-agent-guidance"
+      ]
     },
     {
       "id": "diagnosis-before-instruction-redesign",
-      "expected": "should_trigger",
-      "category": "coexistence",
-      "prompt": "Agents sometimes ignore our existing AGENTS.md and CLAUDE.md, but we do not know which files loaded or which policy won. Diagnose the cause and evidence gaps before redesigning the document set."
+      "prompt": "Agents sometimes ignore our existing AGENTS.md and CLAUDE.md, but we do not know which files loaded or which policy won. Diagnose the cause and evidence gaps before redesigning the document set.",
+      "expected_handlers": [
+        "audit-agent-guidance"
+      ]
     },
     {
       "id": "ordinary-pr-review",
-      "expected": "should_not_trigger",
-      "category": "out_of_scope",
-      "prompt": "Review this pull request diff for correctness, missing tests, security issues, and maintainability regressions."
+      "prompt": "Review this pull request diff for correctness, missing tests, security issues, and maintainability regressions.",
+      "expected_handlers": [
+        "review-changes"
+      ]
     },
     {
       "id": "standalone-script-vulnerability-review",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "Perform a line-by-line vulnerability review of this shell script implementation, focusing on command injection, quoting bugs, temporary-file races, and unsafe permissions."
+      "prompt": "Perform a line-by-line vulnerability review of this shell script implementation, focusing on command injection, quoting bugs, temporary-file races, and unsafe permissions.",
+      "expected_handlers": []
     },
     {
       "id": "new-skill-design",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "Design a new Skill for rotating PDF pages, including its name, description, workflow, boundaries, and optional resources."
+      "prompt": "Design a new Skill for rotating PDF pages, including its name, description, workflow, boundaries, and optional resources.",
+      "expected_handlers": [
+        "design-skill"
+      ]
     },
     {
       "id": "new-instruction-set",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "Create a new AGENTS.md and CLAUDE.md document set for a repository that does not have agent instructions yet."
+      "prompt": "Create a new AGENTS.md and CLAUDE.md document set for a repository that does not have agent instructions yet.",
+      "expected_handlers": [
+        "design-agent-instructions"
+      ]
     },
     {
       "id": "standalone-rules-review",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "Review this Codex .rules file as a standalone command policy and tell me whether each allow, prompt, and forbid rule is correct."
+      "prompt": "Review this Codex .rules file as a standalone command policy and tell me whether each allow, prompt, and forbid rule is correct.",
+      "expected_handlers": []
     },
     {
       "id": "design-ready-existing-skill",
-      "expected": "should_not_trigger",
-      "category": "coexistence",
-      "prompt": "The audit is complete and the responsibility boundary is settled. Design the approved split of this existing Skill, including metadata, resources, and evaluation coverage, without implementing it."
+      "prompt": "The audit is complete and the responsibility boundary is settled. Design the approved split of this existing Skill, including metadata, resources, and evaluation coverage, without implementing it.",
+      "expected_handlers": [
+        "design-skill"
+      ]
     }
   ]
 }
