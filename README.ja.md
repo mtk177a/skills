@@ -100,7 +100,9 @@ python3 scripts/run_skill_evaluation.py plan --help
 ```
 
 Runner は編集後に評価を自動実行せず、全ケースを暗黙に選択しません。\
-モデルを使う経路では、実行可能な `{skill_name, evals}` 形式を使用します。旧形式の評価用ファイルは、各 Skill を初めて実質的に変更するときに Skill 単位で移行し、モデル評価に必要な定義がなければ新形式で作成します。\
+モデルを使う経路では、実行可能な `{skill_name, evals}` 形式を使用します。\
+旧形式の評価定義は、Issue #49 でその Skill を監査するとき、または監査以外で初めて実質的に変更するときに、Skill 単位で移行します。\
+モデル評価に必要な定義がなければ新形式で作成します。\
 実行可能な定義がなくても `static-only` は使用できます。\
 経路の選択、実行、採点、簡潔な評価記録の扱いは [docs/ja/evaluation.md](docs/ja/evaluation.md) を参照してください。
 

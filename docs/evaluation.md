@@ -38,17 +38,18 @@ Repeat only when observed instability, conflicting evidence, or a material failu
 Package and distribution checks remain separate from routine Skill behavior evaluation.\
 Run them only when distribution behavior changes.
 
-## Migrate definitions when a Skill is first materially changed
+## Migrate existing definitions per Skill
 
 Existing evaluation assets are not migrated repository-wide.\
-For an existing Skill, migrate its complete `evals.json` and `triggers.json` set the first time a pull request materially changes its `SKILL.md`, runtime resources, discovery behavior, responsibility, safety boundary, or evaluation definition.
+During the Issue #49 audit, migrate each Skill's complete existing `evals.json` and `triggers.json` set in its Sub Issue, whether or not its instructions or runtime behavior change.\
+Outside that audit, migrate a still-legacy set when a pull request first materially changes the Skill's `SKILL.md`, runtime resources, discovery behavior, responsibility, safety boundary, or evaluation definition.
 
-README changes, reference-translation synchronization, meaning-preserving documentation or metadata changes, and legacy-result-only changes do not trigger migration.\
+Outside the audit, README changes, reference-translation synchronization, meaning-preserving documentation or metadata changes, and legacy-result-only changes do not independently trigger migration.\
 If both `evals.json` and `triggers.json` exist for a Skill, migrate both in the same pull request so the Skill never has a mixed executable contract.
 
-If only one of those definition files exists, migrate that file and create another only when the changed responsibility needs its evaluation path.\
-When a material change requires model-backed evaluation and the Skill has no executable definitions, create the needed behavior or routing definitions in the executable format before running the evaluation.\
-If a Skill does not need model-backed evaluation, do not create definitions merely to perform a migration.
+If only one definition file exists, migrate that file and create another only when a changed responsibility needs its evaluation path.\
+When a change requires model-backed evaluation and the Skill has no executable definitions for the affected responsibility, create the needed behavior or routing definitions in the executable format before running the evaluation.\
+Do not create definitions solely to perform a migration.
 
 ### Migration examples
 
@@ -165,7 +166,7 @@ skills/example-skill/evals/
 ```
 
 Migrating definitions does not mean executing every migrated case.\
-After migration, run only the cases required by the responsibility changed in that pull request.
+If the Skill's runtime behavior and discovery are unchanged, use static validation; otherwise run only the cases required by the responsibility changed in that pull request.
 
 Legacy `{skill, cases}` assets, `scenarios` assets, and legacy `triggers.json` remain valid repository history.\
 Model-backed paths reject them before invoking Codex and explain that complete per-Skill migration is required.\
