@@ -682,6 +682,38 @@ def direct_skill_load_observation(events: list[dict[str, Any]], skill: str) -> s
     return "not_exposed"
 
 
+def personal_skill_load_observation(events: list[dict[str, Any]], skill: str) -> str:
+    personal_paths = {
+        str(Path.home() / directory / skill / "SKILL.md").replace("\\", "/")
+        for directory in (".agents/skills", ".codex/skills")
+    }
+
+    def visit(value: Any, key: str = "") -> bool:
+        if isinstance(value, dict):
+            return any(visit(child, str(child_key)) for child_key, child in value.items())
+        if isinstance(value, list):
+            return any(visit(child, key) for child in value)
+        if isinstance(value, str) and key in {"command", "path", "file_path"}:
+            normalized = value.replace("\\", "/")
+            return any(path in normalized for path in personal_paths)
+        return False
+
+    for event in events:
+        if event.get("type") != "item.completed" or not isinstance(event.get("item"), dict):
+            continue
+        item = event["item"]
+        if item.get("type") == "command_execution" and item.get("exit_code") == 0 and visit(item):
+            return "observed"
+        if (
+            item.get("type") in {"file_read", "tool_call"}
+            and item.get("status") not in {"error", "failed"}
+            and not item.get("error")
+            and visit(item)
+        ):
+            return "observed"
+    return "not_exposed"
+
+
 def observed_skill_handlers(events: list[dict[str, Any]], skills: list[str]) -> dict[str, Any]:
     if not any(event.get("type") == "turn.completed" for event in events):
         return {"status": "not_exposed", "handlers": []}
@@ -700,7 +732,9 @@ def build_executor_prompt(plan: dict[str, Any], case: dict[str, Any]) -> str:
     if plan["path"] == "targeted-routing":
         return prompt
     return (
-        f"Use the `{plan['skill']}` Skill available in this environment to handle the request below. "
+        f"For this evaluation, use only the `{plan['skill']}` Skill at "
+        f"`.agents/skills/{plan['skill']}/SKILL.md` in the current evaluation workspace if it is present. "
+        "Do not read or use a same-name Skill outside the current evaluation workspace. "
         "Return only the task result; do not discuss the evaluation.\n\n"
         + prompt
     )
@@ -762,6 +796,33 @@ def isolated_skill_config_args(skill: str, companions: list[str]) -> list[str]:
         "-c", "skills.max_context_tokens=10000",
         "-c", "skills.config=[" + ",".join(disabled) + "]",
     ]
+
+
+def personal_skill_files(skill: str, home: Path | None = None) -> list[Path]:
+    base = home or Path.home()
+    return [base / directory / skill / "SKILL.md" for directory in (".agents/skills", ".codex/skills")]
+
+
+def runtime_skill_read_guard(
+    codex_bin: str,
+    skill: str,
+    *,
+    home: Path | None = None,
+    platform_name: str | None = None,
+    sandbox_exec: Path = Path("/usr/bin/sandbox-exec"),
+) -> tuple[list[str], str, str | None]:
+    existing = [path for path in personal_skill_files(skill, home) if path.is_file()]
+    if not existing:
+        return [codex_bin], "not-required", None
+    platform = platform_name or sys.platform
+    if platform != "darwin" or not sandbox_exec.is_file():
+        return [], "unavailable", "cannot enforce read isolation for a personal same-name Skill"
+    denied = "".join(
+        f"(deny file-read-data (subpath {json.dumps(str(path.parent))}))"
+        for path in existing
+    )
+    profile = "(version 1)(allow default)" + denied
+    return [str(sandbox_exec), "-p", profile, codex_bin], "macos-seatbelt", None
 
 
 def isolated_skill_catalog_check(
@@ -862,8 +923,9 @@ def execute_case(
     config_args = isolated_skill_config_args(plan["skill"], execution["coexistence_skills"])
     if auth_credentials_store is not None:
         config_args.extend(["-c", f'cli_auth_credentials_store="{auth_credentials_store}"'])
+    command_prefix, runtime_guard, runtime_guard_error = runtime_skill_read_guard(codex_bin, plan["skill"])
     command = [
-        codex_bin,
+        *command_prefix,
         "exec",
         "--ephemeral",
         "--json",
@@ -896,6 +958,10 @@ def execute_case(
         record.update({"status": "error", "error": preflight_error, "preflight_failed": True})
         return record
     record["catalog_preflight"] = "pass"
+    record["runtime_read_guard"] = runtime_guard
+    if runtime_guard_error is not None:
+        record.update({"status": "error", "error": runtime_guard_error, "preflight_failed": True})
+        return record
     try:
         result = subprocess.run(
             command,
@@ -925,6 +991,14 @@ def execute_case(
     except EvaluationError as error:
         record.update({"status": "error", "error": str(error)})
         return record
+    if personal_skill_load_observation(events, plan["skill"]) == "observed":
+        record.update({
+            "status": "error",
+            "error": "model read a personal same-name Skill during execution",
+            "runtime_isolation": "fail",
+        })
+        return record
+    record["runtime_isolation"] = "pass"
     record["status"] = "completed"
     if plan["path"] == "targeted-routing":
         installed = sorted({plan["skill"], *execution["coexistence_skills"]})

@@ -481,6 +481,10 @@ Before every model call, the Runner disables plugins and personal copies of the 
 It stops before the model call if a required fixture Skill is absent, duplicated, changed in the catalog, or resolved outside the disposable fixture.\
 The `without-skill` condition likewise stops if the target remains visible.
 
+When a personal copy of the target Skill exists, the Runner also prevents the model execution from reading that copy.\
+If the host cannot enforce that read boundary, the run stops before the model call.\
+If the execution trace nevertheless shows a read of the personal target copy, the run fails and cannot be reported as candidate evidence.
+
 Selected case inputs are copied to `fixture/inputs/<repository-relative-path>`.\
 The Runner checks the source and destination again before copying, so a case input cannot overwrite its repository source.
 

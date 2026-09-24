@@ -18,6 +18,7 @@ from scripts.run_skill_evaluation import (
     observed_skill_handlers,
     isolated_skill_catalog_check,
     isolated_skill_config_args,
+    runtime_skill_read_guard,
     skill_manifest,
     validate_plan,
     verify_file_manifest,
@@ -117,7 +118,10 @@ elif {mode!r} == "non-trigger":
     print(json.dumps({{"type": "item.completed", "item": {{"type": "agent_message", "text": "No Skill was needed."}}}}))
     print(json.dumps({{"type": "turn.completed", "usage": {{"input_tokens": 1, "output_tokens": 1}}}}))
 else:
-    print(json.dumps({{"type": "item.completed", "item": {{"type": "command_execution", "command": "read " + str(skill), "exit_code": 0}}}}))
+    observed_skill = skill
+    if {mode!r} == "personal-runtime":
+        observed_skill = pathlib.Path.home() / ".agents" / "skills" / "alpha-skill" / "SKILL.md"
+    print(json.dumps({{"type": "item.completed", "item": {{"type": "command_execution", "command": "read " + str(observed_skill), "exit_code": 0}}}}))
     if {mode!r} == "beta-read":
         beta = pathlib.Path.cwd() / ".agents" / "skills" / "beta-skill" / "SKILL.md"
         print(json.dumps({{"type": "item.completed", "item": {{"type": "command_execution", "command": "read " + str(beta), "exit_code": 0}}}}))
@@ -204,6 +208,43 @@ def create_manual_run(plan_path: Path, run_path: Path) -> None:
 
 
 class SkillEvaluationRunnerTests(unittest.TestCase):
+    def test_runtime_skill_read_guard_denies_existing_personal_copy_on_macos(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory) / "home"
+            personal = home / ".agents" / "skills" / "alpha-skill" / "SKILL.md"
+            write(personal, "personal copy\n")
+            sandbox_exec = Path(directory) / "sandbox-exec"
+            write(sandbox_exec, "")
+
+            command, status, error = runtime_skill_read_guard(
+                "codex",
+                "alpha-skill",
+                home=home,
+                platform_name="darwin",
+                sandbox_exec=sandbox_exec,
+            )
+
+            self.assertEqual("macos-seatbelt", status)
+            self.assertIsNone(error)
+            self.assertEqual(str(sandbox_exec), command[0])
+            self.assertEqual("-p", command[1])
+            self.assertIn("deny file-read-data", command[2])
+            self.assertIn(str(personal.parent), command[2])
+            self.assertEqual("codex", command[3])
+
+    def test_runtime_skill_read_guard_stops_when_enforcement_is_unavailable(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory) / "home"
+            write(home / ".codex" / "skills" / "alpha-skill" / "SKILL.md", "personal copy\n")
+
+            command, status, error = runtime_skill_read_guard(
+                "codex", "alpha-skill", home=home, platform_name="linux",
+            )
+
+            self.assertEqual([], command)
+            self.assertEqual("unavailable", status)
+            self.assertIn("cannot enforce read isolation", error or "")
+
     def test_repository_local_catalog_rejects_a_second_same_name_skill(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             fixture = Path(directory) / "fixture"
@@ -1858,8 +1899,80 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             self.assertTrue(
                 all('model_reasoning_effort="max"' in invocation["argv"] for invocation in invocations)
             )
-            self.assertTrue(all("Use the `alpha-skill` Skill" in invocation["prompt"] for invocation in invocations))
+            self.assertTrue(
+                all(
+                    "use only the `alpha-skill` Skill at `.agents/skills/alpha-skill/SKILL.md`"
+                    in invocation["prompt"]
+                    for invocation in invocations
+                )
+            )
+            self.assertTrue(
+                all("Do not read or use a same-name Skill outside" in invocation["prompt"] for invocation in invocations)
+            )
             self.assertTrue(all("Do not run this case." not in invocation["prompt"] for invocation in invocations))
+
+    def test_public_run_rejects_personal_same_name_skill_read_during_execution(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            fake_codex = Path(output) / "fake-codex"
+            create_fake_codex(fake_codex, "personal-runtime")
+            plan_path = Path(output) / "plan.json"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "plan",
+                    "--skill",
+                    "alpha-skill",
+                    "--path",
+                    "targeted-candidate",
+                    "--purpose",
+                    "Reject a personal same-name Skill read at runtime.",
+                    "--affected",
+                    "public Skill runtime isolation",
+                    "--case",
+                    "selected",
+                    "--base-ref",
+                    "HEAD",
+                    "--output",
+                    str(plan_path),
+                ],
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            artifacts = Path(output) / "artifacts"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "--codex-bin",
+                    str(fake_codex),
+                    "run",
+                    "--plan",
+                    str(plan_path),
+                    "--artifacts-dir",
+                    str(artifacts),
+                    "--execute",
+                    "--max-model-calls",
+                    "1",
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(1, result.returncode, result.stderr)
+            run = json.loads((artifacts / "run.json").read_text(encoding="utf-8"))
+            execution = run["executions"][0]
+            self.assertEqual("error", execution["status"])
+            self.assertEqual("fail", execution["runtime_isolation"])
+            self.assertIn("personal same-name Skill", execution["error"])
 
     def test_public_run_rejects_personal_same_name_skill_before_model_call(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
