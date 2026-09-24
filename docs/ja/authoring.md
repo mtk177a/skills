@@ -231,9 +231,18 @@ Skill を変更するときは、評価証拠を選ぶ前に、影響を受け�
 
 Codex 固有の Skill を Claude Code や GitHub Copilot 向けに改変するとき、Codex 固有の表現を残すべきかを見直します。
 
-互換性のあるクライアントが同じ指示ファイル名を検出し、同じ優先順位で適用するとは限りません。リンク先の現行公式文書によると、Codex はリポジトリで継続的に適用する指示に `AGENTS.md` を使います。Claude Code は `CLAUDE.md` を読み、インポートまたは橋渡し用のファイルを介して `AGENTS.md` を再利用できます。GitHub Copilot における `AGENTS.md` の対応状況は利用環境によって異なります。そのため、このリポジトリでは、`.github/copilot-instructions.md` を、そのファイルを読み込む一方で `AGENTS.md` を自動では読み込まない環境向けの最小限の橋渡しとして維持します。この挙動が設計に影響する場合は、クライアントの最新文書を再確認します。
+Skill の共通仕様に対応するクライアントでも、指示ファイルの検出方法、読み込み方、優先順位、Skill の選択方法が同じとは限りません。\
+これらの違いが設計に影響する場合は、対象クライアントの最新の公式文書を確認します。\
+公式文書の説明がバージョンや実行環境によって異なる、または十分でない場合は、対象環境での挙動も確かめます。\
+確認した結果はその設計判断に使い、変わり得るクライアントの挙動をこの文書に一覧として維持しません。
 
-このリポジトリでは、共有するリポジトリ指示を `AGENTS.md` で管理します。GitHub Copilot 用の橋渡しファイルは、`AGENTS.md` を読むよう Copilot に指示します。`AGENTS.md` を参照できない場合は、ファイルの変更、コマンドの実行、外部状態の変更を行わずに停止するよう指示します。一部の Copilot 環境は橋渡しファイルを読み込んでも `AGENTS.md` を自動では読み込まないため、そのファイルには、この境界を維持するために必要最小限の安全性・承認ルールだけを重複して記載します。この限定的な代替手段は、指示をクライアントへ届ける仕組みに限った例外であり、共有指示を別に定義するものではありません。`AGENTS.md` の関連ルールを変更するときは、代替手段との整合性を同時に確認して更新します。それ以外の共有ルールをクライアント固有の橋渡しファイルに重複して記載しません。
+このリポジトリでは、共有するリポジトリ指示を `AGENTS.md` で管理します。\
+GitHub Copilot 用の橋渡しファイルは、`AGENTS.md` を読むよう Copilot に指示します。\
+`AGENTS.md` を参照できない場合は、ファイルの変更、コマンドの実行、外部状態の変更を行わずに停止するよう指示します。\
+橋渡しファイルを読み込んでも `AGENTS.md` を自動では読み込まない環境に備え、そのファイルには、この境界を維持するために必要最小限の安全性・承認ルールだけを重複して記載します。\
+この限定的な代替手段は、指示をクライアントへ届ける仕組みに限った例外であり、共有指示を別に定義するものではありません。\
+`AGENTS.md` の関連ルールを変更するときは、代替手段との整合性を同時に確認して更新します。\
+それ以外の共有ルールをクライアント固有の橋渡しファイルに重複して記載しません。
 
 確認すること:
 
@@ -248,4 +257,4 @@ Codex 固有の Skill を Claude Code や GitHub Copilot 向けに改変する�
 その固有性が Skill の核心的な価値である場合のみ、Codex 固有の表現を残します。
 そうでなければ、目的と判断基準を中心に書き直し、実行機構を差し替え可能にします。
 
-情報源: [OpenAI agents guidance](https://developers.openai.com/codex/concepts/customization#agents-guidance)、[Claude Code memory and CLAUDE.md](https://code.claude.com/docs/en/memory)、[GitHub Copilot custom instructions support](https://docs.github.com/en/copilot/reference/custom-instructions-support)。
+クライアントの公式文書: [Codex の `AGENTS.md`](https://learn.chatgpt.com/docs/agent-configuration/agents-md)、[Claude Code のプロジェクト指示](https://code.claude.com/docs/en/memory)、[GitHub Copilot のカスタム指示](https://docs.github.com/en/copilot/reference/custom-instructions-support)。

@@ -172,6 +172,40 @@
       ]
     },
     {
+      "id": "current-authoring-guidance",
+      "title": "Undated authoring claims versus current official guidance",
+      "prompt": "Audit an existing agent Skill for a target client. An undated internal note says that the client requires a Never heading and always loads both AGENTS.md and CLAUDE.md. No client version or execution trace is supplied. The user asks whether to use those statements as audit criteria. Current official client documentation may be available, but its contents have not been provided.",
+      "assertions": [
+        {
+          "id": "current-guidance-evidence",
+          "text": "Does not accept the undated note as a universal requirement; checks applicable current official documentation and best-practice guidance when available, or marks those claims unverified when it is not.",
+          "critical": true
+        },
+        {
+          "id": "evidence-vs-inference",
+          "text": "Separates claims in the note from observed client behavior and identifies the missing version or execution evidence.",
+          "critical": true
+        }
+      ]
+    },
+    {
+      "id": "minor-correction-without-rollout",
+      "title": "A minor guidance correction without rollout risk",
+      "prompt": "Audit an existing instruction document. One sentence incorrectly names an internal checklist, but the intended checklist and its location are unambiguous from the surrounding text. Usage traces show agents already read the intended checklist and complete the task correctly. The owner wants the sentence corrected to prevent future confusion. No loading, permissions, distribution, or safety behavior changes. Recommend whether to correct it and how to validate the correction.",
+      "assertions": [
+        {
+          "id": "evidence-vs-inference",
+          "text": "Separates the observed successful behavior from the possible future confusion inferred from the wording.",
+          "critical": true
+        },
+        {
+          "id": "proportional-rollout",
+          "text": "Recommends validation proportional to the narrow correction without requiring a staged rollout when no rollout risk is identified.",
+          "critical": true
+        }
+      ]
+    },
+    {
       "id": "authority-without-agents",
       "title": "Authoritative guidance without AGENTS.md",
       "prompt": "A repository has no AGENTS.md. Its client configuration explicitly loads POLICY.md, and POLICY.md defines approval boundaries. Audit the guidance behavior and recommend whether any change is needed.",
