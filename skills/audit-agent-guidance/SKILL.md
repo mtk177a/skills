@@ -61,7 +61,7 @@ Choose a structure appropriate to the audit instead of forcing fixed headings. I
 - alternatives and trade-offs, including maintaining or removing guidance when plausible
 - the recommendation and validation method, plus a staged rollout when rollout risk warrants one
 
-For a third-party or executable Skill finding, identify the trust boundary, relevant capability and data path, destination, and deterministic control or missing control. Do not reduce a combined risk to a list of individually acceptable permissions.
+For a third-party or executable Skill finding, identify the trust boundary, relevant capability and data path, destination, and enforceable control or missing control. Do not reduce a combined risk to a list of individually acceptable permissions.
 
 Do not force a change when the evidence shows that current guidance is adequate.
 

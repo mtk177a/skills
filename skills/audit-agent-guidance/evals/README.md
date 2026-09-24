@@ -8,7 +8,7 @@ Verify that the Skill diagnoses guidance behavior and root causes without inheri
 
 - `triggers.json`: executable routing cases for triggers, near misses, and coexistence
 - `evals.json`: executable behavior cases and their grading requirements
-- [`report.json`](report.json): compact report for the selected audited-content case on 2026-09-22
+- [`report.json`](report.json): compact report for the selected third-party capability-chain correction case on 2026-09-24
 - [`results.json`](results.json): legacy historical behavior evidence for the recorded revision
 - this README: coverage, selection guidance, historical evidence, and unverified boundaries
 
@@ -100,6 +100,11 @@ All three changes were evaluated in selected cases on 2026-09-22.\
 
 ## Current audit status — 2026-09-24
 
+- The review correction replaces a determinism-based description with controls that the runtime can enforce.\
+  A one-call candidate run selected `third-party-skill-capability-chain` with Codex CLI 0.155.1, `gpt-5.6-luna`, maximum reasoning, and a read-only sandbox.\
+  The accepted run used the macOS read guard, matched the planned candidate hashes, and passed all seven assigned requirements.\
+  It traced the combined file-read and network-send path, treated preapproved tools as insufficient protection, proposed enforceable controls, and kept actual exfiltration and malicious intent unverified.\
+  The compact report now records this case.
 - The executable definitions and a one-call plan for `audited-files-are-evidence` passed static validation.\
   An initial run with Codex CLI 0.154.0 produced no model response because of HTTP 401.\
   A subsequent runner attempt timed out at 300 seconds and raised an exception while saving partial logs; a direct retry completed.\
@@ -114,8 +119,10 @@ All three changes were evaluated in selected cases on 2026-09-22.\
   The runner now accepts `--auth-credentials-store` and records the selection; the final case used `auto` through that option.\
   A short probe with the same CLI version and no override returned HTTP 401 with a missing authentication header, so the CLI upgrade alone has not been shown to fix authentication.
 - The runner now saves partial JSONL and stderr on timeout and writes a timeout result to `run.json`.\
-  Its ordinary public-Skill path now disables personal same-name Skills and plugins per invocation and verifies the model-visible catalog before every model call.\
-  The final recorded case predates this runner fix and used a temporary wrapper to apply the same isolation settings.
+  Its ordinary public-Skill path disables personal same-name Skills and plugins per invocation and verifies the model-visible catalog before every model call.\
+  When a personal copy of the target Skill exists, the runner now denies reads from that directory before starting Codex and stops before the model call if the host cannot enforce the restriction.\
+  It also rejects a completed run if the execution trace still records a read from the personal copy.\
+  An earlier capability-chain retry that read the older personal copy was excluded; the accepted retry used the enforced read guard.
 - The selected cases do not verify other client versions or actual guidance loading in a target repository.\
   The audited-content case used a read-only sandbox, so it does not establish behavior when writes are permitted.
 
