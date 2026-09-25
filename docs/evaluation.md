@@ -462,6 +462,11 @@ python3 scripts/run_skill_evaluation.py run \
   --max-model-calls 1
 ```
 
+Public Skill runs ignore the user's Codex configuration.\
+If stored credentials require a particular store, pass `--auth-credentials-store auto`, `file`, `keyring`, or `ephemeral` to `run`; the Runner forwards only that setting to Codex and records the selection without recording credentials.\
+Omitting the option leaves Codex's isolated default unchanged.\
+On a timeout, the Runner records the error in `run.json` and saves any partial JSONL and stderr output in the temporary artifacts directory.
+
 `run` refuses to start when the plan exceeds `--max-model-calls` or any recorded candidate, evaluation input, case input, or coexistence Skill manifest has changed, including an executable-mode change.\
 These checks happen before Codex is invoked.\
 The artifacts directory must not already exist.
@@ -471,6 +476,14 @@ The candidate condition copies the manifest-bound working-tree Skill, the baseli
 The baseline condition rejects symlinks and other unsupported Git tree entries, while the without-Skill condition omits the target Skill.\
 Candidate and companion copies exclude `evals/`.\
 Each execution copies only its own planned coexistence Skills; routing observations use that same installed set.
+
+Before every model call, the Runner disables plugins and personal copies of the target and planned coexistence Skills for that invocation, then inspects the model-visible Skill catalog.\
+It stops before the model call if a required fixture Skill is absent, duplicated, changed in the catalog, or resolved outside the disposable fixture.\
+The `without-skill` condition likewise stops if the target remains visible.
+
+When a personal copy of the target Skill exists, the Runner also prevents the model execution from reading that copy.\
+If the host cannot enforce that read boundary, the run stops before the model call.\
+If the execution trace nevertheless shows a read of the personal target copy, the run fails and cannot be reported as candidate evidence.
 
 Selected case inputs are copied to `fixture/inputs/<repository-relative-path>`.\
 The Runner checks the source and destination again before copying, so a case input cannot overwrite its repository source.

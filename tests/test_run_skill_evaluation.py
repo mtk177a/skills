@@ -16,8 +16,9 @@ from scripts.run_skill_evaluation import (
     copy_manifest,
     direct_skill_load_observation,
     observed_skill_handlers,
-    repository_local_catalog_check,
-    repository_local_config_args,
+    isolated_skill_catalog_check,
+    isolated_skill_config_args,
+    runtime_skill_read_guard,
     skill_manifest,
     validate_plan,
     verify_file_manifest,
@@ -87,17 +88,15 @@ if "--version" in sys.argv:
     print("codex-cli fake")
     raise SystemExit(0)
 if sys.argv[1:3] == ["debug", "prompt-input"]:
-    local = pathlib.Path.cwd() / ".agents" / "skills" / "maintain-japanese-references" / "SKILL.md"
-    if local.exists():
+    skills_root = pathlib.Path.cwd() / ".agents" / "skills"
+    catalog = "- `r0` = `" + str(skills_root) + "`"
+    for local in sorted(skills_root.glob("*/SKILL.md")):
         description = next((line.removeprefix("description: ") for line in local.read_text().splitlines() if line.startswith("description: ")), "")
-        catalog = "- `r0` = `" + str(local.parent.parent) + "`\\n- maintain-japanese-references: " + description + " (file: r0/maintain-japanese-references/SKILL.md)"
-    else:
-        catalog = ""
+        catalog += "\\n- " + local.parent.name + ": " + description + " (file: r0/" + local.parent.name + "/SKILL.md)"
     if {mode!r} == "duplicate-catalog":
         catalog += "\\n- `r1` = `/tmp/personal-skills`\\n- maintain-japanese-references: Personal copy. (file: r1/maintain-japanese-references/SKILL.md)"
-    companion = pathlib.Path.cwd() / ".agents" / "skills" / "beta-skill" / "SKILL.md"
-    if companion.exists():
-        catalog += "\\n- beta-skill: Beta companion. (file: r0/beta-skill/SKILL.md)"
+    if {mode!r} == "duplicate-public-catalog":
+        catalog += "\\n- `r1` = `/tmp/personal-skills`\\n- alpha-skill: Personal copy. (file: r1/alpha-skill/SKILL.md)"
     if {mode!r} == "personal-companion":
         catalog += "\\n- `r2` = `/tmp/personal-skills`\\n- write-natural-japanese: Personal copy. (file: r2/write-natural-japanese/SKILL.md)"
     print(json.dumps([{{"role": "developer", "content": [{{"text": catalog}}]}}]))
@@ -108,6 +107,8 @@ state = skill.read_text() if skill.exists() else "without-skill"
 prompt = sys.stdin.read()
 output.write_text("final: " + state, encoding="utf-8")
 if {mode!r} == "timeout":
+    print("partial event before timeout", flush=True)
+    print("partial stderr before timeout", file=sys.stderr, flush=True)
     time.sleep(5)
 elif {mode!r} == "invalid-jsonl":
     print("not-json")
@@ -117,7 +118,10 @@ elif {mode!r} == "non-trigger":
     print(json.dumps({{"type": "item.completed", "item": {{"type": "agent_message", "text": "No Skill was needed."}}}}))
     print(json.dumps({{"type": "turn.completed", "usage": {{"input_tokens": 1, "output_tokens": 1}}}}))
 else:
-    print(json.dumps({{"type": "item.completed", "item": {{"type": "command_execution", "command": "read " + str(skill), "exit_code": 0}}}}))
+    observed_skill = skill
+    if {mode!r} == "personal-runtime":
+        observed_skill = pathlib.Path.home() / ".agents" / "skills" / "alpha-skill" / "SKILL.md"
+    print(json.dumps({{"type": "item.completed", "item": {{"type": "command_execution", "command": "read " + str(observed_skill), "exit_code": 0}}}}))
     if {mode!r} == "beta-read":
         beta = pathlib.Path.cwd() / ".agents" / "skills" / "beta-skill" / "SKILL.md"
         print(json.dumps({{"type": "item.completed", "item": {{"type": "command_execution", "command": "read " + str(beta), "exit_code": 0}}}}))
@@ -204,6 +208,43 @@ def create_manual_run(plan_path: Path, run_path: Path) -> None:
 
 
 class SkillEvaluationRunnerTests(unittest.TestCase):
+    def test_runtime_skill_read_guard_denies_existing_personal_copy_on_macos(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory) / "home"
+            personal = home / ".agents" / "skills" / "alpha-skill" / "SKILL.md"
+            write(personal, "personal copy\n")
+            sandbox_exec = Path(directory) / "sandbox-exec"
+            write(sandbox_exec, "")
+
+            command, status, error = runtime_skill_read_guard(
+                "codex",
+                "alpha-skill",
+                home=home,
+                platform_name="darwin",
+                sandbox_exec=sandbox_exec,
+            )
+
+            self.assertEqual("macos-seatbelt", status)
+            self.assertIsNone(error)
+            self.assertEqual(str(sandbox_exec), command[0])
+            self.assertEqual("-p", command[1])
+            self.assertIn("deny file-read-data", command[2])
+            self.assertIn(str(personal.parent), command[2])
+            self.assertEqual("codex", command[3])
+
+    def test_runtime_skill_read_guard_stops_when_enforcement_is_unavailable(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory) / "home"
+            write(home / ".codex" / "skills" / "alpha-skill" / "SKILL.md", "personal copy\n")
+
+            command, status, error = runtime_skill_read_guard(
+                "codex", "alpha-skill", home=home, platform_name="linux",
+            )
+
+            self.assertEqual([], command)
+            self.assertEqual("unavailable", status)
+            self.assertIn("cannot enforce read isolation", error or "")
+
     def test_repository_local_catalog_rejects_a_second_same_name_skill(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             fixture = Path(directory) / "fixture"
@@ -211,9 +252,9 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                   "---\nname: maintain-japanese-references\ndescription: Fixture candidate.\nlicense: MIT\n---\n")
             fake = Path(directory) / "codex"
             create_fake_codex(fake, "duplicate-catalog")
-            result = repository_local_catalog_check(
+            result = isolated_skill_catalog_check(
                 str(fake), fixture, "maintain-japanese-references", "candidate",
-                repository_local_config_args("maintain-japanese-references", []),
+                isolated_skill_config_args("maintain-japanese-references", []),
             )
             self.assertIn("duplicated", result or "")
 
@@ -224,9 +265,9 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                   "---\nname: maintain-japanese-references\ndescription: Fixture candidate.\nlicense: MIT\n---\n")
             fake = Path(directory) / "codex"
             create_fake_codex(fake, "personal-companion")
-            args = repository_local_config_args("maintain-japanese-references", [])
+            args = isolated_skill_config_args("maintain-japanese-references", [])
             self.assertIn("write-natural-japanese", " ".join(args))
-            result = repository_local_catalog_check(
+            result = isolated_skill_catalog_check(
                 str(fake), fixture, "maintain-japanese-references", "candidate", args,
             )
             self.assertIn("without a fixture copy", result or "")
@@ -266,6 +307,7 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             self.assertTrue((fixture / "skills" / "beta-skill" / "SKILL.md").is_file())
             invocation = json.loads((fixture / "invocation.json").read_text())
             self.assertNotIn("--ignore-user-config", invocation["argv"])
+            self.assertFalse(any(arg.startswith("cli_auth_credentials_store=") for arg in invocation["argv"]))
             self.assertIn("features.plugins=false", invocation["argv"])
 
     def test_repository_local_plan_and_run_reject_companion_fixture_collision(self) -> None:
@@ -894,7 +936,10 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             root = Path(repository)
             create_repository(root)
             for skill in ("beta-skill", "gamma-skill"):
-                write(root / "skills" / skill / "SKILL.md", f"# {skill}\n")
+                write(
+                    root / "skills" / skill / "SKILL.md",
+                    f"---\nname: {skill}\ndescription: Exercises {skill} coexistence.\nlicense: MIT\n---\n",
+                )
             write(
                 root / "skills" / "alpha-skill" / "evals" / "triggers.json",
                 json.dumps(
@@ -1793,6 +1838,8 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                     "--execute",
                     "--max-model-calls",
                     "3",
+                    "--auth-credentials-store",
+                    "auto",
                 ],
                 text=True,
                 capture_output=True,
@@ -1801,6 +1848,7 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             run = json.loads((artifacts / "run.json").read_text(encoding="utf-8"))
             self.assertEqual("pass", run["static_check"]["status"])
+            self.assertEqual("auto", run["auth_credentials_store"])
             self.assertEqual(
                 ["candidate", "baseline", "without-skill"],
                 [execution["condition"] for execution in run["executions"]],
@@ -1837,6 +1885,11 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             )
             self.assertTrue(all("--ephemeral" in invocation["argv"] for invocation in invocations))
             self.assertTrue(all("--json" in invocation["argv"] for invocation in invocations))
+            self.assertTrue(all("--ignore-user-config" in invocation["argv"] for invocation in invocations))
+            self.assertTrue(all("features.plugins=false" in invocation["argv"] for invocation in invocations))
+            self.assertTrue(all("skills.config=[" in " ".join(invocation["argv"]) for invocation in invocations))
+            self.assertTrue(all('cli_auth_credentials_store="auto"' in invocation["argv"] for invocation in invocations))
+            self.assertTrue(all(execution["catalog_preflight"] == "pass" for execution in run["executions"]))
             self.assertTrue(
                 all(
                     invocation["argv"][invocation["argv"].index("--model") + 1] == "gpt-5.6-luna"
@@ -1846,8 +1899,145 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             self.assertTrue(
                 all('model_reasoning_effort="max"' in invocation["argv"] for invocation in invocations)
             )
-            self.assertTrue(all("Use the `alpha-skill` Skill" in invocation["prompt"] for invocation in invocations))
+            self.assertTrue(
+                all(
+                    "use only the `alpha-skill` Skill at `.agents/skills/alpha-skill/SKILL.md`"
+                    in invocation["prompt"]
+                    for invocation in invocations
+                )
+            )
+            self.assertTrue(
+                all("Do not read or use a same-name Skill outside" in invocation["prompt"] for invocation in invocations)
+            )
             self.assertTrue(all("Do not run this case." not in invocation["prompt"] for invocation in invocations))
+
+    def test_public_run_rejects_personal_same_name_skill_read_during_execution(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            fake_codex = Path(output) / "fake-codex"
+            create_fake_codex(fake_codex, "personal-runtime")
+            plan_path = Path(output) / "plan.json"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "plan",
+                    "--skill",
+                    "alpha-skill",
+                    "--path",
+                    "targeted-candidate",
+                    "--purpose",
+                    "Reject a personal same-name Skill read at runtime.",
+                    "--affected",
+                    "public Skill runtime isolation",
+                    "--case",
+                    "selected",
+                    "--base-ref",
+                    "HEAD",
+                    "--output",
+                    str(plan_path),
+                ],
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            artifacts = Path(output) / "artifacts"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "--codex-bin",
+                    str(fake_codex),
+                    "run",
+                    "--plan",
+                    str(plan_path),
+                    "--artifacts-dir",
+                    str(artifacts),
+                    "--execute",
+                    "--max-model-calls",
+                    "1",
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(1, result.returncode, result.stderr)
+            run = json.loads((artifacts / "run.json").read_text(encoding="utf-8"))
+            execution = run["executions"][0]
+            self.assertEqual("error", execution["status"])
+            self.assertEqual("fail", execution["runtime_isolation"])
+            self.assertIn("personal same-name Skill", execution["error"])
+
+    def test_public_run_rejects_personal_same_name_skill_before_model_call(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            fake_codex = Path(output) / "fake-codex"
+            create_fake_codex(fake_codex, "duplicate-public-catalog")
+            plan_path = Path(output) / "plan.json"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "plan",
+                    "--skill",
+                    "alpha-skill",
+                    "--path",
+                    "targeted-candidate",
+                    "--purpose",
+                    "Reject a personal same-name Skill.",
+                    "--affected",
+                    "public Skill isolation",
+                    "--case",
+                    "selected",
+                    "--base-ref",
+                    "HEAD",
+                    "--output",
+                    str(plan_path),
+                ],
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            artifacts = Path(output) / "artifacts"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--root",
+                    str(root),
+                    "--codex-bin",
+                    str(fake_codex),
+                    "run",
+                    "--plan",
+                    str(plan_path),
+                    "--artifacts-dir",
+                    str(artifacts),
+                    "--execute",
+                    "--max-model-calls",
+                    "1",
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(1, result.returncode, result.stderr)
+            run = json.loads((artifacts / "run.json").read_text(encoding="utf-8"))
+            execution = run["executions"][0]
+            self.assertEqual("error", execution["status"])
+            self.assertTrue(execution["preflight_failed"])
+            self.assertIn("duplicated", execution["error"])
+            fixture = artifacts / execution["artifact_directory"] / "fixture"
+            self.assertFalse((fixture / "invocation.json").exists())
 
     def test_report_previews_then_writes_compact_change_scoped_record(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
@@ -2023,6 +2213,10 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 run = json.loads((artifacts / "run.json").read_text(encoding="utf-8"))
                 self.assertEqual("error", run["executions"][0]["status"])
                 self.assertIn(expected_error, run["executions"][0]["error"])
+                if mode == "timeout":
+                    execution = artifacts / run["executions"][0]["artifact_directory"]
+                    self.assertIn("partial event before timeout", (execution / "events.jsonl").read_text())
+                    self.assertIn("partial stderr before timeout", (execution / "stderr.txt").read_text())
 
     def test_routing_does_not_infer_skill_load_from_output_wording(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:

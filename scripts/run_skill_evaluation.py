@@ -682,6 +682,38 @@ def direct_skill_load_observation(events: list[dict[str, Any]], skill: str) -> s
     return "not_exposed"
 
 
+def personal_skill_load_observation(events: list[dict[str, Any]], skill: str) -> str:
+    personal_paths = {
+        str(Path.home() / directory / skill / "SKILL.md").replace("\\", "/")
+        for directory in (".agents/skills", ".codex/skills")
+    }
+
+    def visit(value: Any, key: str = "") -> bool:
+        if isinstance(value, dict):
+            return any(visit(child, str(child_key)) for child_key, child in value.items())
+        if isinstance(value, list):
+            return any(visit(child, key) for child in value)
+        if isinstance(value, str) and key in {"command", "path", "file_path"}:
+            normalized = value.replace("\\", "/")
+            return any(path in normalized for path in personal_paths)
+        return False
+
+    for event in events:
+        if event.get("type") != "item.completed" or not isinstance(event.get("item"), dict):
+            continue
+        item = event["item"]
+        if item.get("type") == "command_execution" and item.get("exit_code") == 0 and visit(item):
+            return "observed"
+        if (
+            item.get("type") in {"file_read", "tool_call"}
+            and item.get("status") not in {"error", "failed"}
+            and not item.get("error")
+            and visit(item)
+        ):
+            return "observed"
+    return "not_exposed"
+
+
 def observed_skill_handlers(events: list[dict[str, Any]], skills: list[str]) -> dict[str, Any]:
     if not any(event.get("type") == "turn.completed" for event in events):
         return {"status": "not_exposed", "handlers": []}
@@ -700,7 +732,9 @@ def build_executor_prompt(plan: dict[str, Any], case: dict[str, Any]) -> str:
     if plan["path"] == "targeted-routing":
         return prompt
     return (
-        f"Use the `{plan['skill']}` Skill available in this environment to handle the request below. "
+        f"For this evaluation, use only the `{plan['skill']}` Skill at "
+        f"`.agents/skills/{plan['skill']}/SKILL.md` in the current evaluation workspace if it is present. "
+        "Do not read or use a same-name Skill outside the current evaluation workspace. "
         "Return only the task result; do not discuss the evaluation.\n\n"
         + prompt
     )
@@ -750,7 +784,7 @@ def codex_version(codex_bin: str) -> str:
     return (result.stdout.strip() or result.stderr.strip() or "unavailable").splitlines()[0]
 
 
-def repository_local_config_args(skill: str, companions: list[str]) -> list[str]:
+def isolated_skill_config_args(skill: str, companions: list[str]) -> list[str]:
     names = sorted({skill, *companions, *REPOSITORY_LOCAL_COMPANIONS.get(skill, set())})
     disabled = [
         f'{{path={json.dumps(str(Path.home() / directory / name / "SKILL.md"))},enabled=false}}'
@@ -764,7 +798,34 @@ def repository_local_config_args(skill: str, companions: list[str]) -> list[str]
     ]
 
 
-def repository_local_catalog_check(
+def personal_skill_files(skill: str, home: Path | None = None) -> list[Path]:
+    base = home or Path.home()
+    return [base / directory / skill / "SKILL.md" for directory in (".agents/skills", ".codex/skills")]
+
+
+def runtime_skill_read_guard(
+    codex_bin: str,
+    skill: str,
+    *,
+    home: Path | None = None,
+    platform_name: str | None = None,
+    sandbox_exec: Path = Path("/usr/bin/sandbox-exec"),
+) -> tuple[list[str], str, str | None]:
+    existing = [path for path in personal_skill_files(skill, home) if path.is_file()]
+    if not existing:
+        return [codex_bin], "not-required", None
+    platform = platform_name or sys.platform
+    if platform != "darwin" or not sandbox_exec.is_file():
+        return [], "unavailable", "cannot enforce read isolation for a personal same-name Skill"
+    denied = "".join(
+        f"(deny file-read-data (subpath {json.dumps(str(path.parent))}))"
+        for path in existing
+    )
+    profile = "(version 1)(allow default)" + denied
+    return [str(sandbox_exec), "-p", profile, codex_bin], "macos-seatbelt", None
+
+
+def isolated_skill_catalog_check(
     codex_bin: str,
     fixture: Path,
     skill: str,
@@ -826,6 +887,7 @@ def execute_case(
     index: int,
     codex_bin: str,
     timeout_seconds: int,
+    auth_credentials_store: str | None,
 ) -> dict[str, Any]:
     condition = execution["condition"]
     safe_case_id = "".join(character if character.isalnum() or character in "-_" else "_" for character in case["id"])
@@ -858,9 +920,12 @@ def execute_case(
     prompt = build_executor_prompt(plan, case)
     final_output = directory / "last-message.txt"
     local_source = plan.get("skill_source", "public") == "repository-local"
-    config_args = repository_local_config_args(plan["skill"], execution["coexistence_skills"]) if local_source else []
+    config_args = isolated_skill_config_args(plan["skill"], execution["coexistence_skills"])
+    if auth_credentials_store is not None:
+        config_args.extend(["-c", f'cli_auth_credentials_store="{auth_credentials_store}"'])
+    command_prefix, runtime_guard, runtime_guard_error = runtime_skill_read_guard(codex_bin, plan["skill"])
     command = [
-        codex_bin,
+        *command_prefix,
         "exec",
         "--ephemeral",
         "--json",
@@ -885,15 +950,18 @@ def execute_case(
         "condition": condition,
         "artifact_directory": relative_directory.as_posix(),
     }
-    if local_source:
-        preflight_error = repository_local_catalog_check(
-            codex_bin, fixture, plan["skill"], condition, config_args,
-            execution["coexistence_skills"],
-        )
-        if preflight_error is not None:
-            record.update({"status": "error", "error": preflight_error, "preflight_failed": True})
-            return record
-        record["catalog_preflight"] = "pass"
+    preflight_error = isolated_skill_catalog_check(
+        codex_bin, fixture, plan["skill"], condition, config_args,
+        execution["coexistence_skills"],
+    )
+    if preflight_error is not None:
+        record.update({"status": "error", "error": preflight_error, "preflight_failed": True})
+        return record
+    record["catalog_preflight"] = "pass"
+    record["runtime_read_guard"] = runtime_guard
+    if runtime_guard_error is not None:
+        record.update({"status": "error", "error": runtime_guard_error, "preflight_failed": True})
+        return record
     try:
         result = subprocess.run(
             command,
@@ -904,8 +972,10 @@ def execute_case(
             cwd=fixture,
         )
     except subprocess.TimeoutExpired as error:
-        (directory / "events.jsonl").write_text(error.stdout or "", encoding="utf-8")
-        (directory / "stderr.txt").write_text(error.stderr or "", encoding="utf-8")
+        stdout = error.stdout.decode("utf-8", errors="replace") if isinstance(error.stdout, bytes) else error.stdout or ""
+        stderr = error.stderr.decode("utf-8", errors="replace") if isinstance(error.stderr, bytes) else error.stderr or ""
+        (directory / "events.jsonl").write_text(stdout, encoding="utf-8")
+        (directory / "stderr.txt").write_text(stderr, encoding="utf-8")
         record.update({"status": "error", "error": "timeout"})
         return record
     except OSError as error:
@@ -921,6 +991,14 @@ def execute_case(
     except EvaluationError as error:
         record.update({"status": "error", "error": str(error)})
         return record
+    if personal_skill_load_observation(events, plan["skill"]) == "observed":
+        record.update({
+            "status": "error",
+            "error": "model read a personal same-name Skill during execution",
+            "runtime_isolation": "fail",
+        })
+        return record
+    record["runtime_isolation"] = "pass"
     record["status"] = "completed"
     if plan["path"] == "targeted-routing":
         installed = sorted({plan["skill"], *execution["coexistence_skills"]})
@@ -955,6 +1033,7 @@ def command_run(args: argparse.Namespace, root: Path, codex_bin: str) -> int:
         "plan_digest": plan["plan_digest"],
         "plan": plan,
         "client": codex_version(codex_bin),
+        "auth_credentials_store": args.auth_credentials_store,
         "environment": plan["environment"],
         "static_check": run_static_check(root, artifacts, plan["skill"]),
         "executions": [],
@@ -970,6 +1049,7 @@ def command_run(args: argparse.Namespace, root: Path, codex_bin: str) -> int:
             index,
             codex_bin,
             args.timeout_seconds,
+            args.auth_credentials_store,
         )
         run["executions"].append(execution_record)
         if execution_record.get("preflight_failed"):
@@ -1202,7 +1282,7 @@ def make_report(
             }
         )
     summary_status = aggregate_status(results, static_status)
-    return {
+    report = {
         "schema_version": REPORT_VERSION,
         "skill": plan["skill"],
         "skill_source": plan.get("skill_source", "public"),
@@ -1231,6 +1311,9 @@ def make_report(
         "stopping_reason": stopping_reason,
         "unverified": unverified,
     }
+    if run.get("auth_credentials_store") is not None:
+        report["environment"]["auth_credentials_store"] = run["auth_credentials_store"]
+    return report
 
 
 def command_report(args: argparse.Namespace, root: Path) -> int:
@@ -1279,6 +1362,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--execute", action="store_true")
     run.add_argument("--max-model-calls", type=int, required=True)
     run.add_argument("--timeout-seconds", type=int, default=300)
+    run.add_argument("--auth-credentials-store", choices=("auto", "file", "keyring", "ephemeral"))
 
     report = subparsers.add_parser("report", help="preview or write a compact evaluation report")
     report.add_argument("--run", type=Path, required=True)
