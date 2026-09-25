@@ -918,7 +918,7 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             self.assertEqual(canonical_json(plan) + "\n", plan_path.read_text(encoding="utf-8"))
             self.assertEqual(
                 {
-                    "model": "gpt-5.6-luna",
+                    "model": "gpt-6-luna",
                     "reasoning_effort": "max",
                     "sandbox": "read-only",
                 },
@@ -1892,7 +1892,7 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             self.assertTrue(all(execution["catalog_preflight"] == "pass" for execution in run["executions"]))
             self.assertTrue(
                 all(
-                    invocation["argv"][invocation["argv"].index("--model") + 1] == "gpt-5.6-luna"
+                    invocation["argv"][invocation["argv"].index("--model") + 1] == "gpt-6-luna"
                     for invocation in invocations
                 )
             )
