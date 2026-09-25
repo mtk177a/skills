@@ -447,7 +447,7 @@ The default condition is `candidate`.\
 `baseline-comparison` defaults to `candidate` plus `baseline` and may instead receive explicit `--condition` values, including `without-skill`.\
 Other paths do not accept comparison conditions.
 
-The default model is `gpt-5.6-luna`, the default reasoning effort is `max`, and the default sandbox is `read-only`.\
+The default model is `gpt-6-luna`, the default reasoning effort is `max`, and the default sandbox is `read-only`.\
 Override these inputs explicitly when the evaluation question requires another environment.
 
 ## Execute the approved plan

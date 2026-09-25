@@ -1351,7 +1351,7 @@ def build_parser() -> argparse.ArgumentParser:
     plan.add_argument("--case", action="append")
     plan.add_argument("--condition", action="append", choices=sorted(CONDITIONS))
     plan.add_argument("--base-ref", default="origin/main")
-    plan.add_argument("--model", default="gpt-5.6-luna")
+    plan.add_argument("--model", default="gpt-6-luna")
     plan.add_argument("--reasoning-effort", default="max")
     plan.add_argument("--sandbox", choices=("read-only", "workspace-write"), default="read-only")
     plan.add_argument("--output", type=Path, required=True)

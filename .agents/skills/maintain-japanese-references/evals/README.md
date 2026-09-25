@@ -32,7 +32,7 @@ The new model run selected H, I, J, and K because they directly cover the change
 
 ## Execution and stopping rule
 
-Plan behavior and routing separately with `--skill-source repository-local`, the needed `--case` values, `gpt-5.6-luna`, and `--reasoning-effort max`; inspect the model-call count before `run --execute`.\
+Plan behavior and routing separately with `--skill-source repository-local`, the needed `--case` values, `gpt-6-luna`, and `--reasoning-effort max`; inspect the model-call count before `run --execute`.\
 The Runner binds the candidate, definitions, case files, and companion files by hash, then creates a disposable fixture for each case.\
 For H, I, J, and K maintenance, the fixture commits the previous document text and applies the current text so the executor can inspect a real Git diff.\
 It places the `write-natural-japanese` package only in cases that require the companion; its bundled reference is available there.\
