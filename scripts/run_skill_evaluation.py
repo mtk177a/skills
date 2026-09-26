@@ -808,21 +808,73 @@ def runtime_skill_read_guard(
     skill: str,
     *,
     home: Path | None = None,
-    platform_name: str | None = None,
-    sandbox_exec: Path = Path("/usr/bin/sandbox-exec"),
+    sandbox: str = "read-only",
 ) -> tuple[list[str], str, str | None]:
     existing = [path for path in personal_skill_files(skill, home) if path.is_file()]
     if not existing:
         return [codex_bin], "not-required", None
-    platform = platform_name or sys.platform
-    if platform != "darwin" or not sandbox_exec.is_file():
+    parents = {"read-only": ":read-only", "workspace-write": ":workspace"}
+    if sandbox not in parents:
         return [], "unavailable", "cannot enforce read isolation for a personal same-name Skill"
-    denied = "".join(
-        f"(deny file-read-data (subpath {json.dumps(str(path.parent))}))"
-        for path in existing
-    )
-    profile = "(version 1)(allow default)" + denied
-    return [str(sandbox_exec), "-p", profile, codex_bin], "macos-seatbelt", None
+    # A process-wide Seatbelt wrapper prevents Codex from applying its own sandbox.
+    # Put the denials inside that sandbox instead; never mix --sandbox with profiles.
+    denied = sorted({str(parent) for path in existing for parent in (path.parent, path.resolve().parent)})
+    filesystem = ",".join(f'{json.dumps(path)}="deny"' for path in denied)
+    profile = f'permissions.skill-evaluation={{extends={json.dumps(parents[sandbox])},filesystem={{{filesystem}}}}}'
+    return [
+        codex_bin,
+        "-c", 'default_permissions="skill-evaluation"',
+        "-c", profile,
+        "-c", 'approval_policy="never"',
+    ], "permission-profile", None
+
+
+def runtime_skill_read_check(
+    command_prefix: list[str], fixture: Path, skill: str, sandbox: str,
+    *, home: Path | None = None,
+) -> str | None:
+    """Verify native sandbox enforcement without a model or printing file contents."""
+    existing = [str(path) for path in personal_skill_files(skill, home) if path.is_file()]
+    target_present = (fixture / ".agents" / "skills" / skill / "SKILL.md").is_file()
+    program = """
+import sys, tempfile
+from pathlib import Path
+fixture = Path(sys.argv[1])
+target = fixture / ".agents" / "skills" / sys.argv[2] / "SKILL.md"
+if sys.argv[4] == "present":
+    with target.open("rb") as source:
+        source.read(1)
+else:
+    list((fixture / ".agents" / "skills").iterdir())
+for path in sys.argv[5:]:
+    try:
+        with open(path, "rb") as source:
+            source.read(1)
+    except PermissionError:
+        continue
+    raise SystemExit("personal Skill read was allowed")
+try:
+    with tempfile.TemporaryFile(dir=fixture):
+        pass
+except PermissionError:
+    if sys.argv[3] != "read-only":
+        raise SystemExit("workspace write was denied")
+else:
+    if sys.argv[3] == "read-only":
+        raise SystemExit("read-only workspace write was allowed")
+"""
+    try:
+        result = subprocess.run(
+            [*command_prefix, "sandbox", "-P", "skill-evaluation", "-C", str(fixture),
+             "--", sys.executable, "-c", program, str(fixture), skill, sandbox,
+             "present" if target_present else "absent", *existing],
+            cwd=fixture, text=True, capture_output=True, timeout=30,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return "could not verify native sandbox Skill read isolation"
+    if result.returncode != 0:
+        return "native sandbox could not preserve fixture access, personal Skill denial, and planned write access"
+    return None
 
 
 def isolated_skill_catalog_check(
@@ -923,17 +975,19 @@ def execute_case(
     config_args = isolated_skill_config_args(plan["skill"], execution["coexistence_skills"])
     if auth_credentials_store is not None:
         config_args.extend(["-c", f'cli_auth_credentials_store="{auth_credentials_store}"'])
-    command_prefix, runtime_guard, runtime_guard_error = runtime_skill_read_guard(codex_bin, plan["skill"])
+    command_prefix, runtime_guard, runtime_guard_error = runtime_skill_read_guard(
+        codex_bin, plan["skill"], sandbox=plan["environment"]["sandbox"],
+    )
     command = [
         *command_prefix,
         "exec",
         "--ephemeral",
         "--json",
-        *([] if local_source else ["--ignore-user-config"]),
+        # A legacy sandbox_mode in user config would override the native profile.
+        *([] if local_source and runtime_guard != "permission-profile" else ["--ignore-user-config"]),
         "--ignore-rules",
         "--skip-git-repo-check",
-        "--sandbox",
-        plan["environment"]["sandbox"],
+        *([] if runtime_guard == "permission-profile" else ["--sandbox", plan["environment"]["sandbox"]]),
         "--model",
         plan["environment"]["model"],
         *config_args,
@@ -962,6 +1016,12 @@ def execute_case(
     if runtime_guard_error is not None:
         record.update({"status": "error", "error": runtime_guard_error, "preflight_failed": True})
         return record
+    if runtime_guard == "permission-profile":
+        runtime_guard_error = runtime_skill_read_check(command_prefix, fixture, plan["skill"], plan["environment"]["sandbox"])
+        if runtime_guard_error is not None:
+            record.update({"status": "error", "error": runtime_guard_error, "preflight_failed": True})
+            return record
+        record["runtime_guard_preflight"] = "pass"
     try:
         result = subprocess.run(
             command,
