@@ -481,8 +481,12 @@ Before every model call, the Runner disables plugins and personal copies of the 
 It stops before the model call if a required fixture Skill is absent, duplicated, changed in the catalog, or resolved outside the disposable fixture.\
 The `without-skill` condition likewise stops if the target remains visible.
 
-When a personal copy of the target Skill exists, the Runner also prevents the model execution from reading that copy.\
-If the host cannot enforce that read boundary, the run stops before the model call.\
+When a personal copy of the target Skill exists, the Runner adds native permission-profile denials for its directory and any resolved symlink target.\
+The profile extends `:read-only` or `:workspace` to preserve the planned sandbox; it does not wrap Codex in an additional process sandbox.\
+Profile-backed executions ignore user configuration, including for repository-local Skills, so a legacy `sandbox_mode` cannot override the denials; authentication still uses the existing store and the explicit `--auth-credentials-store` selection.\
+Approval escalation is disabled for that execution, and the Runner never combines the profile with `--sandbox`.\
+Before invoking a model, it uses `codex sandbox` to verify fixture reads, personal Skill read denial, and the planned workspace write behavior without printing file contents.\
+Unsupported profiles, an unavailable enforcement path, or a failed boundary check stop the run before the model call.\
 If the execution trace nevertheless shows a read of the personal target copy, the run fails and cannot be reported as candidate evidence.
 
 Selected case inputs are copied to `fixture/inputs/<repository-relative-path>`.\

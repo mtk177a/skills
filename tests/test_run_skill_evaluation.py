@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts.run_skill_evaluation import (
     EvaluationError,
@@ -18,6 +19,8 @@ from scripts.run_skill_evaluation import (
     observed_skill_handlers,
     isolated_skill_catalog_check,
     isolated_skill_config_args,
+    execute_case,
+    runtime_skill_read_check,
     runtime_skill_read_guard,
     skill_manifest,
     validate_plan,
@@ -208,42 +211,118 @@ def create_manual_run(plan_path: Path, run_path: Path) -> None:
 
 
 class SkillEvaluationRunnerTests(unittest.TestCase):
-    def test_runtime_skill_read_guard_denies_existing_personal_copy_on_macos(self) -> None:
+    def test_runtime_skill_read_guard_uses_one_profile_with_personal_denials(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory) / "home"
             personal = home / ".agents" / "skills" / "alpha-skill" / "SKILL.md"
             write(personal, "personal copy\n")
-            sandbox_exec = Path(directory) / "sandbox-exec"
-            write(sandbox_exec, "")
-
             command, status, error = runtime_skill_read_guard(
                 "codex",
                 "alpha-skill",
                 home=home,
-                platform_name="darwin",
-                sandbox_exec=sandbox_exec,
+                sandbox="workspace-write",
             )
 
-            self.assertEqual("macos-seatbelt", status)
+            self.assertEqual("permission-profile", status)
             self.assertIsNone(error)
-            self.assertEqual(str(sandbox_exec), command[0])
-            self.assertEqual("-p", command[1])
-            self.assertIn("deny file-read-data", command[2])
-            self.assertIn(str(personal.parent), command[2])
-            self.assertEqual("codex", command[3])
+            self.assertEqual("codex", command[0])
+            self.assertNotIn("sandbox-exec", command)
+            self.assertIn('default_permissions="skill-evaluation"', command)
+            self.assertTrue(any('extends=":workspace"' in arg for arg in command))
+            self.assertTrue(any(json.dumps(str(personal.parent)) + '="deny"' in arg for arg in command))
+            self.assertIn('approval_policy="never"', command)
 
-    def test_runtime_skill_read_guard_stops_when_enforcement_is_unavailable(self) -> None:
+    def test_runtime_skill_read_guard_refuses_unsandboxed_personal_reads(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory) / "home"
             write(home / ".codex" / "skills" / "alpha-skill" / "SKILL.md", "personal copy\n")
 
             command, status, error = runtime_skill_read_guard(
-                "codex", "alpha-skill", home=home, platform_name="linux",
+                "codex", "alpha-skill", home=home, sandbox="danger-full-access",
             )
 
             self.assertEqual([], command)
             self.assertEqual("unavailable", status)
             self.assertIn("cannot enforce read isolation", error or "")
+
+    def test_read_only_profile_denies_both_personal_locations_and_symlink_target(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory) / "home"
+            canonical = home / "actual-skill" / "SKILL.md"
+            write(canonical, "personal copy\n")
+            alias = home / ".agents" / "skills" / "alpha-skill" / "SKILL.md"
+            alias.parent.mkdir(parents=True)
+            alias.symlink_to(canonical)
+            other = home / ".codex" / "skills" / "alpha-skill" / "SKILL.md"
+            write(other, "other copy\n")
+            command, status, error = runtime_skill_read_guard("codex", "alpha-skill", home=home)
+            self.assertIsNone(error)
+            self.assertEqual("permission-profile", status)
+            profile = next(arg for arg in command if arg.startswith("permissions.skill-evaluation="))
+            self.assertIn('extends=":read-only"', profile)
+            for path in (alias.parent, canonical.resolve().parent, other.parent):
+                self.assertIn(json.dumps(str(path)) + '="deny"', profile)
+
+    def test_native_read_check_rejects_unsupported_cli_before_a_model_call(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = Path(directory)
+            with patch("scripts.run_skill_evaluation.subprocess.run", return_value=subprocess.CompletedProcess([], 2, "", "unsupported profile")) as run:
+                error = runtime_skill_read_check(["codex"], fixture, "alpha-skill", "read-only", home=fixture)
+            self.assertIn("native sandbox could not preserve", error or "")
+            self.assertEqual(1, run.call_count)
+            self.assertIn("sandbox", run.call_args.args[0])
+            self.assertNotIn("exec", run.call_args.args[0])
+
+    def test_failed_guard_preflight_stops_execution_before_model_invocation(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+            root = Path(repository)
+            create_repository(root)
+            plan_path = Path(output) / "plan.json"
+            create_manual_plan(root, plan_path)
+            plan = json.loads(plan_path.read_text())
+            fake = Path(output) / "fake-codex"
+            create_fake_codex(fake)
+            with (
+                patch("scripts.run_skill_evaluation.runtime_skill_read_guard", return_value=([str(fake)], "permission-profile", None)),
+                patch("scripts.run_skill_evaluation.runtime_skill_read_check", return_value="sandbox probe failed"),
+            ):
+                record = execute_case(root, Path(output) / "artifacts", plan, plan["cases"][0], plan["executions"][0], 1, str(fake), 30, None)
+            self.assertEqual("error", record["status"])
+            self.assertTrue(record["preflight_failed"])
+            self.assertEqual("sandbox probe failed", record["error"])
+            fixture = Path(output) / "artifacts" / record["artifact_directory"] / "fixture"
+            self.assertFalse((fixture / "invocation.json").exists())
+            self.assertFalse((fixture.parent / "events.jsonl").exists())
+
+    def test_profile_execution_preserves_denials_without_legacy_sandbox_overrides(self) -> None:
+        for source in ("public", "repository-local"):
+            with self.subTest(source=source), tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as output:
+                root = Path(repository)
+                create_repository(root)
+                write(root / ".agents" / "skills" / "alpha-skill" / "SKILL.md", (root / "skills" / "alpha-skill" / "SKILL.md").read_text())
+                plan_path = Path(output) / "plan.json"
+                create_manual_plan(root, plan_path)
+                plan = json.loads(plan_path.read_text())
+                plan["skill_source"] = source
+                fake = Path(output) / "fake-codex"
+                create_fake_codex(fake)
+                home = Path(output) / "home"
+                write(home / ".agents" / "skills" / "alpha-skill" / "SKILL.md", "personal copy\n")
+                prefix, status, error = runtime_skill_read_guard(str(fake), "alpha-skill", home=home)
+                with (
+                    patch("scripts.run_skill_evaluation.TRACKED_REPOSITORY_LOCAL_SKILLS", {"alpha-skill"}),
+                    patch("scripts.run_skill_evaluation.runtime_skill_read_guard", return_value=(prefix, status, error)),
+                    patch("scripts.run_skill_evaluation.runtime_skill_read_check", return_value=None),
+                ):
+                    record = execute_case(root, Path(output) / "artifacts", plan, plan["cases"][0], plan["executions"][0], 1, str(fake), 30, "auto")
+                self.assertEqual("completed", record["status"])
+                self.assertEqual("pass", record["runtime_guard_preflight"])
+                fixture = Path(output) / "artifacts" / record["artifact_directory"] / "fixture"
+                argv = json.loads((fixture / "invocation.json").read_text())["argv"]
+                self.assertNotIn("--sandbox", argv)
+                self.assertIn("--ignore-user-config", argv)
+                self.assertIn('default_permissions="skill-evaluation"', argv)
+                self.assertIn('approval_policy="never"', argv)
 
     def test_repository_local_catalog_rejects_a_second_same_name_skill(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
