@@ -2,29 +2,6 @@
 
 Use this reference as a cross-repository design baseline. Discover applicable local instructions instead of assuming a particular root document or directory layout. Local instructions govern their own scope; this guide fills gaps rather than overriding them.
 
-## Start from demonstrated value
-
-A Skill should preserve specialized knowledge, a repeatable workflow, or a fragile operation that the agent would otherwise rediscover or mishandle. Prefer evidence from:
-
-- a completed real task and the corrections needed to make it succeed
-- repeated failures, traces, outputs, review comments, or operational history
-- domain artifacts such as schemas, runbooks, interfaces, and tested scripts
-- baseline runs without the Skill or with the previous version
-
-Do not infer that a requested Skill must exist. If ordinary model behavior already meets the intended outcome reliably, durable instructions may add context cost without adding capability. When behavioral evidence is unavailable, record the proposal as a hypothesis and design the evaluation needed to test it.
-
-## Choose the intervention before the artifact
-
-Compare the relevant options:
-
-- no durable guidance
-- a local instruction, reference, tool, or script
-- update or merge an existing Skill
-- split an overloaded Skill
-- create a new Skill
-
-Treat a Skill as one coherent unit of work. Too narrow a unit forces unnecessary composition and context loading; too broad a unit makes triggering and instructions ambiguous. Prefer updating or merging when the trigger, output contract, and safety boundary remain coherent. Prefer a new or split Skill when those properties differ materially.
-
 ## Design discovery metadata
 
 The Agent Skills format requires a `SKILL.md` with `name` and `description`. Applicable local policy may require additional metadata.
@@ -48,32 +25,6 @@ Keep the standard `name`, `description`, instructions, and bundled resources as 
 - permission, sandbox, hook, or execution-context behavior
 
 Do not add every supported extension to every Skill. Keep the portable metadata draft limited to the common contract and list target-specific additions separately in the implementation handoff. If a client's format requires an extension in the same `SKILL.md`, label the field as target-specific and verify that every other intended client tolerates it. Verify current client semantics before depending on an extension, document the supported target, and keep the core responsibility usable without unrelated client metadata.
-
-## Spend context on what the agent lacks
-
-Assume the agent already knows general software concepts. Include domain facts, non-obvious failure modes, required procedures, and validated defaults that change its behavior.
-
-Use progressive disclosure:
-
-- Keep core decisions and procedures in `SKILL.md`.
-- Put focused, conditionally needed knowledge in `references/`.
-- Put deterministic or repeatedly reconstructed operations in tested `scripts/`.
-- Put distributable templates and output resources in `assets/`.
-- Keep references directly discoverable from `SKILL.md`; avoid reference chains.
-
-Do not bundle a generic guide merely because a reference directory is available. Every file should remove a demonstrated ambiguity, repeated rediscovery, or execution risk.
-
-## Match control to fragility
-
-Use goals, decision criteria, and examples when multiple approaches are valid. Use ordered steps, validators, or narrow scripts when sequence and consistency are safety-critical. A single Skill may mix these levels.
-
-Prefer a clear default with an escape condition over an unranked menu. Use exact output templates only when downstream consumers require exact structure; otherwise state the required information and let the agent adapt the presentation.
-
-## Define material boundaries
-
-Describe inputs, outputs, exclusions, failure handling, authority, and permission boundaries when they affect correct execution.
-
-Do not require `Always`, `Ask first`, and `Never` headings as a universal structure. Use them only when the categories clarify distinct operational behavior. Preserve safety properties across redesigns and verify replacements rather than retaining wording mechanically.
 
 Keep portable Skills independent of unnamed external documents and companion Skills. For an intentionally project-specific Skill, make the dependency and environment explicit.
 
@@ -111,21 +62,6 @@ Choose evaluation depth proportionally:
 State the selected depth and the evidence that would justify escalating to the next level. Do not describe a targeted regression or a variable-output smoke test as empirical tuning unless it actually runs repeated baseline/candidate cycles to resolve observed instability or failure.
 
 There is no universal `/eval` command. Record the exact client workflow, command, script, or manual procedure used, and introduce a wrapper only when it improves repeated execution materially.
-
-## Produce an implementation handoff
-
-A design is ready to implement when it states:
-
-- the selected intervention and rejected alternatives
-- the evidence and unresolved assumptions
-- responsibility, trigger boundary, inputs, outputs, and exclusions
-- metadata and content allocation
-- portable metadata and content, separately listed client-specific additions, plus third-party provenance when applicable
-- required safety, data-flow, and permission properties
-- evaluation coverage, selected depth and escalation conditions, grading method, and acceptance criteria
-- actual target surfaces and migration or rollout needs
-
-The design workflow should stop at this handoff. Editing, dependency changes, policy changes, deployment, and publication follow the authorization rules of the target environment.
 
 ## Canonical sources
 

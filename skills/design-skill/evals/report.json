@@ -1,0 +1,239 @@
+{
+  "schema_version": 2,
+  "skill": "design-skill",
+  "skill_source": "public",
+  "evaluated_on": "2026-09-26",
+  "purpose": "Check conditional guide loading preserves intervention, evaluation, and capability design.",
+  "affected_responsibilities": [
+    "Conditional reference loading and retained design-only handoff"
+  ],
+  "selection": {
+    "path": "targeted-candidate",
+    "cases": [
+      {
+        "id": "requested-skill-with-healthy-baseline",
+        "conditions": [
+          "candidate"
+        ]
+      },
+      {
+        "id": "coverage-based-evaluation",
+        "conditions": [
+          "candidate"
+        ]
+      },
+      {
+        "id": "adapt-third-party-executable-skill",
+        "conditions": [
+          "candidate"
+        ]
+      }
+    ]
+  },
+  "base": {
+    "commit": "41a71383936c6b9bf4c99520dfd311e03b5a1348"
+  },
+  "candidate": {
+    "files": {
+      "SKILL-ja.md": {
+        "mode": "100644",
+        "sha256": "sha256:7326db0294df8ac4947d7d2fd95f33ebaf7e725569aa871e5526f5c828ceef4e"
+      },
+      "SKILL.md": {
+        "mode": "100644",
+        "sha256": "sha256:b029ac6fea8f1944107ded98da2631a4330b721b9c2046fb4caac3363347348f"
+      },
+      "references/authoring-guide.md": {
+        "mode": "100644",
+        "sha256": "sha256:b72deee4a2094cef2fd6bc828be8fd2ce7b17e483f2b6b5a938efa18685eb1e4"
+      }
+    }
+  },
+  "evaluation_inputs": {
+    "evaluation_files": {
+      "skills/design-skill/evals/evals.json": "sha256:13adb1085d6cee4f26c373b888a459d2523cceb1fa055a367346946478127cec"
+    },
+    "case_files": {}
+  },
+  "environment": {
+    "client": "codex-cli 0.155.1",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max",
+    "sandbox": "workspace-write",
+    "auth_credentials_store": "auto"
+  },
+  "checks": {
+    "repository": "pass"
+  },
+  "results": [
+    {
+      "case_id": "requested-skill-with-healthy-baseline",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "outcome-before-artifact",
+          "status": "pass",
+          "evidence": "Identifies accurate three-item summaries as the capability and finds no reusable knowledge or workflow gap in the supplied successes.",
+          "critical": true
+        },
+        {
+          "id": "evidence-status",
+          "status": "pass",
+          "evidence": "Attributes the three baseline successes to the supplied information and explicitly leaves other users and inputs unverified; claims no candidate improvement.",
+          "critical": true
+        },
+        {
+          "id": "intervention-counterfactuals",
+          "status": "pass",
+          "evidence": "Selects the already-successful ordinary workflow without durable guidance; no specialized context or procedure supports a relevant tool, existing-Skill revision, or new Skill.",
+          "critical": false
+        },
+        {
+          "id": "resource-justification",
+          "status": "pass",
+          "evidence": "Adds no resources or implementation surfaces because no demonstrated need exists.",
+          "critical": false
+        },
+        {
+          "id": "evaluation-first",
+          "status": "pass",
+          "evidence": "No extensive authoring or changed Skill behavior is proposed. The supplied successful baselines support stopping, and recurring observed failures trigger reconsideration; no new evaluation is executed or claimed.",
+          "critical": true
+        },
+        {
+          "id": "design-only-handoff",
+          "status": "pass",
+          "evidence": "Returns a no-change decision with no implementation surfaces. The completed stream contains only a target read, and all fixture files retain their planned hashes.",
+          "critical": true
+        },
+        {
+          "id": "additional-requirement",
+          "status": "pass",
+          "evidence": "Explicitly recommends not creating a Skill.",
+          "critical": true
+        }
+      ],
+      "evidence": "All planned requirements passed against the actual response and completed successful fixture reads. Native boundary preflight passed; no personal target read, file change, nested evaluation, or vendor action was observed.",
+      "status": "pass"
+    },
+    {
+      "case_id": "coverage-based-evaluation",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "evidence-status",
+          "status": "pass",
+          "evidence": "Distinguishes inspected adjacent metadata from missing target details and safety criteria; marks unavailable checks unexecuted rather than passed.",
+          "critical": true
+        },
+        {
+          "id": "coherent-responsibility",
+          "status": "pass",
+          "evidence": "Keeps the settled responsibility unchanged, supplies target/neighbor/near-miss inputs and expected outputs, and defines unknown criteria and safety failures as stop conditions.",
+          "critical": true
+        },
+        {
+          "id": "evaluation-first",
+          "status": "pass",
+          "evidence": "Maps trigger collision, changed output, and critical safety failures to cases and observable or deterministic grading, selects static plus targeted regression, and limits repetition to instability or failure.",
+          "critical": true
+        },
+        {
+          "id": "design-only-handoff",
+          "status": "pass",
+          "evidence": "Provides affected instruction/evaluation surfaces and implementation steps without edits or nested evaluations; completed tools only inspect fixture files, whose hashes remain unchanged.",
+          "critical": true
+        },
+        {
+          "id": "additional-requirement",
+          "status": "pass",
+          "evidence": "Explicitly excludes client/model comparison and script execution when no such risk exists; gives no fixed case or repeated-run count.",
+          "critical": true
+        }
+      ],
+      "evidence": "All planned requirements passed against the actual response and completed successful fixture reads. Native boundary preflight passed; no personal target read, file change, nested evaluation, or vendor action was observed.",
+      "status": "pass"
+    },
+    {
+      "case_id": "adapt-third-party-executable-skill",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "outcome-before-artifact",
+          "status": "pass",
+          "evidence": "Requires real release-task examples and a reusable workflow gap; prefers existing release procedures for a one-off task rather than forcing a Skill.",
+          "critical": true
+        },
+        {
+          "id": "evidence-status",
+          "status": "pass",
+          "evidence": "States that upstream files, scripts, task history, and destination facts are absent; conditions the proposal on verification and does not claim adoption or evaluation success.",
+          "critical": true
+        },
+        {
+          "id": "coherent-responsibility",
+          "status": "pass",
+          "evidence": "Bounds explicit release-archive upload to an approved vendor, excludes notes/general deployment/unattended upload, specifies allowlisted files, manifest/hash/destination outputs, and unresolved-input stop conditions.",
+          "critical": true
+        },
+        {
+          "id": "material-boundaries-only",
+          "status": "pass",
+          "evidence": "Uses approval, least-data, redirect, secret-handling, and stop properties relevant to upload, without imposing universal boundary headings.",
+          "critical": false
+        },
+        {
+          "id": "client-specific-metadata-justified",
+          "status": "pass",
+          "evidence": "Keeps standard metadata and portable behavior common while separately designing Codex/Claude invocation, UI, and permission controls; leaves exact keys and compatibility to verified client documentation.",
+          "critical": false
+        },
+        {
+          "id": "third-party-capability-design",
+          "status": "pass",
+          "evidence": "Requires pinned provenance, license, checksums, complete file/reference/dependency scope, local diffs and updates; traces file/env/credential access through archive creation, upload, and redirects; enforces allowlists and keeps adoption blocked.",
+          "critical": true
+        },
+        {
+          "id": "resource-justification",
+          "status": "pass",
+          "evidence": "Conditions a local vendor reference on verified domain detail and update need, and justifies a constrained local uploader by the fragile file-selection and outbound capability path.",
+          "critical": false
+        },
+        {
+          "id": "evaluation-first",
+          "status": "pass",
+          "evidence": "Maps unsafe inputs, unwanted activation, client permissions, redirects, secrets, and outbound data to bounded synthetic/mock checks, selects static plus targeted checks, and repeats only for client divergence or instability.",
+          "critical": true
+        },
+        {
+          "id": "design-only-handoff",
+          "status": "pass",
+          "evidence": "Returns conditional design and ordered implementation steps without copying upstream files, editing the fixture, running evaluations, or contacting the vendor.",
+          "critical": true
+        },
+        {
+          "id": "additional-requirement",
+          "status": "pass",
+          "evidence": "Rejects current adoption until provenance and outbound data flow are resolved, and separates client-specific controls from the portable Skill layer.",
+          "critical": true
+        }
+      ],
+      "evidence": "All planned requirements passed against the actual response and completed successful fixture reads. Native boundary preflight passed; no personal target read, file change, nested evaluation, or vendor action was observed.",
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "status": "pass",
+    "counts": {
+      "error": 0,
+      "fail": 0,
+      "inconclusive": 0,
+      "pass": 3
+    }
+  },
+  "stopping_reason": "All three selected candidate cases and planned requirements passed after native sandbox boundary verification. Direct fixture reads and unchanged files support the design-only boundary. One observation per selected case answers the affected acceptance questions; no additional model calls are warranted.",
+  "unverified": [
+    "Live routing, baseline comparison, repeated-run stability, other clients and platforms, and unselected responsibilities. The evaluation-design case read the guide broadly; exact section-only loading and latency or token improvements are not established."
+  ]
+}

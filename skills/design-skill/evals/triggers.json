@@ -1,73 +1,65 @@
 {
-  "skill": "design-skill",
-  "version": 2,
-  "run_policy": {
-    "protocol": "Present each prompt as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
-    "count_only_observed_skill_loads": true,
-    "unobservable_result": "not exposed",
-    "repetition_rule": "Run each retained case under the target condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant. Use matched repetitions for baseline and candidate.",
-    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every observed condition. Mixed observed results are unstable, not a pass."
-  },
-  "cases": [
+  "skill_name": "design-skill",
+  "evals": [
     {
       "id": "new-skill-or-no-skill",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Before we author a new Skill for recurring release handoffs, decide whether a Skill is actually the right intervention. Use our completed examples, define the responsibility and trigger boundary, and design the evaluation and implementation handoff."
+      "prompt": "Before we author a new Skill for recurring release handoffs, decide whether a Skill is actually the right intervention. Use our completed examples, define the responsibility and trigger boundary, and design the evaluation and implementation handoff.",
+      "expected_handlers": [
+        "design-skill"
+      ]
     },
     {
       "id": "merge-overlapping-skills",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Two Skills both activate for API incident triage. Design whether to merge them or keep separate responsibilities, including metadata, coexistence risks, and evaluation cases."
+      "prompt": "Two Skills both activate for API incident triage. Design whether to merge them or keep separate responsibilities, including metadata, coexistence risks, and evaluation cases.",
+      "expected_handlers": [
+        "design-skill"
+      ]
     },
     {
       "id": "split-overloaded-skill",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "This Skill now handles planning, destructive execution, and post-change validation. Design a coherent split or rescope before anyone edits it."
+      "prompt": "This Skill now handles planning, destructive execution, and post-change validation. Design a coherent split or rescope before anyone edits it.",
+      "expected_handlers": [
+        "design-skill"
+      ]
     },
     {
       "id": "design-from-real-workflow",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Turn this proven data-export workflow and its recurring corrections into an implementation-ready Skill design. Decide which knowledge belongs in instructions, references, scripts, and evals."
+      "prompt": "Turn this proven data-export workflow and its recurring corrections into an implementation-ready Skill design. Decide which knowledge belongs in instructions, references, scripts, and evals.",
+      "expected_handlers": [
+        "design-skill"
+      ]
     },
     {
       "id": "fragile-skill-redesign",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Substantially redesign our migration Skill so fragile steps use a verified script while contextual decisions remain flexible. Define preserved safety properties and the candidate-vs-baseline evaluation."
+      "prompt": "Substantially redesign our migration Skill so fragile steps use a verified script while contextual decisions remain flexible. Define preserved safety properties and the candidate-vs-baseline evaluation.",
+      "expected_handlers": [
+        "design-skill"
+      ]
     },
     {
       "id": "audit-current-guidance",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "Audit why this existing SKILL.md behaves inconsistently across clients. Diagnose loading, precedence, trigger conflicts, and evidence before recommending changes."
+      "prompt": "Audit why this existing SKILL.md behaves inconsistently across clients. Diagnose loading, precedence, trigger conflicts, and evidence before recommending changes.",
+      "expected_handlers": []
     },
     {
       "id": "routine-wording-edit",
-      "expected": "should_not_trigger",
-      "category": "out_of_scope",
-      "prompt": "Fix two typos and simplify one sentence in this SKILL.md without changing its behavior or trigger."
+      "prompt": "Fix two typos and simplify one sentence in this SKILL.md without changing its behavior or trigger.",
+      "expected_handlers": []
     },
     {
       "id": "implement-approved-skill",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "The Skill design is approved. Edit the listed files, add the agreed script, run the specified tests, and report the diff."
+      "prompt": "The Skill design is approved. Edit the listed files, add the agreed script, run the specified tests, and report the diff.",
+      "expected_handlers": []
     },
     {
       "id": "application-change-design",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "Design the database and API changes for adding organization-level billing to this application, including risks and verification."
+      "prompt": "Design the database and API changes for adding organization-level billing to this application, including risks and verification.",
+      "expected_handlers": []
     },
     {
       "id": "tune-description-empirically",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "The Skill responsibility is already settled. Run repeated trigger experiments and tune only its description based on false-positive and false-negative results."
+      "prompt": "The Skill responsibility is already settled. Run repeated trigger experiments and tune only its description based on false-positive and false-negative results.",
+      "expected_handlers": []
     }
   ]
 }

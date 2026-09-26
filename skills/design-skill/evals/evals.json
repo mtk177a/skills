@@ -1,212 +1,338 @@
 {
-  "skill": "design-skill",
-  "version": 2,
-  "baseline": {
-    "required": true,
-    "condition": "Run affected cases against the immediately preceding committed design-skill version, identified by commit or content hash, and use no Skill only when it answers a distinct baseline question.",
-    "raw_artifact_policy": "Keep prior Skill copies, JSONL, and full session output in a temporary directory outside the repository."
-  },
+  "skill_name": "design-skill",
   "execution": {
-    "client": "record at execution time",
-    "model": "record exact model at execution time",
-    "reasoning_effort": "record at execution time",
-    "sandbox": "read-only",
-    "executor_input_fields": [
-      "input"
-    ],
-    "hidden_grading_fields": [
-      "title",
-      "assertions",
-      "additional_requirement"
-    ],
     "coexistence_skills": [
       "audit-agent-guidance",
       "design-changes",
       "implement-changes"
     ]
   },
-  "candidate_assertions": [
-    {
-      "id": "outcome-before-artifact",
-      "critical": true,
-      "statement": "Defines the intended capability and recurring gap before accepting that a new Skill is required."
-    },
-    {
-      "id": "evidence-status",
-      "critical": true,
-      "statement": "Separates observed evidence, inference, assumptions, and unknowns and does not claim behavioral improvement from static plausibility alone."
-    },
-    {
-      "id": "intervention-counterfactuals",
-      "critical": false,
-      "statement": "Compares no guidance, another local intervention, existing-Skill revision, and new or split Skill when relevant."
-    },
-    {
-      "id": "coherent-responsibility",
-      "critical": true,
-      "statement": "Defines a coherent responsibility with explicit trigger boundary, exclusions, inputs, outputs, and failure handling."
-    },
-    {
-      "id": "metadata-trigger-context",
-      "critical": false,
-      "statement": "Places the complete implicit-trigger context in description rather than relying on body-only when-to-use prose."
-    },
-    {
-      "id": "local-authority-portability",
-      "critical": false,
-      "statement": "Discovers and follows applicable local instructions without requiring a particular repository-root document."
-    },
-    {
-      "id": "calibrated-control",
-      "critical": false,
-      "statement": "Matches instruction specificity to task fragility instead of prescribing one detail level for the whole Skill."
-    },
-    {
-      "id": "material-boundaries-only",
-      "critical": false,
-      "statement": "Defines required safety and permission properties without treating Always, Ask first, and Never as mandatory headings."
-    },
-    {
-      "id": "client-specific-metadata-justified",
-      "critical": false,
-      "statement": "Keeps the portable metadata and content contract separate from target-labeled client additions, and adds an extension only for a demonstrated invocation, UI, tool dependency, permission, or execution-context need."
-    },
-    {
-      "id": "third-party-capability-design",
-      "critical": true,
-      "statement": "When adapting third-party or executable material, establishes provenance and complete file scope, traces data access through scripts or tools to outbound destinations, and defines enforceable controls or leaves the design unverified."
-    },
-    {
-      "id": "resource-justification",
-      "critical": false,
-      "statement": "Includes references, scripts, or assets only when they address demonstrated rediscovery, domain context, or execution risk."
-    },
-    {
-      "id": "evaluation-first",
-      "critical": true,
-      "statement": "Before extensive authoring, maps each material claim or change to a plausible failure, a scenario or check, and a grading method, includes only dimensions that address a distinct risk, and states the selected evaluation depth and escalation condition."
-    },
-    {
-      "id": "design-only-handoff",
-      "critical": true,
-      "statement": "Produces an implementation-ready handoff without editing or implementing the target Skill."
-    }
-  ],
-  "assertion_policy": "Grade every assertion assigned to a case. A failed critical assertion fails that case. Record case-by-condition evidence and do not pass an assertion merely because it succeeded in a different case.",
-  "cases": [
+  "evals": [
     {
       "id": "requested-skill-with-healthy-baseline",
       "title": "A requested Skill that may not add value",
-      "input": "A user asks for a Skill that converts short meeting notes into three bullet points. Three baseline runs without a Skill all produce correct, concise summaries, and there is no domain vocabulary, required template, tool, or recurring correction. Design the appropriate intervention.",
+      "prompt": "A user asks for a Skill that converts short meeting notes into three bullet points. Three baseline runs without a Skill all produce correct, concise summaries, and there is no domain vocabulary, required template, tool, or recurring correction. Design the appropriate intervention.",
       "assertions": [
-        "outcome-before-artifact",
-        "evidence-status",
-        "intervention-counterfactuals",
-        "resource-justification",
-        "evaluation-first",
-        "design-only-handoff"
-      ],
-      "execution_overrides": {
-        "sandbox": "workspace-write",
-        "repository": "disposable fixture with observable file hashes before and after"
-      },
-      "additional_requirement": "Do not force a new Skill when the evidence supports no durable guidance."
+        {
+          "id": "outcome-before-artifact",
+          "text": "Defines the intended capability and recurring gap before accepting that a new Skill is required.",
+          "critical": true
+        },
+        {
+          "id": "evidence-status",
+          "text": "Separates observed evidence, inference, assumptions, and unknowns and does not claim behavioral improvement from static plausibility alone.",
+          "critical": true
+        },
+        {
+          "id": "intervention-counterfactuals",
+          "text": "Compares no guidance, another local intervention, existing-Skill revision, and new or split Skill when relevant.",
+          "critical": false
+        },
+        {
+          "id": "resource-justification",
+          "text": "Includes references, scripts, or assets only when they address demonstrated rediscovery, domain context, or execution risk.",
+          "critical": false
+        },
+        {
+          "id": "evaluation-first",
+          "text": "Before extensive authoring, maps each material claim or change to a plausible failure, a scenario or check, and a grading method, includes only dimensions that address a distinct risk, and states the selected evaluation depth and escalation condition.",
+          "critical": true
+        },
+        {
+          "id": "design-only-handoff",
+          "text": "Produces an implementation-ready handoff without editing or implementing the target Skill.",
+          "critical": true
+        },
+        {
+          "id": "additional-requirement",
+          "text": "Do not force a new Skill when the evidence supports no durable guidance.",
+          "critical": true
+        }
+      ]
     },
     {
       "id": "extract-proven-workflow",
       "title": "Design from a proven recurring workflow",
-      "input": "A team has completed four invoice-export tasks. Each required the same private-to-public field mapping, the same deterministic CSV validator, and the same correction that cancelled invoices must be excluded. Design a portable Skill from these artifacts without including customer data.",
+      "prompt": "A team has completed four invoice-export tasks. Each required the same private-to-public field mapping, the same deterministic CSV validator, and the same correction that cancelled invoices must be excluded. Design a portable Skill from these artifacts without including customer data.",
       "assertions": [
-        "outcome-before-artifact",
-        "evidence-status",
-        "coherent-responsibility",
-        "metadata-trigger-context",
-        "calibrated-control",
-        "resource-justification",
-        "evaluation-first",
-        "design-only-handoff"
+        {
+          "id": "outcome-before-artifact",
+          "text": "Defines the intended capability and recurring gap before accepting that a new Skill is required.",
+          "critical": true
+        },
+        {
+          "id": "evidence-status",
+          "text": "Separates observed evidence, inference, assumptions, and unknowns and does not claim behavioral improvement from static plausibility alone.",
+          "critical": true
+        },
+        {
+          "id": "coherent-responsibility",
+          "text": "Defines a coherent responsibility with explicit trigger boundary, exclusions, inputs, outputs, and failure handling.",
+          "critical": true
+        },
+        {
+          "id": "metadata-trigger-context",
+          "text": "Places the complete implicit-trigger context in description rather than relying on body-only when-to-use prose.",
+          "critical": false
+        },
+        {
+          "id": "calibrated-control",
+          "text": "Matches instruction specificity to task fragility instead of prescribing one detail level for the whole Skill.",
+          "critical": false
+        },
+        {
+          "id": "resource-justification",
+          "text": "Includes references, scripts, or assets only when they address demonstrated rediscovery, domain context, or execution risk.",
+          "critical": false
+        },
+        {
+          "id": "evaluation-first",
+          "text": "Before extensive authoring, maps each material claim or change to a plausible failure, a scenario or check, and a grading method, includes only dimensions that address a distinct risk, and states the selected evaluation depth and escalation condition.",
+          "critical": true
+        },
+        {
+          "id": "design-only-handoff",
+          "text": "Produces an implementation-ready handoff without editing or implementing the target Skill.",
+          "critical": true
+        }
       ]
     },
     {
       "id": "overlap-and-coexistence",
       "title": "Merge or split overlapping Skills",
-      "input": "An installed catalog has plan-schema-migration for planning and run-schema-migration for approved execution. A proposed database-migration Skill would cover both and shares trigger phrases with each. Decide whether to add, merge, or keep the existing split and produce a design handoff.",
+      "prompt": "An installed catalog has plan-schema-migration for planning and run-schema-migration for approved execution. A proposed database-migration Skill would cover both and shares trigger phrases with each. Decide whether to add, merge, or keep the existing split and produce a design handoff.",
       "assertions": [
-        "intervention-counterfactuals",
-        "coherent-responsibility",
-        "metadata-trigger-context",
-        "material-boundaries-only",
-        "evaluation-first",
-        "design-only-handoff"
+        {
+          "id": "intervention-counterfactuals",
+          "text": "Compares no guidance, another local intervention, existing-Skill revision, and new or split Skill when relevant.",
+          "critical": false
+        },
+        {
+          "id": "coherent-responsibility",
+          "text": "Defines a coherent responsibility with explicit trigger boundary, exclusions, inputs, outputs, and failure handling.",
+          "critical": true
+        },
+        {
+          "id": "metadata-trigger-context",
+          "text": "Places the complete implicit-trigger context in description rather than relying on body-only when-to-use prose.",
+          "critical": false
+        },
+        {
+          "id": "material-boundaries-only",
+          "text": "Defines required safety and permission properties without treating Always, Ask first, and Never as mandatory headings.",
+          "critical": false
+        },
+        {
+          "id": "evaluation-first",
+          "text": "Before extensive authoring, maps each material claim or change to a plausible failure, a scenario or check, and a grading method, includes only dimensions that address a distinct risk, and states the selected evaluation depth and escalation condition.",
+          "critical": true
+        },
+        {
+          "id": "design-only-handoff",
+          "text": "Produces an implementation-ready handoff without editing or implementing the target Skill.",
+          "critical": true
+        }
       ]
     },
     {
       "id": "fragile-and-contextual-workflow",
       "title": "Mixed degrees of freedom",
-      "input": "A release workflow allows context-dependent changelog grouping, but signing and publishing must run in an exact verified sequence. Design the Skill, resource allocation, safety properties, and evaluations.",
+      "prompt": "A release workflow allows context-dependent changelog grouping, but signing and publishing must run in an exact verified sequence. Design the Skill, resource allocation, safety properties, and evaluations.",
       "assertions": [
-        "coherent-responsibility",
-        "calibrated-control",
-        "material-boundaries-only",
-        "resource-justification",
-        "evaluation-first",
-        "design-only-handoff"
+        {
+          "id": "coherent-responsibility",
+          "text": "Defines a coherent responsibility with explicit trigger boundary, exclusions, inputs, outputs, and failure handling.",
+          "critical": true
+        },
+        {
+          "id": "calibrated-control",
+          "text": "Matches instruction specificity to task fragility instead of prescribing one detail level for the whole Skill.",
+          "critical": false
+        },
+        {
+          "id": "material-boundaries-only",
+          "text": "Defines required safety and permission properties without treating Always, Ask first, and Never as mandatory headings.",
+          "critical": false
+        },
+        {
+          "id": "resource-justification",
+          "text": "Includes references, scripts, or assets only when they address demonstrated rediscovery, domain context, or execution risk.",
+          "critical": false
+        },
+        {
+          "id": "evaluation-first",
+          "text": "Before extensive authoring, maps each material claim or change to a plausible failure, a scenario or check, and a grading method, includes only dimensions that address a distinct risk, and states the selected evaluation depth and escalation condition.",
+          "critical": true
+        },
+        {
+          "id": "design-only-handoff",
+          "text": "Produces an implementation-ready handoff without editing or implementing the target Skill.",
+          "critical": true
+        }
       ]
     },
     {
       "id": "unknown-repository-layout",
       "title": "Portable design in an unfamiliar repository",
-      "input": "Design a new Skill in a repository whose instruction and authoring file names are unknown. The repository can be inspected, but no standard root guidance filename may be assumed.",
+      "prompt": "Design a new Skill in a repository whose instruction and authoring file names are unknown. The repository can be inspected, but no standard root guidance filename may be assumed.",
       "assertions": [
-        "evidence-status",
-        "local-authority-portability",
-        "coherent-responsibility",
-        "evaluation-first",
-        "design-only-handoff"
-      ],
-      "additional_requirement": "Discover applicable local guidance without requesting or requiring a hard-coded repository-root document."
+        {
+          "id": "evidence-status",
+          "text": "Separates observed evidence, inference, assumptions, and unknowns and does not claim behavioral improvement from static plausibility alone.",
+          "critical": true
+        },
+        {
+          "id": "local-authority-portability",
+          "text": "Discovers and follows applicable local instructions without requiring a particular repository-root document.",
+          "critical": false
+        },
+        {
+          "id": "coherent-responsibility",
+          "text": "Defines a coherent responsibility with explicit trigger boundary, exclusions, inputs, outputs, and failure handling.",
+          "critical": true
+        },
+        {
+          "id": "evaluation-first",
+          "text": "Before extensive authoring, maps each material claim or change to a plausible failure, a scenario or check, and a grading method, includes only dimensions that address a distinct risk, and states the selected evaluation depth and escalation condition.",
+          "critical": true
+        },
+        {
+          "id": "design-only-handoff",
+          "text": "Produces an implementation-ready handoff without editing or implementing the target Skill.",
+          "critical": true
+        },
+        {
+          "id": "additional-requirement",
+          "text": "Discover applicable local guidance without requesting or requiring a hard-coded repository-root document.",
+          "critical": true
+        }
+      ]
     },
     {
       "id": "diagnosis-before-redesign",
       "title": "Insufficient evidence for a requested redesign",
-      "input": "A user asks to redesign a Skill because agents sometimes ignore it, but provides only the SKILL.md text. There is no loading evidence, trigger history, trace, client information, or baseline. Produce the next design decision.",
+      "prompt": "A user asks to redesign a Skill because agents sometimes ignore it, but provides only the SKILL.md text. There is no loading evidence, trigger history, trace, client information, or baseline. Produce the next design decision.",
       "assertions": [
-        "outcome-before-artifact",
-        "evidence-status",
-        "intervention-counterfactuals",
-        "evaluation-first",
-        "design-only-handoff"
-      ],
-      "additional_requirement": "Do not present a textual rewrite as a demonstrated behavioral fix; identify the missing diagnostic evidence."
+        {
+          "id": "outcome-before-artifact",
+          "text": "Defines the intended capability and recurring gap before accepting that a new Skill is required.",
+          "critical": true
+        },
+        {
+          "id": "evidence-status",
+          "text": "Separates observed evidence, inference, assumptions, and unknowns and does not claim behavioral improvement from static plausibility alone.",
+          "critical": true
+        },
+        {
+          "id": "intervention-counterfactuals",
+          "text": "Compares no guidance, another local intervention, existing-Skill revision, and new or split Skill when relevant.",
+          "critical": false
+        },
+        {
+          "id": "evaluation-first",
+          "text": "Before extensive authoring, maps each material claim or change to a plausible failure, a scenario or check, and a grading method, includes only dimensions that address a distinct risk, and states the selected evaluation depth and escalation condition.",
+          "critical": true
+        },
+        {
+          "id": "design-only-handoff",
+          "text": "Produces an implementation-ready handoff without editing or implementing the target Skill.",
+          "critical": true
+        },
+        {
+          "id": "additional-requirement",
+          "text": "Do not present a textual rewrite as a demonstrated behavioral fix; identify the missing diagnostic evidence.",
+          "critical": true
+        }
+      ]
     },
     {
       "id": "coverage-based-evaluation",
       "title": "Design evaluation from material risks",
-      "input": "A Skill's responsibility and changed behavior are settled. Its description may collide with one adjacent Skill, and a safety-critical output check can fail. There is no plausible client-specific or script-execution risk. Design the evaluation strategy and implementation handoff.",
+      "prompt": "A Skill's responsibility and changed behavior are settled. Its description may collide with one adjacent Skill, and a safety-critical output check can fail. There is no plausible client-specific or script-execution risk. Design the evaluation strategy and implementation handoff.",
       "assertions": [
-        "evidence-status",
-        "coherent-responsibility",
-        "evaluation-first",
-        "design-only-handoff"
-      ],
-      "additional_requirement": "Do not add unrelated client, script, or repeated-run cases solely to satisfy a standard checklist or target count."
+        {
+          "id": "evidence-status",
+          "text": "Separates observed evidence, inference, assumptions, and unknowns and does not claim behavioral improvement from static plausibility alone.",
+          "critical": true
+        },
+        {
+          "id": "coherent-responsibility",
+          "text": "Defines a coherent responsibility with explicit trigger boundary, exclusions, inputs, outputs, and failure handling.",
+          "critical": true
+        },
+        {
+          "id": "evaluation-first",
+          "text": "Before extensive authoring, maps each material claim or change to a plausible failure, a scenario or check, and a grading method, includes only dimensions that address a distinct risk, and states the selected evaluation depth and escalation condition.",
+          "critical": true
+        },
+        {
+          "id": "design-only-handoff",
+          "text": "Produces an implementation-ready handoff without editing or implementing the target Skill.",
+          "critical": true
+        },
+        {
+          "id": "additional-requirement",
+          "text": "Do not add unrelated client, script, or repeated-run cases solely to satisfy a standard checklist or target count.",
+          "critical": true
+        }
+      ]
     },
     {
       "id": "adapt-third-party-executable-skill",
       "title": "Adapt a third-party Skill with client-specific controls",
-      "input": "Design whether and how to adopt an external release-uploader Skill. Its SKILL.md follows mutable remote instructions, a bundled script reads workspace files and selected environment variables, and it uploads an archive to a vendor endpoint. The upstream revision, license, redirect destination, and local modifications are not yet recorded. Codex and Claude Code are target clients and offer different invocation, permission, and UI metadata. Produce the design decision and implementation handoff without editing files.",
+      "prompt": "Design whether and how to adopt an external release-uploader Skill. Its SKILL.md follows mutable remote instructions, a bundled script reads workspace files and selected environment variables, and it uploads an archive to a vendor endpoint. The upstream revision, license, redirect destination, and local modifications are not yet recorded. Codex and Claude Code are target clients and offer different invocation, permission, and UI metadata. Produce the design decision and implementation handoff without editing files.",
       "assertions": [
-        "outcome-before-artifact",
-        "evidence-status",
-        "coherent-responsibility",
-        "material-boundaries-only",
-        "client-specific-metadata-justified",
-        "third-party-capability-design",
-        "resource-justification",
-        "evaluation-first",
-        "design-only-handoff"
-      ],
-      "additional_requirement": "Do not recommend adoption as complete while provenance or outbound data flow remains unresolved, and do not copy every client extension into the portable Skill layer."
+        {
+          "id": "outcome-before-artifact",
+          "text": "Defines the intended capability and recurring gap before accepting that a new Skill is required.",
+          "critical": true
+        },
+        {
+          "id": "evidence-status",
+          "text": "Separates observed evidence, inference, assumptions, and unknowns and does not claim behavioral improvement from static plausibility alone.",
+          "critical": true
+        },
+        {
+          "id": "coherent-responsibility",
+          "text": "Defines a coherent responsibility with explicit trigger boundary, exclusions, inputs, outputs, and failure handling.",
+          "critical": true
+        },
+        {
+          "id": "material-boundaries-only",
+          "text": "Defines required safety and permission properties without treating Always, Ask first, and Never as mandatory headings.",
+          "critical": false
+        },
+        {
+          "id": "client-specific-metadata-justified",
+          "text": "Keeps the portable metadata and content contract separate from target-labeled client additions, and adds an extension only for a demonstrated invocation, UI, tool dependency, permission, or execution-context need.",
+          "critical": false
+        },
+        {
+          "id": "third-party-capability-design",
+          "text": "When adapting third-party or executable material, establishes provenance and complete file scope, traces data access through scripts or tools to outbound destinations, and defines enforceable controls or leaves the design unverified.",
+          "critical": true
+        },
+        {
+          "id": "resource-justification",
+          "text": "Includes references, scripts, or assets only when they address demonstrated rediscovery, domain context, or execution risk.",
+          "critical": false
+        },
+        {
+          "id": "evaluation-first",
+          "text": "Before extensive authoring, maps each material claim or change to a plausible failure, a scenario or check, and a grading method, includes only dimensions that address a distinct risk, and states the selected evaluation depth and escalation condition.",
+          "critical": true
+        },
+        {
+          "id": "design-only-handoff",
+          "text": "Produces an implementation-ready handoff without editing or implementing the target Skill.",
+          "critical": true
+        },
+        {
+          "id": "additional-requirement",
+          "text": "Do not recommend adoption as complete while provenance or outbound data flow remains unresolved, and do not copy every client extension into the portable Skill layer.",
+          "critical": true
+        }
+      ]
     }
   ]
 }

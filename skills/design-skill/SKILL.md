@@ -14,7 +14,14 @@ license: MIT
 
 ## Evidence
 
-Read `references/authoring-guide.md` completely before making design decisions.
+Use `references/authoring-guide.md` for the details that apply to the design:
+
+- **Design discovery metadata:** when drafting or revising `name` and `description`
+- **Separate portable and client-specific layers:** when client-specific metadata or controls are needed
+- **Review third-party and executable capabilities:** when adapting third-party material or designing executable resources
+- **Design evaluation before extensive instructions:** when defining evaluation inputs, grading, comparison, or escalation
+
+Read the relevant sections rather than requiring the whole guide for every task.
 
 Gather what is available:
 
