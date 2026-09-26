@@ -1,36 +1,32 @@
 {
-  "skill": "clarify-request",
-  "version": 1,
-  "run_policy": {
-    "protocol": "Present each prompt and any supplied conversation context as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
-    "count_only_observed_skill_loads": true,
-    "unobservable_result": "not exposed",
-    "repetition_rule": "Run each affected case once per condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
-    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every case. Mixed observed results are unstable, not a pass."
+  "skill_name": "clarify-request",
+  "execution": {
+    "coexistence_skills": [
+      "design-changes",
+      "implement-changes",
+      "draft-issue",
+      "review-changes",
+      "define-referents",
+      "explore-decision-space"
+    ]
   },
-  "coexistence_skills": [
-    "design-changes",
-    "implement-changes",
-    "draft-issue",
-    "review-changes"
-  ],
-  "cases": [
+  "evals": [
     {
       "id": "ambiguous-change-request",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Improve the production onboarding flow. I have not specified the users, current problem, success criteria, target environment, or acceptable risk. Help me determine what must be clarified before work starts."
+      "prompt": "Improve the production onboarding flow. I have not specified the users, current problem, success criteria, target environment, or acceptable risk. Help me determine what must be clarified before work starts.",
+      "expected_handlers": [
+        "clarify-request"
+      ]
     },
     {
       "id": "explicit-request-organization",
-      "expected": "should_trigger",
-      "category": "merged_scope",
-      "prompt": "Organize this feature idea into a decision-ready request with its intended outcome, completion criteria, constraints, assumptions, non-goals, unresolved items, and next action."
+      "prompt": "Organize this feature idea into a decision-ready request with its intended outcome, completion criteria, constraints, assumptions, non-goals, unresolved items, and next action.",
+      "expected_handlers": [
+        "clarify-request"
+      ]
     },
     {
       "id": "clarification-continuation",
-      "expected": "should_trigger",
-      "category": "continuation",
       "conversation": [
         {
           "role": "user",
@@ -41,31 +37,64 @@
           "content": "Which customer group is in scope, and is this a design request or an authorized migration?"
         }
       ],
-      "prompt": "Enterprise customers are in scope. This is design only, but I have not decided whether existing sessions must remain valid."
+      "prompt": "Enterprise customers are in scope. This is design only, but I have not decided whether existing sessions must remain valid.",
+      "expected_handlers": [
+        "clarify-request"
+      ]
     },
     {
       "id": "understood-change-design",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "The objective, success criteria, constraints, and non-goals are approved. Design the implementation approach, affected boundaries, risks, verification coverage, and stop conditions before editing."
+      "prompt": "The objective, success criteria, constraints, and non-goals are approved. Design the implementation approach, affected boundaries, risks, verification coverage, and stop conditions before editing.",
+      "expected_handlers": [
+        "design-changes"
+      ]
     },
     {
       "id": "approved-implementation",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "The change approach, scope, authorization, and verification method are approved. Implement the code and documentation changes, run the checks, and report the result."
+      "prompt": "The change approach, scope, authorization, and verification method are approved. Implement the code and documentation changes, run the checks, and report the result.",
+      "expected_handlers": [
+        "implement-changes"
+      ]
     },
     {
       "id": "issue-drafting",
-      "expected": "should_not_trigger",
-      "category": "coexistence",
-      "prompt": "The bug report is decision-ready with reproduction steps, expected and actual behavior, environment, and acceptance criteria. Draft an unposted GitHub Issue that follows the repository template."
+      "prompt": "The bug report is decision-ready with reproduction steps, expected and actual behavior, environment, and acceptance criteria. Draft an unposted GitHub Issue that follows the repository template.",
+      "expected_handlers": [
+        "draft-issue"
+      ]
     },
     {
       "id": "diff-review",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "Review the effective pull request diff for actionable correctness, safety, compatibility, verification, maintainability, and performance problems."
+      "prompt": "Review the effective pull request diff for actionable correctness, safety, compatibility, verification, maintainability, and performance problems.",
+      "expected_handlers": [
+        "review-changes"
+      ]
+    },
+    {
+      "id": "explicit-understanding-check",
+      "prompt": "請求書一覧から、現在の絞り込みに一致する全件を CSV にして月末の照合に使いたいです。私の言っている意味が分かりますか？",
+      "expected_handlers": [
+        "clarify-request"
+      ]
+    },
+    {
+      "id": "terminology-preflight",
+      "prompt": "The requested implementation is already understood. Before naming the two data objects, define concrete referents for a request event and its persisted record so the term request cannot collapse them. Return naming constraints only.",
+      "expected_handlers": [
+        "define-referents"
+      ]
+    },
+    {
+      "id": "explore-supported-options",
+      "prompt": "The goal, success criteria, constraints, and authority are clear. Before choosing the costly long-term billing architecture, explore structurally different solution options and their trade-offs; do not design the implementation yet.",
+      "expected_handlers": [
+        "explore-decision-space"
+      ],
+      "fixture": {
+        "files": {
+          "README.md": "# Billing architecture decision\n\nGoal: choose a long-term architecture for subscription billing before committing to an expensive migration.\nSuccess: support both monthly subscriptions and usage-based invoices, reconcile invoices with the existing finance system, and preserve five years of invoice history.\nConstraints: keep the current payment processor, require an audit trail for invoice adjustments, and minimize ongoing operations for a two-person engineering team.\nAuthority: read-only exploration of structurally different options and trade-offs; no vendor selection, purchasing, experiments, or implementation is authorized.\n"
+        }
+      }
     }
   ]
 }

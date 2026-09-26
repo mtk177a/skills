@@ -1,0 +1,200 @@
+{
+  "schema_version": 2,
+  "skill": "clarify-request",
+  "skill_source": "public",
+  "evaluated_on": "2026-09-26",
+  "purpose": "Validate explicit ambiguity and missing-information objective while preserving understanding and completion boundaries after full Japanese translation revision",
+  "affected_responsibilities": [
+    "Ambiguity and missing-information clarification",
+    "Understanding-first and clarification-only completion"
+  ],
+  "selection": {
+    "path": "targeted-candidate",
+    "cases": [
+      {
+        "id": "iterative-provider-clarification-turn-2",
+        "conditions": [
+          "candidate"
+        ]
+      },
+      {
+        "id": "understanding-before-questions",
+        "conditions": [
+          "candidate"
+        ]
+      },
+      {
+        "id": "alignment-complete-stop",
+        "conditions": [
+          "candidate"
+        ]
+      }
+    ]
+  },
+  "base": {
+    "commit": "0f546d99eeb7cad1917e37ab226b305631e101ab"
+  },
+  "candidate": {
+    "files": {
+      "SKILL-ja.md": {
+        "mode": "100644",
+        "sha256": "sha256:54747f377763a2ae4337f5397e3804549bcc6ccbf0b193acdd84d1a10849a8b2"
+      },
+      "SKILL.md": {
+        "mode": "100644",
+        "sha256": "sha256:fecaece772bf6df44794418babd0bfd7ab84baa24319f1489307c1b5064c7ce9"
+      }
+    }
+  },
+  "evaluation_inputs": {
+    "evaluation_files": {
+      "skills/clarify-request/evals/evals.json": "sha256:5e3e7dbefd6731163dd709f8388c694ffb9e82d15e29c3039b363d7ecec9537e"
+    },
+    "case_files": {}
+  },
+  "environment": {
+    "client": "codex-cli 0.155.1",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max",
+    "sandbox": "read-only",
+    "auth_credentials_store": "keyring"
+  },
+  "checks": {
+    "repository": "pass"
+  },
+  "results": [
+    {
+      "case_id": "iterative-provider-clarification-turn-2",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "decision-ready-relative-to-next-workflow",
+          "status": "pass",
+          "evidence": "It preserves design-only scope and seeks the still-material provider-selection responsibility and account-continuity acceptance criteria without requiring a chosen replacement provider or declaring readiness.",
+          "critical": true
+        },
+        {
+          "id": "preserve-clarification-state",
+          "status": "pass",
+          "evidence": "The opening preserves the customer web application, production-provider replacement, existing accounts and sessions, design-only authority, and unselected replacement without inventing constraints.",
+          "critical": true
+        },
+        {
+          "id": "iterate-after-user-answer",
+          "status": "pass",
+          "evidence": "It continues clarification after the partial answer with focused questions about unresolved design scope and continuity criteria.",
+          "critical": true
+        },
+        {
+          "id": "preserve-answers-without-repetition",
+          "status": "pass",
+          "evidence": "It does not re-ask which application, whether sessions must continue, or whether implementation is authorized; it narrows the questions to provider-selection scope and permitted reauthentication or resets.",
+          "critical": true
+        },
+        {
+          "id": "blocking-gap-stop",
+          "status": "pass",
+          "evidence": "It waits for unresolved material scope and continuity decisions and performs no downstream action.",
+          "critical": true
+        },
+        {
+          "id": "authorization-not-assumed",
+          "status": "pass",
+          "evidence": "It explicitly states that implementation is not authorized and adds no external or destructive authority.",
+          "critical": true
+        },
+        {
+          "id": "material-questions-only",
+          "status": "pass",
+          "evidence": "Both questions explain how the answer changes design scope or migration success criteria; no technical implementation choice or fixed global question count is imposed.",
+          "critical": false
+        },
+        {
+          "id": "adaptive-structured-handoff",
+          "status": "pass",
+          "evidence": "It gives the confirmed current understanding and material unresolved questions without declaring a completed handoff, fabricating fields, or adding empty placeholders.",
+          "critical": true
+        },
+        {
+          "id": "stay-out-of-downstream-work",
+          "status": "pass",
+          "evidence": "The completed trace reads only the fixture Skill; it chooses no provider, implementation approach, file boundaries, or verification strategy.",
+          "critical": true
+        },
+        {
+          "id": "case-specific-boundary",
+          "status": "pass",
+          "evidence": "After the supplied second user turn, it continues clarification about remaining provider-selection responsibility and account-continuity acceptance criteria without repeating answered points or declaring premature readiness.",
+          "critical": true
+        }
+      ],
+      "evidence": "The final response and completed read-only trace satisfy all planned requirements.",
+      "status": "pass"
+    },
+    {
+      "case_id": "understanding-before-questions",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "understanding-first",
+          "status": "pass",
+          "evidence": "The response begins by paraphrasing administrator invoice CSV export, active-filter scope, and month-end reconciliation rather than a bare affirmation.",
+          "critical": true
+        },
+        {
+          "id": "material-gap-only",
+          "status": "pass",
+          "evidence": "It separately labels filter types and CSV fields as unspecified and only invites correction of the interpretation; it invents no implementation or completion requirements.",
+          "critical": true
+        },
+        {
+          "id": "no-downstream-action",
+          "status": "pass",
+          "evidence": "It ends at the understanding check; the completed trace reads only the fixture Skill and performs no downstream work.",
+          "critical": true
+        }
+      ],
+      "evidence": "The final response and completed read-only trace satisfy all planned requirements.",
+      "status": "pass"
+    },
+    {
+      "case_id": "alignment-complete-stop",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "self-contained-agreement",
+          "status": "pass",
+          "evidence": "The final agreed request retains administrator audience, month-end purpose, all filtered rows, current column order, UTF-8 CSV, Excel and Google Sheets, and both exclusions.",
+          "critical": true
+        },
+        {
+          "id": "alignment-finished",
+          "status": "pass",
+          "evidence": "It explicitly states that intent alignment is complete and asks no further confirmation or implementation-detail question.",
+          "critical": true
+        },
+        {
+          "id": "wait-for-next-instruction",
+          "status": "pass",
+          "evidence": "The response ends after the agreement and completion statement; the completed trace only reads the Skill and starts no downstream work.",
+          "critical": true
+        }
+      ],
+      "evidence": "The final response and completed read-only trace satisfy all planned requirements.",
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "status": "pass",
+    "counts": {
+      "error": 0,
+      "fail": 0,
+      "inconclusive": 0,
+      "pass": 3
+    }
+  },
+  "stopping_reason": "All three selected candidate cases passed their 16 requirements; source comparison preserves the unchanged English description and remaining instructions, and full translation review preserves meaning and identifiers.",
+  "unverified": [
+    "Unselected behavior and routing cases, live adaptive conversations, other models and clients; prior routing and five-case behavior observations apply to the initial audit candidate only."
+  ]
+}
