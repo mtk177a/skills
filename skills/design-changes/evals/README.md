@@ -198,9 +198,16 @@ Requirements checklist:
 - The existing three behavior cases and nine routing cases were migrated together from the legacy format to the executable `{skill_name, evals}` format; `results.json` remains historical evidence.
 - Two behavior cases were added to examine #37's cause/recovery and compatibility boundaries, which the prior case set did not directly expose.
 - `confirmed-cause-versus-fallback` completed with Codex CLI 0.155.1, `gpt-6-luna`, max reasoning, and a read-only sandbox; direct review passed all three assertions because the output corrected the stale mapping, rejected the invalid placeholder, and conditioned rerun on the observed no-partial-write state and result checks.
-- `current-versus-obsolete-compatibility` completed with Codex CLI 0.155.1, `gpt-6-luna`, medium reasoning, and a read-only sandbox; the three assertions passed, with the compact evidence in [`report.json`](report.json).
+- `current-versus-obsolete-compatibility` completed with Codex CLI 0.155.1, `gpt-6-luna`, medium reasoning, and a read-only sandbox; the three assertions passed, with the compact evidence in the [report at commit `55f496f`](https://github.com/mtk177a/skills/blob/55f496ffb2fb550290ea7bab988a84560936392c/skills/design-changes/evals/report.json).
 - An earlier four-condition attempt reached the Codex API without the required authentication setting and returned 401 before producing model output; it is excluded from behavior evidence.
 - An earlier compatibility attempt timed out after reading the Skill and searching an empty fixture; the revised case explicitly supplies the complete contract context, and the timed-out attempt is excluded from pass evidence.
-- Static inspection and these two selected behavior observations support leaving `SKILL.md` and `SKILL-ja.md` unchanged; no routing case was rerun because the description and adjacent selection boundaries did not change.
-- The English Skill and its Japanese reference were compared for their material scope, authority, risk, verification, and handoff conditions; no meaning difference requiring a translation edit was found.
+- Static inspection and these two selected behavior observations support leaving `SKILL.md` unchanged; no routing case was rerun because its description and adjacent selection boundaries did not change.
+- The initial v2 audit compared the English Skill and Japanese reference for material meaning but incorrectly treated an unchanged English source as sufficient reason to leave the Japanese wording unchanged. The v3 review below supersedes that translation decision.
 - Real application repositories, other clients and models, repeated runs, and unselected behavior or routing cases remain unverified.
+
+## Issue #60 Japanese reference re-review — 2026-09-28
+
+- Audit basis: #49 `監査基準 v3` and the `write-natural-japanese` Skill with its complete wording reference.
+- The English `SKILL.md` remains unchanged. The Japanese reference was read in full and rewritten to replace unnecessary English general terms and source-language sentence structure while preserving the original scope, conditions, certainty, identifiers, and Markdown structure.
+- The current `report.json` records a static-only check of the revised Japanese reference with zero model calls. The earlier model results concern the unchanged English Skill and remain available in the prior report linked above.
+- The translation was checked against every English section and all 13 workflow steps. Model behavior with the revised Japanese reference was not evaluated.

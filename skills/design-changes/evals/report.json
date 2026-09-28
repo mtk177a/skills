@@ -3,20 +3,13 @@
   "skill": "design-changes",
   "skill_source": "public",
   "evaluated_on": "2026-09-28",
-  "purpose": "Audit compatibility decisions with complete supplied contract context",
+  "purpose": "Issue #60 v3 Japanese reference translation review",
   "affected_responsibilities": [
-    "current versus obsolete compatibility"
+    "Japanese reference translation naturalness and English-source fidelity"
   ],
   "selection": {
-    "path": "targeted-candidate",
-    "cases": [
-      {
-        "id": "current-versus-obsolete-compatibility",
-        "conditions": [
-          "candidate"
-        ]
-      }
-    ]
+    "path": "static-only",
+    "cases": []
   },
   "base": {
     "commit": "ee8a5bba221859ee453fc74526008cd161ee1e02"
@@ -25,7 +18,7 @@
     "files": {
       "SKILL-ja.md": {
         "mode": "100644",
-        "sha256": "sha256:6d26d869688e306890189521b320f9edb9554b93d9dbe8e0cf2329253433c33c"
+        "sha256": "sha256:fe428ed2a5dae16ba1ca33966131de5e15d00471ea773b698d5db98ab63779a5"
       },
       "SKILL.md": {
         "mode": "100644",
@@ -34,60 +27,30 @@
     }
   },
   "evaluation_inputs": {
-    "evaluation_files": {
-      "skills/design-changes/evals/evals.json": "sha256:e9740b1c787e896559e76bcd0406de04a6d68a837b22f8ee7e83e9066a7377f1"
-    },
+    "evaluation_files": {},
     "case_files": {}
   },
   "environment": {
     "client": "codex-cli 0.155.1",
     "model": "gpt-6-luna",
-    "reasoning_effort": "medium",
-    "sandbox": "read-only",
-    "auth_credentials_store": "auto"
+    "reasoning_effort": "max",
+    "sandbox": "read-only"
   },
   "checks": {
     "repository": "pass"
   },
-  "results": [
-    {
-      "case_id": "current-versus-obsolete-compatibility",
-      "condition": "candidate",
-      "requirements": [
-        {
-          "id": "current-compatibility",
-          "status": "pass",
-          "evidence": "The handoff retains legacy_code for the current client, queued jobs, mixed deployment, and rollback, and explicitly rejects publication status as the deciding criterion.",
-          "critical": true
-        },
-        {
-          "id": "obsolete-path",
-          "status": "pass",
-          "evidence": "The handoff excludes code_old because no current consumer or persisted use is known and says that newly found usage would require revisiting the decision.",
-          "critical": true
-        },
-        {
-          "id": "retirement-and-verification",
-          "status": "pass",
-          "evidence": "It sets client, queue, mixed-version, rollback, and usage-observation conditions for retirement and maps both input forms and later removal to checks without editing files.",
-          "critical": true
-        }
-      ],
-      "evidence": "All three compatibility boundaries were observable in the read-only implementation handoff.",
-      "status": "pass"
-    }
-  ],
+  "results": [],
   "summary": {
     "status": "pass",
     "counts": {
       "error": 0,
       "fail": 0,
       "inconclusive": 0,
-      "pass": 1
+      "pass": 0
     }
   },
-  "stopping_reason": "The selected current-versus-obsolete compatibility case answered the Issue #37 acceptance question.",
+  "stopping_reason": "The translation-only change passed repository validation and English-source comparison; no model case is needed for unchanged runtime instructions.",
   "unverified": [
-    "Other evaluation cases and routing were not rerun; real application repositories and other clients remain untested."
+    "Model behavior when explicitly reading the revised Japanese reference was not evaluated; prior model results apply to the unchanged English Skill."
   ]
 }

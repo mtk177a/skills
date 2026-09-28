@@ -1,81 +1,111 @@
 ---
 name: design-changes
-description: code または configuration を変更する前に、実装可能な変更方針、対象・対象外の scope、risk、decision point、verification coverage を設計する。request と採用方針が理解済みで、実装前に impact または trade-off を整理するときに使う。未定義 request の明確化、未確定な問題フレームまたは解決案の探索、Agent Skill の設計、変更の実装、高リスクな execution readiness と safety control の単独評価には使わない。
+description: コードや設定を変更する前に、実装に移せる変更方針、対象と対象外、リスク、判断事項、検証方法を設計する。依頼内容と採用する方法が明らかになり、実装前に影響やトレードオフを整理する必要があるときに使う。依頼内容の明確化、未確定の問題の捉え方や解決案の探索、Agent Skill の設計、変更の実装、高リスクな変更の実行準備と安全対策の単独評価には使わない。
 license: MIT
 ---
 
-> **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。
+> **注記:** 英語版 (`SKILL.md`) が基準となる原文です。\
+> このファイルは参考訳です。\
+> 内容に差異がある場合は英語版を優先してください。
 
-# Design Changes
+# 変更の設計
 
 ## 目的
 
-- 実装 workflow が scope、risk、verification の判断をやり直さずに使える、最小で decision-complete な方針を作る。
-- 変更するものと維持するものを分け、impact boundary を review 可能にする。
-- 実装 handoff で止まり、対象ファイルを編集しない。
+- 実装担当者が変更範囲、リスク、検証方法を判断し直さずに進められる、必要な判断を盛り込んだ最小限の方針を作る。
+- 変更するものと維持するものを分け、影響範囲をレビューできるようにする。
+- 実装への引き継ぎまでで止め、対象ファイルを編集しない。
 
-## 証拠と入力
+## 根拠となる情報と入力
 
-利用できる範囲で次を集める:
+利用できる範囲で次を集める。
 
-- 期待する挙動、合意済み scope、制約、non-goals
-- 関連する entry point、module、interface、data flow、configuration、tests
-- 既存仕様、repository guidance、確立済みの implementation pattern
-- 観測済み failure、trace、過去の試行、design decision
-- dependency、migration、compatibility、security、rollout の制約
-- 後続レビューの調整に影響する reviewer context: product または operational criticality、影響する user・data・contract、exposure、採用済み trade-off、detection・recovery control、review focus
+- 期待する挙動、合意済みの範囲、制約、対象外とすること
+- 関連する処理の入口、モジュール、インターフェース、データフロー、設定、テスト
+- 既存の仕様、リポジトリの指針、定着した実装方法
+- 観測された失敗、実行記録、過去の試行、設計上の判断
+- 依存関係、移行、互換性、セキュリティ、ロールアウトに関する制約
+- 後続のレビューで判断の重み付けに影響する情報：製品や運用上の重要度、影響を受ける利用者・データ・保証する挙動、外部への露出、採用済みのトレードオフ、問題の検知と復旧の手段、レビューで特に確認してほしい点
 
-重要な claim を `Observed`、`Reported`、`Inferred`、`Unknown`、`Conflicting` に分け、計画した verification と区別する。文脈不足から低い criticality または exposure を推論しない。成功条件と non-goals を定義できるほど request が理解されていない場合は、変更設計の前に `clarify-request` へ回す。
+重要な主張は `Observed`、`Reported`、`Inferred`、`Unknown`、`Conflicting` に分け、実施予定の検証とも区別する。\
+情報がないことを、重要度や外部への露出が低い根拠にしない。\
+成功条件と対象外を定められるほど依頼内容が明らかでない場合は、変更を設計する前に `clarify-request` へ引き継ぐ。
 
-## Workflow
+## 手順
 
-1. 期待する挙動、合意済み scope、non-goals、適用される制約を捉え直す。未解決の requirement を推測せずに設計を始められることを確認する。
-2. 既存構造を確認し、変更が影響し得る entry point、主要 branch、ownership boundary、現在の verification path を特定する。
-3. 差分を最小化する前に、確認済みの原因と現在の要件を完全に扱う、最小で一貫した boundary を特定する。影響する責務、invariant、contract、既知の実行経路から導出し、明示的な non-target と、影響する interface、module、data、configuration、dependency、consumer を示す。
-   確認済みの現在の evidence が変更を必要としない限り、既存の公開 input、signature、受け入れる呼び出し形式を維持する。missing や omitted などの語が、既存の sentinel value と新しい呼び出し形式のどちらも意味し得る場合は、推測で interface を広げず、現在の contract と観測済み caller から区別する。
-   source code の類似だけから共有 boundary を推論しない。同じ現在の知識、責務、invariant、contract であることを evidence が示す場合は挙動を統合し、それ以外では早すぎる、または誤った abstraction より小さな局所重複を優先する。
-4. その boundary で局所修正が成立するか、構造的修正が必要かを判断する。確認済みの原因を残す、既存規則を重複させる、確立済みの責務 boundary を迂回する、既知の経路間で挙動を不整合にする、既知の追随修正を必要とする場合は、変更行数が少ないことだけを理由に局所 patch を選ばない。
-5. 不確実性、coupling、手戻りコストのため判断に必要な場合だけ、選んだ変更と構造的に異なる代替案を比較する。構造的修正が必要な場合は、局所案が不十分な理由、回復する現在の責務または invariant、影響する contract、変更しないものを説明する。
-6. abstraction、dependency、configuration surface、compatibility path、process、service、deployment unit を追加する場合は、それが解決する現在の問題、その問題が存在するか近い将来の要件として合意済みである evidence、検討した単純な代替案、その代替案が不十分な理由、継続的な maintenance または operational cost を記録する。現在必要な作業と任意の将来改善を分ける。
-7. 各 material risk を、failure mode に適した prevention、mitigation、detection、recovery、compensation、containment strategy のいずれかと対応付ける。plan がどう扱うかを示さずに risk だけを列挙しない。
-8. 変更する各責務、挙動、regression risk、failure boundary を、verification method と期待する evidence へ対応付ける。1つの check が複数 claim を明確に露出する場合は再利用し、固有 risk がある場合だけ追加する。
-9. 実装へ進む条件、implementation scope、stop condition を定義する。dependency 追加、破壊的操作、未解決の authority、高リスクな execution readiness の必要性を実装前に明示する。追加の safety control が必要な場合は `assess-risky-change-readiness` への handoff を明記し、この workflow は通常の change design で止める。
-10. behavior と ownership に沿った最小で review 可能な単位へ分ける。可読性変更では、孤立した空白や comment の差分ではなく、処理段階と読み手の理解単位で分ける。
-11. acceptance、安全性、将来の maintenance に影響する場合、重要な trade-off とユーザーまたは reviewer が理解すべき概念を記録する。
-12. 利用可能な evidence から planned reviewer context を作る。目的と期待結果、product または operational context と criticality、scope と non-goals、影響する user・data・contract・exposure、制約と採用済み trade-off、計画した verification と unknown、detection・recovery control、review focus を対象とする。関連する field だけを含め、gap を埋めずに重要な evidence state を保持する。
-13. 実装可能な handoff を作る。計画した check と観測済み result を分け、変更を実装しない。
+1. 期待する挙動、合意済みの範囲、対象外、適用される制約を整理し直す。\
+   未解決の要件を推測せずに設計を始められるか確認する。
+2. 既存の構造を調べ、変更が影響し得る処理の入口、主要な分岐、責務の境界、現在の検証経路を特定する。
+3. 差分を小さくする前に、確認済みの原因と現在の要件を余さず扱える、最小で一貫した変更範囲を定める。\
+   影響する責務、不変条件、保証する挙動、既知の実行経路を根拠に範囲を決め、対象外と、影響を受けるインターフェース、モジュール、データ、設定、依存関係、利用側を示す。\
+   現在確認できる根拠から変更が必要と分からない限り、既存の公開インターフェースの入力、シグネチャ、受け付ける呼び出し形式を維持する。\
+   `missing` や `omitted` が既存のセンチネル値と新しい呼び出し形式のどちらも指し得る場合は、推測でインターフェースを広げず、現在の仕様と観測された呼び出し元から意味を判別する。\
+   ソースコードが似ていることだけを理由に、共通の責務の境界を推定しない。\
+   同じ知識、責務、不変条件、保証する挙動を扱っていると根拠から確認できる場合は処理を統合し、それ以外では早すぎる抽象化や誤った抽象化を避け、小さな重複を局所的に残す。
+4. 定めた範囲で局所的な修正ができるか、構造的な修正が必要かを判断する。\
+   確認済みの原因が残る、既存の規則を重複させる、確立した責務の境界を迂回する、既知の経路間で挙動が食い違う、または追加修正が必要になると分かっている場合は、変更行数が少ないことだけを理由に局所的な修正を選ばない。
+5. 不確実性、部分間の結び付き、手戻りの費用によって判断が変わり得る場合に限り、選んだ変更と構造の異なる案を比較する。\
+   構造的な修正が必要なら、局所的な案では不十分な理由、本来の状態に戻す責務や不変条件、影響する保証内容、変更しないものを説明する。
+6. 抽象化、依存関係、設定項目、互換性維持の経路、プロセス、サービス、配備単位を追加する場合は、解決する現在の問題、その問題が実在するか近い将来の要件として合意済みである根拠、検討したより単純な案とその不足、継続的な保守・運用費用を記録する。\
+   現在必要な作業と、任意で行う将来の改善を分ける。
+7. 重要なリスクごとに、起こり得る失敗に適した予防、緩和、検知、復旧、補償、影響の封じ込めの方法を対応付ける。\
+   計画でどう対処するかを示さずに、リスクだけを列挙しない。
+8. 変更する責務や挙動、回帰のリスク、失敗が起きる境界を、それぞれ検証方法と期待する証拠に対応付ける。\
+   一つの確認で複数の主張を明確に検証できるなら再利用し、別の確認は固有のリスクがある場合だけ追加する。
+9. 実装へ進む条件、実装する範囲、中止する条件を定める。\
+   依存関係の追加、破壊的操作、未解決の権限、高リスクな変更の実行準備に関する課題を、実装前に明らかにする。\
+   追加の安全対策が必要なら `assess-risky-change-readiness` への引き継ぎを明記し、この手順は通常の変更設計で止める。
+10. 挙動と担当範囲に沿って、レビューできる最小限の単位に作業を分ける。\
+    読みやすさを改善する場合は、空白やコメントの差分を孤立させず、処理の段階と読み手が理解する単位に合わせて分ける。
+11. 受け入れ、安全性、将来の保守に影響する場合は、重要なトレードオフと、ユーザーやレビュアーが理解すべき概念を記録する。
+12. 利用できる根拠から、後続のレビューに必要な情報をまとめる。\
+    目的と期待する結果、製品や運用の状況と重要度、対象範囲と対象外、影響を受ける利用者・データ・保証する挙動・外部への露出、制約と採用済みのトレードオフ、計画した検証と不明点、問題の検知と復旧の手段、レビューで特に確認してほしい点を対象とする。\
+    関連する項目だけを含め、情報の不足を推測で埋めず、重要な情報について観測・報告・推論・不明・矛盾の区別を保つ。
+13. 実装に移せる引き継ぎ情報を作る。\
+    計画した確認と観測済みの結果を分け、変更は実装しない。
 
 ## 判断基準
 
-- 確認済みの原因と現在の要件を完全に扱い、確立済みの boundary を保つ、最小で一貫した変更を優先する。十分な boundary を定めた後にだけ付随的な複雑性を最小化する。
-- 実証済みの failure が構造変更を必要としない限り、既存 style と design を維持する。
-- 推測上の将来の柔軟性を複雑性の根拠にせず、現在の evidence が必要性を示す構造的修正を差分量だけで退けない。
-- design principle は、現在の責務、contract、置換可能性、interface、dependency の問題を明確にするためだけに使う。principle への適合自体を目的として構造を追加しない。
-- downstream consumer が必要とする場合だけ厳密な output template を使い、それ以外は変更に適した構造で必要情報を報告する。
-- impact と不確実性から、static check、targeted regression、反復的 empirical evaluation のいずれかを選ぶ。普遍的な test、scenario、alternative、run の件数を設けない。
-- material な operational、data、security、external-state、irreversibility、recovery risk が通常の implementation handoff を超える execution-readiness control を必要とする場合は `assess-risky-change-readiness` を使う。
+- 確認済みの原因と現在の要件を余さず扱い、確立した責務の境界を保てる、最小で一貫した変更を優先する。\
+  必要な変更範囲を定めてから、付随する複雑さを抑える。
+- 実際に確認された問題への対処に構造変更が必要な場合を除き、既存の書き方と設計を維持する。
+- 将来の柔軟性を推測して複雑な構造を正当化しない。\
+  現在の根拠から必要と分かる構造的な修正は、差分の大きさだけで退けない。
+- 設計原則は、現在の責務、保証する挙動、置換可能性、インターフェース、依存関係の問題を明らかにするためだけに使う。\
+  原則への適合自体を目的に構造を追加しない。
+- 後続の利用側が必要とする場合だけ、厳密な出力形式を使う。\
+  それ以外は変更内容に合う構成で必要な情報を報告する。
+- 影響と不確実性に応じて、静的な確認、対象を絞った回帰確認、反復して行う実証的な評価から検証の深さを選ぶ。\
+  テスト、シナリオ、代替案、実行回数に一律の最低数を設けない。
+- 運用、データ、セキュリティ、外部状態、不可逆性、復旧に関する重要なリスクへの対策が、通常の実装への引き継ぎでは足りない場合は、`assess-risky-change-readiness` を使う。
 
-## 報告契約
+## 報告に含める内容
 
-変更に適した構成を使い、次を含める:
+変更に合った構成で、次の情報を含める。
 
-- 推奨方針と、その evidence、前提、未解決の問い
+- 推奨する方針と、その根拠、前提、未解決の問い
 - 変更するものと維持するもの
-- その選択が重要な場合、局所修正で十分な理由、または構造的修正が必要な理由
-- 現在必要な作業と任意の将来改善
-- dependency、影響する boundary、consumer、compatibility impact
-- mitigation または control と対応付けた material risk
-- verification coverage: 責務または risk → 起こり得る failure → check と期待する evidence
-- review severity を宣言せず、実装と後続 review に十分な、重要な unknown と evidence state を含む planned reviewer context
-- 実装へ進む条件、implementation scope、stop condition、review 可能な変更単位
+- その選択が重要な場合、局所的な修正で十分な理由、または構造的な修正が必要な理由
+- 現在必要な作業と、任意で行う将来の改善
+- 依存関係、影響する責務の境界と利用側、互換性への影響
+- 重要なリスクと、それぞれに対応する緩和策やその他の対策
+- 検証の対象と方法：責務またはリスク → 起こり得る失敗 → 確認方法と期待する証拠
+- レビューの重大度を決めずにまとめた、実装と後続のレビューに必要な情報。\
+  重要な不明点と、情報が観測・報告・推論・不明・矛盾のどれに当たるかを含める
+- 実装へ進む条件、実装する範囲、中止する条件、レビューできる変更単位
 
-代替設計、module map、migration detail、rollback、user explanation point は重要な場合だけ含める。計画した validation は未実行と明示し、観測済み evidence として報告しない。
+代替設計、モジュールの構成、移行の詳細、ロールバック、ユーザーへの説明事項は、重要な場合だけ含める。\
+計画した検証は未実施と明記し、観測済みの証拠として報告しない。
 
 ## 境界
 
-- objective または成功条件が未定義なら `clarify-request`、Agent Skill の責務と trigger 設計には `design-skill`、この handoff の採用後の実装には `implement-changes` を使う。
-- 追加の safety、recovery、evidence、authorization-readiness control が必要な destructive、security-sensitive、migration、dependency、その他の consequential change では `assess-risky-change-readiness` と組み合わせる。重要な意思決定で実質的に異なる問題フレームまたは解決案がまだ必要な場合は、この Skill の前に `explore-decision-space` を使い、案が十分に選択済みなら使わない。
-- high-risk boundary が該当する場合、implementation handoff で `assess-risky-change-readiness` と未解決の readiness need を明記し、通常の design を実行 authorization として扱わない。
-- workflow を read-only に保つ。dependency を追加せず、破壊的変更を行わず、実装を始めない。
-- 固定見出し、空の checklist section、alternative の最小件数、test の最小件数を強制しない。
-- 別 agent または subagent を既定で使わない。利用できる evidence から設計判断を作り、未解決の高影響な選択はユーザーへ残す。
+- 目的や成功条件がまだ定まっていない場合は `clarify-request`、Agent Skill の責務と使用条件の設計には `design-skill`、この引き継ぎ内容が採用された後の実装には `implement-changes` を使う。
+- 破壊的操作、セキュリティ上の懸念、移行、依存関係の追加など、影響の大きい変更に追加の安全対策、復旧方法、証拠、実行権限の確認が必要なら、`assess-risky-change-readiness` と併用する。\
+  重要な意思決定に向けて、実質的に異なる問題の捉え方や解決案をまだ検討する必要がある場合は、この Skill より先に `explore-decision-space` を使い、方針が十分に選ばれている場合は使わない。
+- そのような高リスクの条件に該当する場合は、実装への引き継ぎで `assess-risky-change-readiness` を指定し、実行前に解決すべき事項を示す。\
+  通常の変更設計だけで実行の承認が得られたとはみなさない。
+- この手順では読み取りだけを行う。\
+  依存関係を追加せず、破壊的な変更を行わず、実装を始めない。
+- 固定の見出し、空のチェックリスト、代替案やテストの最低件数を強制しない。
+- 別のエージェントやサブエージェントを既定では使わない。\
+  利用できる根拠から設計を判断し、未解決で影響の大きい選択はユーザーに委ねる。
