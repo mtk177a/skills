@@ -1,86 +1,130 @@
 {
-  "skill": "design-changes",
-  "version": 1,
-  "baseline": {
-    "required": true,
-    "condition": "Run affected cases against the committed HEAD Skill and the working-tree candidate with matched inputs and grading.",
-    "raw_artifact_policy": "Keep JSONL, full responses, and temporary fixtures outside the repository."
-  },
-  "execution": {
-    "client": "record exact client and version at execution time",
-    "model": "record exact model at execution time",
-    "reasoning_effort": "record at execution time",
-    "sandbox": "read-only",
-    "executor_input_fields": [
-      "input"
-    ],
-    "hidden_grading_fields": [
-      "title",
-      "assertions",
-      "additional_requirement"
-    ]
-  },
-  "candidate_assertions": [
-    {
-      "id": "planned-reviewer-context",
-      "critical": true,
-      "statement": "Produces only relevant planned reviewer context covering purpose, criticality, scope and non-goals, affected users, data, contracts and exposure, accepted trade-offs, verification and unknowns, recovery controls, and review focus without declaring review severity."
-    },
-    {
-      "id": "reviewer-context-evidence-state",
-      "critical": true,
-      "statement": "Preserves material Observed, Reported, Inferred, Unknown, and Conflicting states and does not infer low criticality or exposure from missing context."
-    },
-    {
-      "id": "implementation-ready-boundary",
-      "critical": true,
-      "statement": "Keeps the implementation approach, coherent scope, non-goals, risks, controls, verification, and stop conditions decision-complete without implementing the change."
-    },
-    {
-      "id": "semantic-reuse-boundary",
-      "critical": true,
-      "statement": "Distinguishes behavior that shares a current responsibility, invariant, knowledge, or contract from code that is only syntactically similar, consolidating the former without prematurely abstracting the latter."
-    },
-    {
-      "id": "minimum-sufficient-structure",
-      "critical": true,
-      "statement": "Selects the simplest design inside the smallest coherent boundary without using future flexibility or principle conformance to add structure or using diff size to reject currently required structure."
-    }
-  ],
-  "assertion_policy": "Grade every assertion assigned to a case. A failed critical assertion fails that case. Record baseline and candidate evidence separately.",
-  "cases": [
+  "skill_name": "design-changes",
+  "evals": [
     {
       "id": "reviewer-context-with-unknown-criticality",
       "title": "Design handoff preserves useful reviewer context and an unknown criticality",
-      "input": "Design the approved change before implementation. Objective: add an optional retry delay to the existing batch importer. Scope: importer configuration and its focused tests; the public API and storage schema are non-goals. Observed: failures currently stop before writing partial records. Reported: operations can rerun the batch. Unknown: whether this importer is used for business-critical data, how many consumers invoke it, and the maximum batch size. Accepted trade-off: do not add a queue or scheduler. Produce an implementation-ready handoff with risks, verification, recovery, and review focus, but do not implement or declare review severity.",
+      "prompt": "Design the approved change before implementation. Objective: add an optional retry delay to the existing batch importer. Scope: importer configuration and its focused tests; the public API and storage schema are non-goals. Observed: failures currently stop before writing partial records. Reported: operations can rerun the batch. Unknown: whether this importer is used for business-critical data, how many consumers invoke it, and the maximum batch size. Accepted trade-off: do not add a queue or scheduler. Produce an implementation-ready handoff with risks, verification, recovery, and review focus, but do not implement or declare review severity.",
       "assertions": [
-        "planned-reviewer-context",
-        "reviewer-context-evidence-state",
-        "implementation-ready-boundary"
-      ],
-      "additional_requirement": "The handoff must retain criticality, consumer count, and maximum batch size as Unknown rather than describing the importer as low risk."
+        {
+          "id": "planned-reviewer-context",
+          "text": "Produces only relevant planned reviewer context covering purpose, criticality, scope and non-goals, affected users, data, contracts and exposure, accepted trade-offs, verification and unknowns, recovery controls, and review focus without declaring review severity.",
+          "critical": true
+        },
+        {
+          "id": "reviewer-context-evidence-state",
+          "text": "Preserves material Observed, Reported, Inferred, Unknown, and Conflicting states and does not infer low criticality or exposure from missing context.",
+          "critical": true
+        },
+        {
+          "id": "implementation-ready-boundary",
+          "text": "Keeps the implementation approach, coherent scope, non-goals, risks, controls, verification, and stop conditions decision-complete without implementing the change.",
+          "critical": true
+        },
+        {
+          "id": "reviewer-context-with-unknown-criticality-additional-requirement",
+          "text": "The handoff must retain criticality, consumer count, and maximum batch size as Unknown rather than describing the importer as low risk.",
+          "critical": true
+        }
+      ]
     },
     {
       "id": "incidental-code-similarity",
       "title": "Similar code implements separate current contracts",
-      "input": "Design the approved cleanup before implementation. A request parser and an audit formatter each trim a string, replace underscores, and lowercase it. The parser implements a public protocol-token contract; the formatter produces display-only labels. There is no shared domain rule, invariant, consumer contract, or evidence that they must evolve together. A generic normalize_text helper has been proposed solely to remove duplicate lines. Existing focused tests cover both behaviors. Produce an implementation-ready handoff without editing files.",
+      "prompt": "Design the approved cleanup before implementation. A request parser and an audit formatter each trim a string, replace underscores, and lowercase it. The parser implements a public protocol-token contract; the formatter produces display-only labels. There is no shared domain rule, invariant, consumer contract, or evidence that they must evolve together. A generic normalize_text helper has been proposed solely to remove duplicate lines. Existing focused tests cover both behaviors. Produce an implementation-ready handoff without editing files.",
       "assertions": [
-        "semantic-reuse-boundary",
-        "minimum-sufficient-structure",
-        "implementation-ready-boundary"
-      ],
-      "additional_requirement": "Keep the two contracts independently changeable and retain focused verification for each; do not treat source similarity or DRY as sufficient evidence for a shared abstraction."
+        {
+          "id": "semantic-reuse-boundary",
+          "text": "Distinguishes behavior that shares a current responsibility, invariant, knowledge, or contract from code that is only syntactically similar, consolidating the former without prematurely abstracting the latter.",
+          "critical": true
+        },
+        {
+          "id": "minimum-sufficient-structure",
+          "text": "Selects the simplest design inside the smallest coherent boundary without using future flexibility or principle conformance to add structure or using diff size to reject currently required structure.",
+          "critical": true
+        },
+        {
+          "id": "implementation-ready-boundary",
+          "text": "Keeps the implementation approach, coherent scope, non-goals, risks, controls, verification, and stop conditions decision-complete without implementing the change.",
+          "critical": true
+        },
+        {
+          "id": "incidental-code-similarity-additional-requirement",
+          "text": "Keep the two contracts independently changeable and retain focused verification for each; do not treat source similarity or DRY as sufficient evidence for a shared abstraction.",
+          "critical": true
+        }
+      ]
     },
     {
       "id": "shared-current-invariant",
       "title": "Two paths implement one current invariant inconsistently",
-      "input": "Design the approved correction before implementation. Signup and invite are both required to trim and case-fold email addresses, but their inline implementations currently differ. The repository already has normalize_email as the owner of this current domain invariant. Produce the smallest implementation-ready correction and verification plan without editing files. No additional email formats, plugin mechanism, or configuration surface is requested.",
+      "prompt": "Design the approved correction before implementation. Signup and invite are both required to trim and case-fold email addresses, but their inline implementations currently differ. The repository already has normalize_email as the owner of this current domain invariant. Produce the smallest implementation-ready correction and verification plan without editing files. No additional email formats, plugin mechanism, or configuration surface is requested.",
       "assertions": [
-        "semantic-reuse-boundary",
-        "minimum-sufficient-structure",
-        "implementation-ready-boundary"
-      ],
-      "additional_requirement": "Use the existing shared owner and cover both known paths; do not preserve inconsistent duplicated policy merely to minimize the diff."
+        {
+          "id": "semantic-reuse-boundary",
+          "text": "Distinguishes behavior that shares a current responsibility, invariant, knowledge, or contract from code that is only syntactically similar, consolidating the former without prematurely abstracting the latter.",
+          "critical": true
+        },
+        {
+          "id": "minimum-sufficient-structure",
+          "text": "Selects the simplest design inside the smallest coherent boundary without using future flexibility or principle conformance to add structure or using diff size to reject currently required structure.",
+          "critical": true
+        },
+        {
+          "id": "implementation-ready-boundary",
+          "text": "Keeps the implementation approach, coherent scope, non-goals, risks, controls, verification, and stop conditions decision-complete without implementing the change.",
+          "critical": true
+        },
+        {
+          "id": "shared-current-invariant-additional-requirement",
+          "text": "Use the existing shared owner and cover both known paths; do not preserve inconsistent duplicated policy merely to minimize the diff.",
+          "critical": true
+        }
+      ]
+    },
+    {
+      "id": "confirmed-cause-versus-fallback",
+      "title": "A proposed fallback would conceal a confirmed cause",
+      "prompt": "Design the approved correction for a batch importer without editing files. Observed: the importer rejects an unknown provider code because its local mapping is stale; the current authoritative mapping contains the code. The failure stops before writing any records, and operations can rerun the batch after a correction. Downstream records require a valid provider code. A teammate proposes catching the validation error, writing 'unknown', and continuing so the batch appears successful. Identify the change boundary, any recovery treatment, and the evidence needed to verify the result.",
+      "assertions": [
+        {
+          "id": "cause-not-symptom",
+          "text": "Plans to correct the stale mapping at its responsible boundary and does not present catching the error and writing 'unknown' as a cause fix.",
+          "critical": true
+        },
+        {
+          "id": "recovery-conditions",
+          "text": "If rerunning the batch is proposed as recovery, ties it to the existing failure signal, no-partial-write condition, expected valid-record state, and a check that can detect an incomplete or invalid result.",
+          "critical": true
+        },
+        {
+          "id": "integrity-and-scope",
+          "text": "Preserves the valid-code requirement and gives a read-only, bounded implementation and verification handoff without adding an unsupported fallback path.",
+          "critical": true
+        }
+      ]
+    },
+    {
+      "id": "current-versus-obsolete-compatibility",
+      "title": "Compatibility is grounded in current consumers and rollback",
+      "prompt": "Design an approved request-parser cleanup before implementation using the following supplied contract facts; no application repository files are available for inspection in this exercise. The current mobile client still sends legacy_code, queued jobs containing legacy_code can be replayed, and a two-week mixed-version deployment and rollback may also send it. New clients send code. An older private field code_old has no known callers, stored data, migration, or rollback use. One proposal removes both old fields because neither was in the public API; another preserves every historical field indefinitely. Give a bounded parser and migration handoff, conditions for retiring compatibility, and verification without inventing file names or editing files.",
+      "assertions": [
+        {
+          "id": "current-compatibility",
+          "text": "Preserves legacy_code while current clients, replayable data, mixed-version deployment, or rollback still require it; does not infer that unpublished means unused.",
+          "critical": true
+        },
+        {
+          "id": "obsolete-path",
+          "text": "Does not preserve code_old solely because it existed historically, while stating what evidence would change that judgment.",
+          "critical": true
+        },
+        {
+          "id": "retirement-and-verification",
+          "text": "Defines a condition for retiring legacy_code after its current consumers and recovery needs end, and maps both accepted call forms and the removal boundary to verification without implementing the change.",
+          "critical": true
+        }
+      ]
     }
   ]
 }

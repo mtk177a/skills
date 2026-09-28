@@ -1,0 +1,93 @@
+{
+  "schema_version": 2,
+  "skill": "design-changes",
+  "skill_source": "public",
+  "evaluated_on": "2026-09-28",
+  "purpose": "Audit compatibility decisions with complete supplied contract context",
+  "affected_responsibilities": [
+    "current versus obsolete compatibility"
+  ],
+  "selection": {
+    "path": "targeted-candidate",
+    "cases": [
+      {
+        "id": "current-versus-obsolete-compatibility",
+        "conditions": [
+          "candidate"
+        ]
+      }
+    ]
+  },
+  "base": {
+    "commit": "ee8a5bba221859ee453fc74526008cd161ee1e02"
+  },
+  "candidate": {
+    "files": {
+      "SKILL-ja.md": {
+        "mode": "100644",
+        "sha256": "sha256:6d26d869688e306890189521b320f9edb9554b93d9dbe8e0cf2329253433c33c"
+      },
+      "SKILL.md": {
+        "mode": "100644",
+        "sha256": "sha256:b25c647ff6db354148b671ea70d1dbf13e1acbb664f28540491fba956add81dc"
+      }
+    }
+  },
+  "evaluation_inputs": {
+    "evaluation_files": {
+      "skills/design-changes/evals/evals.json": "sha256:e9740b1c787e896559e76bcd0406de04a6d68a837b22f8ee7e83e9066a7377f1"
+    },
+    "case_files": {}
+  },
+  "environment": {
+    "client": "codex-cli 0.155.1",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "sandbox": "read-only",
+    "auth_credentials_store": "auto"
+  },
+  "checks": {
+    "repository": "pass"
+  },
+  "results": [
+    {
+      "case_id": "current-versus-obsolete-compatibility",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "current-compatibility",
+          "status": "pass",
+          "evidence": "The handoff retains legacy_code for the current client, queued jobs, mixed deployment, and rollback, and explicitly rejects publication status as the deciding criterion.",
+          "critical": true
+        },
+        {
+          "id": "obsolete-path",
+          "status": "pass",
+          "evidence": "The handoff excludes code_old because no current consumer or persisted use is known and says that newly found usage would require revisiting the decision.",
+          "critical": true
+        },
+        {
+          "id": "retirement-and-verification",
+          "status": "pass",
+          "evidence": "It sets client, queue, mixed-version, rollback, and usage-observation conditions for retirement and maps both input forms and later removal to checks without editing files.",
+          "critical": true
+        }
+      ],
+      "evidence": "All three compatibility boundaries were observable in the read-only implementation handoff.",
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "status": "pass",
+    "counts": {
+      "error": 0,
+      "fail": 0,
+      "inconclusive": 0,
+      "pass": 1
+    }
+  },
+  "stopping_reason": "The selected current-versus-obsolete compatibility case answered the Issue #37 acceptance question.",
+  "unverified": [
+    "Other evaluation cases and routing were not rerun; real application repositories and other clients remain untested."
+  ]
+}
