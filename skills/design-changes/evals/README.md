@@ -209,5 +209,5 @@ Requirements checklist:
 
 - Audit basis: #49 `監査基準 v3` and the `write-natural-japanese` Skill with its complete wording reference.
 - The English `SKILL.md` remains unchanged. The Japanese reference was read in full and rewritten to replace unnecessary English general terms and source-language sentence structure while preserving the original scope, conditions, certainty, identifiers, and Markdown structure.
-- The current `report.json` records a static-only check of the revised Japanese reference with zero model calls. The earlier model results concern the unchanged English Skill and remain available in the prior report linked above.
+- The Japanese reference revision uses the static-only path and adds no model results. The earlier model results concern the unchanged English Skill and remain available in the report linked above.
 - The translation was checked against every English section and all 13 workflow steps. Model behavior with the revised Japanese reference was not evaluated.
