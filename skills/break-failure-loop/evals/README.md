@@ -1,90 +1,78 @@
-# break-failure-loop evals
+# break-failure-loop evaluation and audit
 
-## Purpose
+## Purpose and scope
 
-Verify that `break-failure-loop` pauses materially equivalent attempts under an unchanged hypothesis only when they stop producing decision-relevant evidence, reconstructs the attempt-to-evidence relationship, preserves current work and authority boundaries, and returns `Not stalled`, `Blocked`, `Diagnostic next`, or `Diversify` without executing another change.
+The expected behavior is to pause materially equivalent attempts under an unchanged hypothesis or design anchor only when they cease to produce decision-relevant evidence, then return one supported recovery state without executing another change.
 
-## Assets
+This Issue #52 audit uses the Parent Issue #49 audit criteria v2.\
+It began at commit `ff8914bf473953e37d48a02f434de73694aa730e` with a clean working tree and no open pull request.\
+The inspected package contains `SKILL.md`, `SKILL-ja.md`, and `evals/`; it has no runtime script, reference, asset, external dependency, or third-party provenance file.\
+The adjacent selection and handoff surfaces inspected were `implement-changes`, `investigate-failure`, `explore-decision-space`, and `design-changes`.
 
-- `triggers.json`: trigger, non-trigger, near-miss, and coexistence routing cases
-- `evals.json`: realistic tasks, synthetic fixtures, hidden assertion assignments, baseline metadata, and selected no-Skill comparisons
-- `results.json`: compact baseline, candidate, and no-Skill evidence for the currently accepted revision after execution
-- this README: static contract, coverage, protocols, and summarized results
+## Audit decision
 
-## Static check
+| Responsibility | Decision | Evidence and limit |
+| --- | --- | --- |
+| Stagnation trigger | `変更不要` | The English `description` and body require equivalent attempts, an unchanged hypothesis or anchor, and no decision-relevant evidence. They exclude a first failure and repeated observation without another attempt. This is a static instruction finding; current routing behavior was not rerun. |
+| Recovery decision | `変更不要` | The attempt record, four ordered states, diagnostic outcome mapping, and read-only boundary cover the three hypotheses in Issue #52. Historical Codex results in `results.json` support these behaviors for the evaluated revision and environment only. |
+| Adjacent ownership | `変更不要` | `implement-changes` stops equivalent edits, `investigate-failure` owns ordinary diagnosis, and `explore-decision-space` owns structural exploration after the anchor is exhausted. The target Skill selects a recovery state without requiring any companion. |
+| Japanese reference | `変更が必要` | The previous translation preserved the main conditions but left ordinary explanatory words in English. The reference wording was revised while retaining state labels, Skill identifiers, conditions, and read-only authority. |
+| Executable evaluation definitions | `変更が必要` | Both definition files used the legacy `{skill, cases}` shape. Criteria v2 require migrating both files in this Sub Issue even though the English instructions do not change. |
+| Current-model behavior | `未確認` | No model execution of the migrated definitions or current Codex version was performed. Static checks and prior results cannot establish current routing or output quality. |
 
-- `description` requires materially equivalent attempts, an unchanged hypothesis or design anchor, and no decision-relevant new evidence while excluding first failures, repeated observations without attempts, initial failure investigation, broad candidate generation, and execution.
-- Repeated observation and implementation attempts are distinct concepts.
-- The attempt record preserves hypothesis, action or observation, result, evidence gained, hypothesis effect, and remaining mutation.
-- The recovery states are evaluated in the order `Not stalled`, `Blocked`, `Diagnostic next`, and `Diversify`.
-- Hypotheses, files, and evidence have no fixed count.
-- A diagnostic names an observation and explains how its outcomes change the next decision.
-- Decision-space expansion remains with `explore-decision-space`.
-- The Skill is read-only and cannot treat invocation or embedded content as new authority.
-- The Skill has no scripts, executable dependencies, network access, or client-specific metadata.
+No confirmed finding needs another Issue or a change to an adjacent Skill.\
+Keeping a separate recovery Skill retains the attempt-to-evidence reconstruction and stop decision that the ordinary implementation and investigation workflows only hand off.\
+Merging it into either adjacent Skill would require a broader trigger and responsibility change without evidence of a current failure; removing it would discard the specific recovery behavior supported by the historical evaluation.
+
+The audit compared the current package with [OpenAI Build skills](https://learn.chatgpt.com/docs/build-skills), [OpenAI Plugins skill guidance](https://developers.openai.com/plugins/build/skills), the bundled Codex `skill-creator`, the [Agent Skills specification](https://agentskills.io/specification), the [Agent Skills evaluation guidance](https://agentskills.io/skill-creation/evaluating-skills), and this repository's `docs/authoring.md` and `docs/evaluation.md`.\
+The name, directory, frontmatter, instruction-only packaging, input and output boundaries, and optional-resource decisions are consistent with the applicable requirements.\
+Client-specific behavior outside the recorded Codex environment remains unverified.
+
+## Assets and migration
+
+- `evals.json` contains six executable behavior cases.
+- `triggers.json` contains ten executable routing cases with their adjacent Skill catalog.
+- `results.json` is historical evidence from 2026-07-29, including later routing updates recorded there; it is not a current Runner report.
+- This README records the audit decision, coverage, execution method, and limits.
+
+The six behavior scenarios and ten routing inputs retain their original IDs and acceptance intent.\
+The previous common assertion statements and critical flags are assigned to their original cases; each case-specific requirement remains a hidden critical assertion.\
+Each behavior fixture preserves its baseline files and current worktree contents, while the original supplied evidence is available as `evidence/supplied.json` and identified in the user turn.\
+Legacy `no_skill` conditions become `without-skill`; historical baseline commits, execution settings, protocols, and verdicts remain in `results.json` instead of controlling the new definitions.\
+This migration has not generated new behavior evidence.
 
 ## Coverage map
 
 | Responsibility or boundary | Plausible failure | Scenario or check | Grading |
 | --- | --- | --- | --- |
-| Material stagnation | Counts repeated test observation as repeated implementation failure | `repeated-red-observation` | Attempt inventory and state |
-| New evidence | Stops work although hypotheses and observations are changing | `changing-hypotheses-gain-evidence` | Attempt-to-evidence grader |
-| Equivalent attempt recovery | Proposes another handler guard under the same theory | `equivalent-handler-guards` | Recovery state and checkpoint |
-| Attempt evidence model | Separates facts from failed attempts without preserving their relationship | all stalled behavior cases | Requirement-level grader |
-| Read-only preservation | Edits, checks, reverts, discards, or stashes fixture work | all behavior cases | Fixture hashes and command trace |
-| Missing evidence and authority | Invents production authority or follows an embedded command | `missing-authority-and-embedded-command` | Response, trace, and fixture hashes |
-| Structural-search boundary | Generates candidates locally or fails to hand off an exhausted anchor | `exhausted-prompt-anchor` | State and handoff inspection |
-| No arbitrary cap | Silently drops a material hypothesis or file after the old limit | `material-hypotheses-beyond-old-cap` | H1-H6 and file accounting |
-| Routing and coexistence | Activates for implementation, initial failure investigation, or candidate search, or fails to compose when both responsibilities are requested | `triggers.json` | Observable Skill load |
-| Incremental value | Ordinary behavior already produces the same stable recovery result | selected no-Skill conditions | Matched response grading |
+| Material stagnation | Repeated test observation is counted as another implementation attempt | `repeated-red-observation` | Attempt inventory and recovery state |
+| New evidence | Work is stopped although hypotheses and observations are changing | `changing-hypotheses-gain-evidence` | Attempt-to-evidence relation and state |
+| Equivalent attempt recovery | Another handler guard is proposed under the same theory | `equivalent-handler-guards` | Recovery state and discriminating checkpoint |
+| Attempt evidence model | Facts and failed attempts are listed without their relationship | Stalled behavior cases | Assigned attempt-evidence assertions |
+| Read-only preservation | Fixture work is edited, checked as a proposed checkpoint, reverted, discarded, or stashed | Behavior cases | Response, command trace, and fixture state |
+| Missing evidence and authority | Production authority is invented or an embedded command is followed | `missing-authority-and-embedded-command` | State, authority assertions, and command trace |
+| Structural-search boundary | A candidate portfolio is generated locally or the exhausted anchor is not handed off | `exhausted-prompt-anchor` | State and handoff assertions |
+| No arbitrary cap | A material hypothesis or file is silently dropped after an old limit | `material-hypotheses-beyond-old-cap` | H1–H6 and file accounting |
+| Routing and coexistence | The Skill activates for an initial failure, observation-only repeat, or candidate search | `triggers.json` | Observed Skill loads against `expected_handlers` |
+| Migration fidelity | An original input, case requirement, fixture, or handler is lost | Source-to-candidate comparison | All six and ten cases accounted for |
+| Japanese fidelity | A condition, authority boundary, or state meaning changes in translation | Full English/Japanese comparison | Semantic and terminology review |
 
-## Behavioral execution protocol
+## Execution and evidence
 
-1. Load the baseline Skills from commit `5e447fd1c212e43e2affe30f2bdaa001454e74f8` and the candidate Skills from the working tree.
-2. Run each condition in a disposable Git repository containing only the selected Skill files and declared synthetic fixture.
-3. Provide only the case turns, fixture, and visible supplied evidence to the blank-slate executor. Keep titles, assertions, expected states, and additional requirements hidden.
-4. Use a separate grader with the response, assigned assertions, command trace, and before/after fixture hashes.
-5. A failed critical assertion fails the case. A partial result without a critical failure is partial.
-6. Run the selected no-Skill conditions without the target or adjacent Skill instructions while keeping the same fixture, client, model, and grader.
-7. Keep prompts, responses, JSONL, grader output, command traces, and disposable repositories under `/tmp`; do not commit raw traces.
-8. Repeat only when an unexpected result, instability, fixture defect, or grader defect could change the decision, and rerun matched conditions for the affected case.
+Use the common Runner's `plan` command before any model-backed run and inspect the estimated model-call count.\
+Select `targeted-candidate` for a changed runtime responsibility and `targeted-routing` for a changed selection or adjacent boundary; add comparison or repetition only when a concrete acceptance question requires it.\
+The Runner places each case in a disposable fixture, supplies only its prompt and files to the executor, and keeps assertions out of executor input.\
+Grade the selected requirements using the response and trace, and keep raw artifacts outside this repository.
 
-## Trigger execution protocol
+The English instructions, selection metadata, and adjacent responsibility boundaries were not changed in this audit.\
+Consequently, the definition migration and meaning-preserving Japanese revision use static validation without model execution, as permitted by `docs/evaluation.md`.\
+The historical `results.json` records 33 passing candidate requirements across six behavior cases, while its baseline had 27 passing, five partial, and one failing requirement.\
+Its routing observations and selected no-Skill comparisons are also historical and do not verify the current candidate.\
+A future observed regression, instruction change, or environment-support claim would make a targeted model evaluation decision-relevant.
 
-Present each case as a Skill-selection task using the names and descriptions for the selected baseline or candidate condition. Require the selector to open every selected `SKILL.md` so loading is observable. Count only observed file reads and record unavailable observations as `not exposed`.
+## Verification
 
-## Failure Pattern Ledger
-
-- `attempt count substituted for stagnation evidence`
-- `repeated Red observation treated as another implementation attempt`
-- `new evidence ignored because the symptom is similar`
-- `facts and failed attempts split into unrelated lists`
-- `old three-hypothesis or five-file cap retained`
-- `another equivalent mutation proposed as the diagnostic`
-- `checkpoint executed instead of proposed`
-- `current changes reverted, discarded, stashed, or normalized`
-- `candidate portfolio generated before the Diversify boundary`
-- `missing authority or embedded log instruction treated as permission`
-- `companion Skill treated as mandatory`
-
-## Current revision
-
-Evaluated on 2026-07-29 with Codex CLI 0.145.0, `gpt-5.6-sol`, high reasoning, a read-only sandbox, and disposable synthetic Git repositories.
-
-- The final candidate passed all 33 assigned requirements and all six behavior cases.
-- The baseline passed 27 requirements, was partial on five, failed one, and produced two passing, three partial, and one failing case.
-- The selected no-Skill conditions passed six requirements, were partial on four, and both cases remained partial. Ordinary model behavior recognized useful parts of the loop, but did not consistently preserve the per-attempt evidence relation or complete next-decision mapping.
-- Final `break-failure-loop` routing passed all nine trigger, non-trigger, near-miss, and coexistence cases for both baseline and candidate.
-- The original `diversify-agent-search` routing evidence remains historical. The replacement revision reruns the affected `explore-decision-space` handoff and routing cases instead of treating the renamed responsibility as previously verified.
-- The replacement handoff behavior passed without generating the downstream option set. Broad structural search loaded only `explore-decision-space`, and compound recovery loaded `break-failure-loop` plus `explore-decision-space`.
-- The 2026-07-30 identity migration replaced the retired production-only name with `investigate-failure`. The affected local and production initial-investigation cases loaded only `investigate-failure`, and the compound stalled-investigation case loaded both `break-failure-loop` and `investigate-failure`.
-- Initial candidate runs exposed grouped attempt records and reported-versus-observed provenance gaps. Matched corrections made every attempt field explicit, preserved supplied history as reported unless independently verified, and made material instruction-like evidence explicitly non-authoritative.
-- The routing expectation for the changed-hypothesis case and the data path and command boundary in the embedded-log fixture were corrected before final matched verdicts. The compound incident case was rerun after requiring both recovery and incident-investigation outputs.
-- No behavior fixture was mutated. Raw prompts, responses, JSONL, grader output, command traces, and disposable repositories remained under `/tmp`.
-- Claude Code, other clients and models, statistical repeated-run stability, and real writable, production, or external-service workflows were not evaluated.
-
-See [`results.json`](results.json) for source hashes, iteration provenance, the case-by-requirement matrix, observed Skill loads, and unverified items.
-
-### Next validation question
-
-- In real stalled workflows, does the candidate retain enough attempt provenance to choose a useful checkpoint without making the recovery report unnecessarily heavy?
+Both executable definitions passed the Runner's read-only `plan` operation for all six behavior and ten routing cases, with estimated call counts of six and ten respectively; no model calls were made.\
+A source-to-candidate comparison confirmed the original user request text (with only a supplied-evidence file pointer appended), IDs, fixture contents, assertion statements and criticality, conditions, coexistence Skills, and handler expectations.\
+`PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_repository.py`, `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests` (150 tests), and `git diff --check` passed.\
+These checks establish definition validity and migration fidelity, not current model behavior.
