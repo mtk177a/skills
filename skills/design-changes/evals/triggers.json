@@ -1,70 +1,78 @@
 {
-  "skill": "design-changes",
-  "version": 1,
-  "run_policy": {
-    "protocol": "Present each prompt as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
-    "count_only_observed_skill_loads": true,
-    "unobservable_result": "not exposed",
-    "repetition_rule": "Run each affected case under the target condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant. Use matched repetitions for baseline and candidate.",
-    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every observed condition. Mixed observed results are unstable, not a pass."
+  "skill_name": "design-changes",
+  "execution": {
+    "coexistence_skills": [
+      "assess-risky-change-readiness",
+      "clarify-request",
+      "design-skill",
+      "explore-decision-space",
+      "implement-changes"
+    ]
   },
-  "cases": [
+  "evals": [
     {
       "id": "application-change-design",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Before implementation, design the database and API changes for adding organization-level billing. Separate targets and non-targets, map impact and risks, and define verification and stop conditions."
+      "prompt": "Before implementation, design the database and API changes for adding organization-level billing. Separate targets and non-targets, map impact and risks, and define verification and stop conditions.",
+      "expected_handlers": [
+        "design-changes"
+      ]
     },
     {
       "id": "reviewer-context-design",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Design this approved change and include planned reviewer context: purpose, criticality, scope, affected consumers and exposure, trade-offs, verification, recovery, unknowns, and review focus. Do not implement it."
+      "prompt": "Design this approved change and include planned reviewer context: purpose, criticality, scope, affected consumers and exposure, trade-offs, verification, recovery, unknowns, and review focus. Do not implement it.",
+      "expected_handlers": [
+        "design-changes"
+      ]
     },
     {
       "id": "readability-refactor-design",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Design a readability refactor for this long request handler before editing it. Identify entry points, processing stages, behavior-preserving change units, risks, and verification."
+      "prompt": "Design a readability refactor for this long request handler before editing it. Identify entry points, processing stages, behavior-preserving change units, risks, and verification.",
+      "expected_handlers": [
+        "design-changes"
+      ]
     },
     {
       "id": "implementation-scope-handoff",
-      "expected": "should_trigger",
-      "category": "retired_skill_handoff",
-      "expected_baseline_skill": "scope-implementation",
-      "expected_candidate_skill": "design-changes",
-      "prompt": "Before editing, turn this approved change into a narrow implementation handoff. Identify the initial areas to inspect, the allowed change boundary and explicit non-targets, reviewable work units, completion criteria, verification coverage, and stop conditions. Do not implement it."
+      "prompt": "Before editing, turn this approved change into a narrow implementation handoff. Identify the initial areas to inspect, the allowed change boundary and explicit non-targets, reviewable work units, completion criteria, verification coverage, and stop conditions. Do not implement it.",
+      "expected_handlers": [
+        "design-changes"
+      ]
     },
     {
       "id": "unsettled-decision-space",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "expected_handler": "explore-decision-space",
-      "prompt": "Before implementation planning, expand materially different problem frames because the problem is still unsettled, then identify what evidence would distinguish them."
+      "prompt": "Before implementation planning, expand materially different problem frames because the problem is still unsettled, then identify what evidence would distinguish them.",
+      "expected_handlers": [
+        "explore-decision-space"
+      ]
     },
     {
       "id": "undefined-request",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "I have a vague idea that onboarding should be better, but I do not know the users, problem, success criteria, or constraints. Help me clarify the request first."
+      "prompt": "I have a vague idea that onboarding should be better, but I do not know the users, problem, success criteria, or constraints. Help me clarify the request first.",
+      "expected_handlers": [
+        "clarify-request"
+      ]
     },
     {
       "id": "agent-skill-design",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "Decide whether to create, merge, or split an Agent Skill for release handoffs, including its responsibility, trigger boundary, resources, and evaluation."
+      "prompt": "Decide whether to create, merge, or split an Agent Skill for release handoffs, including its responsibility, trigger boundary, resources, and evaluation.",
+      "expected_handlers": [
+        "design-skill"
+      ]
     },
     {
       "id": "approved-implementation",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "The change design is approved. Implement the listed code changes, run the tests, and report the resulting diff."
+      "prompt": "The change design is approved. Implement the listed code changes, run the tests, and report the resulting diff.",
+      "expected_handlers": [
+        "implement-changes"
+      ]
     },
     {
       "id": "high-risk-migration-coexistence",
-      "expected": "should_trigger",
-      "category": "coexistence",
-      "prompt": "Design the implementation impact and verification for an authentication data migration, and identify the additional safety, evidence, recovery, residual-risk, and authorization-readiness controls required before execution."
+      "prompt": "Design the implementation impact and verification for an authentication data migration, and identify the additional safety, evidence, recovery, residual-risk, and authorization-readiness controls required before execution.",
+      "expected_handlers": [
+        "design-changes",
+        "assess-risky-change-readiness"
+      ]
     }
   ]
 }

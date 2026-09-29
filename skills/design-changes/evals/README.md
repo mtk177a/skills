@@ -6,11 +6,10 @@ Verify that `design-changes` produces a decision-complete, read-only implementat
 
 ## Assets
 
-- `triggers.json`: core, near-miss, and high-risk coexistence selection cases
+- `evals.json`: executable behavior cases for reviewer context, minimum sufficient design, cause correction, recovery, and compatibility
+- `triggers.json`: executable core, near-miss, and high-risk coexistence selection cases
 - [`results.json`](results.json): immutable, hash-bound behavior and trigger evidence across recorded revisions
 - this README: static contract, behavioral coverage, and execution record
-
-Structured output cases remain optional. Add `evals.json` only if repeated execution needs machine-readable assertions; do not add it merely to match another Skill.
 
 ## Static check
 
@@ -41,6 +40,8 @@ Structured output cases remain optional. Add `evals.json` only if repeated execu
 | Coherent structural correction | Minimizes the diff while leaving a confirmed shared cause or known path unresolved | E | Requirements 1–5 |
 | Semantic reuse boundary | Consolidates code from syntax alone or preserves independent implementations of one current invariant | F and `shared-current-invariant` in `evals.json` | Requirements 1–4 and assigned assertions |
 | Planned reviewer context | Omits criticality, exposure, trade-offs, recovery, or review focus, or turns unknown context into a low-risk claim | `reviewer-context-with-unknown-criticality` in `evals.json` | Assigned assertions |
+| Cause correction and recovery | A fallback conceals a confirmed cause, or recovery lacks a failure signal and expected state | `confirmed-cause-versus-fallback` in `evals.json` | Assigned assertions |
+| Current compatibility | Removes a path still used by clients, queued data, or rollback, or retains an obsolete path indefinitely | `current-versus-obsolete-compatibility` in `evals.json` | Assigned assertions |
 
 ## Behavioral scenarios
 
@@ -124,12 +125,12 @@ Requirements checklist:
 
 ## Execution protocol
 
-1. For the recorded full behavior run, use baseline commit `42ebd18cb2406d1cfcbeb34cd289fd620c8e4f9b`. For the 2026-07-28 routing migrations, use the pre-merge catalog at commit `33c9d95641d816ba3957e5a6045141e3d451b753`. Never substitute moving `HEAD` when reproducing recorded evidence; use the working-tree Skill only as the candidate under evaluation.
-2. Use the same input, client, model, reasoning effort, sandbox, and adjacent Skills for both conditions.
-3. Run behavioral cases in writable disposable repositories and compare file hashes before and after.
-4. Keep expected conclusions and requirements out of executor input.
-5. Grade objective claims with deterministic evidence and judgment-heavy requirements by direct maintainer review. Add a separate blank-slate LLM grader only when repeated or independent judgment is materially useful.
-6. Record exact commands, versions, exposed traces, assertion evidence, and `not exposed` or `not executed` conditions.
+1. Select only cases that can expose the changed responsibility or a material adjacent boundary, and choose the evaluation path in [`docs/evaluation.md`](../../../docs/evaluation.md).
+2. Generate a Runner plan and inspect its model-call count before execution.
+3. Keep expected conclusions and assertions out of executor input, and run each selected case in the Runner's disposable fixture.
+4. When comparison is decision-relevant, use matched inputs and conditions with an explicit baseline commit; the historical commits below are for reproducing the recorded runs, not defaults for new audits.
+5. Grade observable requirements against the actual output and trace, and keep raw responses, JSONL, and fixtures outside the repository.
+6. Record the selected path, conditions, environment, candidate revision, result, stopping reason, and unverified boundaries.
 7. Repeat only when an unexpected result, instability, client difference, or failure impact could change the decision.
 
 ## Failure Pattern Ledger
@@ -189,3 +190,24 @@ Requirements checklist:
 - Initial `--ignore-user-config` attempts returned `401 Unauthorized` before model execution because that option removed the active ChatGPT authentication route; those defective attempts are excluded from pass evidence and do not indicate that the user was logged out.
 - Deterministic JSON parsing, repository validation, candidate hash checks, invocation details, case evidence, and excluded defective runs are recorded in [`results.json`](results.json).
 - Untested boundary: unrelated cases, repeated runs, a separate LLM grader, real application repositories, other models, and other clients remain unverified.
+
+## Issue #60 audit — 2026-09-28
+
+- Audit basis: #49 `監査基準 v2`, #37 acceptance criteria, and commit `ee8a5bba221859ee453fc74526008cd161ee1e02` with a clean starting worktree.
+- The current `SKILL.md` hash is `sha256:b25c647ff6db354148b671ea70d1dbf13e1acbb664f28540491fba956add81dc`, which matches the candidate recorded in the minimum-sufficient-design evidence.
+- The existing three behavior cases and nine routing cases were migrated together from the legacy format to the executable `{skill_name, evals}` format; `results.json` remains historical evidence.
+- Two behavior cases were added to examine #37's cause/recovery and compatibility boundaries, which the prior case set did not directly expose.
+- `confirmed-cause-versus-fallback` completed with Codex CLI 0.155.1, `gpt-6-luna`, max reasoning, and a read-only sandbox; direct review passed all three assertions because the output corrected the stale mapping, rejected the invalid placeholder, and conditioned rerun on the observed no-partial-write state and result checks.
+- `current-versus-obsolete-compatibility` completed with Codex CLI 0.155.1, `gpt-6-luna`, medium reasoning, and a read-only sandbox; the three assertions passed, with the compact evidence in the [report at commit `55f496f`](https://github.com/mtk177a/skills/blob/55f496ffb2fb550290ea7bab988a84560936392c/skills/design-changes/evals/report.json).
+- An earlier four-condition attempt reached the Codex API without the required authentication setting and returned 401 before producing model output; it is excluded from behavior evidence.
+- An earlier compatibility attempt timed out after reading the Skill and searching an empty fixture; the revised case explicitly supplies the complete contract context, and the timed-out attempt is excluded from pass evidence.
+- Static inspection and these two selected behavior observations support leaving `SKILL.md` unchanged; no routing case was rerun because its description and adjacent selection boundaries did not change.
+- The initial v2 audit compared the English Skill and Japanese reference for material meaning but incorrectly treated an unchanged English source as sufficient reason to leave the Japanese wording unchanged. The v3 review below supersedes that translation decision.
+- Real application repositories, other clients and models, repeated runs, and unselected behavior or routing cases remain unverified.
+
+## Issue #60 Japanese reference re-review — 2026-09-28
+
+- Audit basis: #49 `監査基準 v3` and the `write-natural-japanese` Skill with its complete wording reference.
+- The English `SKILL.md` remains unchanged. The Japanese reference was read in full and rewritten to replace unnecessary English general terms and source-language sentence structure while preserving the original scope, conditions, certainty, identifiers, and Markdown structure.
+- The Japanese reference revision uses the static-only path and adds no model results. The earlier model results concern the unchanged English Skill and remain available in the report linked above.
+- The translation was checked against every English section and all 13 workflow steps. Model behavior with the revised Japanese reference was not evaluated.
