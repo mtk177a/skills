@@ -26,7 +26,7 @@ Verify that `explore-decision-space` adds value beyond both ordinary no-Skill be
 | Terminology boundary | Reframes a referent-definition problem as option search | `terminology-near-miss` | Observable Skill load |
 | Read-only authority | Edits files or runs proposed experiments | All applicable behavior cases | Command trace and fixture hash |
 
-## Execution protocol
+## Historical execution protocol
 
 Behavior evaluation uses the same request, Codex model, reasoning setting, read-only sandbox, adjacent Skills, and comparative grader for three conditions:
 
@@ -45,7 +45,7 @@ python3 <temporary-evaluation-dir>/run-eval.py
 python3 <temporary-evaluation-dir>/rerun-decisive.py
 ```
 
-## Result
+## Historical result
 
 The three-way comparison ran on 2026-07-29 with Codex CLI 0.145.0, `gpt-5.6-sol`, high reasoning, and a read-only sandbox.
 
@@ -91,3 +91,20 @@ later change to the Skill body or decisive responsibility.
 ## Next validation question
 
 - Does normal usage observably invoke the Skill before premature convergence often enough to justify its catalog and context cost?
+
+## Issue #65 audit (2026-09-29)
+
+The version 3 audit found no evidence-based need to change the English `SKILL.md` or its selection and handoff boundaries.\
+Its hash remains `sha256:ff674c337a5fd6d3c11581e2077c91e4dfcafa425c4e9a6921ee7306db85a273`.\
+The historical result above supports the evaluated candidate and environment only; it does not establish current-model or other-client behavior.
+
+The seven existing behavior cases and seven routing cases were migrated together to the executable `{skill_name, evals}` format.\
+Behavior assertions retain their IDs, text, criticality, and case membership.\
+Routing cases retain their prompts and expected single handler, now represented by `expected_handlers`.\
+The adjacent Skill set is declared in both executable definitions.\
+The legacy run policy and three-way comparison above describe the historical evaluation; a future run should select its path and cases under `docs/evaluation.md` rather than rerun that comparison automatically.\
+The historical routing driver explicitly asked for a selection without solving the request, whereas the current Runner presents the request and observes completed Skill reads; the two methods should not be treated as identical evidence.
+
+The English Skill's behavior and discovery were unchanged, so this audit selected `static-only` validation and made no model calls.\
+The Japanese reference was revised for naturalness while preserving the English conditions, state labels, permissions, and handoff meanings.\
+Further model-backed evaluation is warranted only when an affected responsibility or routing boundary changes, or when evidence about current use makes one of the unverified questions decision-relevant.
