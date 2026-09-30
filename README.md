@@ -104,6 +104,8 @@ See [docs/evaluation.md](docs/evaluation.md) for path selection, execution, grad
 .
 ├── README.md
 ├── README.ja.md
+├── CONTRIBUTING.md
+├── CONTRIBUTING-ja.md
 ├── LICENSE
 ├── AGENTS.md
 ├── AGENTS-ja.md
@@ -133,6 +135,9 @@ See [docs/evaluation.md](docs/evaluation.md) for path selection, execution, grad
 ## Authoring and contribution
 
 This is a personal repository. External contributions are not expected.
+
+See the [contributing guide](CONTRIBUTING.md) for the maintainer's and AI agents' Issue, verification, commit, and pull request workflow.\
+The [Japanese reference translation](CONTRIBUTING-ja.md) is also available.
 
 Original code and content authored for this repository may be used and adapted under the MIT License. Third-party-derived files retain their individual licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). See [docs/authoring.md](docs/authoring.md) for how Skills are structured and [docs/security.md](docs/security.md) for third-party and executable Skill review.
 

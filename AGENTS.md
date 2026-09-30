@@ -13,6 +13,7 @@ If a deeper `AGENTS.md` exists in a subdirectory, that file takes precedence.
 
 - `README.md`
 - `docs/authoring.md`
+- `CONTRIBUTING.md` for Issue, commit, and pull request conventions
 
 When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files needed to resolve responsibility overlap and converge on a judgment. Stop when that purpose is met; do not impose an arbitrary count.
 
@@ -80,14 +81,7 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 
 ## Commit message convention
 
-- Use Conventional Commits; write the summary in English, short and specific
-- One commit per logical change; do not mix unrelated changes
-- `skills/*/SKILL.md` is treated as the product of this repository; do not categorize all changes as `docs`
-- Adding a new Skill or new behavior to an existing Skill: use `feat`
-- Fixing an inconsistency or judgment error in an existing Skill: use `fix`
-- Renaming, reorganizing, or restructuring without adding behavior: use `refactor`
-- Updating `README.md`, `docs/*`, or `skills/*/evals/README.md`: use `docs`
-- Distribution or reference updates: use the type that matches the primary purpose of the change
+Follow `CONTRIBUTING.md` for commit messages and pull request titles.
 
 ## Changes that require approval
 
