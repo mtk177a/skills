@@ -15,6 +15,7 @@
 
 - `README.md`
 - `docs/authoring.md`
+- Issue、コミット、PR の規約は `CONTRIBUTING.md`
 
 Skill を作成・編集する際は、責務の重複を解消し、判断が収束するまでに必要な既存の `skills/*/SKILL.md` を確認します。目的を満たしたら止め、根拠のない件数上限は設けません。
 
@@ -82,14 +83,7 @@ Skill を作成・編集する際は、責務の重複を解消し、判断が�
 
 ## コミットメッセージ運用
 
-- Conventional Commits を使い、概要は英語で短く具体的に書く
-- 1 コミット 1 主題を基本とし、無関係な変更を混ぜない
-- `skills/*/SKILL.md` はこのリポジトリの成果物として扱い、一律に `docs` としない
-- 新しい Skill の追加や新しい振る舞いの追加: `feat`
-- 既存 Skill の不整合や判断ミスの修正: `fix`
-- 名前変更・責務整理・構造再編など、振る舞いを増やさない整理: `refactor`
-- `README.md`、`docs/*`、`skills/*/evals/README.md` などの更新: `docs`
-- 配布や参照の更新: 主目的となる変更の `type` に合わせる
+コミットメッセージと PR タイトルは `CONTRIBUTING.md` の規約に従う。
 
 ## 承認が必要な作業
 

@@ -732,7 +732,7 @@ def build_executor_prompt(plan: dict[str, Any], case: dict[str, Any]) -> str:
     if plan["path"] == "targeted-routing":
         return prompt
     return (
-        f"For this evaluation, use only the `{plan['skill']}` Skill at "
+        f"For this evaluation, use the `{plan['skill']}` Skill at "
         f"`.agents/skills/{plan['skill']}/SKILL.md` in the current evaluation workspace if it is present. "
         "Do not read or use a same-name Skill outside the current evaluation workspace. "
         "Return only the task result; do not discuss the evaluation.\n\n"
