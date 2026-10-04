@@ -15,6 +15,10 @@ Structured assets:
 - `results.json`: compact, hash-bound evidence across recorded revisions, added
   after execution
 
+`evals.json` and `triggers.json` use the executable `{skill_name, evals}`
+contract. Existing named fixtures were materialized as inline disposable files;
+the prompts, intended assertions, and routing cases were retained.
+
 ## Candidate static check
 
 - `description` includes approved, sufficiently scoped code, documentation, and
@@ -31,6 +35,8 @@ Structured assets:
   under an unchanged hypothesis
 - focused checks during a work unit and broader relevant regression checks before
   completion are distinct
+- a confirmed cause is corrected without disguising the symptom as success, while
+  an authorized recovery path for an unresolved cause remains available
 - `Blocked` and `Done` reports preserve the information needed for the next
   decision
 - the Skill remains usable without a companion Skill, subagent, script, or
@@ -51,6 +57,8 @@ Structured assets:
 | Newly exposed boundary gap | Adds a workaround or silently expands scope after discovering that the authorized local correction is insufficient | `scope-discovery` | File hashes and assigned assertions |
 | Response-decision boundary | Implements Defer or No action work from the review handoff | `act-now-only-with-reviewer-context` | File diff and assigned assertions |
 | Actual reviewer context | Omits actual scope, unknown criticality, recovery, review focus, or plan deviations from the Done report | `act-now-only-with-reviewer-context` | Report inspection |
+| Confirmed cause and existing recovery | Adds an `unknown` fallback instead of correcting the stale mapping, or omits the conditions for a safe rerun | `confirmed-cause-not-fallback` | File diff, test commands, report inspection |
+| Necessary recovery with unknown cause | Rejects an authorized bounded retry or claims it fixed the unknown timeout cause | `necessary-recovery-not-cause-fix` | File diff, test commands, report inspection |
 
 ## Behavioral scenarios
 
@@ -169,27 +177,18 @@ Requirements checklist:
 
 ## Execution protocol
 
-1. Use the committed `HEAD` Skill as the baseline and the working-tree Skill as
-   the candidate.
-2. Use the same input, client, model, reasoning effort, sandbox, adjacent Skills,
-   and grader for both conditions.
-3. Run implementation cases in writable disposable repositories. Preserve the
-   before and after hashes, command output, and final response outside the source
-   repository.
-4. Give the executor only `input` and the fixture. Keep assertions and expected
-   conclusions hidden.
-5. Use deterministic checks for file changes, test results, and unchanged blocked
-   fixtures. Use a separate grader for judgment-heavy requirements.
-6. Record exact commands, versions, exposed traces, assertion evidence, and
-   `not exposed` or `not executed` conditions.
-7. Repeat only when an unexpected result, instability, client difference, or
-   failure impact could change the decision.
+Use `scripts/run_skill_evaluation.py` and `docs/evaluation.md` to select a path,
+plan an explicit set of cases, inspect the model-call count, execute in writable
+disposable fixtures, grade the planned requirements, and record a compact report.
+The Runner supplies only `prompt` and fixture files to the executor; assertions
+remain hidden. Preserve raw traces and fixture diffs in the system temporary
+directory. Compare against a prior Skill or without the Skill only when the
+change or observed result makes that comparison decision-relevant.
 
-For Codex CLI, pin model and reasoning and use an ephemeral session. Keep raw JSONL
-and full output in a temporary directory outside the repository.
-
-Claude Code and other clients are not part of the current execution plan; record
-them as `not executed`.
+Use deterministic file and test evidence for implementation claims and inspect
+the response for cause-versus-recovery judgments. Repeat only when conflicting
+results, instability, or failure impact could change the decision. Other clients
+remain unverified until directly executed.
 
 ## Failure Pattern Ledger
 
@@ -258,3 +257,24 @@ explicit than these disposable fixtures?
 - Issue #13 changes no implementation-stage responsibility or instruction: this Skill already requires the simplest implementation inside the approved coherent boundary, rejects unrequired abstractions, and stops instead of applying a local workaround when inspection exposes a shared cause outside authorized scope.
 - Existing `approved-shared-invariant`, `scope-discovery`, and `act-now-only-with-reviewer-context` cases cover required structural correction, speculative-complexity rejection, and refusal to implement hypothetical extension work.
 - Per the repository evaluation selection and evidence-reuse policies, no behavior or routing case is rerun because the Skill body, assertions, inputs, and affected implementation-stage requirements are unchanged.
+
+## Issue #66 audit — 2026-10-04
+
+- Existing behavior and routing definitions were migrated together to the common
+  executable format. Former named fixtures are inline files in disposable
+  repositories; `results.json` remains historical evidence.
+- The changed cause-versus-recovery responsibility adds two cases. The selected
+  `confirmed-cause-not-fallback` candidate run used Codex CLI 0.155.1,
+  `gpt-6-luna` / max, a workspace-write fixture, and the keyring credential
+  store. The plan estimated one model call.
+- The Runner's repository, Skill-catalog, write-access, and personal-Skill
+  isolation checks passed. The executor observed the intended failing test and
+  correctly described why `unknown` would not fix the stale mapping. It then
+  treated the writable fixture as read-only and did not implement the fix.
+  The case is **fail**, as recorded in [`report.json`](report.json); the response's
+  recovery reasoning passed its assigned requirement, but cause correction and
+  completion verification failed.
+- `necessary-recovery-not-cause-fix` was not run after this execution-environment
+  mismatch. Other clients and real repositories remain unverified. Run the
+  recovery case when the evaluator can reliably give the executor writable
+  access; do not infer its result from static prose or the first case.

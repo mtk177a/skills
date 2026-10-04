@@ -1,73 +1,85 @@
 {
-  "skill": "implement-changes",
-  "version": 1,
-  "run_policy": {
-    "protocol": "Present each prompt as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
-    "count_only_observed_skill_loads": true,
-    "unobservable_result": "not exposed",
-    "repetition_rule": "Run each affected case under the target condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant. Use matched repetitions for baseline and candidate.",
-    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every observed condition. Mixed observed results are unstable, not a pass."
+  "skill_name": "implement-changes",
+  "execution": {
+    "coexistence_skills": [
+      "assess-risky-change-readiness",
+      "break-failure-loop",
+      "clarify-request",
+      "design-changes",
+      "review-changes",
+      "validate-fix"
+    ]
   },
-  "cases": [
+  "evals": [
     {
       "id": "approved-bug-fix",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "The bug-fix design and scope are approved. Implement the change in small units, run the focused test and relevant regression checks, and report what remains unverified."
+      "prompt": "The bug-fix design and scope are approved. Implement the change in small units, run the focused test and relevant regression checks, and report what remains unverified.",
+      "expected_handlers": [
+        "implement-changes"
+      ]
     },
     {
       "id": "approved-documentation-config",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Implement the approved README and editor-configuration changes. Use the available Markdown and JSON validation rather than inventing a product test, then report the checks you ran."
+      "prompt": "Implement the approved README and editor-configuration changes. Use the available Markdown and JSON validation rather than inventing a product test, then report the checks you ran.",
+      "expected_handlers": [
+        "implement-changes"
+      ]
     },
     {
       "id": "accepted-review-fixes",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "The review findings have been triaged. Apply only the accepted fixes, run the relevant checks, and hand off the resulting evidence."
+      "prompt": "The review findings have been triaged. Apply only the accepted fixes, run the relevant checks, and hand off the resulting evidence.",
+      "expected_handlers": [
+        "implement-changes"
+      ]
     },
     {
       "id": "act-now-review-fixes",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "The review findings are triaged. Implement only authorized Act now items, leave Defer and No action unchanged, run relevant checks, and return actual reviewer context."
+      "prompt": "The review findings are triaged. Implement only authorized Act now items, leave Defer and No action unchanged, run relevant checks, and return actual reviewer context.",
+      "expected_handlers": [
+        "implement-changes"
+      ]
     },
     {
       "id": "undefined-request",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "I think onboarding needs improvement, but the affected users, desired behavior, scope, and acceptance criteria are not defined. Help me clarify the request."
+      "prompt": "I think onboarding needs improvement, but the affected users, desired behavior, scope, and acceptance criteria are not defined. Help me clarify the request.",
+      "expected_handlers": [
+        "clarify-request"
+      ]
     },
     {
       "id": "change-design",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "Before touching code, design the change scope, affected consumers, risks, stop conditions, and verification coverage."
+      "prompt": "Before touching code, design the change scope, affected consumers, risks, stop conditions, and verification coverage.",
+      "expected_handlers": [
+        "design-changes"
+      ]
     },
     {
       "id": "diff-review",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "Review this existing diff for correctness, safety, maintainability, performance, and missing tests. Do not edit it."
+      "prompt": "Review this existing diff for correctness, safety, maintainability, performance, and missing tests. Do not edit it.",
+      "expected_handlers": [
+        "review-changes"
+      ]
     },
     {
       "id": "completed-fix-validation",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "The fix is already complete. Independently verify the diff and test results, separate confirmed from unconfirmed items, and assess the remaining risk without making changes."
+      "prompt": "The fix is already complete. Independently verify the diff and test results, separate confirmed from unconfirmed items, and assess the remaining risk without making changes.",
+      "expected_handlers": [
+        "validate-fix"
+      ]
     },
     {
       "id": "unapproved-auth-coexistence",
-      "expected": "should_not_trigger",
-      "category": "coexistence",
-      "prompt": "Prepare this authentication change for execution, but do not edit until its exact action, scope, safety controls, recovery treatment, residual risk, and execution authority are decision-ready. Assess what is missing."
+      "prompt": "Prepare this authentication change for execution, but do not edit until its exact action, scope, safety controls, recovery treatment, residual risk, and execution authority are decision-ready. Assess what is missing.",
+      "expected_handlers": [
+        "assess-risky-change-readiness"
+      ]
     },
     {
       "id": "failure-analysis-near-miss",
-      "expected": "should_not_trigger",
-      "category": "coexistence",
-      "prompt": "Two materially identical implementation attempts failed under the same hypothesis. Stop editing, organize confirmed facts and unknowns, and select one structurally different next check."
+      "prompt": "Two materially identical implementation attempts failed under the same hypothesis. Stop editing, organize confirmed facts and unknowns, and select one structurally different next check.",
+      "expected_handlers": [
+        "break-failure-loop"
+      ]
     }
   ]
 }

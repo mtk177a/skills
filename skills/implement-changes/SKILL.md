@@ -65,6 +65,13 @@ When upstream review feedback uses the current response contract, implement only
    workaround. If the required coherent boundary exceeds the authorized scope, stop
    and report the evidence and required scope decision. Also stop for any other
    material dependency, test-strategy, or risk change before expanding the work.
+   When implementing recovery or mitigation, distinguish its effect from a cause fix.
+   Tie any added fallback or recovery path to a current failure condition, its trigger,
+   the required state after recovery, and a check that can detect an invalid result.
+   Do not call a cause resolved merely because the symptom disappears. Preserve
+   recovery, error handling, and compatibility required by current consumers,
+   data, deployment, or rollback; do not retain a path solely because it existed
+   before or might be useful later.
 8. Track implementation attempts separately from test executions. If two
    materially equivalent attempts under the same unchanged hypothesis fail
    without new evidence, stop before a third equivalent edit. Record the failed
