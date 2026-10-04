@@ -73,7 +73,7 @@ Claude Code and other clients are outside the current execution plan and must be
 
 ## Current evidence — 2026-10-04
 
-At base `b88af0cdcd07138c8e7341a8423a34331b0a84b6`, all 7 existing behavior cases and 9 routing cases were migrated to the executable format without changing their prompts or original grading intent.\
+At base `b88af0cdcd07138c8e7341a8423a34331b0a84b6`, all 7 existing behavior cases and 9 routing cases were migrated to the executable format with their prompts unchanged.\
 Two behavior cases were added for the #37 cause and compatibility boundary.
 
 Codex CLI 0.155.1 with `gpt-6-luna`, max reasoning, and a read-only sandbox ran `symptom-masking-fallback` and `required-legacy-compatibility` on the final candidate.\
@@ -85,6 +85,16 @@ The compact record is in `report.json`.
 Earlier candidate observations exposed a mistaken `Partially resolved` status for the masked failure and an overconfident statement about active clients.\
 The final candidate clarified those boundaries and was rerun.\
 Unselected legacy cases, routing behavior, live deployment, and other clients were not executed for this change.
+
+## Routing expectation correction — 2026-10-05
+
+An independent review found that the migrated `summarize-supplied-results` case expected `summarize-changes` even though its legacy expectation was only that `validate-fix` not trigger.\
+The prompt supplies no scoped change set and forbids diff inspection, so the current `summarize-changes` contract does not apply.\
+The case now expects no Skill handler; the other eight routing expectations and all nine prompts remain unchanged.
+
+A one-call `targeted-routing` plan for this case passed static validation, but the Runner stopped at Skill-catalog preflight before a model call.\
+The historical candidate observation selected no Skill; it does not establish current routing behavior.\
+The corrected expectation is supported by the current Skill contracts and the repository's routing schema, while current model selection remains unverified.
 
 ## Historical result
 

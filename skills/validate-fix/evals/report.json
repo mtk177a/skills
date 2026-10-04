@@ -124,7 +124,7 @@
       "pass": 2
     }
   },
-  "stopping_reason": "Both selected changed-responsibility cases passed on the final candidate; migration parity and static checks cover the retained definitions.",
+  "stopping_reason": "Both selected changed-responsibility behavior cases passed on the final candidate; routing was not executed.",
   "unverified": [
     "Unselected legacy cases, routing behavior, live deployment, and other clients were not executed."
   ]

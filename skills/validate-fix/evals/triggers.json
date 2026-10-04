@@ -62,9 +62,7 @@
     {
       "id": "summarize-supplied-results",
       "prompt": "Summarize the test output and implementation notes I supplied into a short status update. Do not inspect the diff or independently verify the fix.",
-      "expected_handlers": [
-        "summarize-changes"
-      ]
+      "expected_handlers": []
     },
     {
       "id": "draft-review-comments",
