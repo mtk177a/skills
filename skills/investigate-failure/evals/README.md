@@ -114,6 +114,9 @@ Authentication and preflight failures before candidate execution are not candida
 The audit did not rerun unchanged routing cases, the other behavior cases, other clients or models, live production access, or long-running implicit invocation.\
 Further model evaluation is warranted if the state labels need to be reliable under a different reasoning setting or client.
 
+On 2026-10-04, an independent review of the current Japanese reference corrected one translation of whether the incident owner or runbook is active.\
+The report manifest was refreshed to match the reviewed candidate; the English runtime Skill and evaluation input did not change, and the model result does not evaluate the Japanese reference.
+
 ### Next validation question
 
 - In normal long-running sessions, does the broader Skill continue iterating through useful diagnostics without becoming too heavy for routine local failures or absorbing incident-management responsibility?
