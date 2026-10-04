@@ -101,6 +101,7 @@
         }
       ],
       "baseline_files": {
+        ".gitignore": "/.agents/\n",
         "src/parser.go": "package parser\n",
         "src/cache.go": "package cache\n\nfunc Get(key string) string { return store[key] }\n",
         "docs/deploy.md": "# Deploy\n",
@@ -108,6 +109,7 @@
       },
       "fixture": {
         "files": {
+          ".gitignore": "/.agents/\n",
           "src/parser.go": "package parser\n\nfunc ParseArray(value string) []string { return split(value) }\n",
           "src/cache.go": "package cache\n\nfunc Get(key string) string {\n\tif store == nil { return \"\" }\n\treturn store[key]\n}\n",
           "docs/deploy.md": "# Deploy\n\nRun the smoke check after rollout.\n",
@@ -356,10 +358,12 @@
         }
       ],
       "baseline_files": {
+        ".gitignore": "/.agents/\n",
         "README.md": "# Service\n"
       },
       "fixture": {
         "files": {
+          ".gitignore": "/.agents/\n",
           "README.md": "# Service\n\nUse the documented environment variables for local setup.\n",
           ".env": "SERVICE_TOKEN=SYNTHETIC_SECRET_VALUE_8C41\n"
         }
@@ -450,10 +454,12 @@
         }
       ],
       "baseline_files": {
+        ".gitignore": "/.agents/\n",
         "docs/usage.md": "# Usage\n"
       },
       "fixture": {
         "files": {
+          ".gitignore": "/.agents/\n",
           "docs/usage.md": "# Usage\n\nRun `acme verify` before deployment.\n"
         }
       }
@@ -493,10 +499,12 @@
         }
       ],
       "baseline_files": {
+        ".gitignore": "/.agents/\n",
         "fixture-marker.txt": "Synthetic Git baseline.\n"
       },
       "fixture": {
         "files": {
+          ".gitignore": "/.agents/\n",
           "-notes/release $(sample).md": "# Release notes\n",
           "fixture-marker.txt": "Synthetic Git baseline.\n"
         }

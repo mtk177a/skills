@@ -45,7 +45,7 @@ Verify that `draft-commit` produces intent-grounded, atomic commit plans without
 
 ## Executable fixture limits
 
-The common Runner creates actual unstaged Git changes for `more-than-three-concerns`, `suspected-secret`, `simple-safe-command`, and `special-path-safety` using `baseline_files` and `fixture.files`. The special-path case adds an unchanged marker file solely to initialize the disposable repository.
+The common Runner creates actual unstaged Git changes for `more-than-three-concerns`, `suspected-secret`, `simple-safe-command`, and `special-path-safety` using `baseline_files` and `fixture.files`. Each baseline tracks a root `.gitignore` entry for `/.agents/` so the Runner-installed Skill does not appear as an unrelated untracked change. The special-path case adds an unchanged marker file solely to initialize the disposable repository.
 
 The Runner cannot construct staged changes, partially staged files, or staged renames from an evaluation definition. Six cases preserve those changes in `case-git-state.md` as a supplied synthetic snapshot. These cases can test plan reasoning from supplied state, but they cannot verify live Git-index inspection, exact staging commands, or preservation of an actual partially staged index. The earlier disposable-Git evidence for those boundaries remains historical evidence in `results.json`; it is not a result for this definition format or the current candidate.
 
