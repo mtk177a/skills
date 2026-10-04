@@ -1,65 +1,77 @@
 ---
 name: design-agent-instructions
-description: リポジトリが実際に使う agent client 向けに、新規または再編する durable instruction 文書セットを設計する。編集前に source of truth の役割、loading と precedence の関係、共通 guidance と client 固有 guidance、必要な companion file を決めるときに使う。未解明な挙動の診断、通常の Skill 設計、承認済み文書変更の実行には使わず、実行は implementation workflow へ回す。
+description: リポジトリで実際に使うエージェント向けに、継続して参照する指示文書群の新規作成や再編を設計する。編集前に、共有情報の正本、文書の読み込みと優先順位、共通指示とクライアント固有の指示、補助文書の要否を決めるときに使う。原因が分かっていない挙動の診断、通常の Skill 設計、決定済みの文書変更の実施には使わず、実施は別の作業手順へ引き継ぐ。
 license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。
 
-# Design Agent Instructions
+# エージェント向け指示文書の設計
 
 ## 目的
 
-- 明確な authority と最小限の重複で、期待する client に届く最小の instruction 文書セットを設計する。
-- 1つの filename や hierarchy が普遍的だと仮定せず、確認済みの client semantics と repository の必要性から文書の役割を決める。
-- instruction set を編集せず、実装可能な handoff を作る。
+- 対象のクライアントに届き、指示の優先関係が明確で、重複を最小限に抑えた指示文書群を設計する。
+- 特定のファイル名や階層構造がすべてのクライアントに共通すると仮定せず、確認した読み込み規則とリポジトリの必要性に基づいて各文書の役割を決める。
+- 指示文書を編集せず、実装に引き継げる設計結果を作る。
 
-## 証拠
+## 判断に使う情報
 
-利用できる範囲で以下を集める。
+入手できる範囲で以下を集める。
 
-- 期待する挙動、scope、実際の利用者、client、model
-- 既存の instruction 文書、client 設定、import、rules、hooks、policy surface、一般 project documentation
-- loading、discovery、precedence、enforcement、対応 filename が重要な場合の最新公式 client documentation
-- 観測済みの loading evidence、trace、修正履歴、失敗
-- 適用可能な local policy と authorization boundary
+- 期待する挙動、対象範囲、実際の利用者、クライアント、モデル
+- 既存の指示文書、クライアントの設定、取り込み設定、規則、フック、制御方針に関わる設定、一般的なプロジェクト文書
+- 読み込み、検出、優先順位、強制的な制御、対応するファイル名が判断に影響する場合は、そのクライアントの最新の公式文書
+- 読み込みを確認した記録、実行履歴、修正履歴、失敗事例
+- 適用されるローカルの方針と作業の承認範囲
 
-観測事実、推論、前提、不明点を分ける。依頼が未解明な挙動から始まり、loading または authority が不確かな場合は、文書再設計を修正と扱う前に `audit-agent-guidance` で診断する。
+観測した事実、推論、前提、未確認事項を区別する。\
+依頼の発端が原因不明の挙動で、読み込みや指示の優先関係を確認できていない場合は、文書の再編を解決策とみなす前に `audit-agent-guidance` で診断する。
 
-## Workflow
+## 手順
 
-1. 期待する挙動、scope、実際に使う client、共通化すべき内容と client 固有にすべき内容を定義する。説明できない non-adherence が主題で、loading または authority が未確定なら、document design を止め、不足 evidence とともに `audit-agent-guidance` へ明示的に引き渡す。
-2. 既存の instruction set と project-local の一次情報を確認する。標準的な filename がないことだけを欠陥と扱わない。
-3. 各 target client について、関連する loading、discovery、precedence、import、enforcement semantics を確認して記録する。ある client の hierarchy を別 client に投影しない。
-4. 共通の事実または rule ごとに canonical source を特定する。import、reference、generated view は、target client が対応し、authority を隠さず drift を減らす場合だけ使う。
-5. durable behavioral guidance と、強制される permission または lifecycle automation を分離する。保証が必要で client に該当 mechanism がある場合は、client policy、settings、hooks を使う。
-6. 必要な文書と設定 surface を決める。client 固有 companion は、その client が実際に使われ、canonical guidance を直接利用できない場合だけ含める。
-7. 各 surface に置く内容と明示的に置かない内容を定義する。一般 project facts は、agent context に必要でなければ通常の documentation に置く。
-8. 必要に応じて、重複、矛盾、context cost、portability、ownership、更新経路、compaction または lazy loading 後の挙動を確認する。
-9. 提案 set を、現状維持、冗長 guidance の削除、より小さい bridge document と比較する。
-10. 重要な risk から validation を定義する。loading observability、precedence conflict、instruction adherence、enforcement boundary、active client 間の coexistence を扱う。
-11. scope のある implementation handoff を作る。この design workflow では file を作成・編集しない。
+1. 期待する挙動、対象範囲、実際に使うクライアント、共通化する内容とクライアント固有の内容を定める。\
+   指示が守られない原因の解明が主題で、読み込みや指示の優先関係を確認できていない場合は文書の設計を止め、不足している証拠を示して `audit-agent-guidance` へ明示的に引き継ぐ。
+2. 既存の指示文書群と、対象プロジェクト内の一次資料を確認する。\
+   一般的な名前のファイルがないことだけを欠陥とみなさない。
+3. 対象とするクライアントごとに、関連する読み込み、検出、優先順位、取り込み、強制的な制御の規則を確認して記録する。\
+   あるクライアントの階層構造を別のクライアントにも当てはめない。
+4. 共有する事実や規則ごとに正本を決める。\
+   ファイルの取り込み、参照、生成した文書は、対象クライアントが対応し、指示の優先関係を分かりにくくせず、内容のずれを減らせる場合にだけ使う。
+5. 継続して参照する行動指針と、権限の制御や処理の自動実行を分ける。\
+   強制的な制御が必要で、その仕組みをクライアントが提供している場合は、方針設定、設定項目、フックを使う。
+6. 必要な文書と設定箇所を決める。\
+   クライアント固有の補助文書は、そのクライアントを実際に使っており、共通の指示を直接読み込めない場合にだけ含める。
+7. 各文書や設定箇所に置く内容と、置かない内容を明らかにする。\
+   一般的なプロジェクトの情報は、エージェントが作業中に参照する必要がなければ通常の文書に置く。
+8. 必要に応じて、重複、矛盾、読み込みに使うコンテキスト量、環境間の移植性、管理責任、更新手順、コンテキストの圧縮や遅延読み込み後の挙動を確認する。
+9. 提案する文書群を、現状維持、重複する指示の削除、より簡潔な橋渡し文書と比較する。
+10. 重要なリスクに基づき、読み込みを観測できるか、優先順位の競合、指示が守られるか、強制的な制御との境界、利用中のクライアント間の併存を確認する方法を定める。
+11. 対象範囲を限定した実装への引き継ぎ資料を作る。\
+    この設計手順ではファイルを作成・編集しない。
 
-## 報告契約
+## 報告内容
 
-判断に合う構成を使い、以下を含める。
+判断に合う構成で、以下を含める。
 
-- 推奨する文書セットと、代替案より適切な理由
-- 期待する挙動、scope、active client、未解決の前提
-- client ごとに確認した loading、discovery、precedence、import、enforcement semantics
-- canonical source と surface ごとの責務
-- 意図的に省く文書または surface
-- 重複、context、portability、maintenance、migration の risk
-- validation coverage と実装可能な change unit
-- 未解決の挙動により妥当な document design ができない場合の、`audit-agent-guidance` への明示的な diagnostic handoff
+- 推奨する文書群と、代替案より適切な理由
+- 期待する挙動、対象範囲、実際に使うクライアント、未解決の前提
+- クライアントごとに確認した読み込み、検出、優先順位、取り込み、強制的な制御の規則
+- 共有情報の正本と、文書・設定箇所ごとの役割
+- 意図的に作らない文書や設定箇所
+- 重複、コンテキスト量、移植性、保守、移行に伴うリスク
+- 確認すべき範囲と、実装に引き継げる変更単位
+- 原因不明の挙動が設計の妥当性を妨げる場合は、`audit-agent-guidance` に引き継ぐ診断事項
 
-companion document、固定 filename、固定 heading template を強制しない。挙動が未確認の場合は、design を実証済みの修正として示さず、必要な diagnostic evidence を特定する。
+補助文書、固定のファイル名、固定の見出し構成を必須としない。\
+挙動を確認できていない場合は、設計によって問題を解消できると断定せず、診断に必要な証拠を示す。
 
-## 境界
+## 責務の境界
 
-- 主目的が既存 guidance の不整合な挙動の原因診断なら `audit-agent-guidance` を使う。再利用可能な Skill の責務と trigger 設計には `design-skill` を使う。
-- 現行 client semantics が別の性質を示さない限り、instruction document は hard enforcement ではなく behavioral context として扱う。
-- `AGENTS.md`、`CLAUDE.md`、`.github/copilot-instructions.md`、`GEMINI.md` が client に読み込まれると、確認なしに仮定しない。
-- 文書セットを完全に見せるためだけに、共通事実を複数 file へ複製しない。
-- workflow は read-only に保つ。編集には user authorization と対象環境の applicable policy が必要であり、普遍的な追加 approval gate を作らない。
-- template と例に secret、credential、personal information、非公開の operational data を含めない。
+- 主な目的が、既存の指示が一貫して守られない原因の診断であれば `audit-agent-guidance` を使う。\
+  再利用可能な Skill の責務や使用条件の設計には `design-skill` を使う。
+- 現行のクライアントの仕様で別の扱いが確認できない限り、指示文書は行動を導く情報として扱い、強制的な制御とはみなさない。
+- `AGENTS.md`、`CLAUDE.md`、`.github/copilot-instructions.md`、`GEMINI.md` が対象クライアントに読み込まれると、確認せずに仮定しない。
+- 文書群を揃えて見せるためだけに、共有する事実を複数のファイルへ複製しない。
+- この手順では読み取りと設計だけを行う。\
+  編集にはユーザーの許可と対象環境で適用される方針が必要だが、一律に追加の承認を求める規則は作らない。
+- ひな型や例に秘密情報、認証情報、個人情報、非公開の運用情報を含めない。

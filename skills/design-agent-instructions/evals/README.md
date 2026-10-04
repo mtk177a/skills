@@ -6,7 +6,7 @@ Verify that the Skill designs the smallest instruction document set from active-
 
 ## Assets
 
-- `triggers.json`: core and near-miss routing cases with observable Skill-load policy
+- `triggers.json`: executable core and near-miss routing definitions
 - [`results.json`](results.json): immutable revision identifiers, behavior evidence, and trigger observations for the currently accepted revision
 - this README: static contract, coverage, scenarios, and summarized results
 
