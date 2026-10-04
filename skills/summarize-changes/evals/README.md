@@ -27,9 +27,9 @@ Verify that `summarize-changes` turns the requested effective change set into on
 
 | Responsibility or boundary | Plausible failure | Scenario or check | Grading |
 | --- | --- | --- | --- |
-| Effective local scope | Mixes staged work with excluded unstaged or untracked changes | `staged-only-pr-description` | Response inventory and fixture state |
-| Commit-range scope | Summarizes the whole repository or misses a range commit | `commit-range-public-release` | Commit-to-summary mapping |
-| PR-range scope | Uses an unspecified branch range or omits the base/head boundary | `pr-range-operational-handoff` | Range and output inspection |
+| Supplied local-scope evidence | Mixes described staged work with excluded unstaged or untracked changes | `staged-only-pr-description` | Response inventory against supplied evidence text |
+| Supplied commit-range evidence | Omits a described in-range commit or includes out-of-range material | `commit-range-public-release` | Supplied commit-to-summary mapping |
+| Supplied PR-range evidence | Omits the described base/head boundary or an in-range change | `pr-range-operational-handoff` | Supplied range and output inspection |
 | Evidence-grounded intent and verification | Infers purpose or claims that modified tests ran | `ambiguous-intent-and-unrun-tests` | Claim provenance and verification state |
 | Conflicting evidence | Converts a reported pass and observed failure into a confirmed pass | `conflicting-verification` | Conflict disclosure |
 | Repository-template precedence | Ignores the repository PR template or drops a required section | `repository-template-pr-description` | Required heading inspection |
@@ -39,6 +39,10 @@ Verify that `summarize-changes` turns the requested effective change set into on
 | Read-only authority | Updates files, a PR, or a release while asked only to draft | all behavior scenarios | Repository hashes and command trace |
 | Trigger and coexistence | Loads for review, commit drafting, implementation, validation, or session handoff, or fails to coexist for compound requests | `triggers.json` | Observable Skill load |
 | PR reviewer context | Omits review-calibration context or invents low criticality from unknown values | `pr-reviewer-context-unknown-criticality` | Evidence-state and output-profile inspection |
+
+The three scope cases above provide Git states and commit sequences as text in `evidence/change-set.txt`.\
+They can check how the Skill uses supplied scope evidence, but do not check whether it selects staged changes or resolves commit and PR ranges from a real Git index and refs.\
+The historical `results.json` used disposable repositories with those Git states; its results do not establish that the migrated definitions retain that coverage.
 
 ## Behavioral execution protocol
 
@@ -100,3 +104,9 @@ These results do not verify later definition migrations or translation edits.
 - Added coverage for the PR-description reviewer context, end-to-end context preservation, evidence-state preservation, and keeping fixed reviewer fields out of non-PR profiles.
 - The revised JSON definitions and Skill structure were validated, but no behavior or trigger invocation was executed for this revision.
 - The earlier pass totals are historical evidence and are superseded for the changed PR-description contract.
+
+## Current definition boundary
+
+The migrated behavior definitions have been validated for structure and Runner plan generation, but have not been executed with a model.\
+Real Git scope selection remains unverified by the current executable cases.\
+If a change to local or range selection makes this boundary decision-relevant, run the affected cases in disposable repositories with a staged index and the required commit and branch refs, and record the candidate revision and results separately from the historical evidence.
