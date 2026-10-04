@@ -7,7 +7,7 @@ This repository-local Skill maintains Japanese references when English repositor
 
 | Asset | Role |
 | --- | --- |
-| `evals.json` | Executable behavior cases H, I, and J. |
+| `evals.json` | Executable behavior cases H, I, J, and L. |
 | `triggers.json` | Executable routing cases for K maintenance and Issue-only authoring. |
 | `README.md` | Coverage, method, results, and limits across the evaluation paths. |
 
@@ -22,6 +22,7 @@ The case prompts, fixtures, expected handlers, and assertions live in the JSON d
 | Required companion and faithful Japanese | Skips the companion or weakens an obligation | H | Completed reads of both repository Skills and the full wording reference before editing; English unchanged; Japanese diff. |
 | Missing companion | Uses a personal replacement or edits anyway | I | Catalog isolation, candidate read, no Japanese edit, and missing-file response. |
 | Meaning-preserving source edit | Rewrites an aligned reference or skips the companion | J | Both Skill reads, Git diff, and no-update reason. |
+| CONTRIBUTING guide pair | Guesses the pair, weakens Issue tracking, or skips the companion | L contributing | Reads `docs/localization.md`, the candidate, companion, and full wording reference before editing; only the Japanese guide changes and preserves the maintainer's explicit exception. |
 | English maintenance request | Fails to select the candidate or edits beyond the changed pair | K maintenance | Complete event stream, observed handlers, successful reads, and document diff. |
 | Issue authoring exclusion | Applies reference maintenance to an Issue draft | K Issue-only | Complete event stream with no candidate read and no file edit. |
 | Evaluation definitions and relative links | Malformed evaluation definitions or broken relative Markdown links | Repository checker | `python3 -B scripts/check_repository.py`. |
@@ -75,6 +76,41 @@ Six model calls were made in total: the original five plus the focused I retry.
 The temporary machine-graded reports record H/J as pass and initial I as fail, I retry as pass, and both K cases as pass.\
 The repository checker passed during each completed run.\
 Plans, raw events, and grading files remain outside the repository; this README preserves their decision-relevant results without combining distinct paths into one report.
+
+## Current evidence: 2026-09-30
+
+The change adding the `CONTRIBUTING.md` → `CONTRIBUTING-ja.md` pair was checked with targeted candidate case L and one planned model call using `gpt-6-luna` with `max` reasoning.\
+An initial preflight stopped before a model call because the sandbox could not inspect the Codex Skill catalog; the same read-only diagnostic succeeded outside that sandbox.\
+A new workspace-write plan then passed catalog and runtime-isolation preflight and completed the case in a disposable fixture outside the repository.
+
+Case L did not pass all critical assertions.\
+The executor read the repository-local maintenance Skill and correctly changed only the Japanese guide to require Issue tracking unless the maintainer explicitly waived it.\
+The English guide remained at its supplied candidate content, and `git diff --check` passed.\
+The event stream contained no read of the required `write-natural-japanese` Skill or its wording reference before the edit.\
+The pair mapping and obligation were observed, but this run does not verify the required companion behavior for the new pair.\
+The plan and run record remain in temporary storage outside the repository; no model retry was made under the unchanged candidate.
+
+The subsequent candidate moved pair selection to `docs/localization.md` and made companion reads the first steps of the maintenance Skill.\
+H, I, J, K maintenance, and L fixtures now contain a localization table; L no longer names its Japanese counterpart in the prompt and requires an observed table read before editing.\
+A targeted plan selected L, H, and I for three model calls, but execution stopped at the L catalog preflight before any model call.\
+The sandboxed Codex diagnostic returned a read-only filesystem error.\
+Automatic approval review initially rejected an escalated diagnostic because Codex could create PATH aliases outside the workspace.\
+After the maintainer explicitly approved that possible side effect, the three-call run completed: L and H edited the correct Japanese files but skipped the required companion, while I stopped without editing after inspecting the document change.
+
+The Runner's targeted-candidate prompt had said to "use only" the candidate Skill, which could conflict with its required companion.\
+A focused unit test failed before that wording was changed and passed after "only" was removed; the same-name personal Skill restriction remains.\
+The next three-call run observed complete companion and wording-reference reads before the L and H edits.\
+I stopped without editing, but its fixture lacked the localization table, so that run did not isolate the missing-companion condition.
+
+The I fixture was given the table, and a three-call L/I/J run followed.\
+L read the companion, full wording reference, and table before editing the Japanese guide; I reported the missing repository companion and made no edit; J read the companion and left the aligned Japanese file unchanged.\
+The L run opened the candidate Japanese file before reading the table, although it consulted the table before editing.\
+Two focused L runs with an instruction to consult the table before opening the candidate showed that this opening order was inconsistent; both still read the table and companion before editing.\
+The required boundary was therefore stated as confirming the counterpart in the table before editing, while allowing exploratory reads.
+
+One final L run against that exact candidate passed its critical checks: the repository companion and full wording reference were read, `docs/localization.md` identified the counterpart before editing, only `CONTRIBUTING-ja.md` was edited, and the stronger Issue obligation and explicit maintainer exception were preserved.\
+The final candidate's H, I, and J cases were not rerun after the last wording refinement; their earlier completed runs support the unchanged behaviors, but are not exact-candidate evidence.\
+These results establish observed behavior in the selected disposable Codex CLI fixtures, not a guarantee across clients, models, or future runs.
 
 ## Earlier evidence and limits
 

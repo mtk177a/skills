@@ -8,12 +8,14 @@
       "fixture": {
         "files": {
           "docs/authoring.md": "If an English requirement changes, maintainers must update its Japanese reference before merging the pull request.\n",
-          "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新してもよい。\n"
+          "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新してもよい。\n",
+          "docs/localization.md": "# Localization\n\n| File | Canonical | Translation |\n| --- | --- | --- |\n| `CONTRIBUTING.md` | English | `CONTRIBUTING-ja.md` |\n| `docs/*.md` | English | `docs/ja/*.md` |\n"
         }
       },
       "baseline_files": {
         "docs/authoring.md": "If an English requirement changes, maintainers may update its Japanese reference before merging the pull request.\n",
-        "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新してもよい。\n"
+        "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新してもよい。\n",
+        "docs/localization.md": "# Localization\n\n| File | Canonical | Translation |\n| --- | --- | --- |\n| `CONTRIBUTING.md` | English | `CONTRIBUTING-ja.md` |\n| `docs/*.md` | English | `docs/ja/*.md` |\n"
       },
       "coexistence_skills": ["write-natural-japanese"],
       "expected_handlers": ["maintain-japanese-references", "write-natural-japanese"],

@@ -40,15 +40,21 @@ skills/<skill-name>/
 > This Japanese translation is provided as a reference only.
 ```
 
-The same policy applies to other translated files:
+The following table defines the maintained canonical-to-reference file pairs.\
+Use it to identify the Japanese reference for a changed English file; add a new pair here when no listed path or pattern covers it.
 
 | File | Canonical | Translation |
 |------|-----------|-------------|
-| `SKILL.md` | English by default; Japanese for a documented Japanese writing/editing exception | `SKILL-ja.md` when English is canonical |
+| `skills/<skill-name>/SKILL.md` | English by default; Japanese for a documented Japanese writing/editing exception | `skills/<skill-name>/SKILL-ja.md` when English is canonical |
 | `README.md` | English | `README.ja.md` |
+| `CONTRIBUTING.md` | English | `CONTRIBUTING-ja.md` |
 | `AGENTS.md` | English | `AGENTS-ja.md` |
 | `CLAUDE.md` | English | `CLAUDE-ja.md` |
 | `docs/*.md` | English | `docs/ja/*.md` |
+| `.agents/skills/<tracked-skill>/SKILL.md` | English by default; Japanese for a documented Japanese writing/editing exception | `.agents/skills/<tracked-skill>/SKILL-ja.md` when English is canonical |
+
+If the table does not identify a unique counterpart, do not infer a filename or create a translation.\
+Report the unresolved pair so the mapping can be decided and recorded here.
 
 ## Keeping translations in sync
 
@@ -73,7 +79,7 @@ Japanese-canonical Skills remain outside this workflow and do not receive a dupl
 
 Commit message summaries are written in English and kept short and specific.
 
-See `AGENTS.md` for the full commit message convention.
+See `CONTRIBUTING.md` for the full commit message and pull request title convention.
 
 ## Language in Issues and pull requests
 

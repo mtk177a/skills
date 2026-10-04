@@ -112,6 +112,8 @@ Runner は編集後に評価を自動実行せず、全ケースを暗黙に選�
 .
 ├── README.md
 ├── README.ja.md
+├── CONTRIBUTING.md
+├── CONTRIBUTING-ja.md
 ├── LICENSE
 ├── AGENTS.md
 ├── AGENTS-ja.md
@@ -141,6 +143,9 @@ Runner は編集後に評価を自動実行せず、全ケースを暗黙に選�
 ## 作成と貢献
 
 個人用リポジトリのため、外部からの貢献は想定していません。
+
+本人と AI エージェントによる Issue、検証、コミット、PR の手順は [コントリビューションガイド](CONTRIBUTING.md) を参照してください。\
+[日本語参考訳](CONTRIBUTING-ja.md) もあります。
 
 このリポジトリ向けに独自作成したコードとコンテンツは、MIT ライセンスの範囲で利用・改変できます。第三者の著作物を基にしたファイルには個別のライセンスが適用されます。詳細は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) を参照してください。Skill の構成は [docs/ja/authoring.md](docs/ja/authoring.md)、第三者が提供する Skill や実行可能な Skill の確認方法は [docs/ja/security.md](docs/ja/security.md) を参照してください。
 

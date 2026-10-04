@@ -47,15 +47,21 @@ skills/<skill-name>/
 > 内容に差異がある場合は英語版を優先してください。
 ```
 
-同じ方針が他の訳ファイルにも適用されます:
+次の表で、保守する英語版と日本語参考訳の組み合わせを定めます。\
+変更された英語版に対応する参考訳をこの表で特定し、既存の行やパターンに該当しない組を追加するときは、ここに記録します。
 
 | ファイル | 内容の基準となる版 | 参考訳 |
 |----------|------|----|
-| `SKILL.md` | 原則は英語。文書化した日本語の執筆・推敲用 Skill は日本語 | 英語版を基準とする場合は `SKILL-ja.md` |
+| `skills/<skill-name>/SKILL.md` | 原則は英語。文書化した日本語の執筆・推敲用 Skill は日本語 | 英語版を基準とする場合は `skills/<skill-name>/SKILL-ja.md` |
 | `README.md` | 英語 | `README.ja.md` |
+| `CONTRIBUTING.md` | 英語 | `CONTRIBUTING-ja.md` |
 | `AGENTS.md` | 英語 | `AGENTS-ja.md` |
 | `CLAUDE.md` | 英語 | `CLAUDE-ja.md` |
 | `docs/*.md` | 英語 | `docs/ja/*.md` |
+| `.agents/skills/<tracked-skill>/SKILL.md` | 原則は英語。文書化した日本語の執筆・推敲用 Skill は日本語 | 英語版を基準とする場合は `.agents/skills/<tracked-skill>/SKILL-ja.md` |
+
+表から対応するファイルを一つに特定できない場合は、ファイル名を推測したり参考訳を作成したりせず、未決定の組を報告します。\
+対応を決めたら、この表に記録します。
 
 ## 訳の同期維持
 
@@ -80,7 +86,7 @@ skills/<skill-name>/
 
 コミットメッセージのサマリーは英語で短く具体的に書きます。
 
-完全なコミットメッセージ規約については `AGENTS.md` を参照してください。
+コミットメッセージと PR タイトルの詳しい規約については `CONTRIBUTING.md` を参照してください。
 
 ## Issue と pull request の言語
 
