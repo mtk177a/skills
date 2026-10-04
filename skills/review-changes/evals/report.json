@@ -1,0 +1,149 @@
+{
+  "schema_version": 2,
+  "skill": "review-changes",
+  "skill_source": "public",
+  "evaluated_on": "2026-10-04",
+  "purpose": "Check cause, compatibility, and explicit premise reporting for Issue 71",
+  "affected_responsibilities": [
+    "Cause versus fallback, current compatibility, and explicit unconfirmed-premise handoff"
+  ],
+  "selection": {
+    "path": "targeted-candidate",
+    "cases": [
+      {
+        "id": "fallback-masks-confirmed-cause",
+        "conditions": [
+          "candidate"
+        ]
+      },
+      {
+        "id": "unreleased-persisted-compatibility",
+        "conditions": [
+          "candidate"
+        ]
+      }
+    ]
+  },
+  "base": {
+    "commit": "b88af0cdcd07138c8e7341a8423a34331b0a84b6"
+  },
+  "candidate": {
+    "files": {
+      "SKILL-ja.md": {
+        "mode": "100644",
+        "sha256": "sha256:1686d05aa6126a6864c63a096a3fba8e39de32e849141ca84abf0ad08f4ac39b"
+      },
+      "SKILL.md": {
+        "mode": "100644",
+        "sha256": "sha256:edb27dad09f4f81c0c1ae25f4259abcddb6fa25e6e0734ca1d0ce5b6005bce1d"
+      }
+    }
+  },
+  "evaluation_inputs": {
+    "evaluation_files": {
+      "skills/review-changes/evals/evals.json": "sha256:9aac612195164a4823f67217af05b8bd784a3d693587fd59952944157afd4f4a"
+    },
+    "case_files": {}
+  },
+  "environment": {
+    "client": "codex-cli 0.155.1",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max",
+    "sandbox": "read-only",
+    "auth_credentials_store": "auto"
+  },
+  "checks": {
+    "repository": "pass"
+  },
+  "results": [
+    {
+      "case_id": "fallback-masks-confirmed-cause",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "contextual-evidence",
+          "status": "pass",
+          "evidence": "Compared the changed export.py with docs/export-contract.md and the parser's unchanged field lookup.",
+          "critical": true
+        },
+        {
+          "id": "finding-contract",
+          "status": "pass",
+          "evidence": "The finding gave must, high confidence, cited code and contract, described impact and exposure, suggested checks, and used a separate unconfirmed-premises field.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "status": "pass",
+          "evidence": "Reported git diff --check as passed; separated static inspection, unrun behavior tests, and proposed checks.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "status": "pass",
+          "evidence": "Trace contains file reads and Git read-only checks, with no edits or external writes.",
+          "critical": true
+        },
+        {
+          "id": "cause-versus-mitigation",
+          "status": "pass",
+          "evidence": "Identified the unchanged report/report_data mismatch and explained that returning [] hides rather than repairs it.",
+          "critical": true
+        }
+      ],
+      "evidence": "The candidate found the confirmed cause and the failed fallback behavior within the supplied diff.",
+      "status": "pass"
+    },
+    {
+      "case_id": "unreleased-persisted-compatibility",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "contextual-evidence",
+          "status": "pass",
+          "evidence": "Read the saved v1 record and rollback guidance in addition to the reader.py diff.",
+          "critical": true
+        },
+        {
+          "id": "finding-contract",
+          "status": "pass",
+          "evidence": "The finding supplied must, high confidence, locations, concrete impact and preconditions, verification direction, recovery context, and a dedicated unconfirmed-premises field.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "status": "pass",
+          "evidence": "Reported diff check and static comparison as executed, and tests and callers as unchecked.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "status": "pass",
+          "evidence": "Execution reported only reads and nonmutating Git checks; no fix or triage decision.",
+          "critical": true
+        },
+        {
+          "id": "current-compatibility",
+          "status": "pass",
+          "evidence": "Tied compatibility to the persisted v1 record and documented rollback, without using release status to dismiss it.",
+          "critical": true
+        }
+      ],
+      "evidence": "The candidate identified a concrete saved-record read failure and bounded its unknown operational reach.",
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "status": "pass",
+    "counts": {
+      "error": 0,
+      "fail": 0,
+      "inconclusive": 0,
+      "pass": 2
+    }
+  },
+  "stopping_reason": "Both selected candidate cases exposed the changed judgments and satisfied their critical requirements; no further model call is decision-relevant.",
+  "unverified": [
+    "Unselected review and routing cases, real repository diffs, other models and clients, and live production behavior."
+  ]
+}

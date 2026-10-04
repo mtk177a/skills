@@ -51,6 +51,8 @@ Use only the dimensions material to the change.
 - External contracts such as APIs and schemas versus internal implementation constraints
 - Authorization, authentication, input validation, injection, secret or personal data exposure, and unsafe side effects
 - Backward compatibility, migrations, rollout behavior, and consistency with callers or sibling implementations
+- Fallbacks, retries, and catch-and-continue paths: whether they address a current failure condition, expose or conceal a supported cause, and leave the required recovery state observable and verifiable
+- Compatibility paths: whether known consumers, published behavior, persisted data, migration, mixed-version rollout, or rollback currently require them, without assuming an unpublished feature has no compatibility obligations
 - Test coverage and test quality, including implementation coupling or over-mocking
 - Maintainability and performance when there is a concrete impact rather than a personal preference or speculative optimization
 - Unjustified abstractions, extension points, configuration surfaces, dependencies, compatibility paths, or architectural layers whose concrete maintenance or operational cost is not supported by current requirements or observed risks
@@ -107,6 +109,8 @@ For a completed review, include:
 - findings, ordered by requested response and impact
 - checks performed with commands or methods and actual results
 - suggested verification, unchecked scope, and residual risks
+
+Keep each finding's `Unconfirmed premises` as a distinct field even in a concise presentation; do not leave the reader to infer them from confidence, risk context, or residual-risk prose.
 
 If there are no material findings, state that explicitly and still report the reviewed scope, checks, unchecked scope, and residual risk. Do not produce a bare `LGTM` or manufacture minor comments.
 
