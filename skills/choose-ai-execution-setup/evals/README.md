@@ -2,78 +2,52 @@
 
 ## Purpose
 
-Verify that `choose-ai-execution-setup` produces an actionable recommendation for a concrete task from confirmed available choices while keeping access, tools, model capability, reasoning effort, context, permissions, verification, topology, and user-supplied constraints independent.
+Check that the Skill recommends an available execution setup for a concrete task, verifies decision-critical technical facts when it can, leaves unresolved user priorities to the user, and stops before starting the task or changing the client.
 
 ## Assets
 
-- `triggers.json`: trigger, near-miss, and coexistence selection cases
-- `evals.json`: current, no-Skill, and candidate behavior cases with hidden requirement assignments
-- `results.json`: compact evidence for the accepted revision after execution
-- this README: static contract, coverage, protocol, and summarized results
+- `evals.json`: executable behavior cases, including the original seven cases and two cases for the audited boundaries
+- `triggers.json`: executable selection, near-miss, and coexistence cases
+- `report.json`: compact results for the two changed-responsibility candidate cases
+- `results.json`: historical evidence from the accepted 2026-07-30 revision; it is not evidence for the current candidate
+- this README: responsibility coverage, execution choice, and evidence limits
 
-## Static check
+The definitions use the repository's `{skill_name, evals}` contract. The old `current` condition now maps to `baseline`, which means the selected Git base revision; the old `no_skill` condition maps to `without-skill`. The historical `triage-agent-usage` comparison remains in `results.json` and is not implied by the new `baseline` condition. All original case prompts, expected behavior, assertion meanings and criticality, and routing expectations are preserved.
 
-- `description` targets explicit execution-setup advice and excludes task execution, implementation-unit design, client-setting changes, and learning calibration.
+## Static checks
+
+- Metadata names explicit setup advice and excludes implementation, setting changes, and learning calibration.
 - Required capability and confirmed availability remain distinct.
-- Model capability and reasoning effort are evaluated and reported separately.
-- A completion state, gating prerequisites, decision-critical unknowns, and the next actor make the recommendation actionable.
-- Topology is selected only from defined work units, and parallelism accounts for ownership, shared state, verification, parent integration, and coordination cost.
-- The Skill performs no task, configuration change, permission grant, or automatic orchestration.
+- Model capability and reasoning effort remain separate.
+- Recommendation states, prerequisites, unknowns, and the next actor make advice actionable.
+- The Skill does not start the task, configure the client, grant permission, or automatically orchestrate agents.
+- The English and Japanese instructions preserve the same conditions and boundaries.
 
-## Coverage map
+## Coverage
 
-| Responsibility or boundary | Plausible failure | Scenario or check | Grading |
-| --- | --- | --- | --- |
-| Confirmed setup choice | Chooses unnecessary tools or an unavailable named setup | `confirmed-text-options` | Availability and handoff assertions |
-| Missing input handling | Guesses a setup without a concrete task or available choices | `missing-availability` | Completion-state and availability assertions |
-| Independent dimensions | Treats stronger reasoning as a substitute for access or model capability | `routine-high-impact` | Dimension and grounding assertions |
-| Bounded parallelism | Uses an integrating parent as an unconfirmed worker or ignores capacity | `parallel-independent-units` | Topology and parallel-safety assertions |
-| Shared-state conflict | Parallelizes competing writes and evolving shared context | `shared-write-conflict` | Critical parallel-safety assertion |
-| Task-design boundary | Invents work units before choosing topology | `undefined-work-units` | Task-design handoff assertion |
-| Learning coexistence | Absorbs learning calibration or drops its explicit handoff | `learning-coexistence` | Learning-boundary assertion |
-| Trigger boundary | Absorbs implementation, design, review, learning, or setting changes | `triggers.json` | Observable Skill loads |
+| Responsibility or boundary | Plausible failure | Case or check |
+| --- | --- | --- |
+| Confirmed setup choice | Chooses unnecessary tools or an unavailable named setup | `confirmed-text-options` |
+| Missing task or options | Invents an available setup | `missing-availability` |
+| Independent dimensions | Substitutes reasoning for required access | `routine-high-impact` |
+| Bounded parallelism | Counts an unconfirmed parent as a worker or ignores capacity | `parallel-independent-units` |
+| Shared mutable state | Recommends conflicting parallel writes | `shared-write-conflict` |
+| Task-design boundary | Invents implementation units | `undefined-work-units` |
+| Learning boundary | Absorbs learning calibration | `learning-coexistence` |
+| Technical fact finding | Asks the user for locally checkable tool and repository facts | `check-technical-availability` |
+| User-owned trade-off | Silently ranks spending against privacy | `unresolved-user-tradeoff` |
+| Selection boundary | Absorbs implementation, design, review, learning, or setting changes | `triggers.json` |
 
-## Behavioral execution protocol
+Behavior cases use their stated expected output and critical assertions. Routing cases use observed Skill loads and expected handlers.
 
-1. Load `triage-agent-usage` from baseline commit `c464b605b1cfbb47d53fa7143aa5789d1b60387e`, the working-tree candidate, and a no-Skill condition in separate disposable directories.
-2. Run candidate behavior first with Codex CLI, `gpt-5.6-sol`, high reasoning, and a read-only sandbox.
-3. Continue to the comparison only after every candidate response assigns one completion state and the candidate trigger boundary passes.
-4. Keep hidden assertions and expected conclusions out of executor input.
-5. Grade blinded responses with a separate executor. A failed critical assertion fails the condition; a partial result without a critical failure is partial.
-6. Keep raw prompts, responses, JSONL, and grader output outside the repository.
-7. Repeat only when variation, an unexpected result, or failure impact could change the decision.
+## Execution and evidence
 
-## Trigger execution protocol
+For a changed instruction, use the repository Runner's `targeted-candidate` path, select only cases that expose the changed responsibility, inspect the planned model-call count, then run the candidate once. Keep raw artifacts outside the repository. Add comparison or repetition only if the first result leaves a decision-relevant ambiguity. Unchanged selection metadata needs static review rather than another routing run.
 
-Present each case as a Skill-selection task with the target and adjacent Skills installed. Require the selector to open every selected `SKILL.md` so loading is observable. Count only observed target file reads; record an unavailable observation as `not exposed`.
+The 2026-07-30 `results.json` records seven passing candidate behavior cases and eight passing trigger cases under Codex CLI 0.146.0, `gpt-5.6-sol`, high reasoning, and a read-only sandbox. That evidence is historical; it does not establish the behavior of the current candidate or of other clients.
 
-## Failure Pattern Ledger
+On 2026-10-04, Codex CLI 0.155.1 with `gpt-6-luna`, max reasoning, and a read-only sandbox completed `check-technical-availability` and `unresolved-user-tradeoff`; all six critical requirements passed. The separate `confirmed-text-options` regression run also passed: the response recommended the stated available Chat A and did not draft the announcement. `report.json` records the two changed-responsibility cases and their exact candidate hashes. The regression run remains in temporary artifacts and is summarized here and in Issue #54.
 
-- `required access replaced by stronger reasoning`
-- `model capability inferred from reasoning effort`
-- `named setup availability invented`
-- `recommendation ready despite a gating unknown`
-- `implementation units invented during topology selection`
-- `parallel agents selected despite shared state or write conflicts`
-- `integrating parent counted as an unconfirmed worker`
-- `task execution or client configuration absorbed into setup advice`
-- `explicit learning goal absorbed or dropped instead of handed off`
+## Unverified boundaries
 
-## Current revision
-
-Evaluated on 2026-07-30 with Codex CLI 0.146.0, `gpt-5.6-sol`, high reasoning, and a read-only sandbox.
-
-- The candidate passed all seven behavior cases and all 41 assigned assertions.
-- Under the redesigned contract, the current `triage-agent-usage` baseline passed no behavior case; two were partial and five failed.
-- Under the same contract, the no-Skill condition passed no behavior case.
-- The candidate passed all eight trigger, near-miss, and coexistence cases. The current Skill also selected the expected owner in all eight cases.
-- Without the target Skill, the predefined-topology request loaded `design-changes`; the other seven routing cases selected the expected available owner or no target.
-- After the final parent-worker boundary change, `parallel-independent-units` was rerun. Other behavior evidence was reused because the added instruction applies only when an integrating parent could be counted as a worker.
-- Trigger evidence was reused after body-only refinements because the `description` and adjacent Skill metadata were unchanged.
-- Claude and other clients were not executed.
-
-See [`results.json`](results.json) for candidate hashes, the case-by-requirement matrix, observable Skill loads, and unverified items.
-
-### Next validation question
-
-- In real use, do users provide enough information about available client surfaces and permissions for conditional recommendations to converge without unnecessary clarification?
+The other behavior and routing cases are not rerun merely because their definitions were migrated. Real users may provide incomplete environment details, and client-specific tool visibility can vary. Repeat a case or test another client only when its behavior becomes relevant to an acceptance decision.

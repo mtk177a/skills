@@ -1,125 +1,344 @@
 {
-  "skill": "choose-ai-execution-setup",
-  "version": 1,
-  "baseline": {
-    "commit": "c464b605b1cfbb47d53fa7143aa5789d1b60387e",
-    "conditions": {
-      "current": "Use triage-agent-usage from baseline.commit.",
-      "no_skill": "Use ordinary model behavior without an execution-setup selection Skill.",
-      "candidate": "Use the working-tree choose-ai-execution-setup."
-    },
-    "raw_artifact_policy": "Keep prompts, responses, JSONL, grader output, and temporary Skill directories outside the source repository."
-  },
-  "execution": {
-    "client": "Codex CLI",
-    "model": "gpt-5.6-sol",
-    "reasoning_effort": "high",
-    "sandbox": "read-only",
-    "executor_input_fields": [
-      "input"
-    ],
-    "hidden_grading_fields": [
-      "assertions",
-      "additional_requirement"
-    ]
-  },
-  "assertions": [
-    {
-      "id": "independent-dimensions",
-      "critical": true,
-      "statement": "Separately derives access and tools, model capability, reasoning effort, context, permissions, verification, and topology instead of collapsing them into one light-to-heavy scale."
-    },
-    {
-      "id": "availability-grounded",
-      "critical": true,
-      "statement": "Maps requirements only to confirmed available choices and labels capability requirements or unknown availability without inventing a named setup."
-    },
-    {
-      "id": "actionable-handoff",
-      "critical": true,
-      "statement": "Returns one valid completion state and identifies prerequisites, unknowns, and the actor responsible for the next step."
-    },
-    {
-      "id": "topology-from-units",
-      "critical": true,
-      "statement": "Chooses topology only from already-defined work units and returns undefined implementation-unit design to the owning workflow."
-    },
-    {
-      "id": "parallel-safety",
-      "critical": true,
-      "statement": "Uses parallel agents only when units are independent, avoid mutable-state or file conflicts, have ownership and checks, can be integrated, and justify coordination cost."
-    },
-    {
-      "id": "authority-boundary",
-      "critical": true,
-      "statement": "Does not execute the task, change settings, grant permissions, or treat setup selection as authorization."
-    },
-    {
-      "id": "cost-constraint",
-      "critical": false,
-      "statement": "Uses stated cost, latency, token, and privacy constraints without inventing them or treating one as a universal ranking."
-    },
-    {
-      "id": "learning-boundary",
-      "critical": true,
-      "statement": "Keeps learning calibration separate while allowing a precise handoff when the user explicitly requests learning support."
-    },
-    {
-      "id": "material-value",
-      "critical": true,
-      "statement": "Provides a decision-ready setup recommendation or stop condition that is materially more actionable than generic advice."
-    }
-  ],
-  "assertion_policy": "Grade only assertions assigned to the case. A failed critical assertion fails that condition; a partial result with no critical failure makes the condition partial.",
-  "cases": [
+  "skill_name": "choose-ai-execution-setup",
+  "evals": [
     {
       "id": "confirmed-text-options",
-      "input": "I need to turn supplied meeting notes into a concise internal announcement. No repository, file, command, or external-system access is needed. Available choices are ordinary Chat A with standard reasoning, or Coding Agent B with repository and command tools. Choose the execution setup, but do not draft the announcement.",
-      "conditions": ["candidate", "current", "no_skill"],
-      "assertions": ["independent-dimensions", "availability-grounded", "actionable-handoff", "authority-boundary", "cost-constraint", "material-value"],
-      "additional_requirement": "Choose confirmed Chat A, explain why Coding Agent B's tools are unnecessary without treating Chat A as universally lighter, and leave drafting to the next actor."
+      "prompt": "I need to turn supplied meeting notes into a concise internal announcement. No repository, file, command, or external-system access is needed. Available choices are ordinary Chat A with standard reasoning, or Coding Agent B with repository and command tools. Choose the execution setup, but do not draft the announcement.",
+      "expected_output": "Choose confirmed Chat A, explain why Coding Agent B's tools are unnecessary without treating Chat A as universally lighter, and leave drafting to the next actor.",
+      "assertions": [
+        {
+          "id": "independent-dimensions",
+          "text": "Separately derives access and tools, model capability, reasoning effort, context, permissions, verification, and topology instead of collapsing them into one light-to-heavy scale.",
+          "critical": true
+        },
+        {
+          "id": "availability-grounded",
+          "text": "Maps requirements only to confirmed available choices and labels capability requirements or unknown availability without inventing a named setup.",
+          "critical": true
+        },
+        {
+          "id": "actionable-handoff",
+          "text": "Returns one valid completion state and identifies prerequisites, unknowns, and the actor responsible for the next step.",
+          "critical": true
+        },
+        {
+          "id": "authority-boundary",
+          "text": "Does not execute the task, change settings, grant permissions, or treat setup selection as authorization.",
+          "critical": true
+        },
+        {
+          "id": "cost-constraint",
+          "text": "Uses stated cost, latency, token, and privacy constraints without inventing them or treating one as a universal ranking.",
+          "critical": false
+        },
+        {
+          "id": "material-value",
+          "text": "Provides a decision-ready setup recommendation or stop condition that is materially more actionable than generic advice.",
+          "critical": true
+        }
+      ],
+      "conditions": [
+        "candidate",
+        "baseline",
+        "without-skill"
+      ]
     },
     {
       "id": "missing-availability",
-      "input": "Choose the best AI setup for my task. I have not described the task or listed which chats, agents, models, tools, permissions, or environments are available.",
-      "conditions": ["candidate", "current", "no_skill"],
-      "assertions": ["availability-grounded", "actionable-handoff", "authority-boundary", "material-value"],
-      "additional_requirement": "Return Insufficient evidence, name the decision-critical task and availability inputs, and do not fabricate a recommendation."
+      "prompt": "Choose the best AI setup for my task. I have not described the task or listed which chats, agents, models, tools, permissions, or environments are available.",
+      "expected_output": "Return Insufficient evidence, name the decision-critical task and availability inputs, and do not fabricate a recommendation.",
+      "assertions": [
+        {
+          "id": "availability-grounded",
+          "text": "Maps requirements only to confirmed available choices and labels capability requirements or unknown availability without inventing a named setup.",
+          "critical": true
+        },
+        {
+          "id": "actionable-handoff",
+          "text": "Returns one valid completion state and identifies prerequisites, unknowns, and the actor responsible for the next step.",
+          "critical": true
+        },
+        {
+          "id": "authority-boundary",
+          "text": "Does not execute the task, change settings, grant permissions, or treat setup selection as authorization.",
+          "critical": true
+        },
+        {
+          "id": "material-value",
+          "text": "Provides a decision-ready setup recommendation or stop condition that is materially more actionable than generic advice.",
+          "critical": true
+        }
+      ],
+      "conditions": [
+        "candidate",
+        "baseline",
+        "without-skill"
+      ]
     },
     {
       "id": "routine-high-impact",
-      "input": "Choose between available setups for an authorized production configuration rollout. Setup A can edit the configuration and run the deterministic validation and dry-run but uses standard reasoning. Setup B has stronger reasoning but cannot access the repository or run checks. The rollout itself is outside this request. Which setup should prepare the verified change?",
-      "conditions": ["candidate", "current", "no_skill"],
-      "assertions": ["independent-dimensions", "availability-grounded", "actionable-handoff", "authority-boundary", "material-value"],
-      "additional_requirement": "Prefer Setup A because required access and deterministic verification are gating capabilities; do not equate high impact with stronger reasoning or authorize the rollout."
+      "prompt": "Choose between available setups for an authorized production configuration rollout. Setup A can edit the configuration and run the deterministic validation and dry-run but uses standard reasoning. Setup B has stronger reasoning but cannot access the repository or run checks. The rollout itself is outside this request. Which setup should prepare the verified change?",
+      "expected_output": "Prefer Setup A because required access and deterministic verification are gating capabilities; do not equate high impact with stronger reasoning or authorize the rollout.",
+      "assertions": [
+        {
+          "id": "independent-dimensions",
+          "text": "Separately derives access and tools, model capability, reasoning effort, context, permissions, verification, and topology instead of collapsing them into one light-to-heavy scale.",
+          "critical": true
+        },
+        {
+          "id": "availability-grounded",
+          "text": "Maps requirements only to confirmed available choices and labels capability requirements or unknown availability without inventing a named setup.",
+          "critical": true
+        },
+        {
+          "id": "actionable-handoff",
+          "text": "Returns one valid completion state and identifies prerequisites, unknowns, and the actor responsible for the next step.",
+          "critical": true
+        },
+        {
+          "id": "authority-boundary",
+          "text": "Does not execute the task, change settings, grant permissions, or treat setup selection as authorization.",
+          "critical": true
+        },
+        {
+          "id": "material-value",
+          "text": "Provides a decision-ready setup recommendation or stop condition that is materially more actionable than generic advice.",
+          "critical": true
+        }
+      ],
+      "conditions": [
+        "candidate",
+        "baseline",
+        "without-skill"
+      ]
     },
     {
       "id": "parallel-independent-units",
-      "input": "Choose the agent topology for three already-defined read-only investigations: dependency advisories, database query performance, and API error logs. Each has a separate evidence source, owner, and completion checklist; none writes files or shared state. One parent session will compare the resulting evidence. Two identical read-only agents are available, and latency matters.",
-      "conditions": ["candidate", "current", "no_skill"],
-      "assertions": ["independent-dimensions", "availability-grounded", "actionable-handoff", "topology-from-units", "parallel-safety", "cost-constraint", "authority-boundary", "material-value"],
-      "additional_requirement": "Recommend bounded parallel execution using the two confirmed agents and parent integration, with the remaining unit scheduled as capacity frees."
+      "prompt": "Choose the agent topology for three already-defined read-only investigations: dependency advisories, database query performance, and API error logs. Each has a separate evidence source, owner, and completion checklist; none writes files or shared state. One parent session will compare the resulting evidence. Two identical read-only agents are available, and latency matters.",
+      "expected_output": "Recommend bounded parallel execution using the two confirmed agents and parent integration, with the remaining unit scheduled as capacity frees.",
+      "assertions": [
+        {
+          "id": "independent-dimensions",
+          "text": "Separately derives access and tools, model capability, reasoning effort, context, permissions, verification, and topology instead of collapsing them into one light-to-heavy scale.",
+          "critical": true
+        },
+        {
+          "id": "availability-grounded",
+          "text": "Maps requirements only to confirmed available choices and labels capability requirements or unknown availability without inventing a named setup.",
+          "critical": true
+        },
+        {
+          "id": "actionable-handoff",
+          "text": "Returns one valid completion state and identifies prerequisites, unknowns, and the actor responsible for the next step.",
+          "critical": true
+        },
+        {
+          "id": "topology-from-units",
+          "text": "Chooses topology only from already-defined work units and returns undefined implementation-unit design to the owning workflow.",
+          "critical": true
+        },
+        {
+          "id": "parallel-safety",
+          "text": "Uses parallel agents only when units are independent, avoid mutable-state or file conflicts, have ownership and checks, can be integrated, and justify coordination cost.",
+          "critical": true
+        },
+        {
+          "id": "cost-constraint",
+          "text": "Uses stated cost, latency, token, and privacy constraints without inventing them or treating one as a universal ranking.",
+          "critical": false
+        },
+        {
+          "id": "authority-boundary",
+          "text": "Does not execute the task, change settings, grant permissions, or treat setup selection as authorization.",
+          "critical": true
+        },
+        {
+          "id": "material-value",
+          "text": "Provides a decision-ready setup recommendation or stop condition that is materially more actionable than generic advice.",
+          "critical": true
+        }
+      ],
+      "conditions": [
+        "candidate",
+        "baseline",
+        "without-skill"
+      ]
     },
     {
       "id": "shared-write-conflict",
-      "input": "Choose the agent topology for two already-defined changes that both edit the same migration file and depend on the same evolving schema decision. Two coding agents are available, but the parent has no deterministic merge procedure. Do not design or implement the migration.",
-      "conditions": ["candidate", "current", "no_skill"],
-      "assertions": ["independent-dimensions", "availability-grounded", "actionable-handoff", "topology-from-units", "parallel-safety", "authority-boundary", "material-value"],
-      "additional_requirement": "Reject parallel writes and recommend a single owner or sequential handoff because shared context, file conflict, and integration uncertainty outweigh latency."
+      "prompt": "Choose the agent topology for two already-defined changes that both edit the same migration file and depend on the same evolving schema decision. Two coding agents are available, but the parent has no deterministic merge procedure. Do not design or implement the migration.",
+      "expected_output": "Reject parallel writes and recommend a single owner or sequential handoff because shared context, file conflict, and integration uncertainty outweigh latency.",
+      "assertions": [
+        {
+          "id": "independent-dimensions",
+          "text": "Separately derives access and tools, model capability, reasoning effort, context, permissions, verification, and topology instead of collapsing them into one light-to-heavy scale.",
+          "critical": true
+        },
+        {
+          "id": "availability-grounded",
+          "text": "Maps requirements only to confirmed available choices and labels capability requirements or unknown availability without inventing a named setup.",
+          "critical": true
+        },
+        {
+          "id": "actionable-handoff",
+          "text": "Returns one valid completion state and identifies prerequisites, unknowns, and the actor responsible for the next step.",
+          "critical": true
+        },
+        {
+          "id": "topology-from-units",
+          "text": "Chooses topology only from already-defined work units and returns undefined implementation-unit design to the owning workflow.",
+          "critical": true
+        },
+        {
+          "id": "parallel-safety",
+          "text": "Uses parallel agents only when units are independent, avoid mutable-state or file conflicts, have ownership and checks, can be integrated, and justify coordination cost.",
+          "critical": true
+        },
+        {
+          "id": "authority-boundary",
+          "text": "Does not execute the task, change settings, grant permissions, or treat setup selection as authorization.",
+          "critical": true
+        },
+        {
+          "id": "material-value",
+          "text": "Provides a decision-ready setup recommendation or stop condition that is materially more actionable than generic advice.",
+          "critical": true
+        }
+      ],
+      "conditions": [
+        "candidate",
+        "baseline",
+        "without-skill"
+      ]
     },
     {
       "id": "undefined-work-units",
-      "input": "Choose whether to use one agent or parallel agents for a multi-file feature. The implementation approach, affected boundaries, and work units have not been designed yet. Do not design the feature in this response.",
-      "conditions": ["candidate", "current", "no_skill"],
-      "assertions": ["actionable-handoff", "topology-from-units", "parallel-safety", "authority-boundary", "material-value"],
-      "additional_requirement": "Do not invent work units or topology. Return Insufficient evidence and identify task design as the next actor's work."
+      "prompt": "Choose whether to use one agent or parallel agents for a multi-file feature. The implementation approach, affected boundaries, and work units have not been designed yet. Do not design the feature in this response.",
+      "expected_output": "Do not invent work units or topology. Return Insufficient evidence and identify task design as the next actor's work.",
+      "assertions": [
+        {
+          "id": "actionable-handoff",
+          "text": "Returns one valid completion state and identifies prerequisites, unknowns, and the actor responsible for the next step.",
+          "critical": true
+        },
+        {
+          "id": "topology-from-units",
+          "text": "Chooses topology only from already-defined work units and returns undefined implementation-unit design to the owning workflow.",
+          "critical": true
+        },
+        {
+          "id": "parallel-safety",
+          "text": "Uses parallel agents only when units are independent, avoid mutable-state or file conflicts, have ownership and checks, can be integrated, and justify coordination cost.",
+          "critical": true
+        },
+        {
+          "id": "authority-boundary",
+          "text": "Does not execute the task, change settings, grant permissions, or treat setup selection as authorization.",
+          "critical": true
+        },
+        {
+          "id": "material-value",
+          "text": "Provides a decision-ready setup recommendation or stop condition that is materially more actionable than generic advice.",
+          "critical": true
+        }
+      ],
+      "conditions": [
+        "candidate",
+        "baseline",
+        "without-skill"
+      ]
     },
     {
       "id": "learning-coexistence",
-      "input": "Choose the execution setup for a repository feature with confirmed code and test access. A repository-capable coding agent is available. I also need to understand the result well enough to maintain it, but do not design the learning method here.",
-      "conditions": ["candidate", "current", "no_skill"],
-      "assertions": ["independent-dimensions", "availability-grounded", "actionable-handoff", "authority-boundary", "learning-boundary", "material-value"],
-      "additional_requirement": "Recommend the confirmed coding agent for execution and keep learning calibration as a separate optional handoff."
+      "prompt": "Choose the execution setup for a repository feature with confirmed code and test access. A repository-capable coding agent is available. I also need to understand the result well enough to maintain it, but do not design the learning method here.",
+      "expected_output": "Recommend the confirmed coding agent for execution and keep learning calibration as a separate optional handoff.",
+      "assertions": [
+        {
+          "id": "independent-dimensions",
+          "text": "Separately derives access and tools, model capability, reasoning effort, context, permissions, verification, and topology instead of collapsing them into one light-to-heavy scale.",
+          "critical": true
+        },
+        {
+          "id": "availability-grounded",
+          "text": "Maps requirements only to confirmed available choices and labels capability requirements or unknown availability without inventing a named setup.",
+          "critical": true
+        },
+        {
+          "id": "actionable-handoff",
+          "text": "Returns one valid completion state and identifies prerequisites, unknowns, and the actor responsible for the next step.",
+          "critical": true
+        },
+        {
+          "id": "authority-boundary",
+          "text": "Does not execute the task, change settings, grant permissions, or treat setup selection as authorization.",
+          "critical": true
+        },
+        {
+          "id": "learning-boundary",
+          "text": "Keeps learning calibration separate while allowing a precise handoff when the user explicitly requests learning support.",
+          "critical": true
+        },
+        {
+          "id": "material-value",
+          "text": "Provides a decision-ready setup recommendation or stop condition that is materially more actionable than generic advice.",
+          "critical": true
+        }
+      ],
+      "conditions": [
+        "candidate",
+        "baseline",
+        "without-skill"
+      ]
+    },
+    {
+      "id": "check-technical-availability",
+      "prompt": "I need to choose a setup to edit and validate this repository later. Before recommending ordinary chat or this coding agent, check with read-only commands whether this session can read the checkout and whether Python is available. Do not edit files or start the implementation.",
+      "expected_output": "Uses available read-only checks for repository and Python access, distinguishes observed capabilities from any unverified future permissions, recommends only a setup supported by the evidence, and does not start the requested repository work.",
+      "assertions": [
+        {
+          "id": "technical-facts",
+          "text": "Checks the decision-critical repository and Python availability with available read-only tools, or identifies a concrete reason those checks cannot run; does not simply ask the user to supply checkable facts.",
+          "critical": true
+        },
+        {
+          "id": "availability-grounded",
+          "text": "Maps requirements only to confirmed available choices and labels capability requirements or unknown availability without inventing a named setup.",
+          "critical": true
+        },
+        {
+          "id": "authority-boundary",
+          "text": "Does not execute the task, change settings, grant permissions, or treat setup selection as authorization.",
+          "critical": true
+        }
+      ],
+      "conditions": [
+        "candidate"
+      ]
+    },
+    {
+      "id": "unresolved-user-tradeoff",
+      "prompt": "Two confirmed setups can complete my private document draft. Setup A costs nothing but sends the document to an external provider. Setup B runs locally but costs me $20 per month. Both have the needed tools and verification. I have not said how I weigh spending against sharing the document. Which should I use? Advise only; do not start the draft.",
+      "expected_output": "Explains the material money and privacy trade-off without inventing the user’s preference, identifies that preference as the decision-critical input for a final choice, and leaves drafting to the next actor.",
+      "assertions": [
+        {
+          "id": "user-owned-tradeoff",
+          "text": "Does not silently rank cost against privacy for the user; explains the concrete consequences and asks for the missing preference or presents a conditional recommendation.",
+          "critical": true
+        },
+        {
+          "id": "actionable-handoff",
+          "text": "Returns one valid completion state and identifies prerequisites, unknowns, and the actor responsible for the next step.",
+          "critical": true
+        },
+        {
+          "id": "authority-boundary",
+          "text": "Does not execute the task, change settings, grant permissions, or treat setup selection as authorization.",
+          "critical": true
+        }
+      ],
+      "conditions": [
+        "candidate"
+      ]
     }
   ]
 }
