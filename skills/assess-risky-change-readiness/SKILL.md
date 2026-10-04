@@ -52,6 +52,8 @@ Use ordinary change design when these properties do not require additional execu
 7. Determine the authorization state for the exact scope and controls without granting authority or requesting redundant approval.
 8. Assign exactly one completion state and produce the handoff.
 
+Keep an unsettled approach or design decision separate from a missing operational control and from a pending approval decision. Return unsettled approaches to design or decision exploration; identify missing controls as readiness gaps; leave approval to the responsible authority once the handoff is otherwise ready.
+
 If the target or execution boundary is not identifiable, classify the result as `Blocked` rather than inventing a plan.
 Treat a command as a proposed, unexecuted action unless supplied evidence establishes that it was already run.
 
@@ -60,8 +62,8 @@ Treat a command as a proposed, unexecuted action unless supplied evidence establ
 Choose exactly one state in this order:
 
 1. `Not applicable`: The change does not need safety controls beyond the ordinary design or implementation handoff.
-2. `Blocked`: The Skill applies, but a material target, evidence, control, recovery, ownership, risk-acceptance, or authority gap prevents a responsible authorization or execution handoff.
-3. `Ready for authorization`: Material controls and evidence are decision-ready, but the responsible authority has not approved the exact action, scope, and residual risk.
+2. `Blocked`: The Skill applies, but a material target, evidence, control, recovery, ownership, risk-acceptance, or decision-authority gap prevents a responsible authorization or execution handoff. A known decision owner whose approval is pending is not, by itself, an authority gap.
+3. `Ready for authorization`: Material controls and evidence are decision-ready, and the responsible decision owner is identified, but that owner has not approved the exact action, scope, and residual risk.
 4. `Ready for execution handoff`: Material controls are decision-ready and the exact action and scope are already authorized for the identified execution owner.
 
 `Blocked` takes precedence over authorization status when a material readiness gap remains.
