@@ -7,8 +7,8 @@ Verify that `calibrate-learning-support` adjusts AI learning support around an a
 ## Assets
 
 - `triggers.json`: trigger, continuation, near-miss, and coexistence selection cases
-- `evals.json`: previous-name, no-Skill, and candidate behavior cases with hidden requirement assignments
-- `results.json`: compact evidence for the accepted revision after execution
+- `evals.json`: executable behavior cases with hidden assertions, including preservation of the originating review output
+- `results.json`: historical evidence for the revision evaluated in July 2026
 - this README: static contract, coverage, protocol, and summarized results
 
 ## Static check
@@ -31,22 +31,22 @@ Verify that `calibrate-learning-support` adjusts AI learning support around an a
 | Iteration across turns | Treats one response as complete or repeats resolved material | `partial-understanding-continuation` | Per-turn transcript grader |
 | Decision ownership | Approves a consequential production choice for the user or dumps all technical analysis back to them | `high-risk-adoption-decision` | Critical ownership assertions |
 | Adaptive output | Always emits a quiz, fixed concept list, study plan, or template | All behavior cases | Cross-case inspection |
+| Originating workflow output | Replaces required review findings with a learning plan or calibration status | `review-output-preserved` | Finding and learning-support assertions |
 | Trigger and continuation | Misses explicit learning intent or a follow-up checkpoint | `triggers.json` | Observable Skill load |
-| Adjacent routing | Absorbs tool selection, ordinary implementation, general teaching, or request clarification | `triggers.json` | Observable Skill load |
+| Adjacent routing | Absorbs tool selection, ordinary implementation, general teaching, or request clarification; treats unfamiliarity alone as learning intent | `triggers.json` | Observable Skill load |
 
 ## Behavioral execution protocol
 
-1. Load `calibrate-ai-learning` from baseline commit `82722ad5cfe003c164bb6b3736fae3612d4612a2` for the previous-name condition, use no Skill for the no-Skill condition, and use the working-tree `calibrate-learning-support` for the candidate.
-2. Run each condition in a disposable directory with only the condition's Skill and declared task input.
-3. For multi-turn cases, accumulate the visible conversation. Keep hidden assertions and expected conclusions out of executor input.
-4. Use a separate grader with the transcript, assigned assertions, and hidden additional requirement.
-5. A failed critical assertion fails the case. A partial result without a critical failure is partial.
-6. Keep raw prompts, responses, JSONL, and grader output outside the repository.
-7. Repeat only when variation, an unexpected result, or failure impact could change the design decision.
+1. Use `scripts/run_skill_evaluation.py plan` to select only the cases and conditions needed for the changed responsibility and inspect the model-call count before execution.
+2. Run the plan in the Runner's disposable fixtures. Keep assertions and expected conclusions out of executor input.
+3. For multi-turn cases, grade the relevant turn against the assigned assertions and the visible prior conversation.
+4. A failed critical assertion fails the case. A partial result without a critical failure is partial.
+5. Keep raw prompts, responses, JSONL, and grader output outside the repository.
+6. Repeat or compare conditions only when variation, an unexpected result, or failure impact could change the decision.
 
 ## Trigger execution protocol
 
-Present each case as a Skill-selection task using only installed names and descriptions. Require the selector to open every selected `SKILL.md` so loading is observable. Count only an observed target file read; record an unavailable observation as `not exposed`.
+Use the Runner's targeted routing path with the declared coexistence Skills. Count only successful Skill reads in a complete event stream; record an unavailable observation as inconclusive.
 
 ## Failure Pattern Ledger
 
@@ -61,7 +61,7 @@ Present each case as a Skill-selection task using only installed names and descr
 - `tool selection routed to learning calibration`
 - `originating workflow never resumes`
 
-## Current revision
+## Historical evidence
 
 Evaluated on 2026-07-30 with Codex CLI 0.146.0, `gpt-5.6-sol`, high reasoning, and a read-only sandbox.
 
@@ -73,6 +73,16 @@ Evaluated on 2026-07-30 with Codex CLI 0.146.0, `gpt-5.6-sol`, high reasoning, a
 - Claude and other clients were not executed.
 
 See [`results.json`](results.json) for candidate hashes, the case-by-requirement matrix, pairwise comparison, observable Skill loads, and unverified items.
+
+## Issue #53 evidence
+
+On 2026-10-04, the working-tree candidate based on `b88af0cdcd07138c8e7341a8423a34331b0a84b6` was checked with Codex CLI 0.155.1, `gpt-6-luna`, maximum reasoning effort, and a read-only evaluation sandbox. The Runner used its isolated `auto` credential store setting. Raw artifacts remain outside this repository.
+
+- `review-output-preserved`: execution and runtime isolation passed. Manual inspection found the requested review finding, its changed location, impact, and evidence; no learning plan displaced the finding.
+- `deadline-execute-and-explain`: execution and runtime isolation passed. The answer returned the requested UTC expression and one-sentence reason without a lecture or checkpoint.
+- `unfamiliar-domain-no-learning-request`: routing observed `implement-changes` alone, as expected.
+- `explicit-learning-priority`: the model read a personal same-name Skill during execution despite the Runner's successful catalog and sandbox preflights. Runtime isolation failed, so this run supplies no candidate routing verdict.
+- The other migrated cases were not executed because their responsibilities did not change in this audit. Historical results above remain historical evidence, not a current rerun.
 
 ### Next validation question
 
