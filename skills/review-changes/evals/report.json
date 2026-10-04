@@ -3,21 +3,15 @@
   "skill": "review-changes",
   "skill_source": "public",
   "evaluated_on": "2026-10-04",
-  "purpose": "Check cause, compatibility, and explicit premise reporting for Issue 71",
+  "purpose": "Check that supported timeout recovery is not over-flagged after Issue 71 review feedback",
   "affected_responsibilities": [
-    "Cause versus fallback, current compatibility, and explicit unconfirmed-premise handoff"
+    "Current failure condition and verified recovery despite unknown root cause"
   ],
   "selection": {
     "path": "targeted-candidate",
     "cases": [
       {
-        "id": "fallback-masks-confirmed-cause",
-        "conditions": [
-          "candidate"
-        ]
-      },
-      {
-        "id": "unreleased-persisted-compatibility",
+        "id": "verified-timeout-recovery",
         "conditions": [
           "candidate"
         ]
@@ -41,7 +35,7 @@
   },
   "evaluation_inputs": {
     "evaluation_files": {
-      "skills/review-changes/evals/evals.json": "sha256:9aac612195164a4823f67217af05b8bd784a3d693587fd59952944157afd4f4a"
+      "skills/review-changes/evals/evals.json": "sha256:46af99c6339bd3d75490d20af3221f78679669755d017ec99ac8a6693c56cdd3"
     },
     "case_files": {}
   },
@@ -57,79 +51,41 @@
   },
   "results": [
     {
-      "case_id": "fallback-masks-confirmed-cause",
+      "case_id": "verified-timeout-recovery",
       "condition": "candidate",
       "requirements": [
         {
           "id": "contextual-evidence",
           "status": "pass",
-          "evidence": "Compared the changed export.py with docs/export-contract.md and the parser's unchanged field lookup.",
+          "evidence": "Read the policy contract and focused tests, and tied the conclusion to the policy_loader.py diff.",
           "critical": true
         },
         {
-          "id": "finding-contract",
+          "id": "necessary-recovery",
           "status": "pass",
-          "evidence": "The finding gave must, high confidence, cited code and contract, described impact and exposure, suggested checks, and used a separate unconfirmed-premises field.",
+          "evidence": "Accepted the bounded verified-snapshot recovery despite an unknown timeout root cause; cited the 0–300 second trigger, signal, and re-raise paths.",
           "critical": true
         },
         {
-          "id": "checks-vs-suggestions",
+          "id": "no-invented-findings",
           "status": "pass",
-          "evidence": "Reported git diff --check as passed; separated static inspection, unrun behavior tests, and proposed checks.",
-          "critical": true
-        },
-        {
-          "id": "read-only-review",
-          "status": "pass",
-          "evidence": "Trace contains file reads and Git read-only checks, with no edits or external writes.",
-          "critical": true
-        },
-        {
-          "id": "cause-versus-mitigation",
-          "status": "pass",
-          "evidence": "Identified the unchanged report/report_data mismatch and explained that returning [] hides rather than repairs it.",
-          "critical": true
-        }
-      ],
-      "evidence": "The candidate found the confirmed cause and the failed fallback behavior within the supplied diff.",
-      "status": "pass"
-    },
-    {
-      "case_id": "unreleased-persisted-compatibility",
-      "condition": "candidate",
-      "requirements": [
-        {
-          "id": "contextual-evidence",
-          "status": "pass",
-          "evidence": "Read the saved v1 record and rollback guidance in addition to the reader.py diff.",
-          "critical": true
-        },
-        {
-          "id": "finding-contract",
-          "status": "pass",
-          "evidence": "The finding supplied must, high confidence, locations, concrete impact and preconditions, verification direction, recovery context, and a dedicated unconfirmed-premises field.",
+          "evidence": "Reported no material supported issue and did not demand fallback removal or a speculative cause fix.",
           "critical": true
         },
         {
           "id": "checks-vs-suggestions",
           "status": "pass",
-          "evidence": "Reported diff check and static comparison as executed, and tests and callers as unchecked.",
+          "evidence": "Marked git diff --check as run, tests as read but unrun, and suggested a focused test while naming runtime and provider gaps.",
           "critical": true
         },
         {
           "id": "read-only-review",
           "status": "pass",
-          "evidence": "Execution reported only reads and nonmutating Git checks; no fix or triage decision.",
-          "critical": true
-        },
-        {
-          "id": "current-compatibility",
-          "status": "pass",
-          "evidence": "Tied compatibility to the persisted v1 record and documented rollback, without using release status to dismiss it.",
+          "evidence": "Execution trace contains Skill and fixture reads plus read-only Git checks; it made no edits or external writes.",
           "critical": true
         }
       ],
-      "evidence": "The candidate identified a concrete saved-record read failure and bounded its unknown operational reach.",
+      "evidence": "The candidate recognized the current verified recovery path as supported and bounded the remaining unknowns.",
       "status": "pass"
     }
   ],
@@ -139,11 +95,11 @@
       "error": 0,
       "fail": 0,
       "inconclusive": 0,
-      "pass": 2
+      "pass": 1
     }
   },
-  "stopping_reason": "Both selected candidate cases exposed the changed judgments and satisfied their critical requirements; no further model call is decision-relevant.",
+  "stopping_reason": "The selected case passed all five critical requirements; additional model calls are not decision-relevant for this finding.",
   "unverified": [
-    "Unselected review and routing cases, real repository diffs, other models and clients, and live production behavior."
+    "Unselected review and routing cases, actual repository diffs, repeated runs, other models and clients, snapshot-provider integration, and production behavior."
   ]
 }

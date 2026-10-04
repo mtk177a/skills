@@ -533,6 +533,49 @@
       }
     },
     {
+      "id": "verified-timeout-recovery",
+      "title": "Current timeout recovery preserves a verified snapshot",
+      "prompt": "Review the current working-tree diff in policy_loader.py. Read the policy contract and tests, then report supported findings, checks, unchecked scope, and residual risk. Do not triage or implement.",
+      "assertions": [
+        {
+          "id": "contextual-evidence",
+          "text": "Uses the current timeout contract and focused tests when judging the changed recovery path, while keeping any finding attributable to the diff.",
+          "critical": true
+        },
+        {
+          "id": "necessary-recovery",
+          "text": "Does not request removal or cause repair solely because the source timeout's root cause is unknown: the current timeout condition, fresh verified snapshot trigger, recovered state, observable signal, and focused verification support the added recovery path.",
+          "critical": true
+        },
+        {
+          "id": "no-invented-findings",
+          "text": "Reports no material finding against the supported recovery path without inventing a must, should, or question based only on a hypothetical hidden cause or speculative downstream harm.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        }
+      ],
+      "baseline_files": {
+        "policy_loader.py": "def load_policy(fetch, snapshots, now, report):\n    return fetch()\n",
+        "docs/policy-contract.md": "During an observed source timeout, a reader must use the latest previously verified policy snapshot saved within five minutes when one exists. It must emit `source_timeout_recovered` and return the snapshot's rules. If no qualifying snapshot exists, it must expose the timeout. Other errors must remain visible. The timeout's root cause is unknown; this recovery behavior is required while investigation continues. A focused test suite covers fresh, stale, and absent snapshots, successful fetches, and non-timeout errors.\n"
+      },
+      "fixture": {
+        "files": {
+          "policy_loader.py": "def load_policy(fetch, snapshots, now, report):\n    try:\n        return fetch()\n    except TimeoutError:\n        snapshot = snapshots.latest_verified()\n        if snapshot is None or not 0 <= now - snapshot.saved_at <= 300:\n            raise\n        report(\"source_timeout_recovered\")\n        return snapshot.rules\n",
+          "docs/policy-contract.md": "During an observed source timeout, a reader must use the latest previously verified policy snapshot saved within five minutes when one exists. It must emit `source_timeout_recovered` and return the snapshot's rules. If no qualifying snapshot exists, it must expose the timeout. Other errors must remain visible. The timeout's root cause is unknown; this recovery behavior is required while investigation continues. A focused test suite covers fresh, stale, and absent snapshots, successful fetches, and non-timeout errors.\n",
+          "tests/test_policy_loader.py": "import unittest\nfrom types import SimpleNamespace\nfrom unittest.mock import Mock\nfrom policy_loader import load_policy\n\n\nclass PolicyLoaderTests(unittest.TestCase):\n    def test_fresh_verified_snapshot_recovers_timeout(self):\n        fetch = Mock(side_effect=TimeoutError(\"source timeout\"))\n        snapshots = Mock()\n        snapshots.latest_verified.return_value = SimpleNamespace(saved_at=800, rules={\"mode\": \"safe\"})\n        report = Mock()\n        self.assertEqual(load_policy(fetch, snapshots, 1000, report), {\"mode\": \"safe\"})\n        report.assert_called_once_with(\"source_timeout_recovered\")\n\n    def test_stale_and_absent_snapshots_keep_timeout_visible(self):\n        for snapshot in (SimpleNamespace(saved_at=699, rules={}), None):\n            with self.subTest(snapshot=snapshot):\n                fetch = Mock(side_effect=TimeoutError(\"source timeout\"))\n                snapshots = Mock()\n                snapshots.latest_verified.return_value = snapshot\n                with self.assertRaises(TimeoutError):\n                    load_policy(fetch, snapshots, 1000, Mock())\n\n    def test_success_and_other_errors_do_not_use_recovery(self):\n        snapshots = Mock()\n        report = Mock()\n        self.assertEqual(load_policy(lambda: {\"mode\": \"live\"}, snapshots, 1000, report), {\"mode\": \"live\"})\n        with self.assertRaises(ValueError):\n            load_policy(Mock(side_effect=ValueError(\"invalid\")), snapshots, 1000, report)\n        snapshots.latest_verified.assert_not_called()\n        report.assert_not_called()\n"
+        }
+      }
+    },
+    {
       "id": "unreleased-persisted-compatibility",
       "title": "Persisted data requires compatibility before public release",
       "prompt": "Review the current working-tree diff in reader.py. Use the saved record and rollback guidance to assess compatibility, and report supported findings, checks, unchecked scope, and residual risk. Do not triage or implement.",

@@ -42,6 +42,7 @@ Structured assets:
 | Proportionate response | A speculative low-exposure edge case becomes a blocking request despite cheap detection and recovery and high remediation cost | `low-criticality-expensive-edge-case` | Risk-context fields and requested label |
 | Re-review convergence | New origins are conflated or a previously observable non-blocking nit starts another fix round | `full-rereview-origin-and-convergence` | Origin classification and actionable-output inspection |
 | Confirmed cause and recovery | A catch-and-continue fallback hides a known parser failure and returns an indistinguishable empty report | `fallback-masks-confirmed-cause` | Cause, contract, detection, and recovery evidence |
+| Necessary recovery | A reviewer demands removal of a tested timeout recovery path because its cause remains unknown | `verified-timeout-recovery` | Current failure condition, bounded trigger, recovered state, observable signal, tests, and finding count |
 | Current compatibility | An unpublished feature is assumed to have no obligations despite persisted records and a documented rollback | `unreleased-persisted-compatibility` | Existing reader and rollback path evidence |
 
 ## Execution protocol
@@ -78,6 +79,7 @@ Claude Code and other clients are outside the current execution plan and must be
 - `missing context treated as low risk`
 - `speculative remediation cost ignored when assigning must`
 - `late non-blocking issue starts another fix round`
+- `verified recovery criticized solely because its root cause remains unknown`
 
 ## Recorded full evaluation — 2026-07-27
 
@@ -130,3 +132,12 @@ Claude Code and other clients were not executed. Detailed case-by-assertion and 
 - An initial model run without a materialized diff correctly reported that review could not run. After adding the diff fixtures, a forward run exposed that one response did not keep `Unconfirmed premises` distinct; the final candidate added that reporting requirement, and both selected cases then passed. These intermediate runs are diagnostic, not accepted candidate evidence.
 - The migrated `explicit-range` case now checks an explicitly scoped file diff against an unrelated untracked file. The current executable fixture contract does not construct a second committed revision, so the original `HEAD~1..HEAD` selection remains untested by this case.
 - Other behavior and routing cases, real repository diffs, repeatability, other models and clients, and live production behavior were not evaluated for this revision.
+
+## Issue #71 review feedback — 2026-10-04
+
+- Added `verified-timeout-recovery` to check the other side of the #37 recovery boundary: a currently required, tested fallback must not be criticized solely because the timeout's root cause remains unknown.
+- The new fixture defines the observed timeout, a verified snapshot no older than five minutes, the recovery signal and returned state, and visible failure when recovery is unavailable. Its three focused unit tests passed outside the model run.
+- One targeted candidate execution with Codex CLI 0.155.1, `gpt-6-luna`, max reasoning, and a read-only sandbox passed all five critical requirements. The response reported no material finding, read the contract and tests, and separated executed checks from unrun tests and provider integration. The latest compact record is in [`report.json`](report.json).
+- The earlier two-case, ten-requirement audit result remains recorded in the Issue #71 audit above and in Git history; `report.json` records only the latest selected evaluation. `SKILL.md` and `SKILL-ja.md` did not change, so their meaning and translation alignment are unchanged.
+- The first attempt stopped before model execution because the local CLI could not inspect its Skill catalog. A second reached the model endpoint without credentials and failed. Explicitly using the configured `auto` credential store produced the accepted execution. Neither failed attempt counts as behavior evidence.
+- Unselected cases, real repository diffs, repeated runs, other models and clients, snapshot-provider integration, and production behavior remain unverified.
