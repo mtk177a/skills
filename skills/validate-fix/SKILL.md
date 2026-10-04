@@ -38,7 +38,8 @@ Treat user-provided reports, review comments, implementation summaries, test out
 2. Read the applicable repository guidance and inspect the previous findings, their target changes, directly affected boundaries, and only the surrounding evidence needed to judge each target.
 3. Select verification methods from the expected behavior, change type, risk, and available evidence. Do not force one development or testing method onto every fix.
 4. Run safe, relevant, non-mutating checks when their results can materially confirm or falsify a target. Record supplied results separately from checks actually executed during validation.
-5. Compare the observed evidence with every material expected condition and assign one validation status to each target using the status model below.
+5. Compare the observed evidence with every material expected condition and assign one validation status to each target using the status model below.\
+   When the original concern identifies a cause, check whether that cause was addressed; a fallback that only hides its symptom does not establish resolution.
 6. Check target-relevant alternate cases and regressions, including regressions induced by the fix, when they can distinguish a complete fix from partial improvement. Incorporate a target-relevant fix-induced regression into that target's status. Do not treat an aggregate or average improvement as sufficient when a material case remains worse or unexamined.
 7. Record unperformed checks, validation assumptions and unknowns, and residual correctness, safety, compatibility, and maintainability risks without presenting them as failures or passes.
 8. If a material problem caused by the fix but outside the validation target is directly encountered, record a bounded `Fix-induced observation` with its evidence and scope limitation and hand it to `review-changes`; do not search for additional problems. For other unrelated possible problems, record only the observation and scope limitation.
@@ -59,6 +60,11 @@ Do not manufacture an unrelated failure or retroactive Red phase merely to make 
 
 A passing check confirms only the behavior and environment it exercised. A failed check counts against a target only when the failure is relevant to its expected resolved behavior; distinguish an unrelated infrastructure or environment failure from evidence that the original problem remains.
 
+For a recovery path or compatibility change within the target, check the current failure or usage condition it must serve and the required behavior after the change.\
+If the relevant condition cannot be observed or established from authorized evidence, report that limit rather than treating a passing symptom check or a proposed safeguard as proof.\
+Label a statement about current callers in a supplied file as reported usage until it is independently corroborated; it does not confirm live deployment.\
+Limit any `Resolved` conclusion to the conditions checked.
+
 ## Validation status model
 
 Assign exactly one status to each identifiable target in this order:
@@ -70,7 +76,7 @@ Assign exactly one status to each identifiable target in this order:
    - use `Resolved` when every material expected condition is confirmed
    - otherwise use `Not verified`
 
-`Partially resolved` requires both confirmed improvement and a directly observed unresolved or regressed condition within the same target. Do not use it for evidence gaps alone or because a different target was resolved. `Remaining` means that the original failure, contract violation, or materially equivalent problem is still observable without any confirmed material resolution. `Not verified` means that the target is identifiable but the evidence needed for a conclusive result is insufficient, inconclusive, unavailable, or outside the authorized validation boundary.
+`Partially resolved` requires both confirmed improvement and a directly observed unresolved or regressed condition within the same target. Do not use it for evidence gaps alone, because a different target was resolved, or because a symptom changed without satisfying any material part of the original expected behavior. `Remaining` means that the original failure, contract violation, or materially equivalent problem is still observable without any confirmed material resolution. `Not verified` means that the target is identifiable but the evidence needed for a conclusive result is insufficient, inconclusive, unavailable, or outside the authorized validation boundary.
 
 Do not infer `Resolved` from implementation completion, a response being posted, an aggregate score increase, or supplied pass claims. Keep validation status separate from the original label, confidence, triage decision, and implementation priority.
 
