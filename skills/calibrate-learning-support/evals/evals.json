@@ -263,6 +263,38 @@
           "critical": true
         }
       ]
+    },
+    {
+      "id": "review-verification-preserved-after-learning",
+      "title": "Learning follow-up retains the review finding and verification result",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Review this JavaScript change against the policy that account owners and admins may delete an account. In the final review, give any finding with its location, impact, and evidence; report checks actually performed and what remains unverified. Before: `function canDelete(account, actor) { return actor.id === account.ownerId || actor.role === 'admin'; }`. After: `function canDelete(account, actor) { return actor.role === 'admin'; }`. I have not supplied a repository or test command. Do not edit files."
+        },
+        {
+          "role": "assistant",
+          "content": "I will compare the supplied expressions with the stated policy and distinguish that check from tests I cannot run without the project."
+        }
+      ],
+      "prompt": "Before you finish the review, help me understand why removing the owner condition changes the decision. Keep it brief, then complete the original review, including the finding and the requested verification result.",
+      "assertions": [
+        {
+          "id": "originating-review-finding-after-learning",
+          "text": "The final response identifies the removed owner condition in the changed return expression and explains that a non-admin account owner is now denied deletion despite the stated policy; it gives the finding's location, impact, and evidence.",
+          "critical": true
+        },
+        {
+          "id": "originating-review-verification-after-learning",
+          "text": "The final response reports the comparison of the supplied expressions with the stated policy as the check performed, clearly states that project tests were not run because no repository or test command was supplied, and leaves runtime or broader project behavior unverified; it does not claim a passing test without execution evidence.",
+          "critical": true
+        },
+        {
+          "id": "focused-learning-after-review",
+          "text": "Briefly explains the owner-versus-admin condition so the user can evaluate the finding, without replacing the review and verification result with a lesson, quiz, or learning plan.",
+          "critical": true
+        }
+      ]
     }
   ]
 }

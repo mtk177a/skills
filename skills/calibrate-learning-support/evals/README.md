@@ -7,7 +7,7 @@ Verify that `calibrate-learning-support` adjusts AI learning support around an a
 ## Assets
 
 - `triggers.json`: trigger, continuation, near-miss, and coexistence selection cases
-- `evals.json`: executable behavior cases with hidden assertions, including preservation of the originating review output
+- `evals.json`: executable behavior cases with hidden assertions, including preservation of the originating review output and verification result
 - `results.json`: historical evidence for the revision evaluated in July 2026
 - this README: static contract, coverage, protocol, and summarized results
 
@@ -32,6 +32,7 @@ Verify that `calibrate-learning-support` adjusts AI learning support around an a
 | Decision ownership | Approves a consequential production choice for the user or dumps all technical analysis back to them | `high-risk-adoption-decision` | Critical ownership assertions |
 | Adaptive output | Always emits a quiz, fixed concept list, study plan, or template | All behavior cases | Cross-case inspection |
 | Originating workflow output | Replaces required review findings with a learning plan or calibration status | `review-output-preserved` | Finding and learning-support assertions |
+| Verification after a learning follow-up | Returns the review finding but drops checks performed or unverified scope | `review-verification-preserved-after-learning` | Finding, verification, and focused-learning assertions |
 | Trigger and continuation | Misses explicit learning intent or a follow-up checkpoint | `triggers.json` | Observable Skill load |
 | Adjacent routing | Absorbs tool selection, ordinary implementation, general teaching, or request clarification; treats unfamiliarity alone as learning intent | `triggers.json` | Observable Skill load |
 
@@ -60,6 +61,7 @@ Use the Runner's targeted routing path with the declared coexistence Skills. Cou
 - `quiz or self-study emitted without decision value`
 - `tool selection routed to learning calibration`
 - `originating workflow never resumes`
+- `originating verification result lost after learning support`
 
 ## Historical evidence
 
@@ -83,6 +85,8 @@ On 2026-10-04, the working-tree candidate based on `b88af0cdcd07138c8e7341a8423a
 - `unfamiliar-domain-no-learning-request`: routing observed `implement-changes` alone, as expected.
 - `explicit-learning-priority`: the model read a personal same-name Skill during execution despite the Runner's successful catalog and sandbox preflights. Runtime isolation failed, so this run supplies no candidate routing verdict.
 - The other migrated cases were not executed because their responsibilities did not change in this audit. Historical results above remain historical evidence, not a current rerun.
+
+On 2026-10-05, `review-verification-preserved-after-learning` was executed with Codex CLI 0.155.1, `gpt-6-luna`, maximum reasoning effort, and the Runner's read-only evaluation sandbox. Catalog preflight and runtime isolation passed. The final response identified the removed owner check and its impact, reported comparison of the supplied expressions with the stated policy, said that project tests were not run, and left broader application behavior unverified. The first attempt stopped at the catalog preflight because the calling host sandbox denied `codex debug prompt-input`; the successful execution used the permitted host command path. This is one candidate observation, not evidence for other cases or clients.
 
 ### Next validation question
 
