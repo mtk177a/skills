@@ -1,0 +1,155 @@
+{
+  "schema_version": 2,
+  "skill": "triage-review-feedback",
+  "skill_source": "public",
+  "evaluated_on": "2026-10-04",
+  "purpose": "Check independent technical assessment, current state, and response decisions for existing findings.",
+  "affected_responsibilities": [
+    "finding assessment, state, and response decision"
+  ],
+  "selection": {
+    "path": "targeted-candidate",
+    "cases": [
+      {
+        "id": "supported-but-disproportionate",
+        "conditions": [
+          "candidate"
+        ]
+      },
+      {
+        "id": "resolved-stale-finding",
+        "conditions": [
+          "candidate"
+        ]
+      }
+    ]
+  },
+  "base": {
+    "commit": "b88af0cdcd07138c8e7341a8423a34331b0a84b6"
+  },
+  "candidate": {
+    "files": {
+      "SKILL-ja.md": {
+        "mode": "100644",
+        "sha256": "sha256:09defc153dbe9ec59be4a5f3c184434ab38c857812b13a200dc714c3579a5b86"
+      },
+      "SKILL.md": {
+        "mode": "100644",
+        "sha256": "sha256:4d9f4ac381928c8085a8ecca15028e07848fd72ab2e570194e3221da82390d1c"
+      }
+    }
+  },
+  "evaluation_inputs": {
+    "evaluation_files": {
+      "skills/triage-review-feedback/evals/evals.json": "sha256:e31edc4499f7f28bc25328e4377fda0b7666eebf8063912f8fa57c43672f9c62"
+    },
+    "case_files": {}
+  },
+  "environment": {
+    "client": "codex-cli 0.155.1",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max",
+    "sandbox": "read-only",
+    "auth_credentials_store": "auto"
+  },
+  "checks": {
+    "repository": "pass"
+  },
+  "results": [
+    {
+      "case_id": "supported-but-disproportionate",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "preserve-supplied-contract",
+          "status": "pass",
+          "evidence": "Output kept the supplied high-confidence concern Supported and Open, chose No action on a qualitative cost/risk comparison, distinguished missing upstream fields, and did no implementation.",
+          "critical": true
+        },
+        {
+          "id": "separate-upstream-and-triage",
+          "status": "pass",
+          "evidence": "Output kept the supplied high-confidence concern Supported and Open, chose No action on a qualitative cost/risk comparison, distinguished missing upstream fields, and did no implementation.",
+          "critical": true
+        },
+        {
+          "id": "proportionate-no-action",
+          "status": "pass",
+          "evidence": "Output kept the supplied high-confidence concern Supported and Open, chose No action on a qualitative cost/risk comparison, distinguished missing upstream fields, and did no implementation.",
+          "critical": true
+        },
+        {
+          "id": "no-action-with-evidence",
+          "status": "pass",
+          "evidence": "Output kept the supplied high-confidence concern Supported and Open, chose No action on a qualitative cost/risk comparison, distinguished missing upstream fields, and did no implementation.",
+          "critical": true
+        },
+        {
+          "id": "stay-in-triage-scope",
+          "status": "pass",
+          "evidence": "Output kept the supplied high-confidence concern Supported and Open, chose No action on a qualitative cost/risk comparison, distinguished missing upstream fields, and did no implementation.",
+          "critical": true
+        },
+        {
+          "id": "actionable-handoff",
+          "status": "pass",
+          "evidence": "Output kept the supplied high-confidence concern Supported and Open, chose No action on a qualitative cost/risk comparison, distinguished missing upstream fields, and did no implementation.",
+          "critical": false
+        }
+      ],
+      "evidence": "Output kept the supplied high-confidence concern Supported and Open, chose No action on a qualitative cost/risk comparison, distinguished missing upstream fields, and did no implementation.",
+      "status": "pass"
+    },
+    {
+      "case_id": "resolved-stale-finding",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "preserve-supplied-contract",
+          "status": "pass",
+          "evidence": "Output kept the old and target revisions distinct, used the supplied restored predicate and passing test as target evidence, marked the finding Resolved and No action, and disclosed that it could not independently inspect the target.",
+          "critical": true
+        },
+        {
+          "id": "separate-upstream-and-triage",
+          "status": "pass",
+          "evidence": "Output kept the old and target revisions distinct, used the supplied restored predicate and passing test as target evidence, marked the finding Resolved and No action, and disclosed that it could not independently inspect the target.",
+          "critical": true
+        },
+        {
+          "id": "no-action-with-evidence",
+          "status": "pass",
+          "evidence": "Output kept the old and target revisions distinct, used the supplied restored predicate and passing test as target evidence, marked the finding Resolved and No action, and disclosed that it could not independently inspect the target.",
+          "critical": true
+        },
+        {
+          "id": "stay-in-triage-scope",
+          "status": "pass",
+          "evidence": "Output kept the old and target revisions distinct, used the supplied restored predicate and passing test as target evidence, marked the finding Resolved and No action, and disclosed that it could not independently inspect the target.",
+          "critical": true
+        },
+        {
+          "id": "actionable-handoff",
+          "status": "pass",
+          "evidence": "Output kept the old and target revisions distinct, used the supplied restored predicate and passing test as target evidence, marked the finding Resolved and No action, and disclosed that it could not independently inspect the target.",
+          "critical": false
+        }
+      ],
+      "evidence": "Output kept the old and target revisions distinct, used the supplied restored predicate and passing test as target evidence, marked the finding Resolved and No action, and disclosed that it could not independently inspect the target.",
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "status": "pass",
+    "counts": {
+      "error": 0,
+      "fail": 0,
+      "inconclusive": 0,
+      "pass": 2
+    }
+  },
+  "stopping_reason": "The two selected cases preserve independent assessment, state, and response decisions; no runtime instructions changed.",
+  "unverified": [
+    "Other behavior cases, clients outside Codex CLI, and target repositories absent from the fixtures were not tested."
+  ]
+}
