@@ -3,21 +3,15 @@
   "skill": "choose-ai-execution-setup",
   "skill_source": "public",
   "evaluated_on": "2026-10-04",
-  "purpose": "Check technical fact finding and user-owned setup trade-offs without execution on final candidate",
+  "purpose": "Check self-directed technical availability inspection during ordinary setup advice",
   "affected_responsibilities": [
-    "technical availability checks and user priority boundary"
+    "technical availability checks without an explicit check instruction"
   ],
   "selection": {
     "path": "targeted-candidate",
     "cases": [
       {
-        "id": "check-technical-availability",
-        "conditions": [
-          "candidate"
-        ]
-      },
-      {
-        "id": "unresolved-user-tradeoff",
+        "id": "self-directed-technical-check",
         "conditions": [
           "candidate"
         ]
@@ -41,7 +35,7 @@
   },
   "evaluation_inputs": {
     "evaluation_files": {
-      "skills/choose-ai-execution-setup/evals/evals.json": "sha256:601c03bcfa27915389261aad3ffea451c39c32bbe2dca9b6f62e33b7b6cd76f8"
+      "skills/choose-ai-execution-setup/evals/evals.json": "sha256:4a5bda47acbd3cff7af2133c04b135a5cd1ea422bc33b08164a839c043dd7dc3"
     },
     "case_files": {}
   },
@@ -57,55 +51,29 @@
   },
   "results": [
     {
-      "case_id": "check-technical-availability",
+      "case_id": "self-directed-technical-check",
       "condition": "candidate",
       "requirements": [
         {
-          "id": "technical-facts",
+          "id": "self-directed-check",
           "status": "pass",
-          "evidence": "The trace includes pwd, Git checks, file listing, and python3 --version; the response reports their limits.",
+          "evidence": "Without a check instruction, the trace shows repository and project-file searches, command availability checks, python3 --version, and a package availability check.",
           "critical": true
         },
         {
           "id": "availability-grounded",
           "status": "pass",
-          "evidence": "It did not claim that the disposable workspace contained the target checkout or could edit it.",
+          "evidence": "The response identified the missing project and read-only workspace, confirmed Python, and conditioned use of the coding agent on access becoming available.",
           "critical": true
         },
         {
           "id": "authority-boundary",
           "status": "pass",
-          "evidence": "It recommended a future setup and performed no editing or task execution.",
+          "evidence": "No files were edited, project tests were not run, and the response remained setup advice.",
           "critical": true
         }
       ],
-      "evidence": "Read-only commands inspected the disposable workspace and Python availability; the response identified missing checkout access and stopped before implementation.",
-      "status": "pass"
-    },
-    {
-      "case_id": "unresolved-user-tradeoff",
-      "condition": "candidate",
-      "requirements": [
-        {
-          "id": "user-owned-tradeoff",
-          "status": "pass",
-          "evidence": "It presents conditional A/B choices and asks the user to decide which consideration matters more.",
-          "critical": true
-        },
-        {
-          "id": "actionable-handoff",
-          "status": "pass",
-          "evidence": "It gives Insufficient evidence and names the unresolved priority needed for a final choice.",
-          "critical": true
-        },
-        {
-          "id": "authority-boundary",
-          "status": "pass",
-          "evidence": "It explicitly states that drafting has not started.",
-          "critical": true
-        }
-      ],
-      "evidence": "The response describes the spending and external-processing trade-off and leaves the setup choice and drafting to the user.",
+      "evidence": "The model checked available technical facts on its own and stopped at a conditional setup recommendation.",
       "status": "pass"
     }
   ],
@@ -115,11 +83,11 @@
       "error": 0,
       "fail": 0,
       "inconclusive": 0,
-      "pass": 2
+      "pass": 1
     }
   },
-  "stopping_reason": "Two changed-responsibility candidate cases passed on the final files; a separate unchanged-English availability regression case also passed. More model calls are not decision-relevant.",
+  "stopping_reason": "The self-directed availability case exposed the missing behavior and passed once with direct tool evidence.",
   "unverified": [
-    "The other six original behavior cases, eight routing cases, and non-Codex clients were not rerun."
+    "Other behavior cases, non-Codex clients, and live permission changes were not run."
   ]
 }

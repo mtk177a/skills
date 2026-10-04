@@ -1,5 +1,13 @@
 {
   "skill_name": "choose-ai-execution-setup",
+  "execution": {
+    "coexistence_skills": [
+      "calibrate-learning-support",
+      "implement-changes",
+      "design-changes",
+      "review-changes"
+    ]
+  },
   "evals": [
     {
       "id": "explicit-setup-selection",
