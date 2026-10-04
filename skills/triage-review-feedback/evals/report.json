@@ -3,21 +3,15 @@
   "skill": "triage-review-feedback",
   "skill_source": "public",
   "evaluated_on": "2026-10-04",
-  "purpose": "Check independent technical assessment, current state, and response decisions for existing findings.",
+  "purpose": "Check current candidate behavior after Japanese reference correction",
   "affected_responsibilities": [
-    "finding assessment, state, and response decision"
+    "separation of assessment, state, and response decision"
   ],
   "selection": {
     "path": "targeted-candidate",
     "cases": [
       {
         "id": "supported-but-disproportionate",
-        "conditions": [
-          "candidate"
-        ]
-      },
-      {
-        "id": "resolved-stale-finding",
         "conditions": [
           "candidate"
         ]
@@ -31,7 +25,7 @@
     "files": {
       "SKILL-ja.md": {
         "mode": "100644",
-        "sha256": "sha256:09defc153dbe9ec59be4a5f3c184434ab38c857812b13a200dc714c3579a5b86"
+        "sha256": "sha256:75437b569387b42f09cf6d4fb3e2cefa7d1f4b9bbf5bb500983fe8389de9252f"
       },
       "SKILL.md": {
         "mode": "100644",
@@ -63,79 +57,41 @@
         {
           "id": "preserve-supplied-contract",
           "status": "pass",
-          "evidence": "Output kept the supplied high-confidence concern Supported and Open, chose No action on a qualitative cost/risk comparison, distinguished missing upstream fields, and did no implementation.",
+          "evidence": "Kept the supplied label, confidence, risk and cost context; marked absent upstream fields as not supplied and F1 as local.",
           "critical": true
         },
         {
           "id": "separate-upstream-and-triage",
           "status": "pass",
-          "evidence": "Output kept the supplied high-confidence concern Supported and Open, chose No action on a qualitative cost/risk comparison, distinguished missing upstream fields, and did no implementation.",
+          "evidence": "Separated upstream evidence from checks and unknowns, and gave distinct Supported, Open, and No action judgments.",
           "critical": true
         },
         {
           "id": "proportionate-no-action",
           "status": "pass",
-          "evidence": "Output kept the supplied high-confidence concern Supported and Open, chose No action on a qualitative cost/risk comparison, distinguished missing upstream fields, and did no implementation.",
+          "evidence": "Compared the rerunnable pre-write failure with deployment, monitoring, testing, and maintenance burdens without a numeric score.",
           "critical": true
         },
         {
           "id": "no-action-with-evidence",
           "status": "pass",
-          "evidence": "Output kept the supplied high-confidence concern Supported and Open, chose No action on a qualitative cost/risk comparison, distinguished missing upstream fields, and did no implementation.",
+          "evidence": "Grounded No action in an explicit risk-reduction and cost comparison.",
           "critical": true
         },
         {
           "id": "stay-in-triage-scope",
           "status": "pass",
-          "evidence": "Output kept the supplied high-confidence concern Supported and Open, chose No action on a qualitative cost/risk comparison, distinguished missing upstream fields, and did no implementation.",
+          "evidence": "Assessed only the supplied finding and performed no implementation or comment drafting.",
           "critical": true
         },
         {
           "id": "actionable-handoff",
           "status": "pass",
-          "evidence": "Output kept the supplied high-confidence concern Supported and Open, chose No action on a qualitative cost/risk comparison, distinguished missing upstream fields, and did no implementation.",
+          "evidence": "Specified conditions that would reopen the decision if pre-write rejection or limited impact proves false.",
           "critical": false
         }
       ],
-      "evidence": "Output kept the supplied high-confidence concern Supported and Open, chose No action on a qualitative cost/risk comparison, distinguished missing upstream fields, and did no implementation.",
-      "status": "pass"
-    },
-    {
-      "case_id": "resolved-stale-finding",
-      "condition": "candidate",
-      "requirements": [
-        {
-          "id": "preserve-supplied-contract",
-          "status": "pass",
-          "evidence": "Output kept the old and target revisions distinct, used the supplied restored predicate and passing test as target evidence, marked the finding Resolved and No action, and disclosed that it could not independently inspect the target.",
-          "critical": true
-        },
-        {
-          "id": "separate-upstream-and-triage",
-          "status": "pass",
-          "evidence": "Output kept the old and target revisions distinct, used the supplied restored predicate and passing test as target evidence, marked the finding Resolved and No action, and disclosed that it could not independently inspect the target.",
-          "critical": true
-        },
-        {
-          "id": "no-action-with-evidence",
-          "status": "pass",
-          "evidence": "Output kept the old and target revisions distinct, used the supplied restored predicate and passing test as target evidence, marked the finding Resolved and No action, and disclosed that it could not independently inspect the target.",
-          "critical": true
-        },
-        {
-          "id": "stay-in-triage-scope",
-          "status": "pass",
-          "evidence": "Output kept the old and target revisions distinct, used the supplied restored predicate and passing test as target evidence, marked the finding Resolved and No action, and disclosed that it could not independently inspect the target.",
-          "critical": true
-        },
-        {
-          "id": "actionable-handoff",
-          "status": "pass",
-          "evidence": "Output kept the old and target revisions distinct, used the supplied restored predicate and passing test as target evidence, marked the finding Resolved and No action, and disclosed that it could not independently inspect the target.",
-          "critical": false
-        }
-      ],
-      "evidence": "Output kept the old and target revisions distinct, used the supplied restored predicate and passing test as target evidence, marked the finding Resolved and No action, and disclosed that it could not independently inspect the target.",
+      "evidence": "The candidate kept the concern Supported and Open while choosing No action on proportionality, with explicit limits on unverified target behavior.",
       "status": "pass"
     }
   ],
@@ -145,11 +101,12 @@
       "error": 0,
       "fail": 0,
       "inconclusive": 0,
-      "pass": 2
+      "pass": 1
     }
   },
-  "stopping_reason": "The two selected cases preserve independent assessment, state, and response decisions; no runtime instructions changed.",
+  "stopping_reason": "The current candidate retained the decision separation in the selected behavior case; the Japanese description was checked against the English original.",
   "unverified": [
-    "Other behavior cases, clients outside Codex CLI, and target repositories absent from the fixtures were not tested."
+    "Routing selection remained unverified: the selected Japanese finding run read the fixture Skill but the Runner observed no handler event.",
+    "Other behavior cases and clients outside Codex CLI were not exercised on this candidate."
   ]
 }
