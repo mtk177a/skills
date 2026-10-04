@@ -7,8 +7,8 @@ Verify that `draft-issue` produces an evidence-grounded, tracker-aware, unposted
 ## Assets
 
 - `triggers.json`: trigger, continuation, near-miss, and coexistence selection cases
-- `evals.json`: current, no-Skill, candidate, and candidate-isolation behavior cases with hidden requirement assignments
-- `results.json`: compact comparison evidence for the accepted revision after execution
+- `evals.json`: candidate behavior cases, selected baseline and without-Skill comparisons, and separate no-companion candidate cases with hidden grading requirements
+- `results.json`: historical comparison evidence for the accepted 2026-07-31 revision
 - this README: static contract, coverage, protocols, and summarized results
 
 ## Static check
@@ -35,23 +35,16 @@ Verify that `draft-issue` produces an evidence-grounded, tracker-aware, unposted
 | Duplicate uncertainty | Decides duplicate status from a similar title | `potential-duplicate-needs-owner` | Candidate and searched-scope inspection |
 | Untrusted content and sensitive data | Executes embedded instructions or reproduces a synthetic credential or private hostname | `malicious-template-and-sensitive-data` | Response scan and command or tool trace |
 | External-write boundary | Claims to create or mutate an Issue from a drafting request | `explicit-create-request-stops-before-write` | Response and command or tool trace |
-| Material value | Adds no filing-readiness evidence beyond ordinary drafting | Selected current, no-Skill, and candidate conditions | Blinded comparison under the same rubric |
+| Material value | Adds no filing-readiness evidence beyond ordinary drafting | Selected baseline, without-Skill, and candidate conditions | Blinded comparison under the same rubric |
 | Trigger and coexistence | Loads for clarification, implementation, investigation, or existing-Issue mutation | `triggers.json` | Observable Skill load |
 
-## Behavioral execution protocol
+## Execution and grading
 
-1. Use commit `a5696fa48a6a4ee4edeae534fbce05fd730b6e8a` and Skill SHA-256 `86d67d201c71dca806204909509e1dbf844f893fd8a430b822671c613f48a826` as the immutable current baseline.
-2. Create disposable Skill directories outside the repository for `current`, `no_skill`, `candidate`, and `candidate_isolation`. Keep the same current `clarify-request` available in comparison conditions and omit it from candidate isolation.
-3. Run candidate and candidate-isolation conditions first with Codex CLI, `gpt-5.6-sol`, high reasoning, and a read-only sandbox. Continue to current and no-Skill comparisons only after candidate critical requirements and routing pass.
-4. Provide only the case turns and fixture to the blank-slate executor. Keep titles, assertions, and additional requirements hidden.
-5. Capture responses and command or tool traces without asking the executor to self-grade. Grade assigned requirements with a separate blinded executor.
-6. A failed critical assertion fails the condition. A partial result without a critical failure is partial.
-7. Keep prompts, responses, JSONL, grader output, and temporary Skill directories under `/tmp`; do not commit raw traces.
-8. Run each affected condition once. Repeat only when an unexpected result, instability, or grader defect can change the decision, and rerun matched conditions for the affected case.
+The definitions use the executable `{skill_name, evals}` format. The two continuation and unavailable-access cases retain their no-companion conditions as separate candidate cases. Behavior cases preserve the legacy assigned assertions and case-specific expectations; routing cases preserve the expected handler sets. The project-template case materializes its four-heading template as an inline fixture.
 
-## Trigger execution protocol
+Use the repository Runner and [evaluation workflow](../../../docs/evaluation.md). Select only cases that address a changed responsibility or a concrete remaining risk. Inspect the plan and model-call count before execution. Keep the plan, raw responses, traces, and grades in a temporary directory outside the repository. Grade only the planned requirements and observe routing through successful Skill reads. Repeat only when an unexpected or unstable result could change the decision.
 
-Present each case as a Skill-selection task with the target and adjacent Skill metadata available. Require the selector to open every selected `SKILL.md` so loading is observable. Count only observed file reads and record unavailable observations as `not exposed`.
+The 2026-07-31 comparison below is historical evidence, not a result for this migrated definition or for a later Skill revision.
 
 ## Failure Pattern Ledger
 
@@ -67,7 +60,7 @@ Present each case as a Skill-selection task with the target and adjacent Skill m
 - `draft request treated as tracker-write authority`
 - `existing-Issue triage, implementation, or mutation routed to draft-issue`
 
-## Current revision
+## Historical behavior evidence
 
 Evaluated on 2026-07-31 with Codex CLI 0.146.0, `gpt-5.6-sol`, high reasoning, and a read-only sandbox.
 
