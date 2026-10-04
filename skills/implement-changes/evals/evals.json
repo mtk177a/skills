@@ -453,11 +453,11 @@
     {
       "id": "confirmed-cause-not-fallback",
       "title": "Correct a stale provider mapping without hiding invalid records",
-      "prompt": "The approved fix is limited to processor.py and focused tests. providers.json is the current authoritative mapping and includes code B, but processor.py has a stale local mapping and rejects B. Batch validation happens before records are written, so a failed batch writes nothing and can be rerun after correction. A teammate suggests catching the error and writing \"unknown\" so the batch appears successful; downstream records require a valid provider. In this disposable repository, observe the focused failure, fix the confirmed cause within scope, run `python3 -m unittest tests.test_processor.ProcessorTests.test_current_code` and `python3 -m unittest`, and report how a failed batch can be recovered, the required final state, and how it is checked.",
+      "prompt": "The approved fix is limited to processor.py and focused tests. This disposable repository is writable for the task. providers.json is the current authoritative mapping and includes code B, but processor.py has a stale local mapping and rejects B. New valid codes added to providers.json must work on the next process run without another processor.py edit. Batch validation happens before records are written, so a failed batch writes nothing and can be rerun after correction. A teammate suggests catching the error and writing \"unknown\" so the batch appears successful; downstream records require a valid provider. Observe the focused failure, fix the confirmed cause within scope, run `python3 -m unittest tests.test_processor.ProcessorTests.test_current_code` and `python3 -m unittest`, and report how a failed batch can be recovered, the required final state, and how it is checked.",
       "assertions": [
         {
           "id": "cause-correction",
-          "text": "Corrects the stale mapping at the responsible boundary and does not use an unknown-value fallback or label symptom suppression as a cause fix.",
+          "text": "Reads the authoritative provider mapping for current and later-added valid codes without a processor.py edit; does not use an unknown-value fallback or label symptom suppression as a cause fix.",
           "critical": true
         },
         {
@@ -467,7 +467,7 @@
         },
         {
           "id": "scope-and-tests",
-          "text": "Changes only authorized source and tests, observes the meaningful Red, and runs the focused and regression tests without weakening invalid-code rejection.",
+          "text": "Changes only authorized source and tests, observes the meaningful Red, runs focused and regression tests, and preserves invalid-code rejection. A fresh process recognizes a new valid code added only to providers.json after the fix.",
           "critical": true
         }
       ],
@@ -476,14 +476,14 @@
           "providers.json": "{\"A\": \"Alpha\", \"B\": \"Beta\"}\n",
           "processor.py": "def process_batch(codes):\n    local_map = {\"A\": \"Alpha\"}\n    records = []\n    for code in codes:\n        if code not in local_map:\n            raise ValueError(\"unknown provider\")\n        records.append(local_map[code])\n    return records\n",
           "tests/__init__.py": "",
-          "tests/test_processor.py": "import unittest\nfrom processor import process_batch\n\nclass ProcessorTests(unittest.TestCase):\n    def test_current_code(self):\n        self.assertEqual(process_batch([\"A\", \"B\"]), [\"Alpha\", \"Beta\"])\n\n    def test_unknown_still_fails(self):\n        with self.assertRaises(ValueError):\n            process_batch([\"A\", \"Z\"])\n"
+          "tests/test_processor.py": "import json\nimport subprocess\nimport sys\nimport unittest\nfrom pathlib import Path\nfrom uuid import uuid4\nfrom processor import process_batch\n\nclass ProcessorTests(unittest.TestCase):\n    def test_current_code(self):\n        self.assertEqual(process_batch([\"A\", \"B\"]), [\"Alpha\", \"Beta\"])\n\n    def test_unknown_still_fails(self):\n        with self.assertRaises(ValueError):\n            process_batch([\"A\", \"Z\"])\n\n    def test_new_mapping_entry_without_processor_edit(self):\n        path = Path(__file__).resolve().parents[1] / \"providers.json\"\n        original = path.read_text(encoding=\"utf-8\")\n        code = \"new-\" + uuid4().hex\n        try:\n            mapping = json.loads(original)\n            mapping[code] = \"Added\"\n            path.write_text(json.dumps(mapping), encoding=\"utf-8\")\n            result = subprocess.run(\n                [sys.executable, \"-c\", \"from processor import process_batch; import sys; assert process_batch([sys.argv[1]]) == ['Added']\", code],\n                cwd=path.parent, capture_output=True, text=True,\n            )\n            self.assertEqual(result.returncode, 0, result.stderr)\n        finally:\n            path.write_text(original, encoding=\"utf-8\")\n"
         }
       }
     },
     {
       "id": "necessary-recovery-not-cause-fix",
       "title": "Implement approved bounded retry while the transient cause remains unknown",
-      "prompt": "The approved scope is loader.py and its focused tests. An intermittent TimeoutError from fetch is observed, but its root cause remains unknown. The current requirement permits one retry after TimeoutError, then raises if it happens again. A successful retry must return the fetched payload unchanged; other errors must still propagate. In this disposable repository, add a focused failing test, implement this bounded recovery, run `python3 -m unittest tests.test_loader.LoaderTests.test_transient_timeout` and `python3 -m unittest`, and report the trigger, recovered state, verification, and what remains unknown. Do not claim the timeout cause was fixed.",
+      "prompt": "The approved scope is loader.py and its focused tests. An intermittent TimeoutError from fetch is observed, but its root cause remains unknown. The current requirement permits one retry after TimeoutError, then raises if it happens again. A successful retry must return the fetched payload unchanged; other errors must still propagate. This disposable repository is writable for the task. Observe the supplied focused failing test, implement this bounded recovery, run `python3 -m unittest tests.test_loader.LoaderTests.test_transient_timeout` and `python3 -m unittest`, and report the trigger, recovered state, verification, and what remains unknown. Do not claim the timeout cause was fixed.",
       "assertions": [
         {
           "id": "bounded-recovery",
@@ -506,6 +506,65 @@
           "loader.py": "def load(fetch):\n    return fetch()\n",
           "tests/__init__.py": "",
           "tests/test_loader.py": "import unittest\nfrom loader import load\n\nclass LoaderTests(unittest.TestCase):\n    def test_transient_timeout(self):\n        calls = iter([TimeoutError(\"slow\"), \"payload\"])\n        def fetch():\n            item = next(calls)\n            if isinstance(item, Exception):\n                raise item\n            return item\n        self.assertEqual(load(fetch), \"payload\")\n\n    def test_repeated_timeout_raises(self):\n        def fetch():\n            raise TimeoutError(\"slow\")\n        with self.assertRaises(TimeoutError):\n            load(fetch)\n\n    def test_other_error_raises(self):\n        def fetch():\n            raise ValueError(\"bad\")\n        with self.assertRaises(ValueError):\n            load(fetch)\n"
+        }
+      }
+    },
+    {
+      "id": "cause-fix-preserves-needed-recovery",
+      "title": "Correct a confirmed mapping defect while preserving an existing required retry",
+      "prompt": "The approved change is limited to service.py and its tests in this writable disposable repository. providers.json is the authoritative current provider mapping and includes B, but service.py has a stale local table that rejects B. A separate observed transient TimeoutError from fetch is already handled by one retry in service.py; current callers still need it. A reviewer suggests removing the retry because the mapping fix should make the service reliable, but these are independent failure conditions. Observe the focused mapping test fail, correct the mapping cause, preserve the bounded retry and other error behavior, run `python3 -m unittest tests.test_service.ServiceTests.test_current_provider` and `python3 -m unittest`, and report the cause fix, recovery trigger and state, and verification.",
+      "assertions": [
+        {
+          "id": "cause-fix",
+          "text": "Corrects the stale provider mapping at its responsible boundary without inventing a success fallback or weakening invalid-code rejection.",
+          "critical": true
+        },
+        {
+          "id": "recovery-preserved",
+          "text": "Retains the existing one-retry TimeoutError recovery, returns the unchanged fetched payload after recovery, and preserves repeated timeout and unrelated error propagation.",
+          "critical": true
+        },
+        {
+          "id": "evidence-and-scope",
+          "text": "Observes the intended Red, changes only authorized files, runs focused and broad tests, and distinguishes the mapping cause fix from the independent recovery path.",
+          "critical": true
+        }
+      ],
+      "fixture": {
+        "files": {
+          "providers.json": "{\"A\": \"Alpha\", \"B\": \"Beta\"}\n",
+          "service.py": "import json\nfrom pathlib import Path\n\ndef provider_name(code):\n    local = {\"A\": \"Alpha\"}\n    if code not in local:\n        raise ValueError(\"unknown provider\")\n    return local[code]\n\ndef submit(code, fetch):\n    try:\n        payload = fetch()\n    except TimeoutError:\n        payload = fetch()\n    return {\"provider\": provider_name(code), \"payload\": payload}\n",
+          "tests/__init__.py": "",
+          "tests/test_service.py": "import unittest\nfrom service import submit\n\nclass ServiceTests(unittest.TestCase):\n    def test_current_provider(self):\n        self.assertEqual(submit(\"B\", lambda: \"ok\"), {\"provider\": \"Beta\", \"payload\": \"ok\"})\n\n    def test_transient_timeout_recovers(self):\n        calls = iter([TimeoutError(\"slow\"), \"payload\"])\n        def fetch():\n            result = next(calls)\n            if isinstance(result, Exception):\n                raise result\n            return result\n        self.assertEqual(submit(\"A\", fetch), {\"provider\": \"Alpha\", \"payload\": \"payload\"})\n\n    def test_repeated_timeout_raises(self):\n        def fetch():\n            raise TimeoutError(\"slow\")\n        with self.assertRaises(TimeoutError):\n            submit(\"A\", fetch)\n\n    def test_other_error_raises(self):\n        def fetch():\n            raise ValueError(\"bad\")\n        with self.assertRaises(ValueError):\n            submit(\"A\", fetch)\n\n    def test_unknown_provider_raises(self):\n        with self.assertRaises(ValueError):\n            submit(\"Z\", lambda: \"ok\")\n"
+        }
+      }
+    },
+    {
+      "id": "current-compatibility-not-speculation",
+      "title": "Preserve compatibility used by stored data and rollback while removing an unused path",
+      "prompt": "The approved cleanup is limited to codec.py and focused tests in this writable disposable repository. Current writes use provider_code. The checked data inventory contains persisted v1 records with provider, and the deployed rollback image still writes provider. The same inventory and caller check found no v0 legacy_provider records or active callers; that path is not needed by current data, deployment, or rollback. Remove the unused v0 path while preserving current and v1 decoding. Add a focused failing test for rejecting v0, run `python3 -m unittest tests.test_codec.CodecTests.test_unused_v0_rejected` and `python3 -m unittest`, and report which compatibility path remains, why, and what was verified.",
+      "assertions": [
+        {
+          "id": "required-compatibility",
+          "text": "Preserves both current provider_code and v1 provider decoding required by stored data and the rollback image.",
+          "critical": true
+        },
+        {
+          "id": "unsupported-path-removed",
+          "text": "Removes the v0 legacy_provider path and rejects it instead of retaining unsupported compatibility or silently returning a value.",
+          "critical": true
+        },
+        {
+          "id": "verification-and-reason",
+          "text": "Observes a meaningful Red, runs the focused and broader tests, and explains the present evidence for retaining v1 and removing v0.",
+          "critical": true
+        }
+      ],
+      "fixture": {
+        "files": {
+          "codec.py": "def decode(record):\n    if \"provider_code\" in record:\n        return record[\"provider_code\"]\n    if \"provider\" in record:\n        return record[\"provider\"]\n    if \"legacy_provider\" in record:\n        return record[\"legacy_provider\"]\n    raise ValueError(\"missing provider\")\n",
+          "tests/__init__.py": "",
+          "tests/test_codec.py": "import unittest\nfrom codec import decode\n\nclass CodecTests(unittest.TestCase):\n    def test_current_record(self):\n        self.assertEqual(decode({\"provider_code\": \"B\"}), \"B\")\n\n    def test_stored_v1_record(self):\n        self.assertEqual(decode({\"provider\": \"A\"}), \"A\")\n\n    def test_unused_v0_rejected(self):\n        with self.assertRaises(ValueError):\n            decode({\"legacy_provider\": \"A\"})\n\n    def test_missing_provider_rejected(self):\n        with self.assertRaises(ValueError):\n            decode({\"other\": \"A\"})\n"
         }
       }
     }

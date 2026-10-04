@@ -3,20 +3,15 @@
   "skill": "implement-changes",
   "skill_source": "public",
   "evaluated_on": "2026-10-04",
-  "purpose": "Check confirmed cause correction versus fallback",
+  "purpose": "Validate review-amended definitions and record blocked model behavior separately",
   "affected_responsibilities": [
-    "cause fix versus fallback"
+    "cause correction",
+    "necessary recovery",
+    "current compatibility"
   ],
   "selection": {
-    "path": "targeted-candidate",
-    "cases": [
-      {
-        "id": "confirmed-cause-not-fallback",
-        "conditions": [
-          "candidate"
-        ]
-      }
-    ]
+    "path": "static-only",
+    "cases": []
   },
   "base": {
     "commit": "b88af0cdcd07138c8e7341a8423a34331b0a84b6"
@@ -25,7 +20,7 @@
     "files": {
       "SKILL-ja.md": {
         "mode": "100644",
-        "sha256": "sha256:a2f65f0f54359fcf49870f29a2256a372f287d7c08014a14be4eed4443e58379"
+        "sha256": "sha256:7288467745f73294c0fd135912110b32cb47e62d5775c0748949a3b4d12ee160"
       },
       "SKILL.md": {
         "mode": "100644",
@@ -38,61 +33,31 @@
     }
   },
   "evaluation_inputs": {
-    "evaluation_files": {
-      "skills/implement-changes/evals/evals.json": "sha256:33733559075d82e25a52a3dff3c31da0901d02c8b11625dda6f6692f1e2f93be"
-    },
+    "evaluation_files": {},
     "case_files": {}
   },
   "environment": {
     "client": "codex-cli 0.155.1",
     "model": "gpt-6-luna",
     "reasoning_effort": "max",
-    "sandbox": "workspace-write",
-    "auth_credentials_store": "keyring"
+    "sandbox": "read-only"
   },
   "checks": {
     "repository": "pass"
   },
-  "results": [
-    {
-      "case_id": "confirmed-cause-not-fallback",
-      "condition": "candidate",
-      "requirements": [
-        {
-          "id": "cause-correction",
-          "status": "fail",
-          "evidence": "The executor observed the intended mapping failure and rejected the unknown-value fallback, but made no cause correction after treating the writable fixture as read-only.",
-          "critical": true
-        },
-        {
-          "id": "recovery-evidence",
-          "status": "pass",
-          "evidence": "The response distinguished a rerun after correction from the fix, cited the pre-write failure, named valid A and B results, retained unknown-code rejection, and named both verification commands.",
-          "critical": true
-        },
-        {
-          "id": "scope-and-tests",
-          "status": "fail",
-          "evidence": "The focused test failed for the intended reason, but no implementation followed and the broader suite remained failing; no files were changed.",
-          "critical": true
-        }
-      ],
-      "evidence": "Observed Red and sound recovery reasoning, but the model did not implement in a fixture that the Runner had verified writable.",
-      "status": "fail"
-    }
-  ],
+  "results": [],
   "summary": {
-    "status": "fail",
+    "status": "pass",
     "counts": {
       "error": 0,
-      "fail": 1,
+      "fail": 0,
       "inconclusive": 0,
       "pass": 0
     }
   },
-  "stopping_reason": "One candidate case failed because the executor misread writable fixture permissions; repeating the same environment would not add decision-relevant evidence.",
+  "stopping_reason": "Selected model runs reached the same model-visible read-only condition despite verified fixture writes; static checks and deterministic fixture probes completed.",
   "unverified": [
-    "Recovery implementation case was not run after the same environment limitation was observed.",
-    "Behavior in other clients and real repositories remains unverified."
+    "No successful model-backed implementation case on the current candidate; the reviewed cause, recovery, coexistence, and compatibility behavior remains unconfirmed.",
+    "Other clients and real repositories were not evaluated."
   ]
 }

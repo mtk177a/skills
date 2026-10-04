@@ -57,8 +57,10 @@ the prompts, intended assertions, and routing cases were retained.
 | Newly exposed boundary gap | Adds a workaround or silently expands scope after discovering that the authorized local correction is insufficient | `scope-discovery` | File hashes and assigned assertions |
 | Response-decision boundary | Implements Defer or No action work from the review handoff | `act-now-only-with-reviewer-context` | File diff and assigned assertions |
 | Actual reviewer context | Omits actual scope, unknown criticality, recovery, review focus, or plan deviations from the Done report | `act-now-only-with-reviewer-context` | Report inspection |
-| Confirmed cause and existing recovery | Adds an `unknown` fallback instead of correcting the stale mapping, or omits the conditions for a safe rerun | `confirmed-cause-not-fallback` | File diff, test commands, report inspection |
+| Confirmed cause and existing recovery | Adds an `unknown` fallback, hardcodes the currently failing code instead of using the authoritative mapping, or omits the conditions for a safe rerun | `confirmed-cause-not-fallback` | File diff, new-code subprocess check, test commands, report inspection |
 | Necessary recovery with unknown cause | Rejects an authorized bounded retry or claims it fixed the unknown timeout cause | `necessary-recovery-not-cause-fix` | File diff, test commands, report inspection |
+| Cause correction with existing recovery | Deletes the still-needed bounded retry while correcting an unrelated confirmed mapping cause | `cause-fix-preserves-needed-recovery` | File diff, recovery/error tests, report inspection |
+| Current compatibility | Drops a path used by stored data and rollback, or retains an old path with no current consumer | `current-compatibility-not-speculation` | File diff, current/v1/v0 tests, report inspection |
 
 ## Behavioral scenarios
 
@@ -175,6 +177,30 @@ Requirements checklist:
 3. Leave fixture hashes unchanged
 4. Do not add speculative abstractions while reporting the blocked state
 
+### Scenario J: Cause correction preserves necessary recovery
+
+A confirmed mapping cause and an independent, observed transient timeout coexist.
+The approved cause correction must retain the one-retry recovery needed by current
+callers, along with repeated-timeout and unrelated-error behavior.
+
+Requirements checklist:
+
+1. [critical] Correct the stale mapping without a success fallback
+2. Keep the existing one-retry recovery and its error boundaries
+3. Observe the focused Red, run the full relevant tests, and report the distinct failure conditions
+
+### Scenario K: Compatibility supported by current data and rollback
+
+Stored v1 data and the rollback image use an older field, while an even older
+field has no current records or callers. The approved cleanup must keep the
+supported format and reject the unused one.
+
+Requirements checklist:
+
+1. [critical] Keep current and v1 decoding
+2. Remove unsupported v0 decoding
+3. Observe the focused Red, run the relevant tests, and explain the evidence for both decisions
+
 ## Execution protocol
 
 Use `scripts/run_skill_evaluation.py` and `docs/evaluation.md` to select a path,
@@ -278,3 +304,31 @@ explicit than these disposable fixtures?
   mismatch. Other clients and real repositories remain unverified. Run the
   recovery case when the evaluator can reliably give the executor writable
   access; do not infer its result from static prose or the first case.
+
+## Issue #66 independent-review follow-up — 2026-10-05
+
+- The [review comment](https://github.com/mtk177a/skills/pull/107#issuecomment-5981792182)
+  identified an acceptance-relevant false positive in the cause case. Its fixture
+  now adds a fresh valid code to `providers.json` and checks it in a new process
+  without editing `processor.py`. A local `B`-only patch failed this check;
+  reading the authoritative file passed the full fixture suite.
+- `cause-fix-preserves-needed-recovery` covers a confirmed mapping cause and an
+  existing, independently required bounded retry in one fixture.
+  `current-compatibility-not-speculation` covers the stored v1 and rollback
+  format alongside an unused v0 path. Each new case had the intended focused
+  Red before implementation; representative correct changes passed its full
+  fixture suite. These are checks of the evaluation definitions, not model
+  implementation passes.
+- The original Runner selected the revised cause and recovery cases in a
+  workspace-write plan. Both executors observed a focused Red but declared the
+  fixture read-only and made no edit; the run was stopped before repeating the
+  same condition for the two additional cases. A separate permission-profile
+  probe wrote successfully when workspace-write was made model-visible, but a
+  full cause-case retry under that setting still stopped as read-only without
+  attempting an edit. This does not establish whether the remaining mismatch is
+  in the Runner, client, or executor interpretation.
+- The current [`report.json`](report.json) is a hash-bound **static-only** record.
+  Its `pass` status means the repository static check passed with zero model
+  cases; it does not supersede the failed implementation observation in the
+  preceding revision or establish success for any of the four selected behavior
+  cases. Other clients and real repositories remain unverified.
