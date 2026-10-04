@@ -7,8 +7,8 @@ Verify that `summarize-changes` turns the requested effective change set into on
 ## Assets
 
 - `triggers.json`: trigger, non-trigger, near-miss, and coexistence routing cases
-- `evals.json`: realistic tasks, synthetic fixtures, hidden assertion assignments, and baseline metadata
-- `results.json`: compact baseline/candidate evidence for the currently accepted revision after execution
+- `evals.json`: executable behavior cases with synthetic input files and hidden grading assertions
+- `results.json`: historical baseline/candidate evidence from the 2026 behavior runs
 - this README: static contract, coverage, protocols, and summarized results
 
 ## Static check
@@ -42,17 +42,21 @@ Verify that `summarize-changes` turns the requested effective change set into on
 
 ## Behavioral execution protocol
 
-1. Use the baseline commit and Skill SHA-256 recorded in `evals.json` as the immutable baseline.
-2. Run each condition in a disposable repository or supplied-only workspace containing only the target Skill, declared fixture files, and synthetic evidence required by the case.
-3. Provide only the case turns and fixture to the blank-slate executor. Keep assertion statements, titles, expected conclusions, and additional requirements hidden.
-4. Capture the response and command trace without asking the executor to self-grade. Use a separate grader for assigned judgment requirements and deterministic scans for exact secret values and repository mutation.
-5. A failed critical assertion fails the case. A partial result without a critical failure is partial.
-6. Keep prompts, responses, JSONL, grader output, command traces, and disposable repositories under `/tmp`; do not commit raw traces.
-7. Run each affected case once for baseline and candidate. Repeat only when an unexpected result, instability, fixture defect, or grader defect could change the decision, and rerun matched conditions for the affected case.
+1. Use `scripts/run_skill_evaluation.py plan` to select only the cases and conditions needed for the changed responsibility and inspect the model-call count before execution.
+2. Run selected cases in disposable workspaces using the executable `evals.json` inputs.\
+   Synthetic change-set evidence is materialized from `fixture.files`; the executor receives only the prompt and fixture, not assertions or expected conclusions.
+3. Capture responses and command traces without asking the executor to grade itself.\
+   Use separate grading for assigned judgment requirements and deterministic scans for exact secret values and repository mutation.
+4. A failed critical assertion fails the case.\
+   A partial result without a critical failure is partial.
+5. Keep plans, prompts, responses, JSONL, grader output, command traces, and disposable workspaces outside this repository; commit only a compact report when useful for reviewing the selected responsibility.
+6. Compare with a baseline or repeat a case only when the extra observation could change the decision.
 
 ## Trigger execution protocol
 
-Present each case as a Skill-selection task using only installed Skill names and descriptions declared for that condition. Require the selector to open every selected `SKILL.md` so loading is observable. Count only an observed file read and record unavailable observations as `not exposed`.
+Use the Runner's executable `triggers.json` cases with the declared coexistence Skills.\
+Count only observed successful reads of installed `SKILL.md` files.\
+If the event stream does not expose a completed routing observation, report it as inconclusive rather than inferring selection from the response.
 
 ## Failure Pattern Ledger
 
@@ -72,7 +76,7 @@ Present each case as a Skill-selection task using only installed Skill names and
 - `PR description drops reviewer context needed for calibration`
 - `unknown criticality or exposure rewritten as low risk`
 
-## Current revision
+## Historical behavior evidence
 
 Evaluated on 2026-07-29 with Codex CLI 0.145.0, `gpt-5.6-sol`, high reasoning, a read-only sandbox, and disposable synthetic repositories.
 
@@ -84,9 +88,10 @@ Evaluated on 2026-07-29 with Codex CLI 0.145.0, `gpt-5.6-sol`, high reasoning, a
 - No behavior fixture was mutated. Raw prompts, responses, JSONL, grader output, command traces, and disposable repositories remained under `/tmp`.
 - Claude Code, other clients, repeated-run stability, hosted CI APIs, external write integrations, and arbitrary prompt-injection or secret formats were not evaluated.
 
-See [`results.json`](results.json) for candidate hashes, iteration provenance, the case-by-requirement matrix, observed Skill loads, and unverified items.
+See [`results.json`](results.json) for the historical candidate hashes, iteration provenance, case-by-requirement matrix, observed Skill loads, and unverified items.\
+These results do not verify later definition migrations or translation edits.
 
-### Next validation question
+### Historical validation question
 
 - Does the candidate preserve exact scope, evidence status, audience boundaries, and read-only authority while remaining useful for ordinary PR and release communication?
 
