@@ -51,18 +51,18 @@ The output need not label every observed sentence. It must qualify reported, inf
 6. Remove secrets, credentials, personal or customer data, private hosts, internal URLs, and other unnecessary non-public details. Refer only to the minimum safe path or category when the existence of sensitive material is relevant.
 7. Assign exactly one handoff state:
    - `Ready to resume`: the next session can identify a safe first action and its entry and stop conditions
-   - `Needs confirmation`: the draft is useful, but a material fact, decision, conflict, or authority must be resolved before the affected action
+   - `Needs confirmation`: the handoff is useful, but a material fact, decision, conflict, or authority must be resolved before the affected action
    - `Blocked`: task identity or current state is too incomplete or conflicting to produce a non-misleading handoff
 8. Determine persistence separately:
    - `Written`: the originating request authorizes recording, the exact destination is supplied or established by authoritative guidance, it belongs to this task, and the update can preserve unrelated content
    - `Draft only`: a useful handoff exists, but no safe destination or sufficient write authority is established
    - `Not written`: conflict, staleness, sensitive-data risk, destructive replacement, or another boundary prevents the requested update
-9. When `Written` applies, update only the authorized destination and verify the resulting artifact. Otherwise return the draft and the reason it was not written. Do not turn missing persistence into a reason to discard a useful handoff.
+9. When `Written` applies, update only the authorized destination and verify the resulting artifact. Do not substitute `Draft only` based on an unverified assumption that the workspace is read-only; check the actual write capability or attempt the authorized write. If writing fails, preserve the draft and report the observed failure. When `Written` does not apply, return the draft and the reason it was not written. Do not turn missing persistence into a reason to discard a useful handoff.
 10. Verify that a blank-slate next session can distinguish current evidence from reports, identify what remains unresolved, locate the relevant artifacts, and choose the next safe action without treating the handoff as renewed authorization.
 
 ## Handoff contract
 
-Adapt presentation and language to the repository convention and user. Omit empty or inapplicable fields rather than emitting placeholders such as "no repository" or "not applicable," and omit fixed headings that do not fit the task. Always state the exact handoff state and persistence state in both the artifact and the final response. A brief write confirmation does not replace the artifact's full semantic contract. Preserve these semantics when applicable:
+Adapt presentation and language to the repository convention and user. Omit empty or inapplicable fields rather than emitting placeholders such as "no repository" or "not applicable," and omit fixed headings that do not fit the task. State the exact handoff state and persistence state in the artifact when one can be produced, and always in the final response. A brief write confirmation does not replace the artifact's full semantic contract. Preserve these semantics when applicable:
 
 - handoff state and persistence state, including the exact written destination
 - task identity, recording time or relevant revision, current goal, and current state
@@ -82,9 +82,10 @@ For `Needs confirmation`, identify what must be resolved and which action is wai
 
 - Skill loading or explicit invocation does not by itself authorize arbitrary file or external writes. Inherit only authority stated in the originating request and applicable guidance.
 - An exact user-supplied destination or an authoritative existing convention may establish the target. A likely filename, nearby notes directory, or previous agent habit does not.
+- Authorization to record a handoff in a local destination does not authorize committing, pushing, posting, sending, or sharing it. Treat each additional operation and recipient as a separate authority and disclosure boundary.
 - Before replacing a mutable `latest` artifact, confirm that it belongs to the same task and does not contain a newer or conflicting state. If that cannot be established, leave it unchanged.
 - Preserve existing unrelated content. Do not summarize, replace, delete, or reorganize historical handoffs unless that separate change is explicitly authorized.
-- If an external destination is explicitly authorized, minimize the outbound data to the handoff contract and verify the exact destination. Do not infer broader connector or publication authority.
+- If recording to an external destination is explicitly authorized, verify the exact destination and recipient or audience, and minimize outbound data to the handoff contract. Do not infer broader connector or publication authority.
 
 ## Safety and workflow boundaries
 
