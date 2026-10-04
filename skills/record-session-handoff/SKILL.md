@@ -53,11 +53,11 @@ The output need not label every observed sentence. It must qualify reported, inf
    - `Ready to resume`: the next session can identify a safe first action and its entry and stop conditions
    - `Needs confirmation`: the handoff is useful, but a material fact, decision, conflict, or authority must be resolved before the affected action
    - `Blocked`: task identity or current state is too incomplete or conflicting to produce a non-misleading handoff
-8. Determine persistence separately:
-   - `Written`: the originating request authorizes recording, the exact destination is supplied or established by authoritative guidance, it belongs to this task, and the update can preserve unrelated content
+8. Check whether recording is eligible, then determine the final persistence state from the observed result:
+   - `Written`: the originating request authorizes recording, the exact destination is supplied or established by authoritative guidance, it belongs to this task, unrelated content is preserved, and the updated artifact is verified at that destination
    - `Draft only`: a useful handoff exists, but no safe destination or sufficient write authority is established
-   - `Not written`: conflict, staleness, sensitive-data risk, destructive replacement, or another boundary prevents the requested update
-9. When `Written` applies, update only the authorized destination and verify the resulting artifact. Do not substitute `Draft only` based on an unverified assumption that the workspace is read-only; check the actual write capability or attempt the authorized write. If writing fails, preserve the draft and report the observed failure. When `Written` does not apply, return the draft and the reason it was not written. Do not turn missing persistence into a reason to discard a useful handoff.
+   - `Not written`: conflict, staleness, sensitive-data risk, destructive replacement, an attempted write failure, or an unverified write result prevents confirming the requested update
+9. If recording is eligible, update only the authorized destination and verify the resulting artifact. Do not substitute `Draft only` based on an unverified assumption that the workspace is read-only; check the actual write capability or attempt the authorized write. If writing fails or cannot be verified, preserve a draft labeled `Not written` and report the observed failure or uncertainty; do not automatically retry a write whose outcome is unknown. If recording is ineligible, return the draft and the reason it was not written. Do not turn missing persistence into a reason to discard a useful handoff.
 10. Verify that a blank-slate next session can distinguish current evidence from reports, identify what remains unresolved, locate the relevant artifacts, and choose the next safe action without treating the handoff as renewed authorization.
 
 ## Handoff contract
