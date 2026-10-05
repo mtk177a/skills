@@ -77,7 +77,7 @@
           "critical": true
         }
       ],
-      "evidence": "One candidate implementation completed with a source edit and focused plus full fixture tests.",
+      "evidence": "One candidate implementation completed under a temporary Runner moving profile arguments after exec while retaining --ignore-user-config and personal Skill denials. The saved trace records service.py editing, focused Red/Green and all six fixture tests passing.",
       "status": "pass"
     }
   ],
@@ -90,9 +90,10 @@
       "pass": 1
     }
   },
-  "stopping_reason": "One combined cause-and-recovery case passed under a temporary Runner variant omitting --ignore-user-config after the standard Runner made the model see read-only; no equivalent reruns.",
+  "stopping_reason": "One combined case passed under a saved temporary Runner moving profile configuration after exec, retaining --ignore-user-config and personal Skill denials. Source patch and captured argv are recorded in runner-profile-evidence.json; no equivalent reruns.",
   "unverified": [
-    "The standard Runner remains unable to present writable permissions to the executor in this environment; this candidate pass used a diagnostic Runner variant without --ignore-user-config.",
-    "Separate unknown-cause recovery, compatibility, other clients, and real repositories were not model-evaluated in this run."
+    "The unchanged repository Runner was not rerun; this is a conditional pass under a temporary argument-position fix, not a standard Runner success.",
+    "Native preflight directly confirmed personal Skill denial; the model did not attempt that read in the main execution. CLI internals and the previous flag-omitting variant source/argv remain unverified.",
+    "Separate unknown-cause recovery, compatibility, other clients, real repositories and other OS/CLI versions were not model-evaluated in this run."
   ]
 }

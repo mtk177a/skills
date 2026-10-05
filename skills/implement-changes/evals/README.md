@@ -347,8 +347,28 @@ explicit than these disposable fixtures?
   `cause-fix-preserves-needed-recovery` once. The executor observed the expected
   Red, replaced the stale local table with a `providers.json` read at process
   start, retained the existing retry, and passed the focused test and all six
-  fixture tests. The current [`report.json`](report.json) records this one
+  fixture tests. The [report at `0aed378`](https://github.com/mtk177a/skills/blob/0aed37836b60c1097c8781ebce6ef83ce3240140/skills/implement-changes/evals/report.json) records this one
   **model-backed candidate pass** and the nonstandard execution condition.
   It does not establish a standard Runner pass. Separate unknown-cause recovery,
   compatibility, other clients, and real repositories remain unverified by a
   model run.
+
+## Profile argument-position evaluation — 2026-10-05
+
+The [published Runner investigation](https://github.com/mtk177a/skills/pull/107#issuecomment-5989836464) identified an argument-position interaction with CLI 0.155.1.
+The head `0aed378` candidate and its existing one-call plan were evaluated with a temporary Runner copy that moved only the profile configuration arguments after `exec`.
+It retained `--ignore-user-config`, `approval_policy="never"`, and the personal same-name Skill directory's `deny` rule.
+The model, reasoning effort, sandbox profile, authentication store, prompt, fixture, candidate, and companion Skill hashes matched the previous plan: `gpt-6-luna / max / workspace-write / keyring`.
+
+The executor read the fixture Skill, observed the focused mapping Red, edited only `service.py` to read `providers.json` at process start, and passed the focused test and all six fixture tests.
+The existing retry was unchanged; `providers.json` and the tests were unchanged after execution.
+An independent fixture check also passed all six tests and verified every installed Skill hash against the plan.
+
+The current [`report.json`](report.json) records this one conditional model pass.
+[`runner-profile-evidence.json`](runner-profile-evidence.json) preserves the exact Runner source patch, the captured execution argument sequence with local paths replaced by named tokens, raw artifact hashes, and event references.
+The actual source, unmodified argv, driver, plan, run record, and JSONL are also retained in the temporary evaluation artifacts.
+Native preflight confirmed fixture access, workspace writing, and personal Skill read denial.
+The main argv preserves that deny rule, and the trace contains no personal Skill load; the model did not attempt that read, so its denial was not directly exercised by a model tool call.
+
+This is a temporary Runner variant, not a success of the unchanged repository Runner.
+The previous flag-omitting variant's exact source and argv, CLI internals, separate unknown-cause recovery and compatibility cases, other clients, real repositories, and other OS or CLI versions remain unverified.

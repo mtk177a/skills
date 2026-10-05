@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "skill": "implement-changes",
+  "evaluated_head": "0aed37836b60c1097c8781ebce6ef83ce3240140",
+  "plan_digest": "sha256:fa2204c72fa8e076b4bdf73abc3e5901cf406d93c565750c08511bff1d903182",
+  "investigation": "https://github.com/mtk177a/skills/pull/107#issuecomment-5989836464",
+  "runner_change": {
+    "original_sha256": "37bf1b5cfdc00cc014e2035201a5dc20249bac82c0764ad07e84ce3d759adfc5",
+    "temporary_sha256": "991b7bb9af0cbda87fbafa3bd61762d3ec3e21f34dc5dc116ac95378c700a4a1",
+    "patch": "--- run_skill_evaluation.py\n+++ temporary-runner.py\n@@ -979,8 +979,9 @@\n         codex_bin, plan[\"skill\"], sandbox=plan[\"environment\"][\"sandbox\"],\n     )\n     command = [\n-        *command_prefix,\n+        command_prefix[0],\n         \"exec\",\n+        *command_prefix[1:],\n         \"--ephemeral\",\n         \"--json\",\n         # A legacy sandbox_mode in user config would override the native profile.\n",
+    "capture_method": "A saved driver recorded the execution argv immediately before forwarding it unchanged to the original subprocess.run. The Runner copy has only the patch shown here."
+  },
+  "execution_argv": [
+    "codex",
+    "exec",
+    "-c",
+    "default_permissions=\"skill-evaluation\"",
+    "-c",
+    "permissions.skill-evaluation={extends=\":workspace\",filesystem={\"<HOME>/.agents/skills/implement-changes\"=\"deny\"}}",
+    "-c",
+    "approval_policy=\"never\"",
+    "--ephemeral",
+    "--json",
+    "--ignore-user-config",
+    "--ignore-rules",
+    "--skip-git-repo-check",
+    "--model",
+    "gpt-6-luna",
+    "-c",
+    "features.plugins=false",
+    "-c",
+    "skills.max_context_tokens=10000",
+    "-c",
+    "skills.config=[{path=\"<HOME>/.agents/skills/assess-risky-change-readiness/SKILL.md\",enabled=false},{path=\"<HOME>/.agents/skills/break-failure-loop/SKILL.md\",enabled=false},{path=\"<HOME>/.agents/skills/design-changes/SKILL.md\",enabled=false},{path=\"<HOME>/.agents/skills/implement-changes/SKILL.md\",enabled=false},{path=\"<HOME>/.agents/skills/review-changes/SKILL.md\",enabled=false},{path=\"<HOME>/.agents/skills/validate-fix/SKILL.md\",enabled=false},{path=\"<HOME>/.codex/skills/assess-risky-change-readiness/SKILL.md\",enabled=false},{path=\"<HOME>/.codex/skills/break-failure-loop/SKILL.md\",enabled=false},{path=\"<HOME>/.codex/skills/design-changes/SKILL.md\",enabled=false},{path=\"<HOME>/.codex/skills/implement-changes/SKILL.md\",enabled=false},{path=\"<HOME>/.codex/skills/review-changes/SKILL.md\",enabled=false},{path=\"<HOME>/.codex/skills/validate-fix/SKILL.md\",enabled=false}]",
+    "-c",
+    "cli_auth_credentials_store=\"keyring\"",
+    "-c",
+    "model_reasoning_effort=\"max\"",
+    "-C",
+    "<EXECUTION_DIR>/fixture",
+    "--output-last-message",
+    "<EXECUTION_DIR>/last-message.txt",
+    "-"
+  ],
+  "path_substitutions": {
+    "<HOME>": "The actual user home path, replaced for portable published evidence.",
+    "<EXECUTION_DIR>": "The actual case execution directory; fixture and last-message paths retain their relative relationship."
+  },
+  "isolation": {
+    "catalog_preflight": "pass",
+    "native_preflight_exit_code": 0,
+    "native_checks": "Fixture Skill read and workspace write succeeded; reading the existing personal same-name Skill raised PermissionError.",
+    "execution_checks": "The main argv retains the same personal-directory deny, --ignore-user-config and approval_policy=never. The trace reads the fixture Skill and contains no observed personal Skill load.",
+    "limit": "The model did not attempt a personal Skill read during the main execution; its denial was directly tested by the native preflight, not by a model tool call."
+  },
+  "observed_model_events": [
+    {
+      "id": "item_6",
+      "type": "command_execution",
+      "check": "focused Red",
+      "exit_code": 1,
+      "result": "test_current_provider raised ValueError: unknown provider for B"
+    },
+    {
+      "id": "item_8",
+      "type": "file_change",
+      "status": "completed",
+      "files": [
+        "service.py"
+      ]
+    },
+    {
+      "id": "item_9",
+      "type": "command_execution",
+      "check": "focused Green",
+      "exit_code": 0,
+      "result": "Ran 1 test; OK"
+    },
+    {
+      "id": "item_10",
+      "type": "command_execution",
+      "check": "full fixture suite",
+      "exit_code": 0,
+      "result": "Ran 6 tests; OK"
+    }
+  ],
+  "fixture_patch": "--- before/service.py\n+++ after/service.py\n@@ -1,11 +1,14 @@\n import json\n from pathlib import Path\n \n+PROVIDERS = json.loads(\n+    Path(__file__).with_name(\"providers.json\").read_text(encoding=\"utf-8\")\n+)\n+\n def provider_name(code):\n-    local = {\"A\": \"Alpha\"}\n-    if code not in local:\n+    if code not in PROVIDERS:\n         raise ValueError(\"unknown provider\")\n-    return local[code]\n+    return PROVIDERS[code]\n \n def submit(code, fetch):\n     try:\n",
+  "final_state": {
+    "providers_and_tests": "unchanged from plan",
+    "candidate_and_companion_skill_hashes": "match plan",
+    "independent_full_suite": "6 tests passed"
+  },
+  "limitations": [
+    "This is a temporary Runner variant, not the unchanged repository Runner.",
+    "No other case, model, client, OS or CLI version was evaluated.",
+    "The internal CLI mechanism and the prior flag-omitting Runner source/argv remain unverified."
+  ],
+  "raw_artifact_sha256": {
+    "runner.py": "991b7bb9af0cbda87fbafa3bd61762d3ec3e21f34dc5dc116ac95378c700a4a1",
+    "driver.py": "9b60a2583d6a9569b1feaf2283fddf8e62cffc82280dd39fd783bcb1c8831c09",
+    "actual-argv.json": "e4326e0c157d8a66a43cad59ceb2ad16ae919867d3bddb1d1ff65e8da7317ca8",
+    "plan.json": "079eaaf76fb4c66bbc0dd872f6e140bcb0f5bdbc5de5d368ac2892e8a529f649",
+    "artifacts/run.json": "da199e9619be87c71bda36b5934ee8f0cfd90caea39bc1614b04754a9d75bba4",
+    "artifacts/executions/001-candidate-cause-fix-preserves-needed-recovery/events.jsonl": "30f453a3ef681217258f8f8821bf08e0ec7a3b7ba326346ef8b8fe0005cb5695"
+  }
+}
