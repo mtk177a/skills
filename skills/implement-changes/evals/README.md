@@ -59,7 +59,7 @@ the prompts, intended assertions, and routing cases were retained.
 | Actual reviewer context | Omits actual scope, unknown criticality, recovery, review focus, or plan deviations from the Done report | `act-now-only-with-reviewer-context` | Report inspection |
 | Confirmed cause and existing recovery | Adds an `unknown` fallback, hardcodes the currently failing code instead of using the authoritative mapping, or omits the conditions for a safe rerun | `confirmed-cause-not-fallback` | File diff, new-code subprocess check, test commands, report inspection |
 | Necessary recovery with unknown cause | Rejects an authorized bounded retry or claims it fixed the unknown timeout cause | `necessary-recovery-not-cause-fix` | File diff, test commands, report inspection |
-| Cause correction with existing recovery | Deletes the still-needed bounded retry while correcting an unrelated confirmed mapping cause | `cause-fix-preserves-needed-recovery` | File diff, recovery/error tests, report inspection |
+| Cause correction with existing recovery | Adds only the currently failing code to a stale local table or deletes the still-needed bounded retry | `cause-fix-preserves-needed-recovery` | Fresh-process new-code check, recovery/error tests, file diff, report inspection |
 | Current compatibility | Drops a path used by stored data and rollback, or retains an old path with no current consumer | `current-compatibility-not-speculation` | File diff, current/v1/v0 tests, report inspection |
 
 ## Behavioral scenarios
@@ -297,7 +297,7 @@ explicit than these disposable fixtures?
   isolation checks passed. The executor observed the intended failing test and
   correctly described why `unknown` would not fix the stale mapping. It then
   treated the writable fixture as read-only and did not implement the fix.
-  The case is **fail**, as recorded in [`report.json`](report.json); the response's
+  The case is **fail**, as recorded in the [report at `46ce1c4`](https://github.com/mtk177a/skills/blob/46ce1c400780cc8928ca19618fa343dbe4e24fb7/skills/implement-changes/evals/report.json); the response's
   recovery reasoning passed its assigned requirement, but cause correction and
   completion verification failed.
 - `necessary-recovery-not-cause-fix` was not run after this execution-environment
@@ -313,7 +313,9 @@ explicit than these disposable fixtures?
   without editing `processor.py`. A local `B`-only patch failed this check;
   reading the authoritative file passed the full fixture suite.
 - `cause-fix-preserves-needed-recovery` covers a confirmed mapping cause and an
-  existing, independently required bounded retry in one fixture.
+  existing, independently required bounded retry in one fixture. A new-code
+  check also requires the authoritative mapping to work in a fresh process
+  without another `service.py` edit; a local `B`-only patch fails it.
   `current-compatibility-not-speculation` covers the stored v1 and rollback
   format alongside an unused v0 path. Each new case had the intended focused
   Red before implementation; representative correct changes passed its full
@@ -325,10 +327,28 @@ explicit than these disposable fixtures?
   same condition for the two additional cases. A separate permission-profile
   probe wrote successfully when workspace-write was made model-visible, but a
   full cause-case retry under that setting still stopped as read-only without
-  attempting an edit. This does not establish whether the remaining mismatch is
-  in the Runner, client, or executor interpretation.
-- The current [`report.json`](report.json) is a hash-bound **static-only** record.
-  Its `pass` status means the repository static check passed with zero model
-  cases; it does not supersede the failed implementation observation in the
-  preceding revision or establish success for any of the four selected behavior
-  cases. Other clients and real repositories remain unverified.
+  attempting an edit. The [report at `13e99f5`](https://github.com/mtk177a/skills/blob/13e99f54f55e986907c2f1d552e07ded2187fa07/skills/implement-changes/evals/report.json)
+  is **static-only**, with zero model cases. Its `pass` means only that the
+  repository static check passed; it is not an implementation success.
+
+## Issue #66 permission and evaluation follow-up — 2026-10-05
+
+- With the permission profile, `codex debug prompt-input` displayed
+  `workspace-write`, and the native sandbox preflight wrote to the fixture.
+  A standard Runner execution of the amended coexistence case nevertheless
+  reported read-only access after the focused Red and made no edit.
+- A diagnostic invocation using the same profile and `--ignore-user-config`
+  reported read-only access and emitted no command execution event, despite
+  claiming that a write command failed. Removing only that flag in a paired
+  diagnostic exposed writable access and produced a successful write command.
+  This isolates a CLI/Runner flag interaction in this environment; the client's
+  internal cause remains unverified. The repository Runner was not changed.
+- A temporary Runner copy omitting that flag executed
+  `cause-fix-preserves-needed-recovery` once. The executor observed the expected
+  Red, replaced the stale local table with a `providers.json` read at process
+  start, retained the existing retry, and passed the focused test and all six
+  fixture tests. The current [`report.json`](report.json) records this one
+  **model-backed candidate pass** and the nonstandard execution condition.
+  It does not establish a standard Runner pass. Separate unknown-cause recovery,
+  compatibility, other clients, and real repositories remain unverified by a
+  model run.
