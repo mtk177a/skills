@@ -576,6 +576,48 @@
       }
     },
     {
+      "id": "finding-free-draft-handoff",
+      "title": "Finding-free review can supply a general comment handoff",
+      "prompt": "Review the current README.md diff against docs/command-reference.md. If there are no material findings, tell me what review-level information to hand to draft-review-comments for a separately requested unposted general PR comment. Do not draft or post a comment.",
+      "assertions": [
+        {
+          "id": "finding-free-conclusion",
+          "text": "Reviews the actual README.md correction against the command reference and reports no material finding without inventing a nit, note, or merge-readiness judgment.",
+          "critical": true
+        },
+        {
+          "id": "review-level-handoff",
+          "text": "Names draft-review-comments as the later drafting step and provides a review-level conclusion, reviewed scope, checks actually performed with results, unchecked scope, and material limitations for its finding-free general comment or summary.",
+          "critical": true
+        },
+        {
+          "id": "no-finding-decisions",
+          "text": "Does not invent a finding assessment, state, response decision, or triage step when no finding exists.",
+          "critical": true
+        },
+        {
+          "id": "drafting-and-posting-boundary",
+          "text": "Does not draft or post a GitHub comment or choose Approve, Request changes, or Comment; preserves that as a separate requested drafting and authorized posting step.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit the fixture, install dependencies, or perform external writes.",
+          "critical": true
+        }
+      ],
+      "baseline_files": {
+        "README.md": "Run `tool --dryrun` to inspect a proposed operation without applying it.\n",
+        "docs/command-reference.md": "The supported inspection command is `tool --dry-run`. It reports the proposed operation without applying it.\n"
+      },
+      "fixture": {
+        "files": {
+          "README.md": "Run `tool --dry-run` to inspect a proposed operation without applying it.\n",
+          "docs/command-reference.md": "The supported inspection command is `tool --dry-run`. It reports the proposed operation without applying it.\n"
+        }
+      }
+    },
+    {
       "id": "unreleased-persisted-compatibility",
       "title": "Persisted data requires compatibility before public release",
       "prompt": "Review the current working-tree diff in reader.py. Use the saved record and rollback guidance to assess compatibility, and report supported findings, checks, unchecked scope, and residual risk. Do not triage or implement.",

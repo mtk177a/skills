@@ -2,16 +2,16 @@
   "schema_version": 2,
   "skill": "review-changes",
   "skill_source": "public",
-  "evaluated_on": "2026-10-04",
-  "purpose": "Check that supported timeout recovery is not over-flagged after Issue 71 review feedback",
+  "evaluated_on": "2026-10-05",
+  "purpose": "Check finding-free review handoff to later PR comment drafting",
   "affected_responsibilities": [
-    "Current failure condition and verified recovery despite unknown root cause"
+    "Review-level conclusion and evidence handoff without invented finding decisions or posting"
   ],
   "selection": {
     "path": "targeted-candidate",
     "cases": [
       {
-        "id": "verified-timeout-recovery",
+        "id": "finding-free-draft-handoff",
         "conditions": [
           "candidate"
         ]
@@ -25,17 +25,17 @@
     "files": {
       "SKILL-ja.md": {
         "mode": "100644",
-        "sha256": "sha256:1686d05aa6126a6864c63a096a3fba8e39de32e849141ca84abf0ad08f4ac39b"
+        "sha256": "sha256:9eea1302bfd28fc6f326478b8a573e357b8509463ca4eddd9748e116e365963d"
       },
       "SKILL.md": {
         "mode": "100644",
-        "sha256": "sha256:edb27dad09f4f81c0c1ae25f4259abcddb6fa25e6e0734ca1d0ce5b6005bce1d"
+        "sha256": "sha256:fc3f49d527b54ea0b814d54ed44e10577425480a51a93f00ccc38c39ba277675"
       }
     }
   },
   "evaluation_inputs": {
     "evaluation_files": {
-      "skills/review-changes/evals/evals.json": "sha256:46af99c6339bd3d75490d20af3221f78679669755d017ec99ac8a6693c56cdd3"
+      "skills/review-changes/evals/evals.json": "sha256:40d760c495b27009a8abad9b1c82cc8aba540bd724db5f47e8f30288b134bc8a"
     },
     "case_files": {}
   },
@@ -51,41 +51,41 @@
   },
   "results": [
     {
-      "case_id": "verified-timeout-recovery",
+      "case_id": "finding-free-draft-handoff",
       "condition": "candidate",
       "requirements": [
         {
-          "id": "contextual-evidence",
+          "id": "finding-free-conclusion",
           "status": "pass",
-          "evidence": "Read the policy contract and focused tests, and tied the conclusion to the policy_loader.py diff.",
+          "evidence": "The response found no material issue in the README command correction and made no merge-readiness claim.",
           "critical": true
         },
         {
-          "id": "necessary-recovery",
+          "id": "review-level-handoff",
           "status": "pass",
-          "evidence": "Accepted the bounded verified-snapshot recovery despite an unknown timeout root cause; cited the 0–300 second trigger, signal, and re-raise paths.",
+          "evidence": "It explicitly named draft-review-comments and supplied the conclusion, README scope, comparison and git diff --check results, and unchecked runtime and PR scope.",
           "critical": true
         },
         {
-          "id": "no-invented-findings",
+          "id": "no-finding-decisions",
           "status": "pass",
-          "evidence": "Reported no material supported issue and did not demand fallback removal or a speculative cause fix.",
+          "evidence": "It did not assign any finding assessment, lifecycle state, or response decision, nor require triage for the empty set.",
           "critical": true
         },
         {
-          "id": "checks-vs-suggestions",
+          "id": "drafting-and-posting-boundary",
           "status": "pass",
-          "evidence": "Marked git diff --check as run, tests as read but unrun, and suggested a focused test while naming runtime and provider gaps.",
+          "evidence": "It stated that no comment draft or post occurred and did not select a GitHub review action.",
           "critical": true
         },
         {
           "id": "read-only-review",
           "status": "pass",
-          "evidence": "Execution trace contains Skill and fixture reads plus read-only Git checks; it made no edits or external writes.",
+          "evidence": "The trace contains only Skill and fixture reads and read-only Git checks; no edits or external writes occurred.",
           "critical": true
         }
       ],
-      "evidence": "The candidate recognized the current verified recovery path as supported and bounded the remaining unknowns.",
+      "evidence": "The review returned a finding-free handoff with explicit evidence and limits, without fabricating decisions or drafting/posting.",
       "status": "pass"
     }
   ],
@@ -98,8 +98,8 @@
       "pass": 1
     }
   },
-  "stopping_reason": "The selected case passed all five critical requirements; additional model calls are not decision-relevant for this finding.",
+  "stopping_reason": "The selected finding-free handoff case passed all five critical requirements; additional model calls are not decision-relevant.",
   "unverified": [
-    "Unselected review and routing cases, actual repository diffs, repeated runs, other models and clients, snapshot-provider integration, and production behavior."
+    "End-to-end drafting with the separate PR #109 candidate, actual GitHub posting, other review cases, repeated runs, other models and clients, and production behavior remain unverified."
   ]
 }

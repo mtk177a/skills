@@ -33,6 +33,7 @@ Structured assets:
 | Uncertainty and handoff | Turns a potentially severe unknown into a low-value question, hides the premise in another field, or forces downstream triage to infer it | `high-impact-unconfirmed-premise` | Finding fields and handoff assertion |
 | Change-type adaptation | Forces code tests onto docs/config or omits available deterministic checks | `documentation-and-configuration` | Commands and results |
 | No-findings state | Invents nits or returns a bare approval | `clean-diff` | Finding count and report contract |
+| Finding-free drafting handoff | Invents finding decisions or omits the review-level conclusion, scope, checks, or limitations needed for a general comment | `finding-free-draft-handoff` | Handoff fields and drafting boundary |
 | Full re-review | Mixes `Resolved` / `Remaining` / `New` with label or confidence, or repeats classifications supplied by the prompt instead of deriving them from the target | `full-rereview` | Fixture-derived state reconciliation and new-finding discovery |
 | Trigger boundary | Collides with triage, validation, comment drafting, summary, implementation, or guidance audit | `triggers.json` | Observable Skill loads |
 | Excess complexity | Accepts speculative abstractions whose concrete maintenance cost has no current requirement or observed-risk basis | `unjustified-abstraction` | Finding evidence and assigned assertions |
@@ -80,6 +81,7 @@ Claude Code and other clients are outside the current execution plan and must be
 - `speculative remediation cost ignored when assigning must`
 - `late non-blocking issue starts another fix round`
 - `verified recovery criticized solely because its root cause remains unknown`
+- `finding-free review blocked on invented finding decisions`
 
 ## Recorded full evaluation — 2026-07-27
 
@@ -128,7 +130,8 @@ Claude Code and other clients were not executed. Detailed case-by-assertion and 
 ## Issue #71 audit — 2026-10-04
 
 - Migrated all 13 existing behavior cases and all 11 routing cases to the executable format. The legacy `results.json` remains historical evidence.
-- Added `fallback-masks-confirmed-cause` and `unreleased-persisted-compatibility` for the responsibilities changed under #37. The candidate passed all 10 selected critical requirements across those two cases with Codex CLI 0.155.1, `gpt-6-luna`, max reasoning, and a read-only sandbox; the compact, candidate-bound record is in [`report.json`](report.json).
+- Added `fallback-masks-confirmed-cause` and `unreleased-persisted-compatibility` for the responsibilities changed under #37.\
+  The candidate passed all 10 selected critical requirements across those two cases with Codex CLI 0.155.1, `gpt-6-luna`, max reasoning, and a read-only sandbox; the compact, candidate-bound record remains in Git history at `d164bc2`.
 - An initial model run without a materialized diff correctly reported that review could not run. After adding the diff fixtures, a forward run exposed that one response did not keep `Unconfirmed premises` distinct; the final candidate added that reporting requirement, and both selected cases then passed. These intermediate runs are diagnostic, not accepted candidate evidence.
 - The migrated `explicit-range` case now checks an explicitly scoped file diff against an unrelated untracked file. The current executable fixture contract does not construct a second committed revision, so the original `HEAD~1..HEAD` selection remains untested by this case.
 - Other behavior and routing cases, real repository diffs, repeatability, other models and clients, and live production behavior were not evaluated for this revision.
@@ -137,7 +140,20 @@ Claude Code and other clients were not executed. Detailed case-by-assertion and 
 
 - Added `verified-timeout-recovery` to check the other side of the #37 recovery boundary: a currently required, tested fallback must not be criticized solely because the timeout's root cause remains unknown.
 - The new fixture defines the observed timeout, a verified snapshot no older than five minutes, the recovery signal and returned state, and visible failure when recovery is unavailable. Its three focused unit tests passed outside the model run.
-- One targeted candidate execution with Codex CLI 0.155.1, `gpt-6-luna`, max reasoning, and a read-only sandbox passed all five critical requirements. The response reported no material finding, read the contract and tests, and separated executed checks from unrun tests and provider integration. The latest compact record is in [`report.json`](report.json).
+- One targeted candidate execution with Codex CLI 0.155.1, `gpt-6-luna`, max reasoning, and a read-only sandbox passed all five critical requirements.\
+  The response reported no material finding, read the contract and tests, and separated executed checks from unrun tests and provider integration.\
+  Its compact record remains in Git history at `8069cb4`.
 - The earlier two-case, ten-requirement audit result remains recorded in the Issue #71 audit above and in Git history; `report.json` records only the latest selected evaluation. `SKILL.md` and `SKILL-ja.md` did not change, so their meaning and translation alignment are unchanged.
 - The first attempt stopped before model execution because the local CLI could not inspect its Skill catalog. A second reached the model endpoint without credentials and failed. Explicitly using the configured `auto` credential store produced the accepted execution. Neither failed attempt counts as behavior evidence.
 - Unselected cases, real repository diffs, repeated runs, other models and clients, snapshot-provider integration, and production behavior remain unverified.
+
+## Finding-free drafting handoff — 2026-10-05
+
+- The retained raw response and run record for `verified-timeout-recovery` were checked against the `8069cb4` Skill file hashes and evaluation input.\
+  The response did not demand removal of the verified recovery path or a speculative cause fix; it separated an executed whitespace check from tests read but not run.
+- Added `finding-free-draft-handoff` to test the requested review-level handoff without inventing finding decisions or drafting or posting a comment.\
+  One targeted candidate execution with Codex CLI 0.155.1, `gpt-6-luna`, max reasoning, and a read-only sandbox passed all five critical requirements.\
+  The latest compact result is in [`report.json`](report.json).
+- The response named `draft-review-comments`, reported no material finding, and supplied the conclusion, reviewed README scope, checks actually performed, and material limitations.\
+  It did not triage, draft, post, or choose a review action.
+- End-to-end drafting with the separate PR #109 candidate, actual GitHub posting, unselected cases, repeated runs, other models and clients, and production behavior remain unverified.
