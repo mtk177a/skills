@@ -15,6 +15,10 @@ Structured assets:
 - `results.json`: compact, hash-bound evidence across recorded revisions, added
   after execution
 
+`evals.json` and `triggers.json` use the executable `{skill_name, evals}`
+contract. Existing named fixtures were materialized as inline disposable files;
+the prompts, intended assertions, and routing cases were retained.
+
 ## Candidate static check
 
 - `description` includes approved, sufficiently scoped code, documentation, and
@@ -31,6 +35,8 @@ Structured assets:
   under an unchanged hypothesis
 - focused checks during a work unit and broader relevant regression checks before
   completion are distinct
+- a confirmed cause is corrected without disguising the symptom as success, while
+  an authorized recovery path for an unresolved cause remains available
 - `Blocked` and `Done` reports preserve the information needed for the next
   decision
 - the Skill remains usable without a companion Skill, subagent, script, or
@@ -51,6 +57,10 @@ Structured assets:
 | Newly exposed boundary gap | Adds a workaround or silently expands scope after discovering that the authorized local correction is insufficient | `scope-discovery` | File hashes and assigned assertions |
 | Response-decision boundary | Implements Defer or No action work from the review handoff | `act-now-only-with-reviewer-context` | File diff and assigned assertions |
 | Actual reviewer context | Omits actual scope, unknown criticality, recovery, review focus, or plan deviations from the Done report | `act-now-only-with-reviewer-context` | Report inspection |
+| Confirmed cause and existing recovery | Adds an `unknown` fallback, hardcodes the currently failing code instead of using the authoritative mapping, or omits the conditions for a safe rerun | `confirmed-cause-not-fallback` | File diff, new-code subprocess check, test commands, report inspection |
+| Necessary recovery with unknown cause | Rejects an authorized bounded retry or claims it fixed the unknown timeout cause | `necessary-recovery-not-cause-fix` | File diff, test commands, report inspection |
+| Cause correction with existing recovery | Adds only the currently failing code to a stale local table or deletes the still-needed bounded retry | `cause-fix-preserves-needed-recovery` | Fresh-process new-code check, recovery/error tests, file diff, report inspection |
+| Current compatibility | Drops a path used by stored data and rollback, or retains an old path with no current consumer | `current-compatibility-not-speculation` | File diff, current/v1/v0 tests, report inspection |
 
 ## Behavioral scenarios
 
@@ -167,29 +177,44 @@ Requirements checklist:
 3. Leave fixture hashes unchanged
 4. Do not add speculative abstractions while reporting the blocked state
 
+### Scenario J: Cause correction preserves necessary recovery
+
+A confirmed mapping cause and an independent, observed transient timeout coexist.
+The approved cause correction must retain the one-retry recovery needed by current
+callers, along with repeated-timeout and unrelated-error behavior.
+
+Requirements checklist:
+
+1. [critical] Correct the stale mapping without a success fallback
+2. Keep the existing one-retry recovery and its error boundaries
+3. Observe the focused Red, run the full relevant tests, and report the distinct failure conditions
+
+### Scenario K: Compatibility supported by current data and rollback
+
+Stored v1 data and the rollback image use an older field, while an even older
+field has no current records or callers. The approved cleanup must keep the
+supported format and reject the unused one.
+
+Requirements checklist:
+
+1. [critical] Keep current and v1 decoding
+2. Remove unsupported v0 decoding
+3. Observe the focused Red, run the relevant tests, and explain the evidence for both decisions
+
 ## Execution protocol
 
-1. Use the committed `HEAD` Skill as the baseline and the working-tree Skill as
-   the candidate.
-2. Use the same input, client, model, reasoning effort, sandbox, adjacent Skills,
-   and grader for both conditions.
-3. Run implementation cases in writable disposable repositories. Preserve the
-   before and after hashes, command output, and final response outside the source
-   repository.
-4. Give the executor only `input` and the fixture. Keep assertions and expected
-   conclusions hidden.
-5. Use deterministic checks for file changes, test results, and unchanged blocked
-   fixtures. Use a separate grader for judgment-heavy requirements.
-6. Record exact commands, versions, exposed traces, assertion evidence, and
-   `not exposed` or `not executed` conditions.
-7. Repeat only when an unexpected result, instability, client difference, or
-   failure impact could change the decision.
+Use `scripts/run_skill_evaluation.py` and `docs/evaluation.md` to select a path,
+plan an explicit set of cases, inspect the model-call count, execute in writable
+disposable fixtures, grade the planned requirements, and record a compact report.
+The Runner supplies only `prompt` and fixture files to the executor; assertions
+remain hidden. Preserve raw traces and fixture diffs in the system temporary
+directory. Compare against a prior Skill or without the Skill only when the
+change or observed result makes that comparison decision-relevant.
 
-For Codex CLI, pin model and reasoning and use an ephemeral session. Keep raw JSONL
-and full output in a temporary directory outside the repository.
-
-Claude Code and other clients are not part of the current execution plan; record
-them as `not executed`.
+Use deterministic file and test evidence for implementation claims and inspect
+the response for cause-versus-recovery judgments. Repeat only when conflicting
+results, instability, or failure impact could change the decision. Other clients
+remain unverified until directly executed.
 
 ## Failure Pattern Ledger
 
@@ -258,3 +283,92 @@ explicit than these disposable fixtures?
 - Issue #13 changes no implementation-stage responsibility or instruction: this Skill already requires the simplest implementation inside the approved coherent boundary, rejects unrequired abstractions, and stops instead of applying a local workaround when inspection exposes a shared cause outside authorized scope.
 - Existing `approved-shared-invariant`, `scope-discovery`, and `act-now-only-with-reviewer-context` cases cover required structural correction, speculative-complexity rejection, and refusal to implement hypothetical extension work.
 - Per the repository evaluation selection and evidence-reuse policies, no behavior or routing case is rerun because the Skill body, assertions, inputs, and affected implementation-stage requirements are unchanged.
+
+## Issue #66 audit — 2026-10-04
+
+- Existing behavior and routing definitions were migrated together to the common
+  executable format. Former named fixtures are inline files in disposable
+  repositories; `results.json` remains historical evidence.
+- The changed cause-versus-recovery responsibility adds two cases. The selected
+  `confirmed-cause-not-fallback` candidate run used Codex CLI 0.155.1,
+  `gpt-6-luna` / max, a workspace-write fixture, and the keyring credential
+  store. The plan estimated one model call.
+- The Runner's repository, Skill-catalog, write-access, and personal-Skill
+  isolation checks passed. The executor observed the intended failing test and
+  correctly described why `unknown` would not fix the stale mapping. It then
+  treated the writable fixture as read-only and did not implement the fix.
+  The case is **fail**, as recorded in the [report at `46ce1c4`](https://github.com/mtk177a/skills/blob/46ce1c400780cc8928ca19618fa343dbe4e24fb7/skills/implement-changes/evals/report.json); the response's
+  recovery reasoning passed its assigned requirement, but cause correction and
+  completion verification failed.
+- `necessary-recovery-not-cause-fix` was not run after this execution-environment
+  mismatch. Other clients and real repositories remain unverified. Run the
+  recovery case when the evaluator can reliably give the executor writable
+  access; do not infer its result from static prose or the first case.
+
+## Issue #66 independent-review follow-up — 2026-10-05
+
+- The [review comment](https://github.com/mtk177a/skills/pull/107#issuecomment-5981792182)
+  identified an acceptance-relevant false positive in the cause case. Its fixture
+  now adds a fresh valid code to `providers.json` and checks it in a new process
+  without editing `processor.py`. A local `B`-only patch failed this check;
+  reading the authoritative file passed the full fixture suite.
+- `cause-fix-preserves-needed-recovery` covers a confirmed mapping cause and an
+  existing, independently required bounded retry in one fixture. A new-code
+  check also requires the authoritative mapping to work in a fresh process
+  without another `service.py` edit; a local `B`-only patch fails it.
+  `current-compatibility-not-speculation` covers the stored v1 and rollback
+  format alongside an unused v0 path. Each new case had the intended focused
+  Red before implementation; representative correct changes passed its full
+  fixture suite. These are checks of the evaluation definitions, not model
+  implementation passes.
+- The original Runner selected the revised cause and recovery cases in a
+  workspace-write plan. Both executors observed a focused Red but declared the
+  fixture read-only and made no edit; the run was stopped before repeating the
+  same condition for the two additional cases. A separate permission-profile
+  probe wrote successfully when workspace-write was made model-visible, but a
+  full cause-case retry under that setting still stopped as read-only without
+  attempting an edit. The [report at `13e99f5`](https://github.com/mtk177a/skills/blob/13e99f54f55e986907c2f1d552e07ded2187fa07/skills/implement-changes/evals/report.json)
+  is **static-only**, with zero model cases. Its `pass` means only that the
+  repository static check passed; it is not an implementation success.
+
+## Issue #66 permission and evaluation follow-up — 2026-10-05
+
+- With the permission profile, `codex debug prompt-input` displayed
+  `workspace-write`, and the native sandbox preflight wrote to the fixture.
+  A standard Runner execution of the amended coexistence case nevertheless
+  reported read-only access after the focused Red and made no edit.
+- A diagnostic invocation using the same profile and `--ignore-user-config`
+  reported read-only access and emitted no command execution event, despite
+  claiming that a write command failed. Removing only that flag in a paired
+  diagnostic exposed writable access and produced a successful write command.
+  This isolates a CLI/Runner flag interaction in this environment; the client's
+  internal cause remains unverified. The repository Runner was not changed.
+- A temporary Runner copy omitting that flag executed
+  `cause-fix-preserves-needed-recovery` once. The executor observed the expected
+  Red, replaced the stale local table with a `providers.json` read at process
+  start, retained the existing retry, and passed the focused test and all six
+  fixture tests. The [report at `0aed378`](https://github.com/mtk177a/skills/blob/0aed37836b60c1097c8781ebce6ef83ce3240140/skills/implement-changes/evals/report.json) records this one
+  **model-backed candidate pass** and the nonstandard execution condition.
+  It does not establish a standard Runner pass. Separate unknown-cause recovery,
+  compatibility, other clients, and real repositories remain unverified by a
+  model run.
+
+## Profile argument-position evaluation — 2026-10-05
+
+The [published Runner investigation](https://github.com/mtk177a/skills/pull/107#issuecomment-5989836464) identified an argument-position interaction with CLI 0.155.1.
+The head `0aed378` candidate and its existing one-call plan were evaluated with a temporary Runner copy that moved only the profile configuration arguments after `exec`.
+It retained `--ignore-user-config`, `approval_policy="never"`, and the personal same-name Skill directory's `deny` rule.
+The model, reasoning effort, sandbox profile, authentication store, prompt, fixture, candidate, and companion Skill hashes matched the previous plan: `gpt-6-luna / max / workspace-write / keyring`.
+
+The executor read the fixture Skill, observed the focused mapping Red, edited only `service.py` to read `providers.json` at process start, and passed the focused test and all six fixture tests.
+The existing retry was unchanged; `providers.json` and the tests were unchanged after execution.
+An independent fixture check also passed all six tests and verified every installed Skill hash against the plan.
+
+The current [`report.json`](report.json) records this one conditional model pass.
+[`runner-profile-evidence.json`](runner-profile-evidence.json) preserves the exact Runner source patch, the captured execution argument sequence with local paths replaced by named tokens, raw artifact hashes, and event references.
+The actual source, unmodified argv, driver, plan, run record, and JSONL are also retained in the temporary evaluation artifacts.
+Native preflight confirmed fixture access, workspace writing, and personal Skill read denial.
+The main argv preserves that deny rule, and the trace contains no personal Skill load; the model did not attempt that read, so its denial was not directly exercised by a model tool call.
+
+This is a temporary Runner variant, not a success of the unchanged repository Runner.
+The previous flag-omitting variant's exact source and argv, CLI internals, separate unknown-cause recovery and compatibility cases, other clients, real repositories, and other OS or CLI versions remain unverified.

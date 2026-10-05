@@ -1,0 +1,99 @@
+{
+  "schema_version": 2,
+  "skill": "implement-changes",
+  "skill_source": "public",
+  "evaluated_on": "2026-10-05",
+  "purpose": "Check cause correction and required retry in one fixture after review amendment",
+  "affected_responsibilities": [
+    "cause correction with necessary recovery"
+  ],
+  "selection": {
+    "path": "targeted-candidate",
+    "cases": [
+      {
+        "id": "cause-fix-preserves-needed-recovery",
+        "conditions": [
+          "candidate"
+        ]
+      }
+    ]
+  },
+  "base": {
+    "commit": "b88af0cdcd07138c8e7341a8423a34331b0a84b6"
+  },
+  "candidate": {
+    "files": {
+      "SKILL-ja.md": {
+        "mode": "100644",
+        "sha256": "sha256:7288467745f73294c0fd135912110b32cb47e62d5775c0748949a3b4d12ee160"
+      },
+      "SKILL.md": {
+        "mode": "100644",
+        "sha256": "sha256:b0bf72244c5df5208f17a8b63f414be48b596899ca26086fd358f9b0ef943f61"
+      },
+      "references/tdd_twada.md": {
+        "mode": "100644",
+        "sha256": "sha256:808c1e099d3d944ac9e8fbfc5dbabfd629a9236cb8b8f56536494ecfe793c04f"
+      }
+    }
+  },
+  "evaluation_inputs": {
+    "evaluation_files": {
+      "skills/implement-changes/evals/evals.json": "sha256:447b2ae8aa41d9d2e416fa84313f84b2d9b3c703e1419f4394108d4cd26bc38b"
+    },
+    "case_files": {}
+  },
+  "environment": {
+    "client": "codex-cli 0.155.1",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max",
+    "sandbox": "workspace-write",
+    "auth_credentials_store": "keyring"
+  },
+  "checks": {
+    "repository": "pass"
+  },
+  "results": [
+    {
+      "case_id": "cause-fix-preserves-needed-recovery",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "cause-fix",
+          "status": "pass",
+          "evidence": "The executor replaced the stale local table with a startup read of providers.json. The fresh-process new-code test and invalid-code test passed; no success fallback was added.",
+          "critical": true
+        },
+        {
+          "id": "recovery-preserved",
+          "status": "pass",
+          "evidence": "The existing one-retry TimeoutError path was left intact. Recovery, repeated timeout, and unrelated error tests passed.",
+          "critical": true
+        },
+        {
+          "id": "evidence-and-scope",
+          "status": "pass",
+          "evidence": "The focused B test failed before editing and passed after the service.py-only fix. The full six-test fixture suite passed, including the new-code test; the final response distinguished cause correction and recovery.",
+          "critical": true
+        }
+      ],
+      "evidence": "One candidate implementation completed under a temporary Runner moving profile arguments after exec while retaining --ignore-user-config and personal Skill denials. The saved trace records service.py editing, focused Red/Green and all six fixture tests passing.",
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "status": "pass",
+    "counts": {
+      "error": 0,
+      "fail": 0,
+      "inconclusive": 0,
+      "pass": 1
+    }
+  },
+  "stopping_reason": "One combined case passed under a saved temporary Runner moving profile configuration after exec, retaining --ignore-user-config and personal Skill denials. Source patch and captured argv are recorded in runner-profile-evidence.json; no equivalent reruns.",
+  "unverified": [
+    "The unchanged repository Runner was not rerun; this is a conditional pass under a temporary argument-position fix, not a standard Runner success.",
+    "Native preflight directly confirmed personal Skill denial; the model did not attempt that read in the main execution. CLI internals and the previous flag-omitting variant source/argv remain unverified.",
+    "Separate unknown-cause recovery, compatibility, other clients, real repositories and other OS/CLI versions were not model-evaluated in this run."
+  ]
+}

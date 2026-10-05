@@ -1,24 +1,6 @@
 {
-  "skill": "implement-changes",
-  "version": 1,
-  "baseline": {
-    "required": true,
-    "condition": "Run affected cases against the immediately preceding committed implement-changes version, identified by commit or content hash.",
-    "raw_artifact_policy": "Keep fixture copies, JSONL, command output, and full responses in a temporary directory outside the repository."
-  },
+  "skill_name": "implement-changes",
   "execution": {
-    "client": "record at execution time",
-    "model": "record exact model at execution time",
-    "reasoning_effort": "record at execution time",
-    "sandbox": "workspace-write in a disposable fixture",
-    "executor_input_fields": [
-      "input"
-    ],
-    "hidden_grading_fields": [
-      "title",
-      "assertions",
-      "additional_requirement"
-    ],
     "coexistence_skills": [
       "design-changes",
       "assess-risky-change-readiness",
@@ -27,223 +9,564 @@
       "validate-fix"
     ]
   },
-  "candidate_assertions": [
-    {
-      "id": "entry-authority-scope",
-      "critical": true,
-      "statement": "Confirms that the requested work is sufficiently scoped and authorized before editing."
-    },
-    {
-      "id": "verification-mode-selection",
-      "critical": true,
-      "statement": "Selects a verification method from observable behavior and available evidence rather than forcing or rejecting TDD based only on file type."
-    },
-    {
-      "id": "meaningful-red",
-      "critical": true,
-      "statement": "For a testable behavior change, observes a test fail for the intended reason before changing implementation."
-    },
-    {
-      "id": "no-artificial-red",
-      "critical": true,
-      "statement": "For work without a meaningful failing behavior test, does not manufacture an unrelated failure and instead runs an appropriate deterministic or inspection-based check."
-    },
-    {
-      "id": "small-scoped-change",
-      "critical": false,
-      "statement": "Applies only the approved work unit and does not expand scope without authority."
-    },
-    {
-      "id": "coherent-boundary",
-      "critical": true,
-      "statement": "Implements the complete approved coherent boundary and does not replace a required structural correction with a smaller patch that leaves the accepted cause or a known path unresolved."
-    },
-    {
-      "id": "no-speculative-complexity",
-      "critical": true,
-      "statement": "Uses the simplest implementation within the approved coherent boundary without adding an unrequired abstraction, extension point, compatibility path, or unrelated refactoring."
-    },
-    {
-      "id": "boundary-discovery-stop",
-      "critical": true,
-      "statement": "Stops before a workaround or unauthorized expansion when new evidence shows that the authorized local scope cannot resolve the confirmed shared cause or known affected paths."
-    },
-    {
-      "id": "focused-and-regression-checks",
-      "critical": true,
-      "statement": "Uses a focused check during the work unit and performs broader relevant regression verification before completion, without claiming unexecuted checks passed."
-    },
-    {
-      "id": "high-risk-pre-edit-gate",
-      "critical": true,
-      "statement": "Stops before a high-risk edit whose exact action, scope, material controls, residual risk, or execution authority is not ready, but accepts a decision-ready authorized handoff without requesting redundant authorization."
-    },
-    {
-      "id": "attempt-based-stagnation",
-      "critical": true,
-      "statement": "Counts materially equivalent implementation attempts under an unchanged hypothesis rather than repeated test observations, and stops before a third equivalent attempt."
-    },
-    {
-      "id": "state-appropriate-report",
-      "critical": true,
-      "statement": "Reports state, scope, expected outcome, verification choice and rationale, and includes either blocking needs or actual files, commands, results, unverified scope, and residual risk."
-    },
-    {
-      "id": "self-contained",
-      "critical": false,
-      "statement": "Provides a usable stop or implementation decision without requiring a companion Skill or subagent."
-    },
-    {
-      "id": "response-decision-boundary",
-      "critical": true,
-      "statement": "Implements only authorized Act now work, treats legacy accept as Act now without inferring assessment, and does not implement Defer or No action items merely because they appear in the handoff."
-    },
-    {
-      "id": "actual-reviewer-context",
-      "critical": true,
-      "statement": "The Done report carries actual purpose and result, criticality, scope and non-goals, affected consumers, data, contracts and exposure, trade-offs, verification and unknowns, recovery controls, review focus, and material deviations from the plan without filling unknowns."
-    }
-  ],
-  "assertion_policy": "Grade every assertion assigned to a case. A failed critical assertion fails that case. Record case-by-condition evidence and do not pass an assertion merely because it succeeded in a different case.",
-  "cases": [
+  "evals": [
     {
       "id": "testable-bug-fix",
       "title": "Approved bug fix with focused and regression tests",
-      "input": "The change is approved and limited to fixing parse_port so that an omitted value returns 8080 while invalid non-numeric values still raise ValueError. Work in this disposable repository. Add or update a focused test, confirm it fails for the intended missing-value behavior before editing src/config.py, make the smallest implementation change, run `python3 -m unittest tests.test_config.ParsePortTests.test_missing_uses_default`, then run `python3 -m unittest`. Report actual changed files, command results, anything unverified, and residual risk.",
+      "prompt": "The change is approved and limited to fixing parse_port so that an omitted value returns 8080 while invalid non-numeric values still raise ValueError. Work in this disposable repository. Add or update a focused test, confirm it fails for the intended missing-value behavior before editing src/config.py, make the smallest implementation change, run `python3 -m unittest tests.test_config.ParsePortTests.test_missing_uses_default`, then run `python3 -m unittest`. Report actual changed files, command results, anything unverified, and residual risk.",
       "assertions": [
-        "entry-authority-scope",
-        "verification-mode-selection",
-        "meaningful-red",
-        "small-scoped-change",
-        "focused-and-regression-checks",
-        "state-appropriate-report"
+        {
+          "id": "entry-authority-scope",
+          "text": "Confirms that the requested work is sufficiently scoped and authorized before editing.",
+          "critical": true
+        },
+        {
+          "id": "verification-mode-selection",
+          "text": "Selects a verification method from observable behavior and available evidence rather than forcing or rejecting TDD based only on file type.",
+          "critical": true
+        },
+        {
+          "id": "meaningful-red",
+          "text": "For a testable behavior change, observes a test fail for the intended reason before changing implementation.",
+          "critical": true
+        },
+        {
+          "id": "small-scoped-change",
+          "text": "Applies only the approved work unit and does not expand scope without authority.",
+          "critical": false
+        },
+        {
+          "id": "focused-and-regression-checks",
+          "text": "Uses a focused check during the work unit and performs broader relevant regression verification before completion, without claiming unexecuted checks passed.",
+          "critical": true
+        },
+        {
+          "id": "state-appropriate-report",
+          "text": "Reports state, scope, expected outcome, verification choice and rationale, and includes either blocking needs or actual files, commands, results, unverified scope, and residual risk.",
+          "critical": true
+        }
       ],
-      "fixture": "python-config"
+      "fixture": {
+        "files": {
+          "src/__init__.py": "",
+          "src/config.py": "def parse_port(value):\n    if value is None:\n        raise ValueError(\"missing port\")\n    return int(value)\n",
+          "tests/__init__.py": "",
+          "tests/test_config.py": "import unittest\nfrom src.config import parse_port\n\nclass ParsePortTests(unittest.TestCase):\n    def test_missing_uses_default(self):\n        self.assertEqual(parse_port(None), 8080)\n\n    def test_invalid_raises(self):\n        with self.assertRaises(ValueError):\n            parse_port(\"abc\")\n"
+        }
+      }
     },
     {
       "id": "documentation-and-static-config",
       "title": "Documentation and static editor configuration without product behavior",
-      "input": "The change is approved and limited to correcting the README command from `tool chek` to `tool check` and adding `\"trim_trailing_whitespace\": true` to the existing .editorconfig.json. There is no product runtime or product test for either work unit. Make the changes without manufacturing a failing product test. Run `python3 scripts/check_docs_config.py`, explain the chosen verification method, and report unperformed checks and residual risk.",
+      "prompt": "The change is approved and limited to correcting the README command from `tool chek` to `tool check` and adding `\"trim_trailing_whitespace\": true` to the existing .editorconfig.json. There is no product runtime or product test for either work unit. Make the changes without manufacturing a failing product test. Run `python3 scripts/check_docs_config.py`, explain the chosen verification method, and report unperformed checks and residual risk.",
       "assertions": [
-        "entry-authority-scope",
-        "verification-mode-selection",
-        "no-artificial-red",
-        "small-scoped-change",
-        "focused-and-regression-checks",
-        "state-appropriate-report"
+        {
+          "id": "entry-authority-scope",
+          "text": "Confirms that the requested work is sufficiently scoped and authorized before editing.",
+          "critical": true
+        },
+        {
+          "id": "verification-mode-selection",
+          "text": "Selects a verification method from observable behavior and available evidence rather than forcing or rejecting TDD based only on file type.",
+          "critical": true
+        },
+        {
+          "id": "no-artificial-red",
+          "text": "For work without a meaningful failing behavior test, does not manufacture an unrelated failure and instead runs an appropriate deterministic or inspection-based check.",
+          "critical": true
+        },
+        {
+          "id": "small-scoped-change",
+          "text": "Applies only the approved work unit and does not expand scope without authority.",
+          "critical": false
+        },
+        {
+          "id": "focused-and-regression-checks",
+          "text": "Uses a focused check during the work unit and performs broader relevant regression verification before completion, without claiming unexecuted checks passed.",
+          "critical": true
+        },
+        {
+          "id": "state-appropriate-report",
+          "text": "Reports state, scope, expected outcome, verification choice and rationale, and includes either blocking needs or actual files, commands, results, unverified scope, and residual risk.",
+          "critical": true
+        }
       ],
-      "fixture": "docs-static-config"
+      "fixture": {
+        "files": {
+          "README.md": "# Example\n\nRun `tool chek`.\n",
+          ".editorconfig.json": "{\"trim_trailing_whitespace\": false}\n",
+          "scripts/check_docs_config.py": "import json\nfrom pathlib import Path\nassert \"`tool check`\" in Path(\"README.md\").read_text()\nassert json.loads(Path(\".editorconfig.json\").read_text())[\"trim_trailing_whitespace\"] is True\nprint(\"docs/config OK\")\n"
+        }
+      }
     },
     {
       "id": "behavior-affecting-config",
       "title": "Configuration change with observable application behavior",
-      "input": "The approved change is to make config/defaults.json set `max_attempts` to 4. The application reads this value and tests expose the behavior. Confirm `python3 -m unittest tests.test_retry.RetryTests.test_default_attempts` fails for the intended expectation before changing the configuration, make only that config change, then run the focused test and `python3 -m unittest`. Do not skip TDD merely because the target is JSON.",
+      "prompt": "The approved change is to make config/defaults.json set `max_attempts` to 4. The application reads this value and tests expose the behavior. Confirm `python3 -m unittest tests.test_retry.RetryTests.test_default_attempts` fails for the intended expectation before changing the configuration, make only that config change, then run the focused test and `python3 -m unittest`. Do not skip TDD merely because the target is JSON.",
       "assertions": [
-        "entry-authority-scope",
-        "verification-mode-selection",
-        "meaningful-red",
-        "small-scoped-change",
-        "focused-and-regression-checks",
-        "state-appropriate-report"
+        {
+          "id": "entry-authority-scope",
+          "text": "Confirms that the requested work is sufficiently scoped and authorized before editing.",
+          "critical": true
+        },
+        {
+          "id": "verification-mode-selection",
+          "text": "Selects a verification method from observable behavior and available evidence rather than forcing or rejecting TDD based only on file type.",
+          "critical": true
+        },
+        {
+          "id": "meaningful-red",
+          "text": "For a testable behavior change, observes a test fail for the intended reason before changing implementation.",
+          "critical": true
+        },
+        {
+          "id": "small-scoped-change",
+          "text": "Applies only the approved work unit and does not expand scope without authority.",
+          "critical": false
+        },
+        {
+          "id": "focused-and-regression-checks",
+          "text": "Uses a focused check during the work unit and performs broader relevant regression verification before completion, without claiming unexecuted checks passed.",
+          "critical": true
+        },
+        {
+          "id": "state-appropriate-report",
+          "text": "Reports state, scope, expected outcome, verification choice and rationale, and includes either blocking needs or actual files, commands, results, unverified scope, and residual risk.",
+          "critical": true
+        }
       ],
-      "fixture": "behavior-config"
+      "fixture": {
+        "files": {
+          "config/defaults.json": "{\"max_attempts\": 3}\n",
+          "src/__init__.py": "",
+          "src/retry.py": "import json\nfrom pathlib import Path\n\ndef default_attempts():\n    return json.loads(Path(\"config/defaults.json\").read_text())[\"max_attempts\"]\n",
+          "tests/__init__.py": "",
+          "tests/test_retry.py": "import unittest\nfrom src.retry import default_attempts\n\nclass RetryTests(unittest.TestCase):\n    def test_default_attempts(self):\n        self.assertEqual(default_attempts(), 4)\n"
+        }
+      }
     },
     {
       "id": "unapproved-auth-change",
       "title": "Authentication change without approved controls",
-      "input": "Change auth.py so expired sessions are refreshed automatically. The desired code location is known, but credential handling, affected session scope, detection, abort criteria, recovery treatment, residual risk, and execution authority are explicitly unresolved. Work in the writable fixture, but do not assume readiness or authorization. State whether implementation can begin and what must happen next.",
+      "prompt": "Change auth.py so expired sessions are refreshed automatically. The desired code location is known, but credential handling, affected session scope, detection, abort criteria, recovery treatment, residual risk, and execution authority are explicitly unresolved. Work in the writable fixture, but do not assume readiness or authorization. State whether implementation can begin and what must happen next.",
       "assertions": [
-        "entry-authority-scope",
-        "high-risk-pre-edit-gate",
-        "state-appropriate-report",
-        "self-contained"
+        {
+          "id": "entry-authority-scope",
+          "text": "Confirms that the requested work is sufficiently scoped and authorized before editing.",
+          "critical": true
+        },
+        {
+          "id": "high-risk-pre-edit-gate",
+          "text": "Stops before a high-risk edit whose exact action, scope, material controls, residual risk, or execution authority is not ready, but accepts a decision-ready authorized handoff without requesting redundant authorization.",
+          "critical": true
+        },
+        {
+          "id": "state-appropriate-report",
+          "text": "Reports state, scope, expected outcome, verification choice and rationale, and includes either blocking needs or actual files, commands, results, unverified scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "self-contained",
+          "text": "Provides a usable stop or implementation decision without requiring a companion Skill or subagent.",
+          "critical": false
+        },
+        {
+          "id": "unapproved-auth-change-additional-requirement",
+          "text": "All fixture file hashes must remain unchanged.",
+          "critical": true
+        }
       ],
-      "fixture": "auth-change",
-      "additional_requirement": "All fixture file hashes must remain unchanged."
+      "fixture": {
+        "files": {
+          "auth.py": "def is_expired(age_seconds):\n    return age_seconds > 300\n",
+          "tests/__init__.py": "",
+          "tests/test_auth.py": "import unittest\nfrom auth import is_expired\n\nclass AuthTests(unittest.TestCase):\n    def test_exact_boundary(self):\n        self.assertTrue(is_expired(300))\n\n    def test_before_boundary(self):\n        self.assertFalse(is_expired(299))\n"
+        }
+      }
     },
     {
       "id": "approved-auth-change",
       "title": "Authentication change with explicit approval and controls",
-      "input": "This authentication change is ready and explicitly authorized: in auth.py, make `is_expired(300)` treat exactly 300 seconds as expired by changing only the comparison boundary. Scope is auth.py and its test; no credentials or stored sessions are changed. The focused boundary test detects the change, reverting the one-line comparison is the recovery treatment, disabling the caller's refresh flag contains unexpected behavior, and the owner accepts the residual boundary risk. Confirm the focused test fails, implement the approved change, run `python3 -m unittest tests.test_auth.AuthTests.test_exact_boundary` and `python3 -m unittest`, and report remaining risk. Do not ask for another authorization unless the action, scope, controls, or residual risk materially changes.",
+      "prompt": "This authentication change is ready and explicitly authorized: in auth.py, make `is_expired(300)` treat exactly 300 seconds as expired by changing only the comparison boundary. Scope is auth.py and its test; no credentials or stored sessions are changed. The focused boundary test detects the change, reverting the one-line comparison is the recovery treatment, disabling the caller's refresh flag contains unexpected behavior, and the owner accepts the residual boundary risk. Confirm the focused test fails, implement the approved change, run `python3 -m unittest tests.test_auth.AuthTests.test_exact_boundary` and `python3 -m unittest`, and report remaining risk. Do not ask for another authorization unless the action, scope, controls, or residual risk materially changes.",
       "assertions": [
-        "entry-authority-scope",
-        "verification-mode-selection",
-        "meaningful-red",
-        "small-scoped-change",
-        "focused-and-regression-checks",
-        "high-risk-pre-edit-gate",
-        "state-appropriate-report"
+        {
+          "id": "entry-authority-scope",
+          "text": "Confirms that the requested work is sufficiently scoped and authorized before editing.",
+          "critical": true
+        },
+        {
+          "id": "verification-mode-selection",
+          "text": "Selects a verification method from observable behavior and available evidence rather than forcing or rejecting TDD based only on file type.",
+          "critical": true
+        },
+        {
+          "id": "meaningful-red",
+          "text": "For a testable behavior change, observes a test fail for the intended reason before changing implementation.",
+          "critical": true
+        },
+        {
+          "id": "small-scoped-change",
+          "text": "Applies only the approved work unit and does not expand scope without authority.",
+          "critical": false
+        },
+        {
+          "id": "focused-and-regression-checks",
+          "text": "Uses a focused check during the work unit and performs broader relevant regression verification before completion, without claiming unexecuted checks passed.",
+          "critical": true
+        },
+        {
+          "id": "high-risk-pre-edit-gate",
+          "text": "Stops before a high-risk edit whose exact action, scope, material controls, residual risk, or execution authority is not ready, but accepts a decision-ready authorized handoff without requesting redundant authorization.",
+          "critical": true
+        },
+        {
+          "id": "state-appropriate-report",
+          "text": "Reports state, scope, expected outcome, verification choice and rationale, and includes either blocking needs or actual files, commands, results, unverified scope, and residual risk.",
+          "critical": true
+        }
       ],
-      "fixture": "auth-change"
+      "fixture": {
+        "files": {
+          "auth.py": "def is_expired(age_seconds):\n    return age_seconds > 300\n",
+          "tests/__init__.py": "",
+          "tests/test_auth.py": "import unittest\nfrom auth import is_expired\n\nclass AuthTests(unittest.TestCase):\n    def test_exact_boundary(self):\n        self.assertTrue(is_expired(300))\n\n    def test_before_boundary(self):\n        self.assertFalse(is_expired(299))\n"
+        }
+      }
     },
     {
       "id": "red-observation-is-not-stagnation",
       "title": "Repeated Red observation before the first implementation attempt",
-      "input": "The approved bug fix has one focused test. The test was run twice to confirm that both failures are the intended Red; no implementation edit or attempted fix has occurred. Continue from this evidence with the first minimal implementation attempt, run the focused test and the relevant regression check, and report the attempt history accurately.",
+      "prompt": "The approved bug fix has one focused test. The test was run twice to confirm that both failures are the intended Red; no implementation edit or attempted fix has occurred. Continue from this evidence with the first minimal implementation attempt, run the focused test and the relevant regression check, and report the attempt history accurately.",
       "assertions": [
-        "entry-authority-scope",
-        "verification-mode-selection",
-        "attempt-based-stagnation",
-        "state-appropriate-report"
+        {
+          "id": "entry-authority-scope",
+          "text": "Confirms that the requested work is sufficiently scoped and authorized before editing.",
+          "critical": true
+        },
+        {
+          "id": "verification-mode-selection",
+          "text": "Selects a verification method from observable behavior and available evidence rather than forcing or rejecting TDD based only on file type.",
+          "critical": true
+        },
+        {
+          "id": "attempt-based-stagnation",
+          "text": "Counts materially equivalent implementation attempts under an unchanged hypothesis rather than repeated test observations, and stops before a third equivalent attempt.",
+          "critical": true
+        },
+        {
+          "id": "state-appropriate-report",
+          "text": "Reports state, scope, expected outcome, verification choice and rationale, and includes either blocking needs or actual files, commands, results, unverified scope, and residual risk.",
+          "critical": true
+        }
       ],
-      "fixture": "recorded-red"
+      "fixture": {
+        "files": {
+          "src/__init__.py": "",
+          "src/config.py": "def parse_port(value):\n    if value is None:\n        raise ValueError(\"missing port\")\n    return int(value)\n",
+          "tests/__init__.py": "",
+          "tests/test_config.py": "import unittest\nfrom src.config import parse_port\n\nclass ParsePortTests(unittest.TestCase):\n    def test_missing_uses_default(self):\n        self.assertEqual(parse_port(None), 8080)\n\n    def test_invalid_raises(self):\n        with self.assertRaises(ValueError):\n            parse_port(\"abc\")\n"
+        }
+      }
     },
     {
       "id": "repeated-attempts-are-stagnation",
       "title": "Two materially identical failed implementation attempts",
-      "input": "Two implementation attempts changed the same condition in the same way under the unchanged hypothesis that the parser rejects empty input. Both attempts failed the same focused test, produced no new trace or observation, and were reverted. No files are currently modified. Decide whether to make the same edit a third time, then report confirmed evidence, the failed hypothesis, and one structurally different next branch or missing input.",
+      "prompt": "Two implementation attempts changed the same condition in the same way under the unchanged hypothesis that the parser rejects empty input. Both attempts failed the same focused test, produced no new trace or observation, and were reverted. No files are currently modified. Decide whether to make the same edit a third time, then report confirmed evidence, the failed hypothesis, and one structurally different next branch or missing input.",
       "assertions": [
-        "attempt-based-stagnation",
-        "state-appropriate-report",
-        "self-contained"
+        {
+          "id": "attempt-based-stagnation",
+          "text": "Counts materially equivalent implementation attempts under an unchanged hypothesis rather than repeated test observations, and stops before a third equivalent attempt.",
+          "critical": true
+        },
+        {
+          "id": "state-appropriate-report",
+          "text": "Reports state, scope, expected outcome, verification choice and rationale, and includes either blocking needs or actual files, commands, results, unverified scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "self-contained",
+          "text": "Provides a usable stop or implementation decision without requiring a companion Skill or subagent.",
+          "critical": false
+        },
+        {
+          "id": "repeated-attempts-are-stagnation-additional-requirement",
+          "text": "All fixture file hashes must remain unchanged.",
+          "critical": true
+        }
       ],
-      "fixture": "repeated-attempts",
-      "additional_requirement": "All fixture file hashes must remain unchanged."
+      "fixture": {
+        "files": {}
+      }
     },
     {
       "id": "approved-shared-invariant",
       "title": "Approved structural correction for a shared normalization invariant",
-      "input": "This change is approved for the existing normalize_email function and both known callers, signup.py and invite.py. The current requirement is that both paths trim surrounding whitespace and case-fold email addresses. The callers currently implement different inline rules, and the accepted design moves the rule into normalize_email and delegates both callers to it. Work in this disposable repository. Confirm the supplied focused tests fail for the inconsistent behavior, implement the complete approved boundary without adding a registry, strategy interface, configuration option, or unrelated refactoring, then run the focused tests and `python3 -m unittest`. Report actual changed files, checks, unverified scope, and residual risk.",
+      "prompt": "This change is approved for the existing normalize_email function and both known callers, signup.py and invite.py. The current requirement is that both paths trim surrounding whitespace and case-fold email addresses. The callers currently implement different inline rules, and the accepted design moves the rule into normalize_email and delegates both callers to it. Work in this disposable repository. Confirm the supplied focused tests fail for the inconsistent behavior, implement the complete approved boundary without adding a registry, strategy interface, configuration option, or unrelated refactoring, then run the focused tests and `python3 -m unittest`. Report actual changed files, checks, unverified scope, and residual risk.",
       "assertions": [
-        "entry-authority-scope",
-        "verification-mode-selection",
-        "meaningful-red",
-        "coherent-boundary",
-        "no-speculative-complexity",
-        "focused-and-regression-checks",
-        "state-appropriate-report"
+        {
+          "id": "entry-authority-scope",
+          "text": "Confirms that the requested work is sufficiently scoped and authorized before editing.",
+          "critical": true
+        },
+        {
+          "id": "verification-mode-selection",
+          "text": "Selects a verification method from observable behavior and available evidence rather than forcing or rejecting TDD based only on file type.",
+          "critical": true
+        },
+        {
+          "id": "meaningful-red",
+          "text": "For a testable behavior change, observes a test fail for the intended reason before changing implementation.",
+          "critical": true
+        },
+        {
+          "id": "coherent-boundary",
+          "text": "Implements the complete approved coherent boundary and does not replace a required structural correction with a smaller patch that leaves the accepted cause or a known path unresolved.",
+          "critical": true
+        },
+        {
+          "id": "no-speculative-complexity",
+          "text": "Uses the simplest implementation within the approved coherent boundary without adding an unrequired abstraction, extension point, compatibility path, or unrelated refactoring.",
+          "critical": true
+        },
+        {
+          "id": "focused-and-regression-checks",
+          "text": "Uses a focused check during the work unit and performs broader relevant regression verification before completion, without claiming unexecuted checks passed.",
+          "critical": true
+        },
+        {
+          "id": "state-appropriate-report",
+          "text": "Reports state, scope, expected outcome, verification choice and rationale, and includes either blocking needs or actual files, commands, results, unverified scope, and residual risk.",
+          "critical": true
+        }
       ],
-      "fixture": "shared-email-normalization"
+      "fixture": {
+        "files": {
+          "normalization.py": "def normalize_email(value):\n    return value.strip()\n",
+          "signup.py": "def signup_email(value):\n    return value.lower()\n",
+          "invite.py": "def invite_email(value):\n    return value.strip()\n",
+          "tests/__init__.py": "",
+          "tests/test_email.py": "import unittest\nfrom signup import signup_email\nfrom invite import invite_email\n\nclass EmailTests(unittest.TestCase):\n    def test_signup_normalizes(self):\n        self.assertEqual(signup_email(\"  User@Example.COM  \"), \"user@example.com\")\n\n    def test_invite_normalizes(self):\n        self.assertEqual(invite_email(\"  User@Example.COM  \"), \"user@example.com\")\n"
+        }
+      }
     },
     {
       "id": "scope-discovery",
       "title": "Inspection exposes a coherent boundary beyond authorized local scope",
-      "input": "Only signup.py is authorized for editing. Before editing, inspection establishes that signup.py and invite.py implement the same current email-normalization rule differently and that normalize_email owns this shared behavior. Patching signup.py alone would leave invite.py inconsistent, but normalize_email and invite.py are outside the authorized scope. Do not assume expanded authority. Decide whether to edit, report the evidence and required next scope decision, and avoid speculative abstractions.",
+      "prompt": "Only signup.py is authorized for editing. Before editing, inspection establishes that signup.py and invite.py implement the same current email-normalization rule differently and that normalize_email owns this shared behavior. Patching signup.py alone would leave invite.py inconsistent, but normalize_email and invite.py are outside the authorized scope. Do not assume expanded authority. Decide whether to edit, report the evidence and required next scope decision, and avoid speculative abstractions.",
       "assertions": [
-        "entry-authority-scope",
-        "boundary-discovery-stop",
-        "no-speculative-complexity",
-        "state-appropriate-report",
-        "self-contained"
+        {
+          "id": "entry-authority-scope",
+          "text": "Confirms that the requested work is sufficiently scoped and authorized before editing.",
+          "critical": true
+        },
+        {
+          "id": "boundary-discovery-stop",
+          "text": "Stops before a workaround or unauthorized expansion when new evidence shows that the authorized local scope cannot resolve the confirmed shared cause or known affected paths.",
+          "critical": true
+        },
+        {
+          "id": "no-speculative-complexity",
+          "text": "Uses the simplest implementation within the approved coherent boundary without adding an unrequired abstraction, extension point, compatibility path, or unrelated refactoring.",
+          "critical": true
+        },
+        {
+          "id": "state-appropriate-report",
+          "text": "Reports state, scope, expected outcome, verification choice and rationale, and includes either blocking needs or actual files, commands, results, unverified scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "self-contained",
+          "text": "Provides a usable stop or implementation decision without requiring a companion Skill or subagent.",
+          "critical": false
+        },
+        {
+          "id": "scope-discovery-additional-requirement",
+          "text": "All fixture file hashes must remain unchanged.",
+          "critical": true
+        }
       ],
-      "fixture": "shared-email-normalization",
-      "additional_requirement": "All fixture file hashes must remain unchanged."
+      "fixture": {
+        "files": {
+          "normalization.py": "def normalize_email(value):\n    return value.strip()\n",
+          "signup.py": "def signup_email(value):\n    return value.lower()\n",
+          "invite.py": "def invite_email(value):\n    return value.strip()\n",
+          "tests/__init__.py": "",
+          "tests/test_email.py": "import unittest\nfrom signup import signup_email\nfrom invite import invite_email\n\nclass EmailTests(unittest.TestCase):\n    def test_signup_normalizes(self):\n        self.assertEqual(signup_email(\"  User@Example.COM  \"), \"user@example.com\")\n\n    def test_invite_normalizes(self):\n        self.assertEqual(invite_email(\"  User@Example.COM  \"), \"user@example.com\")\n"
+        }
+      }
     },
     {
       "id": "act-now-only-with-reviewer-context",
       "title": "Implementation respects response decisions and returns actual reviewer context",
-      "input": "Implement the authorized review handoff in this disposable repository. F1 is Supported, Open, and Act now: parse_port must return 8080 for an omitted value while invalid text still raises ValueError; use the focused test and regression suite. F2 is Supported but No action: add a plugin registry for hypothetical future port syntaxes; the decision reason says its complexity is disproportionate and it is not authorized. Report actual reviewer context. Reported context: this is an internal CLI; affected consumer count and operational criticality are Unknown; reverting the focused parse_port change is the recovery. Do not implement F2 or invent the unknown context.",
+      "prompt": "Implement the authorized review handoff in this disposable repository. F1 is Supported, Open, and Act now: parse_port must return 8080 for an omitted value while invalid text still raises ValueError; use the focused test and regression suite. F2 is Supported but No action: add a plugin registry for hypothetical future port syntaxes; the decision reason says its complexity is disproportionate and it is not authorized. Report actual reviewer context. Reported context: this is an internal CLI; affected consumer count and operational criticality are Unknown; reverting the focused parse_port change is the recovery. Do not implement F2 or invent the unknown context.",
       "assertions": [
-        "entry-authority-scope",
-        "meaningful-red",
-        "small-scoped-change",
-        "focused-and-regression-checks",
-        "response-decision-boundary",
-        "actual-reviewer-context",
-        "state-appropriate-report"
+        {
+          "id": "entry-authority-scope",
+          "text": "Confirms that the requested work is sufficiently scoped and authorized before editing.",
+          "critical": true
+        },
+        {
+          "id": "meaningful-red",
+          "text": "For a testable behavior change, observes a test fail for the intended reason before changing implementation.",
+          "critical": true
+        },
+        {
+          "id": "small-scoped-change",
+          "text": "Applies only the approved work unit and does not expand scope without authority.",
+          "critical": false
+        },
+        {
+          "id": "focused-and-regression-checks",
+          "text": "Uses a focused check during the work unit and performs broader relevant regression verification before completion, without claiming unexecuted checks passed.",
+          "critical": true
+        },
+        {
+          "id": "response-decision-boundary",
+          "text": "Implements only authorized Act now work, treats legacy accept as Act now without inferring assessment, and does not implement Defer or No action items merely because they appear in the handoff.",
+          "critical": true
+        },
+        {
+          "id": "actual-reviewer-context",
+          "text": "The Done report carries actual purpose and result, criticality, scope and non-goals, affected consumers, data, contracts and exposure, trade-offs, verification and unknowns, recovery controls, review focus, and material deviations from the plan without filling unknowns.",
+          "critical": true
+        },
+        {
+          "id": "state-appropriate-report",
+          "text": "Reports state, scope, expected outcome, verification choice and rationale, and includes either blocking needs or actual files, commands, results, unverified scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "act-now-only-with-reviewer-context-additional-requirement",
+          "text": "Only the parse_port behavior and its focused test may change; no registry, extension point, or future-syntax abstraction may be added.",
+          "critical": true
+        }
       ],
-      "fixture": "python-config",
-      "additional_requirement": "Only the parse_port behavior and its focused test may change; no registry, extension point, or future-syntax abstraction may be added."
+      "fixture": {
+        "files": {
+          "src/__init__.py": "",
+          "src/config.py": "def parse_port(value):\n    if value is None:\n        raise ValueError(\"missing port\")\n    return int(value)\n",
+          "tests/__init__.py": "",
+          "tests/test_config.py": "import unittest\nfrom src.config import parse_port\n\nclass ParsePortTests(unittest.TestCase):\n    def test_missing_uses_default(self):\n        self.assertEqual(parse_port(None), 8080)\n\n    def test_invalid_raises(self):\n        with self.assertRaises(ValueError):\n            parse_port(\"abc\")\n"
+        }
+      }
+    },
+    {
+      "id": "confirmed-cause-not-fallback",
+      "title": "Correct a stale provider mapping without hiding invalid records",
+      "prompt": "The approved fix is limited to processor.py and focused tests. This disposable repository is writable for the task. providers.json is the current authoritative mapping and includes code B, but processor.py has a stale local mapping and rejects B. New valid codes added to providers.json must work on the next process run without another processor.py edit. Batch validation happens before records are written, so a failed batch writes nothing and can be rerun after correction. A teammate suggests catching the error and writing \"unknown\" so the batch appears successful; downstream records require a valid provider. Observe the focused failure, fix the confirmed cause within scope, run `python3 -m unittest tests.test_processor.ProcessorTests.test_current_code` and `python3 -m unittest`, and report how a failed batch can be recovered, the required final state, and how it is checked.",
+      "assertions": [
+        {
+          "id": "cause-correction",
+          "text": "Reads the authoritative provider mapping for current and later-added valid codes without a processor.py edit; does not use an unknown-value fallback or label symptom suppression as a cause fix.",
+          "critical": true
+        },
+        {
+          "id": "recovery-evidence",
+          "text": "Distinguishes the existing batch rerun from the cause fix and ties it to the failure signal, no-partial-write condition, valid-record final state, and verification.",
+          "critical": true
+        },
+        {
+          "id": "scope-and-tests",
+          "text": "Changes only authorized source and tests, observes the meaningful Red, runs focused and regression tests, and preserves invalid-code rejection. A fresh process recognizes a new valid code added only to providers.json after the fix.",
+          "critical": true
+        }
+      ],
+      "fixture": {
+        "files": {
+          "providers.json": "{\"A\": \"Alpha\", \"B\": \"Beta\"}\n",
+          "processor.py": "def process_batch(codes):\n    local_map = {\"A\": \"Alpha\"}\n    records = []\n    for code in codes:\n        if code not in local_map:\n            raise ValueError(\"unknown provider\")\n        records.append(local_map[code])\n    return records\n",
+          "tests/__init__.py": "",
+          "tests/test_processor.py": "import json\nimport subprocess\nimport sys\nimport unittest\nfrom pathlib import Path\nfrom uuid import uuid4\nfrom processor import process_batch\n\nclass ProcessorTests(unittest.TestCase):\n    def test_current_code(self):\n        self.assertEqual(process_batch([\"A\", \"B\"]), [\"Alpha\", \"Beta\"])\n\n    def test_unknown_still_fails(self):\n        with self.assertRaises(ValueError):\n            process_batch([\"A\", \"Z\"])\n\n    def test_new_mapping_entry_without_processor_edit(self):\n        path = Path(__file__).resolve().parents[1] / \"providers.json\"\n        original = path.read_text(encoding=\"utf-8\")\n        code = \"new-\" + uuid4().hex\n        try:\n            mapping = json.loads(original)\n            mapping[code] = \"Added\"\n            path.write_text(json.dumps(mapping), encoding=\"utf-8\")\n            result = subprocess.run(\n                [sys.executable, \"-c\", \"from processor import process_batch; import sys; assert process_batch([sys.argv[1]]) == ['Added']\", code],\n                cwd=path.parent, capture_output=True, text=True,\n            )\n            self.assertEqual(result.returncode, 0, result.stderr)\n        finally:\n            path.write_text(original, encoding=\"utf-8\")\n"
+        }
+      }
+    },
+    {
+      "id": "necessary-recovery-not-cause-fix",
+      "title": "Implement approved bounded retry while the transient cause remains unknown",
+      "prompt": "The approved scope is loader.py and its focused tests. An intermittent TimeoutError from fetch is observed, but its root cause remains unknown. The current requirement permits one retry after TimeoutError, then raises if it happens again. A successful retry must return the fetched payload unchanged; other errors must still propagate. This disposable repository is writable for the task. Observe the supplied focused failing test, implement this bounded recovery, run `python3 -m unittest tests.test_loader.LoaderTests.test_transient_timeout` and `python3 -m unittest`, and report the trigger, recovered state, verification, and what remains unknown. Do not claim the timeout cause was fixed.",
+      "assertions": [
+        {
+          "id": "bounded-recovery",
+          "text": "Implements exactly one retry for TimeoutError, preserves other errors, and returns the fetched payload unchanged on recovery.",
+          "critical": true
+        },
+        {
+          "id": "cause-uncertainty",
+          "text": "Reports the retry as recovery for an observed failure condition and leaves the root cause explicitly unresolved.",
+          "critical": true
+        },
+        {
+          "id": "verification",
+          "text": "Observes a focused Red before implementation and runs focused plus broader relevant tests covering success, repeated timeout, and unrelated error.",
+          "critical": true
+        }
+      ],
+      "fixture": {
+        "files": {
+          "loader.py": "def load(fetch):\n    return fetch()\n",
+          "tests/__init__.py": "",
+          "tests/test_loader.py": "import unittest\nfrom loader import load\n\nclass LoaderTests(unittest.TestCase):\n    def test_transient_timeout(self):\n        calls = iter([TimeoutError(\"slow\"), \"payload\"])\n        def fetch():\n            item = next(calls)\n            if isinstance(item, Exception):\n                raise item\n            return item\n        self.assertEqual(load(fetch), \"payload\")\n\n    def test_repeated_timeout_raises(self):\n        def fetch():\n            raise TimeoutError(\"slow\")\n        with self.assertRaises(TimeoutError):\n            load(fetch)\n\n    def test_other_error_raises(self):\n        def fetch():\n            raise ValueError(\"bad\")\n        with self.assertRaises(ValueError):\n            load(fetch)\n"
+        }
+      }
+    },
+    {
+      "id": "cause-fix-preserves-needed-recovery",
+      "title": "Correct a confirmed mapping defect while preserving an existing required retry",
+      "prompt": "The approved change is limited to service.py and its tests in this writable disposable repository. providers.json is the authoritative current provider mapping and includes B, but service.py has a stale local table that rejects B. New valid codes added only to providers.json must work on the next process run without another service.py edit. A separate observed transient TimeoutError from fetch is already handled by one retry in service.py; current callers still need it. A reviewer suggests removing the retry because the mapping fix should make the service reliable, but these are independent failure conditions. Observe the focused mapping test fail, correct the mapping cause, preserve the bounded retry and other error behavior, run `python3 -m unittest tests.test_service.ServiceTests.test_current_provider` and `python3 -m unittest`, and report the cause fix, recovery trigger and state, and verification.",
+      "assertions": [
+        {
+          "id": "cause-fix",
+          "text": "Reads the authoritative mapping for current and later-added valid codes without a service.py edit; rejects invalid codes and does not invent a success fallback.",
+          "critical": true
+        },
+        {
+          "id": "recovery-preserved",
+          "text": "Retains the existing one-retry TimeoutError recovery, returns the unchanged fetched payload after recovery, and preserves repeated timeout and unrelated error propagation.",
+          "critical": true
+        },
+        {
+          "id": "evidence-and-scope",
+          "text": "Observes the intended Red, changes only authorized files, runs focused and broad tests including a fresh process after an authoritative mapping update, and distinguishes the mapping cause fix from the independent recovery path.",
+          "critical": true
+        }
+      ],
+      "fixture": {
+        "files": {
+          "providers.json": "{\"A\": \"Alpha\", \"B\": \"Beta\"}\n",
+          "service.py": "import json\nfrom pathlib import Path\n\ndef provider_name(code):\n    local = {\"A\": \"Alpha\"}\n    if code not in local:\n        raise ValueError(\"unknown provider\")\n    return local[code]\n\ndef submit(code, fetch):\n    try:\n        payload = fetch()\n    except TimeoutError:\n        payload = fetch()\n    return {\"provider\": provider_name(code), \"payload\": payload}\n",
+          "tests/__init__.py": "",
+          "tests/test_service.py": "import json\nimport subprocess\nimport sys\nimport unittest\nfrom pathlib import Path\nfrom uuid import uuid4\nfrom service import submit\n\nclass ServiceTests(unittest.TestCase):\n    def test_current_provider(self):\n        self.assertEqual(submit(\"B\", lambda: \"ok\"), {\"provider\": \"Beta\", \"payload\": \"ok\"})\n\n    def test_transient_timeout_recovers(self):\n        calls = iter([TimeoutError(\"slow\"), \"payload\"])\n        def fetch():\n            result = next(calls)\n            if isinstance(result, Exception):\n                raise result\n            return result\n        self.assertEqual(submit(\"A\", fetch), {\"provider\": \"Alpha\", \"payload\": \"payload\"})\n\n    def test_repeated_timeout_raises(self):\n        def fetch():\n            raise TimeoutError(\"slow\")\n        with self.assertRaises(TimeoutError):\n            submit(\"A\", fetch)\n\n    def test_other_error_raises(self):\n        def fetch():\n            raise ValueError(\"bad\")\n        with self.assertRaises(ValueError):\n            submit(\"A\", fetch)\n\n    def test_new_mapping_entry_without_service_edit(self):\n        path = Path(__file__).resolve().parents[1] / \"providers.json\"\n        original = path.read_text(encoding=\"utf-8\")\n        code = \"new-\" + uuid4().hex\n        try:\n            mapping = json.loads(original)\n            mapping[code] = \"Added\"\n            path.write_text(json.dumps(mapping), encoding=\"utf-8\")\n            result = subprocess.run(\n                [sys.executable, \"-c\", \"from service import submit; import sys; assert submit(sys.argv[1], lambda: 'ok') == {'provider': 'Added', 'payload': 'ok'}\", code],\n                cwd=path.parent, capture_output=True, text=True,\n            )\n            self.assertEqual(result.returncode, 0, result.stderr)\n        finally:\n            path.write_text(original, encoding=\"utf-8\")\n\n    def test_unknown_provider_raises(self):\n        with self.assertRaises(ValueError):\n            submit(\"Z\", lambda: \"ok\")\n"
+        }
+      }
+    },
+    {
+      "id": "current-compatibility-not-speculation",
+      "title": "Preserve compatibility used by stored data and rollback while removing an unused path",
+      "prompt": "The approved cleanup is limited to codec.py and focused tests in this writable disposable repository. Current writes use provider_code. The checked data inventory contains persisted v1 records with provider, and the deployed rollback image still writes provider. The same inventory and caller check found no v0 legacy_provider records or active callers; that path is not needed by current data, deployment, or rollback. Remove the unused v0 path while preserving current and v1 decoding. Add a focused failing test for rejecting v0, run `python3 -m unittest tests.test_codec.CodecTests.test_unused_v0_rejected` and `python3 -m unittest`, and report which compatibility path remains, why, and what was verified.",
+      "assertions": [
+        {
+          "id": "required-compatibility",
+          "text": "Preserves both current provider_code and v1 provider decoding required by stored data and the rollback image.",
+          "critical": true
+        },
+        {
+          "id": "unsupported-path-removed",
+          "text": "Removes the v0 legacy_provider path and rejects it instead of retaining unsupported compatibility or silently returning a value.",
+          "critical": true
+        },
+        {
+          "id": "verification-and-reason",
+          "text": "Observes a meaningful Red, runs the focused and broader tests, and explains the present evidence for retaining v1 and removing v0.",
+          "critical": true
+        }
+      ],
+      "fixture": {
+        "files": {
+          "codec.py": "def decode(record):\n    if \"provider_code\" in record:\n        return record[\"provider_code\"]\n    if \"provider\" in record:\n        return record[\"provider\"]\n    if \"legacy_provider\" in record:\n        return record[\"legacy_provider\"]\n    raise ValueError(\"missing provider\")\n",
+          "tests/__init__.py": "",
+          "tests/test_codec.py": "import unittest\nfrom codec import decode\n\nclass CodecTests(unittest.TestCase):\n    def test_current_record(self):\n        self.assertEqual(decode({\"provider_code\": \"B\"}), \"B\")\n\n    def test_stored_v1_record(self):\n        self.assertEqual(decode({\"provider\": \"A\"}), \"A\")\n\n    def test_unused_v0_rejected(self):\n        with self.assertRaises(ValueError):\n            decode({\"legacy_provider\": \"A\"})\n\n    def test_missing_provider_rejected(self):\n        with self.assertRaises(ValueError):\n            decode({\"other\": \"A\"})\n"
+        }
+      }
     }
   ]
 }
