@@ -5,7 +5,7 @@ If a deeper `AGENTS.md` exists in a subdirectory, that file takes precedence.
 
 ## Purpose
 
-- Manage personally authored agent Skills and Skills maintained with ongoing modifications
+- Manage personally authored agent Skills, Skills maintained with ongoing modifications, and the two designated upstream Gist mirrors
 - Keep a simple structure that multiple agents (Codex, Claude Code, GitHub Copilot, etc.) can reference easily
 - Avoid OS-specific assumptions to stay compatible with both macOS M1 and Windows WSL
 
@@ -21,11 +21,12 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 
 - Personally authored Skills
 - External Skills that have been reviewed and adapted with ongoing maintenance
+- Unmodified copies of the two designated upstream Gists: `japanese-tech-writing` and `cognitive-rhythm-writing`
 - Operational rules, authoring guidelines, and migration notes for Skills
 
 ## What does not belong in this repository
 
-- Verbatim copies of external Skills
+- Verbatim copies of external Skills other than the two designated upstream Gist mirrors
 - Experimental, unfinished Skills that are only being tried out
 - Content containing customer names, internal URLs, secrets, API keys, or personal information
 - Shared team operational rules that belong in a team Skills repository
@@ -34,10 +35,17 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 
 - The basic unit is `skills/<skill-name>/SKILL.md`
 - `<skill-name>` uses kebab-case
-- `SKILL.md` frontmatter must include at minimum `name`, `description`, and `license`
+- `SKILL.md` frontmatter must include at minimum `name`, `description`, and `license`, except that the two upstream Gist mirrors retain their original frontmatter
 - `evals/`, `references/`, `scripts/`, `assets/` are optional and added only when needed
 - Do not create per-agent classification directories like `common/`, `codex/`, or `claude-code/`
 - Express agent-specific differences in Skill names or `description`, not in directory structure
+
+## Upstream Gist mirrors
+
+- Keep `skills/japanese-tech-writing/SKILL.md` and `skills/cognitive-rhythm-writing/SKILL.md` byte-for-byte identical to the recorded upstream Gist revisions. Do not add local instructions, metadata, corrections, or translations to these files.
+- Record each source URL, mirrored revision, retrieval date, file SHA-256, and license evidence in its `UPSTREAM.md`; summarize source and license in `THIRD_PARTY_NOTICES.md`. Keep repository installation guidance outside the mirrored files.
+- Before updating either mirror, compare the recorded revision with the current Gist and review the complete upstream change under `docs/security.md`. If it cannot be accepted as an unmodified copy, report the difference instead of patching the Skill locally.
+- These two mirrors do not require `evals/README.md`. Use model-backed evaluations only when a changed responsibility needs behavioral evidence; do not add definitions solely for a mirror update or the Issue #49 audit.
 
 ## Repository-local operational Skills
 
@@ -51,7 +59,7 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 ## Working rules
 
 - Keep changes small and easy to review
-- Write Skill bodies in English by default. A Skill whose core purpose is Japanese writing or editing may use a Japanese `SKILL.md` as its canonical source and omit a duplicate `SKILL-ja.md`; document the exception and provenance.
+- Write authored or adapted Skill bodies in English by default. A Skill whose core purpose is Japanese writing or editing may use a Japanese `SKILL.md` as its canonical source and omit a duplicate `SKILL-ja.md`; document the exception and provenance. The upstream Gist mirrors retain their original Japanese files.
 - Do not hardcode local absolute paths or environment-specific assumptions
 - Prioritize clear triggers, inputs, expected outputs, and boundaries in Skill bodies
 - Add concise ordered steps and verification when sequence or completeness materially affects correctness
@@ -92,7 +100,7 @@ Follow `CONTRIBUTING.md` for commit messages and pull request titles.
 
 ## Avoid
 
-- Copying external distributed Skills into this repository without modification
+- Copying external distributed Skills into this repository without modification, except for the two designated upstream Gist mirrors
 - Including secrets or non-public information in Skills, docs, scripts, or assets
 - Introducing OS-specific or agent-specific assumptions without explicit documentation
 - Proceeding with repository rule changes without approval

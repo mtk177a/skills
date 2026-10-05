@@ -216,6 +216,59 @@ class CheckerCliTests(unittest.TestCase):
 
         self.assert_fixture_failure(mutate, "frontmatter name `other-skill` does not match directory `alpha-skill`")
 
+    def test_upstream_mirrors_can_omit_local_metadata_and_evaluations(self) -> None:
+        for name in ("japanese-tech-writing", "cognitive-rhythm-writing"):
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                create_valid_repository(root)
+                rename_fixture_skill(root, name)
+                skill = root / "skills" / name
+                source = skill / "SKILL.md"
+                source.write_text(source.read_text().replace("license: MIT\n", ""))
+                (skill / "evals" / "README.md").unlink()
+                digest = hashlib.sha256(source.read_bytes()).hexdigest()
+                write(
+                    skill / "UPSTREAM.md",
+                    f"# Upstream provenance\n\n"
+                    f"- Source: <https://gist.github.com/k16shikano/{'fd287c3133457c4fd8f5601d34aa817d' if name == 'japanese-tech-writing' else 'eb2929f13ed19c97188393d297be8432'}>\n"
+                    f"- Mirrored revision: `{'a' * 40}`\n"
+                    "- Retrieved: `2026-10-05`\n"
+                    f"- SKILL.md SHA-256: `sha256:{digest}`\n"
+                    "- License: Unlicense\n"
+                    "- License declaration: <https://gist.github.com/k16shikano/67625f2a7d96e3bbdfae8d571a936063>\n",
+                )
+
+                result = run_checker(root)
+
+                self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_upstream_mirror_detects_changed_source(self) -> None:
+        def mutate(root: Path) -> None:
+            rename_fixture_skill(root, "japanese-tech-writing")
+            skill = root / "skills" / "japanese-tech-writing"
+            write(
+                skill / "UPSTREAM.md",
+                "# Upstream provenance\n\n"
+                "- Source: <https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d>\n"
+                f"- Mirrored revision: `{'a' * 40}`\n"
+                "- Retrieved: `2026-10-05`\n"
+                f"- SKILL.md SHA-256: `sha256:{'0' * 64}`\n"
+                "- License: Unlicense\n"
+                "- License declaration: <https://gist.github.com/k16shikano/67625f2a7d96e3bbdfae8d571a936063>\n",
+            )
+
+        self.assert_fixture_failure(mutate, "mirrored SKILL.md differs from recorded SHA-256")
+
+    def test_non_mirrored_skill_still_requires_license_and_evaluation_readme(self) -> None:
+        def mutate(root: Path) -> None:
+            skill = root / "skills" / "alpha-skill"
+            source = skill / "SKILL.md"
+            source.write_text(source.read_text().replace("license: MIT\n", ""))
+            (skill / "evals" / "README.md").unlink()
+
+        stderr = self.assert_fixture_failure(mutate, "required frontmatter `license` is missing or empty")
+        self.assertIn("every Skill requires evals/README.md", stderr)
+
     def test_quoted_frontmatter_name_is_normalized(self) -> None:
         for quoted_name in ('"alpha-skill"', "'alpha-skill'", r'"alpha\x2dskill"'):
             with self.subTest(quoted_name=quoted_name), tempfile.TemporaryDirectory() as directory:

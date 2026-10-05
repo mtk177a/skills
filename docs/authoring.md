@@ -1,6 +1,6 @@
 # Skill Authoring Guide
 
-This is the authoring guide for Skills maintained in this repository. Portable Skill design guidance that must travel with an individual Skill should live inside that Skill's own `references/` directory.
+This is the authoring guide for Skills maintained in this repository. The two upstream Gist mirrors follow the separate copying rules below; the authoring rules do not change their `SKILL.md` files. Portable Skill design guidance that must travel with an individual Skill should live inside that Skill's own `references/` directory.
 
 ## What makes a good Skill
 
@@ -74,7 +74,6 @@ assets together.
 
 | Relationship | Rationale | Installation and missing-companion behavior | Provenance | Evaluation |
 | --- | --- | --- | --- | --- |
-| `cognitive-rhythm-writing` → `japanese-tech-writing` | The pacing rules extend, rather than replace, the Japanese technical-writing constraints. | Install both with `apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing`. `cognitive-rhythm-writing` stops without applying its rules when the companion is unavailable. | [`skills/cognitive-rhythm-writing/UPSTREAM.md`](../skills/cognitive-rhythm-writing/UPSTREAM.md), [`skills/japanese-tech-writing/UPSTREAM.md`](../skills/japanese-tech-writing/UPSTREAM.md), and [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md) preserve the Unlicense sources and local adaptations. | [`skills/cognitive-rhythm-writing/evals/README.md`](../skills/cognitive-rhythm-writing/evals/README.md) covers the required read order and missing-companion path. |
 | `maintain-japanese-references` → `write-natural-japanese` | Translation maintenance needs both fidelity to the English source and context-appropriate Japanese wording. | Both Skills are tracked in this repository. Read `skills/write-natural-japanese/SKILL.md` and its required references before applying the repository-local Skill; stop and report a missing repository file without substituting a personal copy. | Both Skills are original repository material; the repository-local Skill began in [#42](https://github.com/mtk177a/skills/pull/42), and [#77](https://github.com/mtk177a/skills/issues/77) records the required relationship and Japanese-canonical exception. | [The repository-local evaluation record](../.agents/skills/maintain-japanese-references/evals/README.md) covers required use, translation quality, and the missing-companion path. Review it when either Skill or this relationship changes. |
 
 ## Writing the description
@@ -139,7 +138,7 @@ If agent specificity matters, include that context in the name or description.
 
 ## When to fork or copy an external Skill
 
-External Skills are not copied into this repository as-is. External Skill installation is managed in dotfiles via `apm.yml` / `apm.lock.yaml`.
+Except for the two Gist mirrors below, external Skills are not copied into this repository as-is. External Skill installation is managed in dotfiles via `apm.yml` / `apm.lock.yaml`.
 
 Bring a Skill into this repository only when:
 
@@ -150,6 +149,14 @@ Bring a Skill into this repository only when:
 Even then, review the `frontmatter` and `description` to align with this repository's conventions — do not import verbatim.
 
 Before adopting or adapting a third-party Skill, review its provenance, license, complete file set, external references, scripts, tool and network use, and combined capabilities. Treat Markdown instructions as executable influence rather than inherently safe text. Follow [Security review](security.md) for the repository checklist.
+
+### Two upstream Gist mirrors
+
+`japanese-tech-writing` and `cognitive-rhythm-writing` are copies of k16shikano's public Gists. Their `SKILL.md` files match the revisions recorded in each `UPSTREAM.md` byte for byte. Do not add local rules, frontmatter fields, editorial corrections, or a Japanese reference translation to either file. The repository checker verifies each copy against the SHA-256 recorded in `UPSTREAM.md`; checking whether a newer Gist revision exists requires an explicit upstream comparison.
+
+When updating a mirror, compare the recorded revision with the current Gist, inspect the complete change under [Security review](security.md), then copy the accepted revision without modification and update its revision, hash, and third-party notice. If the new upstream file cannot be accepted as-is, record the difference and do not create a local variant. Neither mirror requires an `evals/README.md`; add model-backed evaluation definitions only if evidence is needed for a responsibility changed by the upstream revision.
+
+The upstream `cognitive-rhythm-writing` file instructs the agent to read `../japanese-tech-writing/SKILL.md` before applying its rules. Install the pair with `apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing`. This repository does not add a missing-companion procedure to the upstream file.
 
 ## Keeping secrets and private information out
 
@@ -219,7 +226,7 @@ The purpose of evaluation is to collect enough evidence for the current acceptan
 Before opening a pull request for a new Skill:
 
 - [ ] Directory name is kebab-case and matches the frontmatter `name`
-- [ ] `SKILL.md` exists with `name`, `description`, and `license` frontmatter
+- [ ] `SKILL.md` exists with `name`, `description`, and `license` frontmatter (the two documented Gist mirrors retain their upstream frontmatter)
 - [ ] `description` makes the usage context clear without reading the body
 - [ ] The body satisfies the semantic contract without copying a heading template mechanically
 - [ ] Body is written in English, or a Japanese writing/editing exception is documented

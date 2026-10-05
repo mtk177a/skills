@@ -2,7 +2,7 @@
 
 # skills
 
-[mtk177a](https://github.com/mtk177a) が作成・保守する個人用エージェント Skill リポジトリです。
+[mtk177a](https://github.com/mtk177a) が作成・保守する Skill と、元資料をコピーして収録する Skill の個人用リポジトリです。
 
 各 Skill は [Agent Skills 仕様](https://agentskills.io/specification) に準拠しています。
 形式上の互換性だけでは、クライアントによる探索や実行時の動作まで確認できません。
@@ -35,7 +35,7 @@
 | `revise-docs-fresh-eyes` | 執筆時の会話を受け取らない Codex または Claude Code のサブエージェントに、既存文書を初見で読ませ、改稿を完結させる |
 | `implement-changes` | 承認済みの変更を小さな単位で、TDD または適切な別の検証方法を使って実装する |
 | `investigate-failure` | 環境を問わず、原因不明のエラー、失敗するテスト、回帰、性能上の異常、予期しない技術的挙動を調査する |
-| `japanese-tech-writing` | 日本語技術文書の整形・論証構成・用語・推敲の規範を適用する |
+| `japanese-tech-writing` | 日本語技術文書の論証構成・用語・推敲の規範を適用する |
 | `assess-risky-change-readiness` | 重大または復旧困難な変更について、安全対策、復旧方法、証拠、承認状況が実行判断に十分かを評価する |
 | `record-session-handoff` | 後続の AI エージェントが状態を再検証し、安全に作業を再開できるよう、証拠に基づく引き継ぎを記録する |
 | `research-web-safely` | 取得したコンテンツを命令として扱わず、追跡可能な Web 上の根拠を収集・評価する |
@@ -44,6 +44,8 @@
 | `triage-review-feedback` | 指摘の妥当性と現在の状態を、`Act now`・`Defer`・`No action` の対応方針とは分けて評価する |
 | `validate-fix` | 特定済みの指摘に対する通常の修正後レビューを、適切な読み取り専用の証拠を使って限定的に行う |
 | `write-natural-japanese` | 意味、確度、定着した用語を保ちながら、文脈に合う表現で日本語の文章を作成・推敲する |
+
+`japanese-tech-writing` と `cognitive-rhythm-writing` は、元の Gist を改変せずに収録しています。出典の版、ライセンス、同期の記録は各 Skill の `UPSTREAM.md` と [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載しています。
 
 ## インストール
 
