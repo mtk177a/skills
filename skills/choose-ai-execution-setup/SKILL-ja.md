@@ -1,77 +1,85 @@
 ---
 name: choose-ai-execution-setup
-description: 具体的な task の開始前に、必要な access、tool、model capability と reasoning、context、permission、verification、agent topology を導出し、利用可能な AI execution setup のどれを使うべきか助言する。ユーザーが chat、coding agent、model、tool-enabled surface、delegation setup のどれを使うべきか明示的に尋ねた場合に使う。active task の自動 orchestration・実行、implementation unit の設計、client 設定の変更、learning support の calibration には使わない。
+description: 具体的な作業の開始前に、必要なアクセス、ツール、モデルの能力、reasoning effort、コンテキスト、権限、検証方法、エージェントの構成を確認し、利用可能な AI 実行環境を助言する。どのチャット、コーディングエージェント、モデル、ツールを使える環境、または委任方法を選ぶべきか、ユーザーが明示的に尋ねた場合に使う。進行中の作業の自動的な指揮・実行、実装の作業単位の設計、クライアント設定の変更、学習支援の調整には使わない。
 license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。
 
-# Choose AI Execution Setup
+# AI 実行環境を選ぶ
 
 ## 目的
 
-- access、model capability、reasoning effort、context、permission、verification、topology、cost、latency を 1 本の尺度へまとめず、具体的な task に利用可能な AI execution setup を推奨する。
-- prerequisite、未確認の利用可能性、次の手順を所有する actor を特定し、推奨を実行可能にする。
-- execution-setup advice を、task design、task execution、client configuration、authorization、learning calibration から分離する。
+- アクセス、モデルの能力、reasoning effort、コンテキスト、権限、検証方法、エージェントの構成、費用、所要時間を一つの尺度にまとめず、具体的な作業に使える AI 実行環境を推奨する。
+- 開始前に必要な条件、利用可能か未確認の点、次に動く担当者を示し、推奨を実行に移せるようにする。
+- 実行環境の助言と、作業の設計・実行、クライアント設定、承認、学習支援の調整を分ける。
 
-## 証拠
+## 確認する情報
 
-利用可能な情報を集める。
+利用できる情報を集める。
 
-- 具体的な task、意図する outcome、定義済みの work unit
-- setup が読むべき証拠と system、access すべき tool または environment、実行すべき action
-- 利用可能な chat、coding agent、model、reasoning setting、tool、permission、execution environment
-- 不確実性、必要な判断、context 量、verification needs、可逆性、誤りの影響
-- ユーザーが提示した cost、latency、token、privacy の制約
+- 具体的な作業、目指す結果、すでに定義された作業単位
+- 読むべき資料とシステム、必要なツールや環境、実行する操作
+- 利用できるチャット、コーディングエージェント、モデル、reasoning effort の設定、ツール、権限、実行環境
+- 不確実な点、必要な判断、コンテキストの量、検証の必要性、操作の可逆性、誤った場合の影響
+- ユーザーが示した費用、所要時間、トークン量、プライバシーの制約
+- 推奨する環境を変え得る、ユーザーが示した優先順位や得失の判断
 
-確認済みの利用可能性と、必要な capability を区別する。利用可能な選択肢が不明な場合に、特定の product、model、profile、tool、permission、topology を捏造しない。
+利用できると確認した機能と、作業に必要な機能を区別する。\
+判断を左右する技術的事実は、利用可能な読み取り専用のツールや環境の確認、根拠となる公式文書などで確かめてから、ユーザーに情報を求める。\
+報告された利用可能性は確認するまで報告として扱い、確認できない点を示す。\
+選択肢が不明なときに、特定の製品、モデル、設定、ツール、権限、エージェントの構成を作り上げない。
 
-## 判断 workflow
+## 判断の手順
 
-1. 依頼が、具体的な task に対する execution-setup advice を求めているか確認する。task または関連する選択肢が不明確で比較できない場合は、推測せず不足する証拠を示す。
-2. 読むべき証拠、実行すべき action、実行すべき check から、必要な access と tool capability を導出する。
-3. 曖昧さ、必要な判断、影響、verification complexity から model capability を選ぶ。task の重要性や tool access を model capability の代用にしない。利用可能な setup が model capability を独立して示していない場合は、未確認または比較上の差がないとする。
-4. reasoning effort を model や execution surface とは別に選ぶ。reasoning setting を model capability の証拠にしない。深い推論または検証が判断に影響する場合だけ reasoning を増やす。利用可能な reasoning setting を確認できない場合は、既定値を推奨せず、未確認または比較上の差がないとする。
-5. 利用可能でなければならない context と、active context の外に置ける情報を決める。
-6. setup が必要とする permission と side effect を特定する。authorization ではなく prerequisite として扱う。
-7. outcome を確認するために必要な verification と review capability を選ぶ。
-8. work unit が既に定義されている場合だけ、1 session、sequential handoff、independent review、parallel agent のどれを使うか決める。implementation unit の設計が必要な場合は、その作業を所有する design workflow へ返す。
-9. unit が独立しており、mutable state または file の競合がなく、ownership と completion check が明確で、parent が統合でき、効果が coordination cost を上回る場合だけ parallel agent を使う。統合担当の parent は、その unit に対する capability と利用可能性を確認できない限り worker 数へ含めず、work unit を割り当てない。
-10. ユーザーが提示した cost、latency、token、privacy の制約を、適格な選択肢へ適用する。比較する次元を示さずに setup を軽いまたは重いと呼ばない。
-11. requirement を確認済みの利用可能な選択肢へ対応付ける。`Recommendation ready` を使う前に、必要な access、tool、environment、permission、verification capability をその選択肢で確認済みか検証する。それ以外の場合は、条件付き、setup 変更、証拠不足のうち該当する state を使う。
-12. 推奨、重要な代替案、prerequisite、未知、次の actor を示す。
+1. 具体的な作業について、実行環境の助言を求められているか確認する。作業や選択肢が不明確で比較できない場合は、推測せず、足りない情報を示す。
+2. 読むべき資料、実行する操作、必要な検証から、アクセスとツールに必要な機能を導く。
+3. 作業の曖昧さ、必要な判断、誤った場合の影響、検証の複雑さから、モデルに必要な能力を選ぶ。作業の重要性やツールへのアクセスを、モデルの能力の代わりにしない。利用可能な環境でモデルの能力を独立に比較できなければ、未確認か、選択を左右しない項目として扱う。
+4. モデルや実行環境とは別に reasoning effort を選ぶ。その設定をモデルの能力の証拠にしない。深い推論や検証が判断に関わる場合に限って effort を上げる。利用できる設定を確認できなければ、既定値を推奨せず、未確認か、選択を左右しない項目として扱う。
+5. 作業中に参照できなければならない情報と、作業中のコンテキストの外に置ける情報を決める。
+6. 必要な権限と、実行に伴う副作用を特定する。これらを開始前の条件として扱い、操作の承認とみなさない。
+7. 結果を確かめるために必要な検証とレビューの手段を選ぶ。
+8. 作業単位がすでに定義されている場合に限り、一つのセッション、順次の引き継ぎ、独立したレビュー、並列エージェントのどれを使うか決める。実装の作業単位が未設計なら、その設計を担当する手順へ引き継ぐ。
+9. 作業単位が独立し、変更する状態やファイルの競合がなく、担当範囲と完了条件が明確で、親エージェントが統合でき、並列化の効果が調整の負担を上回る場合に限り、並列エージェントを選ぶ。統合する親エージェントは、その作業単位を担当でき、利用可能であると確認しない限り、作業担当者の数に含めたり、作業を割り当てたりしない。
+10. ユーザーが示した費用、所要時間、トークン量、プライバシーの制約を、条件を満たす選択肢に適用する。何を比べるか示さずに、ある環境を「軽い」「重い」と呼ばない。選択肢間に重要な得失があり、ユーザーが優先順位を決めていない場合は、影響を説明して判断を委ねる。
+11. 必要な機能を、利用可能と確認した選択肢に対応付ける。`Recommendation ready` とする前に、必要なアクセス、ツール、環境、権限、検証手段が、その選択肢で確認済みか確かめる。そうでなければ、条件付きの推奨、環境変更の必要性、情報不足のうち、該当する状態を使う。
+12. 推奨、重要な代替案、開始前に必要な条件、不明な点、次に動く担当者を示す。
 
-## 完了 state
+## 完了時の状態
 
-次のいずれか 1 つを割り当てる。
+次のいずれか一つを選ぶ。
 
-- `Recommendation ready`: 確認済みの利用可能な setup が task requirement を満たし、責任を持つ actor が開始できる。
-- `Conditional recommendation`: 推奨する setup を特定できるが、開始前に限定的な利用可能性または task 条件を 1 件確認する必要がある。
-- `Setup change required`: 現在確認済みの setup では、必要な capability、permission、environment、verification need を満たせない。
-- `Insufficient evidence`: task、利用可能な選択肢、または判断に必要な別の入力が不明確で、捏造せずに比較できない。
+- `Recommendation ready`: 利用可能と確認した環境が作業の要件を満たし、担当者が開始できる。
+- `Conditional recommendation`: 推奨する環境は特定できるが、開始前に、範囲の限られた利用可能性か作業条件を一つ確認する必要がある。
+- `Setup change required`: 現在、利用可能と確認できている環境では、必要な機能、権限、環境、検証手段を満たせない。
+- `Insufficient evidence`: 作業、利用できる選択肢、その他の判断に必要な情報が不明確で、作り上げずには比較できない。
 
-## Reporting contract
+## 報告する内容
 
-判断に合わせて応答を調整する。次を含める。
+判断に合わせて回答を整え、次を含める。
 
-- 完了 state
-- 推奨する利用可能な setup、または capability-level recommendation
-- access と tool、model capability、reasoning effort、context、permission と side effect、verification と review、topology の独立した項目。判断を制約しない次元は、未確認または比較上の差がないと示す
-- ユーザーが提示した重要な cost、latency、token、privacy の制約
-- prerequisite、未確認の前提、次の手順を所有する actor
-- setup 判断を妨げる場合だけ、task design、configuration、authorization への handoff
+- 完了時の状態
+- 推奨する利用可能な環境、または必要な機能に基づく推奨
+- アクセスとツール、モデルの能力、reasoning effort、コンテキスト、権限と副作用、検証とレビュー、エージェントの構成をそれぞれ分けた記述。選択を左右しない項目は、未確認か、比較上の差がないことを示す
+- ユーザーが示した重要な費用、所要時間、トークン量、プライバシーの制約
+- 確認した重要な技術的事実、ユーザーの判断に残した得失、確認できなかった事実
+- 開始前に必要な条件、未確認の前提、次に動く担当者
+- 環境を選ぶ判断がそこで止まる場合に限り、作業の設計、設定変更、承認を担当する手順への引き継ぎ
 
-`Recommendation ready` の場合は、開始を妨げる prerequisite または判断に必要な未知が残っていないと示す。topology が重要な場合は、latency または specialization 上の効果が coordination・integration cost を上回るか、その比較を妨げる証拠を示す。
+`Recommendation ready` の場合は、開始を妨げる条件や、判断に必要な未確認事項が残っていないことを示す。\
+エージェントの構成が重要なら、所要時間や専門性の利点が、調整と統合の負担を上回るか、何が分からず比較できないかを示す。
 
-`Model capability` と `Reasoning effort` を別々に示す。reasoning effort に関する記述から model capability を推論したり、model 名から reasoning effort を推論したりしない。最終化する前に、各 model-capability claim が task で直接裏付けられているか確認し、それ以外は未確認または比較上の差がないとする。
+`Model capability` と `Reasoning effort` は分けて報告する。\
+reasoning effort の記述からモデルの能力を、モデル名から reasoning effort を推測しない。\
+回答を確定する前に、モデルの能力について述べた内容が作業から直接裏付けられるか確認し、裏付けられなければ未確認か、選択を左右しない項目として扱う。
 
-ユーザーが task 固有の理解または learning support を明示的に求めた場合は、setup recommendation の後に任意の `calibrate-learning-support` handoff を追加し、その方法は設計しない。
+ユーザーがその作業を理解したい、または学習支援が必要だと明示した場合は、実行環境の推奨の後に、必要に応じて `calibrate-learning-support` へ引き継ぐ。その方法はここで設計しない。
 
-特定の model、profile、複数 agent を強制したり、各独立次元が判断を制約するかの記録を超えた詳細比較を強制したりしない。
+特定のモデルや設定、複数のエージェントを一律に指定しない。各項目が選択を左右するかを記す以上の詳細な比較も強制しない。
 
 ## 境界
 
-- task の実行または orchestration、implementation work unit の作成、client setting の変更、model の切り替え、permission の付与を行わず、recommendation を authorization として扱わない。
-- ユーザーの objective、scope、risk tolerance、実質的な implementation design、final adoption decision を選ばない。
-- task 固有の learning・understanding calibration は `calibrate-learning-support` に残し、その Skill が利用できない場合も自己完結させる。
-- 自動的な agent・tool orchestration は、この配布 Skill ではなく、active agent の durable instructions、client configuration、agent definitions に残す。
+- 作業の実行やエージェントの起動・指揮、実装の作業単位の作成、クライアント設定やモデルの変更、権限の付与は行わず、推奨を操作の承認として扱わない。
+- ユーザーの目的、範囲、優先順位、許容するリスク、実装方法の重要な判断、最終的な採用を代わって決めない。
+- 作業に応じた学習支援の調整は `calibrate-learning-support` に任せる。その Skill が使えなくても、この Skill 単体で助言を完結させる。
+- エージェントやツールの自動的な起動・制御は、この配布 Skill ではなく、稼働中のエージェントへの継続的な指示、クライアント設定、エージェント定義で扱う。
