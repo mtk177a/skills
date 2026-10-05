@@ -62,8 +62,8 @@ Treat a command as a proposed, unexecuted action unless supplied evidence establ
 Choose exactly one state in this order:
 
 1. `Not applicable`: The change does not need safety controls beyond the ordinary design or implementation handoff.
-2. `Blocked`: The Skill applies, but a material target, evidence, control, recovery, ownership, risk-acceptance, or decision-authority gap prevents a responsible authorization or execution handoff. A known decision owner whose approval is pending is not, by itself, an authority gap.
-3. `Ready for authorization`: Material controls and evidence are decision-ready, and the responsible decision owner is identified, but that owner has not approved the exact action, scope, and residual risk.
+2. `Blocked`: The Skill applies, but a material target, evidence, control, recovery, ownership, or decision-authority gap prevents a responsible authorization or execution handoff. A known decision owner whose approval is pending is not, by itself, a readiness gap.
+3. `Ready for authorization`: Material controls and evidence are decision-ready, and the responsible decision owner is identified, but that owner has not approved the exact action, scope, and residual risk, including any irreversible loss.
 4. `Ready for execution handoff`: Material controls are decision-ready and the exact action and scope are already authorized for the identified execution owner.
 
 `Blocked` takes precedence over authorization status when a material readiness gap remains.
@@ -74,7 +74,7 @@ This Skill records authorization; it does not create it.
 - Do not require rollback when reversal is impossible or less safe than another treatment.
 - Do not describe recovery as available without evidence that its prerequisites, procedure, owner, and expected limits are credible.
 - Use roll-forward, restore, compensation, containment, or explicit loss acceptance when they match the failure mode better than rollback.
-- Mark the result `Blocked` when a material irreversible loss lacks an authorized acceptance decision or when required recovery evidence is unavailable.
+- When irreversible loss is material, identify who can accept it and the exact loss and scope requiring a decision. If controls and evidence are decision-ready and that owner has not yet accepted the loss, use `Ready for authorization`; do not treat this state as acceptance or permission to execute. Use `Blocked` if the decision authority or another material readiness requirement is missing.
 - Do not ask for a generic confirmation when the exact scope and controls are already authorized.
 - Require a new decision only when the action, target, scope, control set, residual risk, or applicable authority materially differs from what was authorized.
 
