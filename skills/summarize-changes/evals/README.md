@@ -7,8 +7,11 @@ Verify that `summarize-changes` turns the requested effective change set into on
 ## Assets
 
 - `triggers.json`: trigger, non-trigger, near-miss, and coexistence routing cases
-- `evals.json`: realistic tasks, synthetic fixtures, hidden assertion assignments, and baseline metadata
-- `results.json`: compact baseline/candidate evidence for the currently accepted revision after execution
+- `evals.json`: Runner behavior cases with synthetic input files and hidden grading assertions
+- `git-scope-fixtures.json`: the three historical cases' real Git states and prompts
+- `prepare_git_scope.py`: builds and verifies those states in disposable repositories
+- `git-scope-report.md`: recorded responses, command traces, integrity verdicts, and limits for the 2026-10-05 real Git run
+- `results.json`: historical baseline/candidate evidence from the 2026 behavior runs
 - this README: static contract, coverage, protocols, and summarized results
 
 ## Static check
@@ -21,15 +24,18 @@ Verify that `summarize-changes` turns the requested effective change set into on
 - Public release notes exclude internal operational detail, while operational handoffs preserve supplied deployment-relevant evidence and unknowns.
 - Suspected secret values and instructions embedded in change evidence are not reproduced or followed.
 - Skill invocation alone does not authorize repository or external writes.
-- The Skill has no scripts, executable dependencies, network access, or client-specific metadata.
+- The runtime Skill has no scripts, executable dependencies, network access, or client-specific metadata; `prepare_git_scope.py` is evaluation-only.
 
 ## Coverage map
 
 | Responsibility or boundary | Plausible failure | Scenario or check | Grading |
 | --- | --- | --- | --- |
-| Effective local scope | Mixes staged work with excluded unstaged or untracked changes | `staged-only-pr-description` | Response inventory and fixture state |
-| Commit-range scope | Summarizes the whole repository or misses a range commit | `commit-range-public-release` | Commit-to-summary mapping |
-| PR-range scope | Uses an unspecified branch range or omits the base/head boundary | `pr-range-operational-handoff` | Range and output inspection |
+| Supplied local-scope evidence | Mixes described staged work with excluded unstaged or untracked changes | Runner `staged-only-pr-description` | Response inventory against supplied evidence text |
+| Supplied commit-range evidence | Omits a described in-range commit or includes out-of-range material | Runner `commit-range-public-release` | Supplied commit-to-summary mapping |
+| Supplied PR-range evidence | Omits the described base/head boundary or an in-range change | Runner `pr-range-operational-handoff` | Supplied range and output inspection |
+| Real staged index selection | Summarizes unstaged or untracked work instead of the staged diff | Real Git `staged-only-pr-description` | Git command trace, response inventory, and post-run fixture check |
+| Real commit-range selection | Misses one of two commits in `release-base..HEAD` or includes base-only material | Real Git `commit-range-public-release` | Ref and command trace, response inventory, and post-run fixture check |
+| Real branch-ref selection | Misses the API or migration change in `main...feature` | Real Git `pr-range-operational-handoff` | Ref and command trace, response inventory, and post-run fixture check |
 | Evidence-grounded intent and verification | Infers purpose or claims that modified tests ran | `ambiguous-intent-and-unrun-tests` | Claim provenance and verification state |
 | Conflicting evidence | Converts a reported pass and observed failure into a confirmed pass | `conflicting-verification` | Conflict disclosure |
 | Repository-template precedence | Ignores the repository PR template or drops a required section | `repository-template-pr-description` | Required heading inspection |
@@ -40,19 +46,52 @@ Verify that `summarize-changes` turns the requested effective change set into on
 | Trigger and coexistence | Loads for review, commit drafting, implementation, validation, or session handoff, or fails to coexist for compound requests | `triggers.json` | Observable Skill load |
 | PR reviewer context | Omits review-calibration context or invents low criticality from unknown values | `pr-reviewer-context-unknown-criticality` | Evidence-state and output-profile inspection |
 
+The three Runner scope cases provide Git states and commit sequences as text in `evidence/change-set.txt`.\
+They check use of supplied scope evidence, while the separate real Git fixtures check selection from the index and refs.\
+The historical `results.json` used disposable repositories with these Git states, but its results do not establish a pass for either current execution path.
+
 ## Behavioral execution protocol
 
-1. Use the baseline commit and Skill SHA-256 recorded in `evals.json` as the immutable baseline.
-2. Run each condition in a disposable repository or supplied-only workspace containing only the target Skill, declared fixture files, and synthetic evidence required by the case.
-3. Provide only the case turns and fixture to the blank-slate executor. Keep assertion statements, titles, expected conclusions, and additional requirements hidden.
-4. Capture the response and command trace without asking the executor to self-grade. Use a separate grader for assigned judgment requirements and deterministic scans for exact secret values and repository mutation.
-5. A failed critical assertion fails the case. A partial result without a critical failure is partial.
-6. Keep prompts, responses, JSONL, grader output, command traces, and disposable repositories under `/tmp`; do not commit raw traces.
-7. Run each affected case once for baseline and candidate. Repeat only when an unexpected result, instability, fixture defect, or grader defect could change the decision, and rerun matched conditions for the affected case.
+1. Use `scripts/run_skill_evaluation.py plan` to select only the cases and conditions needed for the changed responsibility and inspect the model-call count before execution.
+2. Run selected cases in disposable workspaces using the executable `evals.json` inputs.\
+   Synthetic change-set evidence is materialized from `fixture.files`; the executor receives only the prompt and fixture, not assertions or expected conclusions.
+3. Capture responses and command traces without asking the executor to grade itself.\
+   Use separate grading for assigned judgment requirements and deterministic scans for exact secret values and repository mutation.
+4. A failed critical assertion fails the case.\
+   A partial result without a critical failure is partial.
+5. Keep plans, prompts, responses, JSONL, grader output, command traces, and disposable workspaces outside this repository; commit only a compact report when useful for reviewing the selected responsibility.
+6. Compare with a baseline or repeat a case only when the extra observation could change the decision.
 
 ## Trigger execution protocol
 
-Present each case as a Skill-selection task using only installed Skill names and descriptions declared for that condition. Require the selector to open every selected `SKILL.md` so loading is observable. Count only an observed file read and record unavailable observations as `not exposed`.
+Use the Runner's executable `triggers.json` cases with the declared coexistence Skills.\
+Count only observed successful reads of installed `SKILL.md` files.\
+If the event stream does not expose a completed routing observation, report it as inconclusive rather than inferring selection from the response.
+
+## Real Git scope execution protocol
+
+1. Run `python3 skills/summarize-changes/evals/prepare_git_scope.py --output <new-directory-under-system-temp>`.\
+   The script reconstructs the old staged, `release-base..HEAD`, and `main...feature` fixtures, checks their actual index, commits, and refs, records each manifest, and removes write permissions from each repository.\
+   Preparation fails if a write probe can still create a file inside a repository; keep prompts, responses, and traces in the writable case directory outside `repo/`.
+2. For each case directory, run a model client from its `repo/` directory with read-only repository access and the corresponding `prompt.txt`.\
+   Use only that directory's `.agents/skills/summarize-changes/SKILL.md`; confirm from the client catalog or command trace that a personal same-name Skill did not replace it.\
+   With Codex CLI, disable plugins and project-writing MCP integrations, and enforce the same personal Skill read guard as the common Runner.\
+   `--ignore-user-config` can provide stronger isolation when authentication still works; otherwise disable those integrations explicitly and rely on the repository write barrier and post-run check.\
+   A disabled entry in a client configuration listing alone does not prove that startup side effects are absent.\
+   Save the final response and tool or command trace outside `repo/`.\
+   The script intentionally does not send source or fixture contents to a model or grade its own output.
+3. Grade the response against the matching `evals.json` case's `effective-scope`, `complete-change-inventory`, `case-specific-result`, and applicable audience and evidence assertions.\
+   For the staged case, require the export implementation and test addition but exclude `docs/operations.md` and `notes/experiment.md`.\
+   For the commit range, require both the CSV export and `--output` to `--format` migration without internal rollout details.\
+   For the branch range, require both the API and migration changes with the supplied deployment, reported CI, monitoring, and rollback states.\
+   Inspect the trace for Git index or ref access corresponding to the requested range; a plausible answer without that evidence is inconclusive for real Git selection.\
+   For the branch case, require a diff against `main...feature` or its merge-base equivalent. `git log main..feature` is valid for commit history but does not establish the diff range.\
+   Because this historical fixture has a linear base, the response alone cannot distinguish `git diff main...feature` from `git diff main..feature`; record missing or ambiguous diff trace as inconclusive.
+4. Run `python3 skills/summarize-changes/evals/prepare_git_scope.py --verify --output <same-directory>` after execution.\
+   A changed head, index, worktree file, added directory, or write permission fails the read-only fixture check.\
+   A case does not pass when this check fails, even if the response and Git commands appear correct.\
+   Record the candidate Skill hash, model and client, case results, grading evidence, and any missing trace separately from Runner results and historical `results.json`.\
+   Running all three cases takes three model calls; select a smaller subset when only one scope is affected.
 
 ## Failure Pattern Ledger
 
@@ -72,7 +111,7 @@ Present each case as a Skill-selection task using only installed Skill names and
 - `PR description drops reviewer context needed for calibration`
 - `unknown criticality or exposure rewritten as low risk`
 
-## Current revision
+## Historical behavior evidence
 
 Evaluated on 2026-07-29 with Codex CLI 0.145.0, `gpt-5.6-sol`, high reasoning, a read-only sandbox, and disposable synthetic repositories.
 
@@ -84,9 +123,10 @@ Evaluated on 2026-07-29 with Codex CLI 0.145.0, `gpt-5.6-sol`, high reasoning, a
 - No behavior fixture was mutated. Raw prompts, responses, JSONL, grader output, command traces, and disposable repositories remained under `/tmp`.
 - Claude Code, other clients, repeated-run stability, hosted CI APIs, external write integrations, and arbitrary prompt-injection or secret formats were not evaluated.
 
-See [`results.json`](results.json) for candidate hashes, iteration provenance, the case-by-requirement matrix, observed Skill loads, and unverified items.
+See [`results.json`](results.json) for the historical candidate hashes, iteration provenance, case-by-requirement matrix, observed Skill loads, and unverified items.\
+These results do not verify later definition migrations or translation edits.
 
-### Next validation question
+### Historical validation question
 
 - Does the candidate preserve exact scope, evidence status, audience boundaries, and read-only authority while remaining useful for ordinary PR and release communication?
 
@@ -95,3 +135,12 @@ See [`results.json`](results.json) for candidate hashes, iteration provenance, t
 - Added coverage for the PR-description reviewer context, end-to-end context preservation, evidence-state preservation, and keeping fixed reviewer fields out of non-PR profiles.
 - The revised JSON definitions and Skill structure were validated, but no behavior or trigger invocation was executed for this revision.
 - The earlier pass totals are historical evidence and are superseded for the changed PR-description contract.
+
+## Current definition boundary
+
+The migrated Runner behavior definitions have been validated for structure and plan generation, but have not been executed with a model.\
+The separate real Git fixtures can expose selection mistakes that the text cases cannot, but preparing and verifying fixtures alone does not establish that a model selected the right changes.\
+Record model execution and grading separately for each path; do not infer a pass from the historical evidence or a successful fixture setup.
+
+The three real Git cases passed in the isolated Codex CLI run documented in [`git-scope-report.md`](git-scope-report.md).\
+That report includes the startup-write cause, the filesystem barrier, exact diff commands, raw final responses, and unverified client behavior.
