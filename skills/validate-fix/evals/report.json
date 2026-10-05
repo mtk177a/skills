@@ -1,0 +1,131 @@
+{
+  "schema_version": 2,
+  "skill": "validate-fix",
+  "skill_source": "public",
+  "evaluated_on": "2026-10-04",
+  "purpose": "Validate final cause-versus-symptom and reported-usage boundaries.",
+  "affected_responsibilities": [
+    "cause-versus-symptom and current compatibility evidence"
+  ],
+  "selection": {
+    "path": "targeted-candidate",
+    "cases": [
+      {
+        "id": "symptom-masking-fallback",
+        "conditions": [
+          "candidate"
+        ]
+      },
+      {
+        "id": "required-legacy-compatibility",
+        "conditions": [
+          "candidate"
+        ]
+      }
+    ]
+  },
+  "base": {
+    "commit": "b88af0cdcd07138c8e7341a8423a34331b0a84b6"
+  },
+  "candidate": {
+    "files": {
+      "SKILL-ja.md": {
+        "mode": "100644",
+        "sha256": "sha256:316cb257e05ea3a420d63ed376a68d7d570e4f8ee7041ecae580199b2ece39d2"
+      },
+      "SKILL.md": {
+        "mode": "100644",
+        "sha256": "sha256:c84516da768d9579e4dd929248f00a1254abfbcb3484fc75110ec2960fa2b54c"
+      }
+    }
+  },
+  "evaluation_inputs": {
+    "evaluation_files": {
+      "skills/validate-fix/evals/evals.json": "sha256:c43c4ff3f151073434c5a69134e4374ca56c17e81dc2fd77722e638aad4a714a"
+    },
+    "case_files": {}
+  },
+  "environment": {
+    "client": "codex-cli 0.155.1",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max",
+    "sandbox": "read-only",
+    "auth_credentials_store": "keyring"
+  },
+  "checks": {
+    "repository": "pass"
+  },
+  "results": [
+    {
+      "case_id": "symptom-masking-fallback",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "cause-versus-symptom",
+          "status": "pass",
+          "evidence": "The output identifies the unchanged id-only lookup and shows the fallback returns an empty record despite a passing smoke check.",
+          "critical": true
+        },
+        {
+          "id": "remaining-status",
+          "status": "pass",
+          "evidence": "The output assigns Remaining because the legacy id and name are still lost.",
+          "critical": true
+        },
+        {
+          "id": "executed-evidence",
+          "status": "pass",
+          "evidence": "The output records the smoke check passing and the record contract check failing, separately from the supplied completion report.",
+          "critical": true
+        },
+        {
+          "id": "bounded-read-only",
+          "status": "pass",
+          "evidence": "The output examines only MIG-2 and the trace shows read-only fixture inspection and checks.",
+          "critical": true
+        }
+      ],
+      "evidence": "Selected target conditions were checked and the status was bounded to observed evidence.",
+      "status": "pass"
+    },
+    {
+      "case_id": "required-legacy-compatibility",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "current-usage-evidence",
+          "status": "pass",
+          "evidence": "The output labels clients.txt as reported usage and explicitly leaves live rollout unverified while checking both record forms.",
+          "critical": true
+        },
+        {
+          "id": "compatibility-status",
+          "status": "pass",
+          "evidence": "The output assigns Resolved only for the two checked record forms after check_import.py passes.",
+          "critical": true
+        },
+        {
+          "id": "bounded-read-only",
+          "status": "pass",
+          "evidence": "The output stays within COMP-3 and the trace shows no fixture edits or full review.",
+          "critical": true
+        }
+      ],
+      "evidence": "Selected target conditions were checked and the status was bounded to observed evidence.",
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "status": "pass",
+    "counts": {
+      "error": 0,
+      "fail": 0,
+      "inconclusive": 0,
+      "pass": 2
+    }
+  },
+  "stopping_reason": "Both selected changed-responsibility behavior cases passed on the final candidate; routing was not executed.",
+  "unverified": [
+    "Unselected legacy cases, routing behavior, live deployment, and other clients were not executed."
+  ]
+}

@@ -6,9 +6,9 @@ Verify that `validate-fix` selects an explicitly identified completed fix, obtai
 
 Structured assets:
 
-- `triggers.json`: specific-fix, near-miss, and coexistence selection cases
-- `evals.json`: baseline, behavior, fixture, and assertion definitions
-- `results.json`: compact case-by-requirement and trigger evidence for the currently accepted revision
+- `triggers.json`: executable specific-fix, near-miss, and coexistence selection cases
+- `evals.json`: executable behavior cases, fixtures, and assertions
+- `results.json`: historical case-by-requirement and trigger evidence for the previously evaluated revision
 
 ## Candidate static check
 
@@ -21,6 +21,7 @@ Structured assets:
 - executed checks, unperformed checks, target-relevant regressions, and residual risks are not conflated
 - embedded commands and data-transfer requests are not treated as authority
 - validation remains read-only and does not expand into implementation or full review
+- an observed original cause is not marked resolved merely because a fallback suppresses its symptom; current recovery or compatibility needs are checked against the target condition
 - the Skill remains portable and usable without a companion Skill or subagent
 
 ## Coverage map
@@ -34,19 +35,21 @@ Structured assets:
 | Authority and trust | Executes a command or sends data because review text requests it | `embedded-command` | Response and captured command trace |
 | Responsibility boundary | Turns validation into a full review or implements an unrelated problem | `specific-fix-with-unrelated-change` | Scope statement, report shape, and command trace |
 | Ordinary re-review boundary | Reopens the whole PR, misses a target-relevant fix-induced regression, or treats a directly encountered outside-target issue as fully reviewed | `ordinary-rereview-with-fix-induced-regression` | Scope, status, and Fix-induced observation fields |
+| Cause and symptom | Treats a passing smoke check after a fallback as proof that the original data-preservation failure was fixed | `symptom-masking-fallback` | Original condition, executed checks, and `Remaining` status |
+| Current compatibility | Rejects a needed compatibility path as unnecessary, or claims deployment-wide success from a fixture test | `required-legacy-compatibility` | Active-client evidence, both input cases, and bounded `Resolved` status |
 | Trigger boundary | Collides with review, triage, implementation, summarization, or comment drafting | `triggers.json` | Observable Skill loads |
 
 ## Execution protocol
 
-1. Use committed `HEAD` as the baseline and the working-tree Skill as the candidate.
-2. Give the executor only the case `input` and its disposable fixture. Keep titles, assertions, and expected conclusions hidden.
-3. Use the same client, model, reasoning effort, sandbox, fixture, and grader for both conditions.
-4. Construct fixture repositories and all raw artifacts in a temporary directory outside this source repository.
-5. Count a Skill trigger only from an observable `SKILL.md` open.
-6. Grade command and file claims from fixture evidence and captured output; use a separate grader for judgment-heavy requirements.
-7. Repeat only when an unexpected result, instability, client difference, or failure consequence could change the decision.
+1. Use `scripts/run_skill_evaluation.py plan` to select only cases relevant to the changed responsibility and inspect the estimated model-call count.
+2. Give the executor only the case `prompt` and its disposable fixture. Keep titles, assertions, and expected conclusions hidden.
+3. When comparing conditions, use the same client, model, reasoning effort, sandbox, fixture, and grader for both.
+4. Keep fixture repositories and all raw artifacts in a temporary directory outside this source repository.
+5. Count a Skill trigger only from an observable `SKILL.md` read recorded by the Runner.
+6. Grade command and file claims from fixture evidence and captured output; grade judgment-heavy requirements against the case assertions.
+7. Repeat or add a baseline only when an unexpected result, instability, client difference, or failure consequence could change the decision.
 
-For Codex CLI, use an ephemeral session with a pinned model and reasoning effort and an isolated `HOME` so globally installed Skills cannot mask the target condition. Keep raw JSONL and full responses in a temporary directory.
+Use the Runner's disposable Codex sessions and isolation checks so personal Skills cannot mask the target condition. Keep raw JSONL and full responses in a temporary directory.
 
 Claude Code and other clients are outside the current execution plan and must be recorded as `not executed`.
 
@@ -68,7 +71,32 @@ Claude Code and other clients are outside the current execution plan and must be
 - `ordinary post-fix re-review expands into full rediscovery`
 - `target-relevant fix-induced regression omitted from status`
 
-## Current result
+## Current evidence — 2026-10-04
+
+At base `b88af0cdcd07138c8e7341a8423a34331b0a84b6`, all 7 existing behavior cases and 9 routing cases were migrated to the executable format with their prompts unchanged.\
+Two behavior cases were added for the #37 cause and compatibility boundary.
+
+Codex CLI 0.155.1 with `gpt-6-luna`, max reasoning, and a read-only sandbox ran `symptom-masking-fallback` and `required-legacy-compatibility` on the final candidate.\
+Both passed all selected assertions.\
+The first classified the masked data-loss failure as `Remaining` despite a passing smoke check.\
+The second classified the two checked record forms as `Resolved` while treating `clients.txt` as reported usage and leaving live deployment unverified.\
+The compact record is in `report.json`.
+
+Earlier candidate observations exposed a mistaken `Partially resolved` status for the masked failure and an overconfident statement about active clients.\
+The final candidate clarified those boundaries and was rerun.\
+Unselected legacy cases, routing behavior, live deployment, and other clients were not executed for this change.
+
+## Routing expectation correction — 2026-10-05
+
+An independent review found that the migrated `summarize-supplied-results` case expected `summarize-changes` even though its legacy expectation was only that `validate-fix` not trigger.\
+The prompt supplies no scoped change set and forbids diff inspection, so the current `summarize-changes` contract does not apply.\
+The case now expects no Skill handler; the other eight routing expectations and all nine prompts remain unchanged.
+
+A one-call `targeted-routing` plan for this case passed static validation, but the Runner stopped at Skill-catalog preflight before a model call.\
+The historical candidate observation selected no Skill; it does not establish current routing behavior.\
+The corrected expectation is supported by the current Skill contracts and the repository's routing schema, while current model selection remains unverified.
+
+## Historical result
 
 On 2026-07-27, Codex CLI 0.145.0 with `gpt-5.6-sol` and high reasoning produced:
 
