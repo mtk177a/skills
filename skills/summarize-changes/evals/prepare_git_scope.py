@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import shutil
+import stat
 import subprocess
 import tempfile
 from pathlib import Path, PurePosixPath
@@ -42,11 +43,39 @@ def write_files(repo: Path, files: dict[str, str]) -> None:
 def snapshot(repo: Path) -> dict[str, str]:
     return {
         path.relative_to(repo).as_posix(): (
-            "symlink" if path.is_symlink() else hashlib.sha256(path.read_bytes()).hexdigest()
+            "symlink" if path.is_symlink() else
+            "directory" if path.is_dir() else hashlib.sha256(path.read_bytes()).hexdigest()
         )
         for path in sorted(repo.rglob("*"))
-        if (path.is_file() or path.is_symlink()) and ".git" not in path.relative_to(repo).parts
+        if ".git" not in path.relative_to(repo).parts
     }
+
+
+WRITE_BITS = stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH
+
+
+def repository_paths(repo: Path) -> list[Path]:
+    return [repo, *repo.rglob("*")]
+
+
+def seal_repository(repo: Path) -> None:
+    for path in repository_paths(repo):
+        if not path.is_symlink():
+            path.chmod(path.stat().st_mode & ~WRITE_BITS)
+    probe = repo / ".git-scope-write-probe"
+    try:
+        probe.write_text("probe", encoding="utf-8")
+    except PermissionError:
+        return
+    probe.unlink()
+    raise RuntimeError(f"repository write barrier is ineffective: {repo}")
+
+
+def verify_seal(repo: Path) -> None:
+    writable = [str(path.relative_to(repo)) for path in repository_paths(repo)
+                if not path.is_symlink() and path.stat().st_mode & WRITE_BITS]
+    if writable:
+        raise RuntimeError(f"repository write barrier changed: {repo}: {', '.join(writable)}")
 
 
 def verify_scope(case_id: str, repo: Path) -> None:
@@ -140,12 +169,14 @@ def prepare(case: dict[str, object], destination: Path) -> None:
         "status": git(repo, "status", "--porcelain", "--untracked-files=all"),
         "files": snapshot(repo),
     }, indent=2) + "\n", encoding="utf-8")
+    seal_repository(repo)
 
 
 def verify(destination: Path) -> None:
     for case_id in sorted(EXPECTED_IDS):
         case_dir = destination / case_id
         repo = case_dir / "repo"
+        verify_seal(repo)
         manifest = json.loads((case_dir / "manifest.json").read_text(encoding="utf-8"))
         verify_scope(case_id, repo)
         current_prompt = hashlib.sha256((case_dir / "prompt.txt").read_bytes()).hexdigest()

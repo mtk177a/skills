@@ -10,6 +10,7 @@ Verify that `summarize-changes` turns the requested effective change set into on
 - `evals.json`: Runner behavior cases with synthetic input files and hidden grading assertions
 - `git-scope-fixtures.json`: the three historical cases' real Git states and prompts
 - `prepare_git_scope.py`: builds and verifies those states in disposable repositories
+- `git-scope-report.md`: recorded responses, command traces, integrity verdicts, and limits for the 2026-10-05 real Git run
 - `results.json`: historical baseline/candidate evidence from the 2026 behavior runs
 - this README: static contract, coverage, protocols, and summarized results
 
@@ -70,19 +71,25 @@ If the event stream does not expose a completed routing observation, report it a
 ## Real Git scope execution protocol
 
 1. Run `python3 skills/summarize-changes/evals/prepare_git_scope.py --output <new-directory-under-system-temp>`.\
-   The script reconstructs the old staged, `release-base..HEAD`, and `main...feature` fixtures and checks their actual index, commits, and refs before writing a manifest for each case.
+   The script reconstructs the old staged, `release-base..HEAD`, and `main...feature` fixtures, checks their actual index, commits, and refs, records each manifest, and removes write permissions from each repository.\
+   Preparation fails if a write probe can still create a file inside a repository; keep prompts, responses, and traces in the writable case directory outside `repo/`.
 2. For each case directory, run a model client from its `repo/` directory with read-only repository access and the corresponding `prompt.txt`.\
    Use only that directory's `.agents/skills/summarize-changes/SKILL.md`; confirm from the client catalog or command trace that a personal same-name Skill did not replace it.\
-   With Codex CLI, use `--ignore-user-config`, disable plugins, and enforce the same personal Skill read guard as the common Runner so unrelated local integrations cannot alter the fixture.\
+   With Codex CLI, disable plugins and project-writing MCP integrations, and enforce the same personal Skill read guard as the common Runner.\
+   `--ignore-user-config` can provide stronger isolation when authentication still works; otherwise disable those integrations explicitly and rely on the repository write barrier and post-run check.\
+   A disabled entry in a client configuration listing alone does not prove that startup side effects are absent.\
    Save the final response and tool or command trace outside `repo/`.\
    The script intentionally does not send source or fixture contents to a model or grade its own output.
 3. Grade the response against the matching `evals.json` case's `effective-scope`, `complete-change-inventory`, `case-specific-result`, and applicable audience and evidence assertions.\
    For the staged case, require the export implementation and test addition but exclude `docs/operations.md` and `notes/experiment.md`.\
    For the commit range, require both the CSV export and `--output` to `--format` migration without internal rollout details.\
    For the branch range, require both the API and migration changes with the supplied deployment, reported CI, monitoring, and rollback states.\
-   Inspect the trace for Git index or ref access corresponding to the requested range; a plausible answer without that evidence is inconclusive for real Git selection.
+   Inspect the trace for Git index or ref access corresponding to the requested range; a plausible answer without that evidence is inconclusive for real Git selection.\
+   For the branch case, require a diff against `main...feature` or its merge-base equivalent. `git log main..feature` is valid for commit history but does not establish the diff range.\
+   Because this historical fixture has a linear base, the response alone cannot distinguish `git diff main...feature` from `git diff main..feature`; record missing or ambiguous diff trace as inconclusive.
 4. Run `python3 skills/summarize-changes/evals/prepare_git_scope.py --verify --output <same-directory>` after execution.\
-   A changed head, index, worktree file, or untracked file fails the read-only fixture check.\
+   A changed head, index, worktree file, added directory, or write permission fails the read-only fixture check.\
+   A case does not pass when this check fails, even if the response and Git commands appear correct.\
    Record the candidate Skill hash, model and client, case results, grading evidence, and any missing trace separately from Runner results and historical `results.json`.\
    Running all three cases takes three model calls; select a smaller subset when only one scope is affected.
 
@@ -134,3 +141,6 @@ These results do not verify later definition migrations or translation edits.
 The migrated Runner behavior definitions have been validated for structure and plan generation, but have not been executed with a model.\
 The separate real Git fixtures can expose selection mistakes that the text cases cannot, but preparing and verifying fixtures alone does not establish that a model selected the right changes.\
 Record model execution and grading separately for each path; do not infer a pass from the historical evidence or a successful fixture setup.
+
+The three real Git cases passed in the isolated Codex CLI run documented in [`git-scope-report.md`](git-scope-report.md).\
+That report includes the startup-write cause, the filesystem barrier, exact diff commands, raw final responses, and unverified client behavior.
