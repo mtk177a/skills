@@ -42,15 +42,21 @@ Failure investigation may support an active production incident, but it does not
 
 `review-changes` → `triage-review-feedback` → optional `draft-review-comments` → `implement-changes` → `validate-fix` → repeat only for remaining or fix-induced work
 
+For a finding-free review with a requested general PR comment or review summary: `review-changes` → `draft-review-comments`.
+
 - `review-changes`: Discover material problems in a new effective diff or an explicitly requested full re-review; do not make final response decisions for existing findings
 - `triage-review-feedback`: Evaluate existing findings using independent finding assessment, lifecycle state, and `Act now` / `Defer` / `No action` response decisions while preserving provenance, risk context, confidence, verification, and unknowns
-- `draft-review-comments`: Convert findings with explicit assessment, state, and response decision into unposted GitHub comment drafts without discovering problems, triaging findings, deciding review actions or timing, or posting comments
+- `draft-review-comments`: Convert decided findings or a finding-free review with a supplied conclusion, scope, checks, and material limitations into unposted GitHub comment drafts without discovering problems, triaging findings, deciding review actions or timing, or posting comments
 - `implement-changes`: Apply only authorized `Act now` work
 - `validate-fix`: By default, re-review addressed findings, their fix diff, directly affected boundaries, and target-relevant regressions without reopening the full diff for discovery
 
 The review finding label, potential impact, confidence, assessment, state, response decision, and implementation priority are separate values. A `Supported` concern may receive `No action` when expected risk reduction does not justify implementation, verification, complexity, regression, delay, and maintenance cost. `Act now` accepts the concern, not automatically the reviewer's proposed implementation. A high-impact `question` remains a question until its premise is confirmed; downstream Skills must not erase the potential impact or turn it into an asserted defect.
 
 Do not draft an actionable comment directly from `review-changes`: its label, confidence, review action, or next-action wording is not a response decision. In the standard workflow, triage must supply assessment, state, and response decision first. A standalone caller may bypass the triage Skill only when it explicitly supplies the same canonical decisions; legacy `accept` / `defer` / `reject` inputs remain supported without inferring missing assessment or state.
+
+When `review-changes` reports no material findings, no finding-specific decisions exist to triage.\
+For a requested general comment or review summary, pass its review-level conclusion, reviewed scope, checks actually performed, and material limitations to `draft-review-comments` without inventing finding assessments or response decisions.\
+Drafting does not authorize posting or choose `Approve`, `Request changes`, or `Comment`.
 
 An ordinary request such as "I addressed the review comments; re-review the fixes" routes to `validate-fix`. Only an explicit request to review the entire updated effective diff routes back to `review-changes`. In a full re-review, classify new findings as `Fix-induced`, `Newly observable`, or `Late-discovered`. Report material findings from every origin, but do not start another fix round for a previously observable, independently non-blocking `Late-discovered` item.
 

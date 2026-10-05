@@ -1,79 +1,92 @@
 {
-  "skill": "review-changes",
-  "version": 1,
-  "run_policy": {
-    "protocol": "Present each prompt as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
-    "count_only_observed_skill_loads": true,
-    "unobservable_result": "not exposed",
-    "repetition_rule": "Run each affected case under the target condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant. Use matched repetitions for baseline and candidate.",
-    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every observed condition. Mixed observed results are unstable, not a pass."
+  "skill_name": "review-changes",
+  "execution": {
+    "coexistence_skills": [
+      "triage-review-feedback",
+      "validate-fix",
+      "draft-review-comments",
+      "summarize-changes",
+      "implement-changes",
+      "audit-agent-guidance"
+    ]
   },
-  "cases": [
+  "evals": [
     {
       "id": "precommit-code-review",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Review my current staged and unstaged code changes before I commit. Identify material correctness, safety, compatibility, test, maintainability, or performance problems, and do not edit the files."
+      "prompt": "Review my current staged and unstaged code changes before I commit. Identify material correctness, safety, compatibility, test, maintainability, or performance problems, and do not edit the files.",
+      "expected_handlers": [
+        "review-changes"
+      ]
     },
     {
       "id": "documentation-configuration-review",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Review this README and static configuration diff. Check factual accuracy, commands, schema, precedence, compatibility, and available deterministic validation without forcing a product test."
+      "prompt": "Review this README and static configuration diff. Check factual accuracy, commands, schema, precedence, compatibility, and available deterministic validation without forcing a product test.",
+      "expected_handlers": [
+        "review-changes"
+      ]
     },
     {
       "id": "pull-request-review",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Review the effective diff for this pull request against its base branch. Use relevant contracts and surrounding code as evidence and report any material findings."
+      "prompt": "Review the effective diff for this pull request against its base branch. Use relevant contracts and surrounding code as evidence and report any material findings.",
+      "expected_handlers": [
+        "review-changes"
+      ]
     },
     {
       "id": "full-rereview",
-      "expected": "should_trigger",
-      "category": "core",
-      "prompt": "Perform a full re-review of the updated PR diff. Reconcile the previous findings as Resolved, Remaining, or New, and also look for newly introduced problems."
+      "prompt": "Perform a full re-review of the updated PR diff. Reconcile the previous findings as Resolved, Remaining, or New, and also look for newly introduced problems.",
+      "expected_handlers": [
+        "review-changes"
+      ]
     },
     {
       "id": "existing-feedback-triage",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "Here are five existing review comments. Decide which to accept, defer, or reject, explain each decision, and choose an implementation approach."
+      "prompt": "Here are five existing review comments. Decide which to accept, defer, or reject, explain each decision, and choose an implementation approach.",
+      "expected_handlers": [
+        "triage-review-feedback"
+      ]
     },
     {
       "id": "specific-fix-validation",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "Verify only whether the completed fix for finding F-2 is resolved. Compare the fix diff and test output with the original finding and report what remains unconfirmed."
+      "prompt": "Verify only whether the completed fix for finding F-2 is resolved. Compare the fix diff and test output with the original finding and report what remains unconfirmed.",
+      "expected_handlers": [
+        "validate-fix"
+      ]
     },
     {
       "id": "ordinary-post-fix-rereview",
-      "expected": "should_not_trigger",
-      "category": "coexistence",
-      "prompt": "I addressed all existing review comments. Re-review those fixes, their changed lines, and any directly related regressions, but do not reopen the entire PR for new findings."
+      "prompt": "I addressed all existing review comments. Re-review those fixes, their changed lines, and any directly related regressions, but do not reopen the entire PR for new findings.",
+      "expected_handlers": [
+        "validate-fix"
+      ]
     },
     {
       "id": "comment-drafting",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "Turn these already organized findings into GitHub inline comments and a concise review summary. Do not discover any new problems."
+      "prompt": "Turn these already organized findings into GitHub inline comments and a concise review summary. Do not discover any new problems.",
+      "expected_handlers": [
+        "draft-review-comments"
+      ]
     },
     {
       "id": "diff-summary",
-      "expected": "should_not_trigger",
-      "category": "near_miss",
-      "prompt": "Summarize this commit range for a pull request description, including what changed, impact, tests, and known risks. Do not review it for defects."
+      "prompt": "Summarize this commit range for a pull request description, including what changed, impact, tests, and known risks. Do not review it for defects.",
+      "expected_handlers": [
+        "summarize-changes"
+      ]
     },
     {
       "id": "implementation",
-      "expected": "should_not_trigger",
-      "category": "coexistence",
-      "prompt": "The scope and design are approved. Implement the code and documentation changes, run the relevant checks, and report residual risk."
+      "prompt": "The scope and design are approved. Implement the code and documentation changes, run the relevant checks, and report residual risk.",
+      "expected_handlers": [
+        "implement-changes"
+      ]
     },
     {
       "id": "guidance-audit",
-      "expected": "should_not_trigger",
-      "category": "coexistence",
-      "prompt": "Audit this SKILL.md as durable agent guidance. Diagnose trigger conflicts, loading behavior, and evaluation gaps before proposing a redesign."
+      "prompt": "Audit this SKILL.md as durable agent guidance. Diagnose trigger conflicts, loading behavior, and evaluation gaps before proposing a redesign.",
+      "expected_handlers": [
+        "audit-agent-guidance"
+      ]
     }
   ]
 }

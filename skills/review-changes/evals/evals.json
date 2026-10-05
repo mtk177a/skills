@@ -1,24 +1,6 @@
 {
-  "skill": "review-changes",
-  "version": 1,
-  "baseline": {
-    "required": true,
-    "condition": "Run every affected case against the committed HEAD Skill and the working-tree candidate with matched inputs and fixtures.",
-    "raw_artifact_policy": "Keep fixture repositories, JSONL, command output, and full responses in a temporary directory outside the source repository."
-  },
+  "skill_name": "review-changes",
   "execution": {
-    "client": "record exact client and version at execution time",
-    "model": "gpt-5.6-luna",
-    "reasoning_effort": "max",
-    "sandbox": "read-only",
-    "executor_input_fields": [
-      "input"
-    ],
-    "hidden_grading_fields": [
-      "title",
-      "assertions",
-      "additional_requirement"
-    ],
     "coexistence_skills": [
       "triage-review-feedback",
       "validate-fix",
@@ -28,105 +10,41 @@
       "audit-agent-guidance"
     ]
   },
-  "candidate_assertions": [
-    {
-      "id": "effective-diff",
-      "critical": true,
-      "statement": "Identifies the actual reviewed diff or explicitly reports that no review could run, without mixing an excluded working-tree range."
-    },
-    {
-      "id": "contextual-evidence",
-      "critical": true,
-      "statement": "Uses relevant contracts, callers, tests, schemas, or repository precedent outside the changed line when needed, while keeping findings attributable to the reviewed change."
-    },
-    {
-      "id": "change-type-adaptation",
-      "critical": true,
-      "statement": "Selects review dimensions and checks appropriate to code, documentation, or configuration instead of forcing one code-centric checklist."
-    },
-    {
-      "id": "finding-contract",
-      "critical": true,
-      "statement": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, an explicit Unconfirmed premises field, and the material exposure, criticality, recovery, and remediation-trade-off fields needed to justify the requested response."
-    },
-    {
-      "id": "uncertainty-impact",
-      "critical": true,
-      "statement": "Keeps an unconfirmed premise as a question while preserving its potentially high impact and avoiding unsupported certainty."
-    },
-    {
-      "id": "unconfirmed-premises-handoff",
-      "critical": true,
-      "statement": "Records the supplied gateway guarantee in a dedicated Unconfirmed premises field, separate from evidence, impact, and verification, so a downstream triage workflow does not need to infer it."
-    },
-    {
-      "id": "checks-vs-suggestions",
-      "critical": true,
-      "statement": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk."
-    },
-    {
-      "id": "no-invented-findings",
-      "critical": true,
-      "statement": "When no material finding exists, says so with reviewed scope and limitations and does not invent nits, notes, or a bare approval."
-    },
-    {
-      "id": "unavailable-diff",
-      "critical": true,
-      "statement": "When no diff can be obtained, states that the review did not run and identifies the missing input rather than claiming no issues."
-    },
-    {
-      "id": "rereview-state",
-      "critical": true,
-      "statement": "For an explicitly requested full re-review, separates Resolved, Remaining, and New state from canonical label and confidence, classifies each New finding as Fix-induced, Newly observable, or Late-discovered, and does not start another fix round for an independently non-blocking Late-discovered item."
-    },
-    {
-      "id": "read-only-review",
-      "critical": true,
-      "statement": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes."
-    },
-    {
-      "id": "complexity-balance",
-      "critical": true,
-      "statement": "Reports excess complexity or an overly narrow correction only from concrete current requirements, observed risks, affected paths, and maintenance or behavioral consequences rather than architectural preference."
-    },
-    {
-      "id": "justified-shared-structure",
-      "critical": true,
-      "statement": "Does not criticize an abstraction or consolidation merely because local duplication would be shorter when current evidence establishes a shared responsibility, invariant, or contract and no concrete unsupported cost is introduced."
-    },
-    {
-      "id": "reviewer-context",
-      "critical": true,
-      "statement": "Uses supplied purpose, criticality, scope, exposure, trade-offs, recovery controls, verification, and review focus with their evidence state, and does not treat missing context as low risk."
-    },
-    {
-      "id": "proportionate-response",
-      "critical": true,
-      "statement": "Calibrates the requested response from supported risk reduction and total remediation cost without a fabricated numeric score, and reserves must for a material pre-merge risk lacking a sufficient lower-cost response."
-    }
-  ],
-  "assertion_policy": "Grade every assertion assigned to a case. A failed critical assertion fails that case. Record case-by-condition evidence and do not pass an assertion because it succeeded in another case.",
-  "cases": [
+  "evals": [
     {
       "id": "explicit-range",
-      "title": "Explicit commit range with unrelated working-tree changes",
-      "input": "Review only the committed range HEAD~1..HEAD in this disposable repository. Do not include the unrelated working-tree edit. Report the effective diff, findings, checks actually performed, unchecked scope, and residual risk. Do not edit anything.",
+      "title": "Explicit file scope with unrelated working-tree changes",
+      "prompt": "Review only the current src/calc.py change against the baseline commit in this disposable repository. Do not include the unrelated untracked notes.txt. Report the effective diff, findings, checks actually performed, unchecked scope, and residual risk. Do not edit anything.",
       "assertions": [
-        "effective-diff",
-        "finding-contract",
-        "checks-vs-suggestions",
-        "read-only-review"
+        {
+          "id": "effective-diff",
+          "text": "Identifies the actual reviewed diff or explicitly reports that no review could run, without mixing an excluded working-tree range.",
+          "critical": true
+        },
+        {
+          "id": "finding-contract",
+          "text": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, an explicit Unconfirmed premises field, and the material exposure, criticality, recovery, and remediation-trade-off fields needed to justify the requested response.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        }
       ],
+      "baseline_files": {
+        "src/calc.py": "def divide(total, count):\n    return total / count\n",
+        "tests/test_calc.py": "import unittest\nfrom src.calc import divide\n\nclass DivideTests(unittest.TestCase):\n    def test_normal(self):\n        self.assertEqual(divide(6, 2), 3)\n"
+      },
       "fixture": {
-        "type": "git",
-        "base_files": {
-          "src/calc.py": "def divide(total, count):\n    return total / count\n",
-          "tests/test_calc.py": "import unittest\nfrom src.calc import divide\n\nclass DivideTests(unittest.TestCase):\n    def test_normal(self):\n        self.assertEqual(divide(6, 2), 3)\n"
-        },
-        "committed_files": {
-          "src/calc.py": "def divide(total, count):\n    if count < 0:\n        return 0\n    return total / count\n"
-        },
-        "working_tree_files": {
+        "files": {
+          "src/calc.py": "def divide(total, count):\n    if count < 0:\n        return 0\n    return total / count\n",
+          "tests/test_calc.py": "import unittest\nfrom src.calc import divide\n\nclass DivideTests(unittest.TestCase):\n    def test_normal(self):\n        self.assertEqual(divide(6, 2), 3)\n",
           "notes.txt": "unrelated local note\n"
         }
       }
@@ -134,226 +52,614 @@
     {
       "id": "external-contract-and-cardinality",
       "title": "Changed singular response conflicts with an existing plural contract",
-      "input": "Review the supplied diff and context as a new code review. The OpenAPI response remains an array, the relation table allows multiple members, and sibling endpoints use list_members(), but the changed handler now calls first_member() and returns one object. Report findings with label, confidence, evidence, impact, verification, checks performed, unchecked scope, and residual risk. Do not decide whether the author should accept the finding and do not implement a fix.",
+      "prompt": "Review the supplied diff and context as a new code review. The OpenAPI response remains an array, the relation table allows multiple members, and sibling endpoints use list_members(), but the changed handler now calls first_member() and returns one object. Report findings with label, confidence, evidence, impact, verification, checks performed, unchecked scope, and residual risk. Do not decide whether the author should accept the finding and do not implement a fix.",
       "assertions": [
-        "contextual-evidence",
-        "finding-contract",
-        "checks-vs-suggestions",
-        "read-only-review"
-      ],
-      "fixture": {
-        "type": "inline",
-        "diff": "handler.py changes return list_members(group_id) to return first_member(group_id)",
-        "context": "openapi.yaml declares type: array; group_members has a composite key allowing multiple rows; sibling handlers return arrays"
-      }
+        {
+          "id": "contextual-evidence",
+          "text": "Uses relevant contracts, callers, tests, schemas, or repository precedent outside the changed line when needed, while keeping findings attributable to the reviewed change.",
+          "critical": true
+        },
+        {
+          "id": "finding-contract",
+          "text": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, an explicit Unconfirmed premises field, and the material exposure, criticality, recovery, and remediation-trade-off fields needed to justify the requested response.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        }
+      ]
     },
     {
       "id": "high-impact-unconfirmed-premise",
       "title": "Authorization premise is unclear but potential impact is high",
-      "input": "Review this diff: download_report(user, report_id) now fetches by report_id without the previous user_id filter. The repository does not contain the product authorization specification, and it is unclear whether an upstream gateway guarantees ownership. Treat that gateway guarantee as unconfirmed. Report the next action, confidence, concrete evidence, potential impact if the guarantee is absent, and how to verify or falsify the concern. Continue reviewing rather than asking a blocking question, and do not edit.",
+      "prompt": "Review this diff: download_report(user, report_id) now fetches by report_id without the previous user_id filter. The repository does not contain the product authorization specification, and it is unclear whether an upstream gateway guarantees ownership. Treat that gateway guarantee as unconfirmed. Report the next action, confidence, concrete evidence, potential impact if the guarantee is absent, and how to verify or falsify the concern. Continue reviewing rather than asking a blocking question, and do not edit.",
       "assertions": [
-        "finding-contract",
-        "uncertainty-impact",
-        "unconfirmed-premises-handoff",
-        "checks-vs-suggestions",
-        "read-only-review"
-      ],
-      "fixture": {
-        "type": "inline",
-        "diff": "query_report(report_id=report_id, user_id=user.id) changes to query_report(report_id=report_id)",
-        "context": "No gateway or ownership contract is available in the fixture"
-      }
+        {
+          "id": "finding-contract",
+          "text": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, an explicit Unconfirmed premises field, and the material exposure, criticality, recovery, and remediation-trade-off fields needed to justify the requested response.",
+          "critical": true
+        },
+        {
+          "id": "uncertainty-impact",
+          "text": "Keeps an unconfirmed premise as a question while preserving its potentially high impact and avoiding unsupported certainty.",
+          "critical": true
+        },
+        {
+          "id": "unconfirmed-premises-handoff",
+          "text": "Records the supplied gateway guarantee in a dedicated Unconfirmed premises field, separate from evidence, impact, and verification, so a downstream triage workflow does not need to infer it.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        }
+      ]
     },
     {
       "id": "documentation-and-configuration",
       "title": "Documentation and static configuration with deterministic checks",
-      "input": "Review the current README and app-settings.json diff in this disposable repository. Use checks appropriate to documentation and static configuration, run python3 check_changes.py, and distinguish its actual result from any suggested product verification. Do not edit files.",
+      "prompt": "Review the current README and app-settings.json diff in this disposable repository. Use checks appropriate to documentation and static configuration, run python3 check_changes.py, and distinguish its actual result from any suggested product verification. Do not edit files.",
       "assertions": [
-        "effective-diff",
-        "change-type-adaptation",
-        "finding-contract",
-        "checks-vs-suggestions",
-        "read-only-review"
-      ],
-      "fixture": {
-        "type": "git",
-        "base_files": {
-          "README.md": "Run `tool check` before release.\n",
-          "app-settings.json": "{\"mode\":\"safe\",\"timeout\":30}\n",
-          "check_changes.py": "import json\nfrom pathlib import Path\ntext = Path('README.md').read_text()\nassert 'tool check' in text\ncfg = json.loads(Path('app-settings.json').read_text())\nassert cfg['mode'] in {'safe', 'fast'}\nprint('docs-config-check: pass')\n"
+        {
+          "id": "effective-diff",
+          "text": "Identifies the actual reviewed diff or explicitly reports that no review could run, without mixing an excluded working-tree range.",
+          "critical": true
         },
-        "working_tree_files": {
-          "README.md": "Run `tool chek` before release.\n",
-          "app-settings.json": "{\"mode\":\"unsafe\",\"timeout\":30}\n"
+        {
+          "id": "change-type-adaptation",
+          "text": "Selects review dimensions and checks appropriate to code, documentation, or configuration instead of forcing one code-centric checklist.",
+          "critical": true
+        },
+        {
+          "id": "finding-contract",
+          "text": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, an explicit Unconfirmed premises field, and the material exposure, criticality, recovery, and remediation-trade-off fields needed to justify the requested response.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        },
+        {
+          "id": "case-requirement",
+          "text": "The check exits non-zero. The response must not describe it as passed or replace it with a product test.",
+          "critical": true
         }
+      ],
+      "baseline_files": {
+        "README.md": "Run `tool check` before release.\n",
+        "app-settings.json": "{\"mode\":\"safe\",\"timeout\":30}\n",
+        "check_changes.py": "import json\nfrom pathlib import Path\ntext = Path('README.md').read_text()\nassert 'tool check' in text\ncfg = json.loads(Path('app-settings.json').read_text())\nassert cfg['mode'] in {'safe', 'fast'}\nprint('docs-config-check: pass')\n"
       },
-      "additional_requirement": "The check exits non-zero. The response must not describe it as passed or replace it with a product test."
+      "fixture": {
+        "files": {
+          "README.md": "Run `tool chek` before release.\n",
+          "app-settings.json": "{\"mode\":\"unsafe\",\"timeout\":30}\n",
+          "check_changes.py": "import json\nfrom pathlib import Path\ntext = Path('README.md').read_text()\nassert 'tool check' in text\ncfg = json.loads(Path('app-settings.json').read_text())\nassert cfg['mode'] in {'safe', 'fast'}\nprint('docs-config-check: pass')\n"
+        }
+      }
     },
     {
       "id": "clean-diff",
       "title": "Reviewed diff with no material finding",
-      "input": "Review the current diff in this disposable repository. Run python3 -m unittest, report the effective diff and actual result, and do not invent nits or notes merely to avoid an empty finding list. Do not edit files.",
+      "prompt": "Review the current diff in this disposable repository. Run python3 -m unittest, report the effective diff and actual result, and do not invent nits or notes merely to avoid an empty finding list. Do not edit files.",
       "assertions": [
-        "effective-diff",
-        "checks-vs-suggestions",
-        "no-invented-findings",
-        "read-only-review"
-      ],
-      "fixture": {
-        "type": "git",
-        "base_files": {
-          "src/greet.py": "def greet(name):\n    return 'Hello, ' + name\n",
-          "tests/test_greet.py": "import unittest\nfrom src.greet import greet\n\nclass GreetTests(unittest.TestCase):\n    def test_name(self):\n        self.assertEqual(greet('Ada'), 'Hello, Ada')\n"
+        {
+          "id": "effective-diff",
+          "text": "Identifies the actual reviewed diff or explicitly reports that no review could run, without mixing an excluded working-tree range.",
+          "critical": true
         },
-        "working_tree_files": {
-          "src/greet.py": "def greet(name):\n    \"\"\"Return a greeting for name.\"\"\"\n    return 'Hello, ' + name\n"
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "no-invented-findings",
+          "text": "When no material finding exists, says so with reviewed scope and limitations and does not invent nits, notes, or a bare approval.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        }
+      ],
+      "baseline_files": {
+        "src/greet.py": "def greet(name):\n    return 'Hello, ' + name\n",
+        "tests/test_greet.py": "import unittest\nfrom src.greet import greet\n\nclass GreetTests(unittest.TestCase):\n    def test_name(self):\n        self.assertEqual(greet('Ada'), 'Hello, Ada')\n"
+      },
+      "fixture": {
+        "files": {
+          "src/greet.py": "def greet(name):\n    \"\"\"Return a greeting for name.\"\"\"\n    return 'Hello, ' + name\n",
+          "tests/test_greet.py": "import unittest\nfrom src.greet import greet\n\nclass GreetTests(unittest.TestCase):\n    def test_name(self):\n        self.assertEqual(greet('Ada'), 'Hello, Ada')\n"
         }
       }
     },
     {
       "id": "missing-diff",
       "title": "Review request without an obtainable diff",
-      "input": "Review my changes and tell me whether there are any issues. No repository, patch, commit range, PR, or file contents are available in this session.",
+      "prompt": "Review my changes and tell me whether there are any issues. No repository, patch, commit range, PR, or file contents are available in this session.",
       "assertions": [
-        "effective-diff",
-        "unavailable-diff",
-        "read-only-review"
-      ],
-      "fixture": {
-        "type": "empty"
-      }
+        {
+          "id": "effective-diff",
+          "text": "Identifies the actual reviewed diff or explicitly reports that no review could run, without mixing an excluded working-tree range.",
+          "critical": true
+        },
+        {
+          "id": "unavailable-diff",
+          "text": "When no diff can be obtained, states that the review did not run and identifies the missing input rather than claiming no issues.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        }
+      ]
     },
     {
       "id": "full-rereview",
       "title": "Full re-review with resolved, remaining, and new findings",
-      "input": "Perform a full re-review of the current working-tree diff. Previous finding F1 reported that display_name called strip() on an optional nickname without a null guard. Previous finding F2 reported that list_members returned one object although the OpenAPI response schema requires an array. Determine the current state of each previous finding and look for new material problems in the effective diff. Keep re-review state separate from each finding's label and confidence, include the complete finding contract, and report checks, unchecked scope, and residual risk. Do not triage or implement.",
+      "prompt": "Perform a full re-review of the current working-tree diff. Previous finding F1 reported that display_name called strip() on an optional nickname without a null guard. Previous finding F2 reported that list_members returned one object although the OpenAPI response schema requires an array. Determine the current state of each previous finding and look for new material problems in the effective diff. Keep re-review state separate from each finding's label and confidence, include the complete finding contract, and report checks, unchecked scope, and residual risk. Do not triage or implement.",
       "assertions": [
-        "finding-contract",
-        "rereview-state",
-        "checks-vs-suggestions",
-        "read-only-review"
-      ],
-      "fixture": {
-        "type": "git",
-        "base_files": {
-          "service.py": "class TransientError(Exception):\n    pass\n\n\ndef display_name(user):\n    return user.nickname.strip()\n\n\ndef list_members(group_id, repository):\n    return repository.first_member(group_id)\n\n\ndef fetch_with_retry(fetch):\n    for _ in range(3):\n        try:\n            return fetch()\n        except TransientError:\n            pass\n    raise TransientError(\"retry limit reached\")\n",
-          "openapi.yaml": "paths:\n  /groups/{group_id}/members:\n    get:\n      responses:\n        '200':\n          content:\n            application/json:\n              schema:\n                type: array\n"
+        {
+          "id": "finding-contract",
+          "text": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, an explicit Unconfirmed premises field, and the material exposure, criticality, recovery, and remediation-trade-off fields needed to justify the requested response.",
+          "critical": true
         },
-        "working_tree_files": {
-          "service.py": "class TransientError(Exception):\n    pass\n\n\ndef display_name(user):\n    if user.nickname is None:\n        return \"\"\n    return user.nickname.strip()\n\n\ndef list_members(group_id, repository):\n    return repository.first_member(group_id)\n\n\ndef fetch_with_retry(fetch):\n    while True:\n        try:\n            return fetch()\n        except TransientError:\n            pass\n"
+        {
+          "id": "rereview-state",
+          "text": "For an explicitly requested full re-review, separates Resolved, Remaining, and New state from canonical label and confidence, classifies each New finding as Fix-induced, Newly observable, or Late-discovered, and does not start another fix round for an independently non-blocking Late-discovered item.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        },
+        {
+          "id": "case-requirement",
+          "text": "Derive from the fixture, without relying on conclusions in the executor input, that F1 is Resolved, F2 is Remaining, and the unbounded retry loop is a New material finding.",
+          "critical": true
         }
+      ],
+      "baseline_files": {
+        "service.py": "class TransientError(Exception):\n    pass\n\n\ndef display_name(user):\n    return user.nickname.strip()\n\n\ndef list_members(group_id, repository):\n    return repository.first_member(group_id)\n\n\ndef fetch_with_retry(fetch):\n    for _ in range(3):\n        try:\n            return fetch()\n        except TransientError:\n            pass\n    raise TransientError(\"retry limit reached\")\n",
+        "openapi.yaml": "paths:\n  /groups/{group_id}/members:\n    get:\n      responses:\n        '200':\n          content:\n            application/json:\n              schema:\n                type: array\n"
       },
-      "additional_requirement": "Derive from the fixture, without relying on conclusions in the executor input, that F1 is Resolved, F2 is Remaining, and the unbounded retry loop is a New material finding."
+      "fixture": {
+        "files": {
+          "service.py": "class TransientError(Exception):\n    pass\n\n\ndef display_name(user):\n    if user.nickname is None:\n        return \"\"\n    return user.nickname.strip()\n\n\ndef list_members(group_id, repository):\n    return repository.first_member(group_id)\n\n\ndef fetch_with_retry(fetch):\n    while True:\n        try:\n            return fetch()\n        except TransientError:\n            pass\n",
+          "openapi.yaml": "paths:\n  /groups/{group_id}/members:\n    get:\n      responses:\n        '200':\n          content:\n            application/json:\n              schema:\n                type: array\n"
+        }
+      }
     },
     {
       "id": "unjustified-abstraction",
       "title": "Speculative extension architecture for one current format",
-      "input": "Review this change as a new code review. The current requirement and all known callers use JSON only, no additional formats are accepted or scheduled, and the existing parse_json function already satisfies the behavior. The diff adds Parser, ParserFactory, a registry, configuration lookup, and one JsonParser implementation, then routes the same callers through them. Report only material findings supported by current requirements and concrete maintenance or operational consequences. Include the complete finding contract, checks, unchecked scope, and residual risk. Do not edit or propose a redesign beyond what is needed to explain the finding.",
+      "prompt": "Review this change as a new code review. The current requirement and all known callers use JSON only, no additional formats are accepted or scheduled, and the existing parse_json function already satisfies the behavior. The diff adds Parser, ParserFactory, a registry, configuration lookup, and one JsonParser implementation, then routes the same callers through them. Report only material findings supported by current requirements and concrete maintenance or operational consequences. Include the complete finding contract, checks, unchecked scope, and residual risk. Do not edit or propose a redesign beyond what is needed to explain the finding.",
       "assertions": [
-        "contextual-evidence",
-        "finding-contract",
-        "complexity-balance",
-        "checks-vs-suggestions",
-        "read-only-review"
-      ],
-      "fixture": {
-        "type": "inline",
-        "diff": "parse_json(payload) is replaced by Parser, JsonParser, ParserFactory, a parser registry, and config-driven parser selection; every caller selects the only registered value, json",
-        "context": "The current specification and every known caller require JSON only. No accepted near-term format or runtime selection requirement exists."
-      },
-      "additional_requirement": "Identify the concrete added concepts and maintenance paths without treating every abstraction as inherently defective."
+        {
+          "id": "contextual-evidence",
+          "text": "Uses relevant contracts, callers, tests, schemas, or repository precedent outside the changed line when needed, while keeping findings attributable to the reviewed change.",
+          "critical": true
+        },
+        {
+          "id": "finding-contract",
+          "text": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, an explicit Unconfirmed premises field, and the material exposure, criticality, recovery, and remediation-trade-off fields needed to justify the requested response.",
+          "critical": true
+        },
+        {
+          "id": "complexity-balance",
+          "text": "Reports excess complexity or an overly narrow correction only from concrete current requirements, observed risks, affected paths, and maintenance or behavioral consequences rather than architectural preference.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        },
+        {
+          "id": "case-requirement",
+          "text": "Identify the concrete added concepts and maintenance paths without treating every abstraction as inherently defective.",
+          "critical": true
+        }
+      ]
     },
     {
       "id": "local-patch-leaves-shared-cause",
       "title": "One-path patch leaves a confirmed shared normalization rule inconsistent",
-      "input": "Review this change as a new code review. The current specification requires trimmed, case-folded email addresses on both signup and invite paths. The repository has normalize_email as the shared owner, but the diff adds inline case-folding only to signup.py; invite.py still trims without case-folding. Report material findings with the complete finding contract, checks, unchecked scope, and residual risk. Do not prefer a larger change merely by style and do not implement a fix.",
+      "prompt": "Review this change as a new code review. The current specification requires trimmed, case-folded email addresses on both signup and invite paths. The repository has normalize_email as the shared owner, but the diff adds inline case-folding only to signup.py; invite.py still trims without case-folding. Report material findings with the complete finding contract, checks, unchecked scope, and residual risk. Do not prefer a larger change merely by style and do not implement a fix.",
       "assertions": [
-        "contextual-evidence",
-        "finding-contract",
-        "complexity-balance",
-        "checks-vs-suggestions",
-        "read-only-review"
-      ],
-      "fixture": {
-        "type": "inline",
-        "diff": "signup.py changes email.strip() to email.strip().casefold(); normalize_email and invite.py are unchanged",
-        "context": "The current specification applies the same normalization invariant to signup and invite. normalize_email is the established shared owner, and invite.py currently calls only strip()."
-      },
-      "additional_requirement": "Identify the known inconsistent path and shared cause; do not base the finding on diff size or extraction preference alone."
+        {
+          "id": "contextual-evidence",
+          "text": "Uses relevant contracts, callers, tests, schemas, or repository precedent outside the changed line when needed, while keeping findings attributable to the reviewed change.",
+          "critical": true
+        },
+        {
+          "id": "finding-contract",
+          "text": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, an explicit Unconfirmed premises field, and the material exposure, criticality, recovery, and remediation-trade-off fields needed to justify the requested response.",
+          "critical": true
+        },
+        {
+          "id": "complexity-balance",
+          "text": "Reports excess complexity or an overly narrow correction only from concrete current requirements, observed risks, affected paths, and maintenance or behavioral consequences rather than architectural preference.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        },
+        {
+          "id": "case-requirement",
+          "text": "Identify the known inconsistent path and shared cause; do not base the finding on diff size or extraction preference alone.",
+          "critical": true
+        }
+      ]
     },
     {
       "id": "incidental-duplication-abstraction",
       "title": "Generic helper couples separate contracts to remove similar lines",
-      "input": "Review this change as a new code review. A request parser and an audit formatter happen to trim, replace underscores, and lowercase strings, but they implement separate current contracts and do not need to evolve together. The diff introduces a generic normalize_text helper used by both solely to remove the duplicated lines. The helper makes changes to either contract affect the shared implementation and both test paths; no current requirement or observed risk justifies that coupling. Report only material findings with the complete finding contract, checks, unchecked scope, and residual risk. Do not edit files.",
+      "prompt": "Review this change as a new code review. A request parser and an audit formatter happen to trim, replace underscores, and lowercase strings, but they implement separate current contracts and do not need to evolve together. The diff introduces a generic normalize_text helper used by both solely to remove the duplicated lines. The helper makes changes to either contract affect the shared implementation and both test paths; no current requirement or observed risk justifies that coupling. Report only material findings with the complete finding contract, checks, unchecked scope, and residual risk. Do not edit files.",
       "assertions": [
-        "contextual-evidence",
-        "finding-contract",
-        "complexity-balance",
-        "checks-vs-suggestions",
-        "read-only-review"
-      ],
-      "fixture": {
-        "type": "inline",
-        "diff": "parser.normalize_token and formatter.display_label replace their local string operations with calls to a new shared normalize_text helper",
-        "context": "The parser and formatter have separate current contracts. The only demonstrated reason for sharing the helper is syntactically similar code."
-      },
-      "additional_requirement": "Identify the concrete maintenance coupling without treating duplicate lines themselves as a defect or inventing an unsupported runtime impact."
+        {
+          "id": "contextual-evidence",
+          "text": "Uses relevant contracts, callers, tests, schemas, or repository precedent outside the changed line when needed, while keeping findings attributable to the reviewed change.",
+          "critical": true
+        },
+        {
+          "id": "finding-contract",
+          "text": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, an explicit Unconfirmed premises field, and the material exposure, criticality, recovery, and remediation-trade-off fields needed to justify the requested response.",
+          "critical": true
+        },
+        {
+          "id": "complexity-balance",
+          "text": "Reports excess complexity or an overly narrow correction only from concrete current requirements, observed risks, affected paths, and maintenance or behavioral consequences rather than architectural preference.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        },
+        {
+          "id": "case-requirement",
+          "text": "Identify the concrete maintenance coupling without treating duplicate lines themselves as a defect or inventing an unsupported runtime impact.",
+          "critical": true
+        }
+      ]
     },
     {
       "id": "justified-shared-invariant",
       "title": "Existing owner consolidates one current invariant",
-      "input": "Review this change as a new code review. The current specification requires signup and invite to apply the same email canonicalization rule. Their previous inline implementations differed and caused an observed inconsistency. The diff moves the rule into the existing canonicalize_email owner and updates both entry points to call it. It adds no interface, registry, configuration, dependency, compatibility layer, or future extension point. Focused tests for both paths pass. Report only material findings, checks, unchecked scope, and residual risk. Do not edit files.",
+      "prompt": "Review this change as a new code review. The current specification requires signup and invite to apply the same email canonicalization rule. Their previous inline implementations differed and caused an observed inconsistency. The diff moves the rule into the existing canonicalize_email owner and updates both entry points to call it. It adds no interface, registry, configuration, dependency, compatibility layer, or future extension point. Focused tests for both paths pass. Report only material findings, checks, unchecked scope, and residual risk. Do not edit files.",
       "assertions": [
-        "contextual-evidence",
-        "complexity-balance",
-        "justified-shared-structure",
-        "checks-vs-suggestions",
-        "no-invented-findings",
-        "read-only-review"
-      ],
-      "fixture": {
-        "type": "inline",
-        "diff": "signup.py and invite.py replace different inline canonicalization rules with calls to the existing canonicalize_email owner; focused tests for both paths are added",
-        "context": "Both entry points implement the same current specification. The shared owner already exists, the previous duplication was observably inconsistent, and the diff adds no extension mechanism."
-      },
-      "additional_requirement": "Do not criticize the shared owner or consolidation merely because duplicated local code would be shorter, and do not invent a finding when no concrete consequence is supported."
+        {
+          "id": "contextual-evidence",
+          "text": "Uses relevant contracts, callers, tests, schemas, or repository precedent outside the changed line when needed, while keeping findings attributable to the reviewed change.",
+          "critical": true
+        },
+        {
+          "id": "complexity-balance",
+          "text": "Reports excess complexity or an overly narrow correction only from concrete current requirements, observed risks, affected paths, and maintenance or behavioral consequences rather than architectural preference.",
+          "critical": true
+        },
+        {
+          "id": "justified-shared-structure",
+          "text": "Does not criticize an abstraction or consolidation merely because local duplication would be shorter when current evidence establishes a shared responsibility, invariant, or contract and no concrete unsupported cost is introduced.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "no-invented-findings",
+          "text": "When no material finding exists, says so with reviewed scope and limitations and does not invent nits, notes, or a bare approval.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        },
+        {
+          "id": "case-requirement",
+          "text": "Do not criticize the shared owner or consolidation merely because duplicated local code would be shorter, and do not invent a finding when no concrete consequence is supported.",
+          "critical": true
+        }
+      ]
     },
     {
       "id": "low-criticality-expensive-edge-case",
       "title": "Low-exposure internal helper with a disproportionate hardening proposal",
-      "input": "Review this new configuration change. The tool is an internal, manually invoked formatter used by two maintainers on disposable generated files. Malformed input is detected immediately, the command exits without writing, and rerunning after correcting the input is the documented recovery. The diff accepts an optional color name from the existing allowlist. A hypothetical reviewer proposal would add a plugin sandbox, persistent transaction journal, and recovery daemon for malformed color values. Review for material findings, preserve unknowns, and calibrate any requested response to the supplied context and remediation cost. Do not triage or implement.",
+      "prompt": "Review this new configuration change. The tool is an internal, manually invoked formatter used by two maintainers on disposable generated files. Malformed input is detected immediately, the command exits without writing, and rerunning after correcting the input is the documented recovery. The diff accepts an optional color name from the existing allowlist. A hypothetical reviewer proposal would add a plugin sandbox, persistent transaction journal, and recovery daemon for malformed color values. Review for material findings, preserve unknowns, and calibrate any requested response to the supplied context and remediation cost. Do not triage or implement.",
       "assertions": [
-        "contextual-evidence",
-        "finding-contract",
-        "reviewer-context",
-        "proportionate-response",
-        "no-invented-findings",
-        "read-only-review"
-      ],
-      "fixture": {
-        "type": "inline",
-        "diff": "formatter config now accepts color from the same static allowlist already used by the renderer",
-        "context": "Internal manual tool; two maintainers; disposable generated output; invalid values fail before writes; correction and rerun is the recovery."
-      },
-      "additional_requirement": "Do not issue must or should solely for the speculative sandbox, journal, or daemon proposal; report a material defect only if the supplied diff and contracts support one."
+        {
+          "id": "contextual-evidence",
+          "text": "Uses relevant contracts, callers, tests, schemas, or repository precedent outside the changed line when needed, while keeping findings attributable to the reviewed change.",
+          "critical": true
+        },
+        {
+          "id": "finding-contract",
+          "text": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, an explicit Unconfirmed premises field, and the material exposure, criticality, recovery, and remediation-trade-off fields needed to justify the requested response.",
+          "critical": true
+        },
+        {
+          "id": "reviewer-context",
+          "text": "Uses supplied purpose, criticality, scope, exposure, trade-offs, recovery controls, verification, and review focus with their evidence state, and does not treat missing context as low risk.",
+          "critical": true
+        },
+        {
+          "id": "proportionate-response",
+          "text": "Calibrates the requested response from supported risk reduction and total remediation cost without a fabricated numeric score, and reserves must for a material pre-merge risk lacking a sufficient lower-cost response.",
+          "critical": true
+        },
+        {
+          "id": "no-invented-findings",
+          "text": "When no material finding exists, says so with reviewed scope and limitations and does not invent nits, notes, or a bare approval.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        },
+        {
+          "id": "case-requirement",
+          "text": "Do not issue must or should solely for the speculative sandbox, journal, or daemon proposal; report a material defect only if the supplied diff and contracts support one.",
+          "critical": true
+        }
+      ]
     },
     {
       "id": "full-rereview-origin-and-convergence",
       "title": "Full re-review distinguishes new-finding origins and avoids a late nit loop",
-      "input": "Perform an explicit full re-review after fixes. Previous F1 was a null dereference and is fixed. The fix changes the same function to catch every exception and return success, which can hide a documented authorization failure. A newly added caller now exposes an existing integer-overflow path that the prior revision could not reach. The original diff also had a trailing-space inconsistency that was visible in the first review but missed; formatting is CI-enforced and it has no behavior or maintenance impact. Reconcile the previous finding and all material new problems, record each New origin, and do not triage or implement.",
+      "prompt": "Perform an explicit full re-review after fixes. Previous F1 was a null dereference and is fixed. The fix changes the same function to catch every exception and return success, which can hide a documented authorization failure. A newly added caller now exposes an existing integer-overflow path that the prior revision could not reach. The original diff also had a trailing-space inconsistency that was visible in the first review but missed; formatting is CI-enforced and it has no behavior or maintenance impact. Reconcile the previous finding and all material new problems, record each New origin, and do not triage or implement.",
       "assertions": [
-        "finding-contract",
-        "rereview-state",
-        "proportionate-response",
-        "checks-vs-suggestions",
-        "read-only-review"
+        {
+          "id": "finding-contract",
+          "text": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, an explicit Unconfirmed premises field, and the material exposure, criticality, recovery, and remediation-trade-off fields needed to justify the requested response.",
+          "critical": true
+        },
+        {
+          "id": "rereview-state",
+          "text": "For an explicitly requested full re-review, separates Resolved, Remaining, and New state from canonical label and confidence, classifies each New finding as Fix-induced, Newly observable, or Late-discovered, and does not start another fix round for an independently non-blocking Late-discovered item.",
+          "critical": true
+        },
+        {
+          "id": "proportionate-response",
+          "text": "Calibrates the requested response from supported risk reduction and total remediation cost without a fabricated numeric score, and reserves must for a material pre-merge risk lacking a sufficient lower-cost response.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        },
+        {
+          "id": "case-requirement",
+          "text": "Classify the swallowed authorization failure as Fix-induced, the reachable overflow as Newly observable, and do not create another actionable fix round for the non-blocking Late-discovered formatting item.",
+          "critical": true
+        }
+      ]
+    },
+    {
+      "id": "fallback-masks-confirmed-cause",
+      "title": "Catch-and-continue hides a confirmed schema failure",
+      "prompt": "Review the current working-tree diff for the export behavior. Read docs/export-contract.md and the code, then report supported findings with evidence, impact, confidence, verification, and material risk context. Do not triage or implement.",
+      "assertions": [
+        {
+          "id": "contextual-evidence",
+          "text": "Uses relevant contracts, callers, tests, schemas, or repository precedent outside the changed line when needed, while keeping findings attributable to the reviewed change.",
+          "critical": true
+        },
+        {
+          "id": "finding-contract",
+          "text": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, an explicit Unconfirmed premises field, and the material exposure, criticality, recovery, and remediation-trade-off fields needed to justify the requested response.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        },
+        {
+          "id": "cause-versus-mitigation",
+          "text": "Distinguishes the confirmed schema mismatch from the catch-and-continue fallback and identifies the observable contract failure without inventing downstream harm.",
+          "critical": true
+        }
       ],
-      "fixture": {
-        "type": "inline",
-        "diff": "F1 null guard added; the function now catches all exceptions and returns success; a new caller reaches the existing integer conversion path; one CI-formatted line has trailing spaces",
-        "context": "Authorization failures must propagate. The new caller did not exist in the prior revision. Formatting is enforced automatically and the trailing spaces were already visible in the original diff."
+      "baseline_files": {
+        "export.py": "def parse_response(response):\n    if \"report\" not in response:\n        raise ValueError(\"missing report\")\n    return response[\"report\"]\n\n\ndef export_report(fetch):\n    return parse_response(fetch())\n",
+        "docs/export-contract.md": "The upstream response contains `report_data`, not `report`. An export must return a report or a visible failure. The parser's field mismatch caused the observed production ValueError. An empty report is a valid result only when the upstream response contains an empty `report_data` array.\n"
       },
-      "additional_requirement": "Classify the swallowed authorization failure as Fix-induced, the reachable overflow as Newly observable, and do not create another actionable fix round for the non-blocking Late-discovered formatting item."
+      "fixture": {
+        "files": {
+          "export.py": "def parse_response(response):\n    if \"report\" not in response:\n        raise ValueError(\"missing report\")\n    return response[\"report\"]\n\n\ndef export_report(fetch):\n    try:\n        return parse_response(fetch())\n    except ValueError:\n        return []\n",
+          "docs/export-contract.md": "The upstream response contains `report_data`, not `report`. An export must return a report or a visible failure. The parser's field mismatch caused the observed production ValueError. An empty report is a valid result only when the upstream response contains an empty `report_data` array.\n"
+        }
+      }
+    },
+    {
+      "id": "verified-timeout-recovery",
+      "title": "Current timeout recovery preserves a verified snapshot",
+      "prompt": "Review the current working-tree diff in policy_loader.py. Read the policy contract and tests, then report supported findings, checks, unchecked scope, and residual risk. Do not triage or implement.",
+      "assertions": [
+        {
+          "id": "contextual-evidence",
+          "text": "Uses the current timeout contract and focused tests when judging the changed recovery path, while keeping any finding attributable to the diff.",
+          "critical": true
+        },
+        {
+          "id": "necessary-recovery",
+          "text": "Does not request removal or cause repair solely because the source timeout's root cause is unknown: the current timeout condition, fresh verified snapshot trigger, recovered state, observable signal, and focused verification support the added recovery path.",
+          "critical": true
+        },
+        {
+          "id": "no-invented-findings",
+          "text": "Reports no material finding against the supported recovery path without inventing a must, should, or question based only on a hypothetical hidden cause or speculative downstream harm.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        }
+      ],
+      "baseline_files": {
+        "policy_loader.py": "def load_policy(fetch, snapshots, now, report):\n    return fetch()\n",
+        "docs/policy-contract.md": "During an observed source timeout, a reader must use the latest previously verified policy snapshot saved within five minutes when one exists. It must emit `source_timeout_recovered` and return the snapshot's rules. If no qualifying snapshot exists, it must expose the timeout. Other errors must remain visible. The timeout's root cause is unknown; this recovery behavior is required while investigation continues. A focused test suite covers fresh, stale, and absent snapshots, successful fetches, and non-timeout errors.\n"
+      },
+      "fixture": {
+        "files": {
+          "policy_loader.py": "def load_policy(fetch, snapshots, now, report):\n    try:\n        return fetch()\n    except TimeoutError:\n        snapshot = snapshots.latest_verified()\n        if snapshot is None or not 0 <= now - snapshot.saved_at <= 300:\n            raise\n        report(\"source_timeout_recovered\")\n        return snapshot.rules\n",
+          "docs/policy-contract.md": "During an observed source timeout, a reader must use the latest previously verified policy snapshot saved within five minutes when one exists. It must emit `source_timeout_recovered` and return the snapshot's rules. If no qualifying snapshot exists, it must expose the timeout. Other errors must remain visible. The timeout's root cause is unknown; this recovery behavior is required while investigation continues. A focused test suite covers fresh, stale, and absent snapshots, successful fetches, and non-timeout errors.\n",
+          "tests/test_policy_loader.py": "import unittest\nfrom types import SimpleNamespace\nfrom unittest.mock import Mock\nfrom policy_loader import load_policy\n\n\nclass PolicyLoaderTests(unittest.TestCase):\n    def test_fresh_verified_snapshot_recovers_timeout(self):\n        fetch = Mock(side_effect=TimeoutError(\"source timeout\"))\n        snapshots = Mock()\n        snapshots.latest_verified.return_value = SimpleNamespace(saved_at=800, rules={\"mode\": \"safe\"})\n        report = Mock()\n        self.assertEqual(load_policy(fetch, snapshots, 1000, report), {\"mode\": \"safe\"})\n        report.assert_called_once_with(\"source_timeout_recovered\")\n\n    def test_stale_and_absent_snapshots_keep_timeout_visible(self):\n        for snapshot in (SimpleNamespace(saved_at=699, rules={}), None):\n            with self.subTest(snapshot=snapshot):\n                fetch = Mock(side_effect=TimeoutError(\"source timeout\"))\n                snapshots = Mock()\n                snapshots.latest_verified.return_value = snapshot\n                with self.assertRaises(TimeoutError):\n                    load_policy(fetch, snapshots, 1000, Mock())\n\n    def test_success_and_other_errors_do_not_use_recovery(self):\n        snapshots = Mock()\n        report = Mock()\n        self.assertEqual(load_policy(lambda: {\"mode\": \"live\"}, snapshots, 1000, report), {\"mode\": \"live\"})\n        with self.assertRaises(ValueError):\n            load_policy(Mock(side_effect=ValueError(\"invalid\")), snapshots, 1000, report)\n        snapshots.latest_verified.assert_not_called()\n        report.assert_not_called()\n"
+        }
+      }
+    },
+    {
+      "id": "finding-free-draft-handoff",
+      "title": "Finding-free review can supply a general comment handoff",
+      "prompt": "Review the current README.md diff against docs/command-reference.md. If there are no material findings, tell me what review-level information to hand to draft-review-comments for a separately requested unposted general PR comment. Do not draft or post a comment.",
+      "assertions": [
+        {
+          "id": "finding-free-conclusion",
+          "text": "Reviews the actual README.md correction against the command reference and reports no material finding without inventing a nit, note, or merge-readiness judgment.",
+          "critical": true
+        },
+        {
+          "id": "review-level-handoff",
+          "text": "Names draft-review-comments as the later drafting step and provides a review-level conclusion, reviewed scope, checks actually performed with results, unchecked scope, and material limitations for its finding-free general comment or summary.",
+          "critical": true
+        },
+        {
+          "id": "no-finding-decisions",
+          "text": "Does not invent a finding assessment, state, response decision, or triage step when no finding exists.",
+          "critical": true
+        },
+        {
+          "id": "drafting-and-posting-boundary",
+          "text": "Does not draft or post a GitHub comment or choose Approve, Request changes, or Comment; preserves that as a separate requested drafting and authorized posting step.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit the fixture, install dependencies, or perform external writes.",
+          "critical": true
+        }
+      ],
+      "baseline_files": {
+        "README.md": "Run `tool --dryrun` to inspect a proposed operation without applying it.\n",
+        "docs/command-reference.md": "The supported inspection command is `tool --dry-run`. It reports the proposed operation without applying it.\n"
+      },
+      "fixture": {
+        "files": {
+          "README.md": "Run `tool --dry-run` to inspect a proposed operation without applying it.\n",
+          "docs/command-reference.md": "The supported inspection command is `tool --dry-run`. It reports the proposed operation without applying it.\n"
+        }
+      }
+    },
+    {
+      "id": "unreleased-persisted-compatibility",
+      "title": "Persisted data requires compatibility before public release",
+      "prompt": "Review the current working-tree diff in reader.py. Use the saved record and rollback guidance to assess compatibility, and report supported findings, checks, unchecked scope, and residual risk. Do not triage or implement.",
+      "assertions": [
+        {
+          "id": "contextual-evidence",
+          "text": "Uses relevant contracts, callers, tests, schemas, or repository precedent outside the changed line when needed, while keeping findings attributable to the reviewed change.",
+          "critical": true
+        },
+        {
+          "id": "finding-contract",
+          "text": "Every material finding includes one canonical label, confidence, concrete evidence, impact, a confirmation or falsification method, an explicit Unconfirmed premises field, and the material exposure, criticality, recovery, and remediation-trade-off fields needed to justify the requested response.",
+          "critical": true
+        },
+        {
+          "id": "checks-vs-suggestions",
+          "text": "Separates checks actually executed and their results from suggested verification, unchecked scope, and residual risk.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "text": "Does not edit files, install dependencies, perform external writes, triage findings, or implement fixes.",
+          "critical": true
+        },
+        {
+          "id": "current-compatibility",
+          "text": "Bases the compatibility concern on existing persisted records and documented rollback rather than public release status, and identifies how to verify affected reads.",
+          "critical": true
+        }
+      ],
+      "baseline_files": {
+        "reader.py": "def decode(record):\n    if record[\"version\"] == 1:\n        return {\"name\": record[\"legacy_name\"]}\n    if record[\"version\"] == 2:\n        return {\"name\": record[\"name\"]}\n    raise ValueError(\"unsupported record version\")\n",
+        "records/saved-v1.json": "{\"version\":1,\"legacy_name\":\"Ada\"}\n",
+        "docs/rollback.md": "The feature has not been publicly released, but internal users already have saved version-1 records. The documented rollback starts the prior binary, which reads those records. No migration of saved records is included in this change.\n"
+      },
+      "fixture": {
+        "files": {
+          "reader.py": "def decode(record):\n    if record[\"version\"] == 2:\n        return {\"name\": record[\"name\"]}\n    raise ValueError(\"unsupported record version\")\n",
+          "records/saved-v1.json": "{\"version\":1,\"legacy_name\":\"Ada\"}\n",
+          "docs/rollback.md": "The feature has not been publicly released, but internal users already have saved version-1 records. The documented rollback starts the prior binary, which reads those records. No migration of saved records is included in this change.\n"
+        }
+      }
     }
   ]
 }

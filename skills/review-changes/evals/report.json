@@ -1,0 +1,105 @@
+{
+  "schema_version": 2,
+  "skill": "review-changes",
+  "skill_source": "public",
+  "evaluated_on": "2026-10-05",
+  "purpose": "Check finding-free review handoff to later PR comment drafting",
+  "affected_responsibilities": [
+    "Review-level conclusion and evidence handoff without invented finding decisions or posting"
+  ],
+  "selection": {
+    "path": "targeted-candidate",
+    "cases": [
+      {
+        "id": "finding-free-draft-handoff",
+        "conditions": [
+          "candidate"
+        ]
+      }
+    ]
+  },
+  "base": {
+    "commit": "b88af0cdcd07138c8e7341a8423a34331b0a84b6"
+  },
+  "candidate": {
+    "files": {
+      "SKILL-ja.md": {
+        "mode": "100644",
+        "sha256": "sha256:9eea1302bfd28fc6f326478b8a573e357b8509463ca4eddd9748e116e365963d"
+      },
+      "SKILL.md": {
+        "mode": "100644",
+        "sha256": "sha256:fc3f49d527b54ea0b814d54ed44e10577425480a51a93f00ccc38c39ba277675"
+      }
+    }
+  },
+  "evaluation_inputs": {
+    "evaluation_files": {
+      "skills/review-changes/evals/evals.json": "sha256:40d760c495b27009a8abad9b1c82cc8aba540bd724db5f47e8f30288b134bc8a"
+    },
+    "case_files": {}
+  },
+  "environment": {
+    "client": "codex-cli 0.155.1",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max",
+    "sandbox": "read-only",
+    "auth_credentials_store": "auto"
+  },
+  "checks": {
+    "repository": "pass"
+  },
+  "results": [
+    {
+      "case_id": "finding-free-draft-handoff",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "finding-free-conclusion",
+          "status": "pass",
+          "evidence": "The response found no material issue in the README command correction and made no merge-readiness claim.",
+          "critical": true
+        },
+        {
+          "id": "review-level-handoff",
+          "status": "pass",
+          "evidence": "It explicitly named draft-review-comments and supplied the conclusion, README scope, comparison and git diff --check results, and unchecked runtime and PR scope.",
+          "critical": true
+        },
+        {
+          "id": "no-finding-decisions",
+          "status": "pass",
+          "evidence": "It did not assign any finding assessment, lifecycle state, or response decision, nor require triage for the empty set.",
+          "critical": true
+        },
+        {
+          "id": "drafting-and-posting-boundary",
+          "status": "pass",
+          "evidence": "It stated that no comment draft or post occurred and did not select a GitHub review action.",
+          "critical": true
+        },
+        {
+          "id": "read-only-review",
+          "status": "pass",
+          "evidence": "The trace contains only Skill and fixture reads and read-only Git checks; no edits or external writes occurred.",
+          "critical": true
+        }
+      ],
+      "evidence": "The review returned a finding-free handoff with explicit evidence and limits, without fabricating decisions or drafting/posting.",
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "status": "pass",
+    "counts": {
+      "error": 0,
+      "fail": 0,
+      "inconclusive": 0,
+      "pass": 1
+    }
+  },
+  "stopping_reason": "The selected finding-free handoff case passed all five critical requirements; additional model calls are not decision-relevant.",
+  "unverified": [
+    "End-to-end drafting with the separate PR #109 candidate, actual GitHub posting, other review cases, repeated runs, other models and clients, and production behavior remain unverified."
+  ]
+}

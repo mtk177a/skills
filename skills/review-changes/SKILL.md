@@ -51,6 +51,8 @@ Use only the dimensions material to the change.
 - External contracts such as APIs and schemas versus internal implementation constraints
 - Authorization, authentication, input validation, injection, secret or personal data exposure, and unsafe side effects
 - Backward compatibility, migrations, rollout behavior, and consistency with callers or sibling implementations
+- Fallbacks, retries, and catch-and-continue paths: whether they address a current failure condition, expose or conceal a supported cause, and leave the required recovery state observable and verifiable
+- Compatibility paths: whether known consumers, published behavior, persisted data, migration, mixed-version rollout, or rollback currently require them, without assuming an unpublished feature has no compatibility obligations
 - Test coverage and test quality, including implementation coupling or over-mocking
 - Maintainability and performance when there is a concrete impact rather than a personal preference or speculative optimization
 - Unjustified abstractions, extension points, configuration surfaces, dependencies, compatibility paths, or architectural layers whose concrete maintenance or operational cost is not supported by current requirements or observed risks
@@ -108,6 +110,8 @@ For a completed review, include:
 - checks performed with commands or methods and actual results
 - suggested verification, unchecked scope, and residual risks
 
+Keep each finding's `Unconfirmed premises` as a distinct field even in a concise presentation; do not leave the reader to infer them from confidence, risk context, or residual-risk prose.
+
 If there are no material findings, state that explicitly and still report the reviewed scope, checks, unchecked scope, and residual risk. Do not produce a bare `LGTM` or manufacture minor comments.
 
 If the diff cannot be obtained or its materially different interpretations cannot be resolved, state that the review did not run, identify the missing input, and do not present the result as "no issues found."
@@ -116,7 +120,9 @@ If the diff cannot be obtained or its materially different interpretations canno
 
 - Use `triage-review-feedback` to assess existing findings and choose a response decision and approach.
 - Use `validate-fix` by default for ordinary post-fix re-review of one or more identified findings.
-- Use `draft-review-comments` only after finding assessment, state, and response decision have been explicitly supplied, normally by `triage-review-feedback`; this review output alone does not authorize an actionable comment draft.
+- For finding-specific drafts, use `draft-review-comments` only after finding assessment, state, and response decision have been explicitly supplied, normally by `triage-review-feedback`; this review output alone does not authorize an actionable comment draft.
+- When a review has no material findings and a general PR comment or review summary is requested, hand `draft-review-comments` the review-level conclusion, reviewed scope, checks actually performed, and material limitations.\
+  Do not invent finding assessments or response decisions, and do not choose a review action or post a comment.
 - Use `summarize-changes` for a descriptive diff summary without problem discovery.
 
 Do not implement fixes or make final response decisions on findings. When an unresolved specification question does not prevent reviewing the rest of the diff, continue and report it as a `question` rather than blocking the entire review. Do not use another agent or subagent by default.
