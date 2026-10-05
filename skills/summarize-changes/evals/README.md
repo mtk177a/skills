@@ -7,7 +7,9 @@ Verify that `summarize-changes` turns the requested effective change set into on
 ## Assets
 
 - `triggers.json`: trigger, non-trigger, near-miss, and coexistence routing cases
-- `evals.json`: executable behavior cases with synthetic input files and hidden grading assertions
+- `evals.json`: Runner behavior cases with synthetic input files and hidden grading assertions
+- `git-scope-fixtures.json`: the three historical cases' real Git states and prompts
+- `prepare_git_scope.py`: builds and verifies those states in disposable repositories
 - `results.json`: historical baseline/candidate evidence from the 2026 behavior runs
 - this README: static contract, coverage, protocols, and summarized results
 
@@ -21,15 +23,18 @@ Verify that `summarize-changes` turns the requested effective change set into on
 - Public release notes exclude internal operational detail, while operational handoffs preserve supplied deployment-relevant evidence and unknowns.
 - Suspected secret values and instructions embedded in change evidence are not reproduced or followed.
 - Skill invocation alone does not authorize repository or external writes.
-- The Skill has no scripts, executable dependencies, network access, or client-specific metadata.
+- The runtime Skill has no scripts, executable dependencies, network access, or client-specific metadata; `prepare_git_scope.py` is evaluation-only.
 
 ## Coverage map
 
 | Responsibility or boundary | Plausible failure | Scenario or check | Grading |
 | --- | --- | --- | --- |
-| Supplied local-scope evidence | Mixes described staged work with excluded unstaged or untracked changes | `staged-only-pr-description` | Response inventory against supplied evidence text |
-| Supplied commit-range evidence | Omits a described in-range commit or includes out-of-range material | `commit-range-public-release` | Supplied commit-to-summary mapping |
-| Supplied PR-range evidence | Omits the described base/head boundary or an in-range change | `pr-range-operational-handoff` | Supplied range and output inspection |
+| Supplied local-scope evidence | Mixes described staged work with excluded unstaged or untracked changes | Runner `staged-only-pr-description` | Response inventory against supplied evidence text |
+| Supplied commit-range evidence | Omits a described in-range commit or includes out-of-range material | Runner `commit-range-public-release` | Supplied commit-to-summary mapping |
+| Supplied PR-range evidence | Omits the described base/head boundary or an in-range change | Runner `pr-range-operational-handoff` | Supplied range and output inspection |
+| Real staged index selection | Summarizes unstaged or untracked work instead of the staged diff | Real Git `staged-only-pr-description` | Git command trace, response inventory, and post-run fixture check |
+| Real commit-range selection | Misses one of two commits in `release-base..HEAD` or includes base-only material | Real Git `commit-range-public-release` | Ref and command trace, response inventory, and post-run fixture check |
+| Real branch-ref selection | Misses the API or migration change in `main...feature` | Real Git `pr-range-operational-handoff` | Ref and command trace, response inventory, and post-run fixture check |
 | Evidence-grounded intent and verification | Infers purpose or claims that modified tests ran | `ambiguous-intent-and-unrun-tests` | Claim provenance and verification state |
 | Conflicting evidence | Converts a reported pass and observed failure into a confirmed pass | `conflicting-verification` | Conflict disclosure |
 | Repository-template precedence | Ignores the repository PR template or drops a required section | `repository-template-pr-description` | Required heading inspection |
@@ -40,9 +45,9 @@ Verify that `summarize-changes` turns the requested effective change set into on
 | Trigger and coexistence | Loads for review, commit drafting, implementation, validation, or session handoff, or fails to coexist for compound requests | `triggers.json` | Observable Skill load |
 | PR reviewer context | Omits review-calibration context or invents low criticality from unknown values | `pr-reviewer-context-unknown-criticality` | Evidence-state and output-profile inspection |
 
-The three scope cases above provide Git states and commit sequences as text in `evidence/change-set.txt`.\
-They can check how the Skill uses supplied scope evidence, but do not check whether it selects staged changes or resolves commit and PR ranges from a real Git index and refs.\
-The historical `results.json` used disposable repositories with those Git states; its results do not establish that the migrated definitions retain that coverage.
+The three Runner scope cases provide Git states and commit sequences as text in `evidence/change-set.txt`.\
+They check use of supplied scope evidence, while the separate real Git fixtures check selection from the index and refs.\
+The historical `results.json` used disposable repositories with these Git states, but its results do not establish a pass for either current execution path.
 
 ## Behavioral execution protocol
 
@@ -61,6 +66,25 @@ The historical `results.json` used disposable repositories with those Git states
 Use the Runner's executable `triggers.json` cases with the declared coexistence Skills.\
 Count only observed successful reads of installed `SKILL.md` files.\
 If the event stream does not expose a completed routing observation, report it as inconclusive rather than inferring selection from the response.
+
+## Real Git scope execution protocol
+
+1. Run `python3 skills/summarize-changes/evals/prepare_git_scope.py --output <new-directory-under-system-temp>`.\
+   The script reconstructs the old staged, `release-base..HEAD`, and `main...feature` fixtures and checks their actual index, commits, and refs before writing a manifest for each case.
+2. For each case directory, run a model client from its `repo/` directory with read-only repository access and the corresponding `prompt.txt`.\
+   Use only that directory's `.agents/skills/summarize-changes/SKILL.md`; confirm from the client catalog or command trace that a personal same-name Skill did not replace it.\
+   With Codex CLI, use `--ignore-user-config`, disable plugins, and enforce the same personal Skill read guard as the common Runner so unrelated local integrations cannot alter the fixture.\
+   Save the final response and tool or command trace outside `repo/`.\
+   The script intentionally does not send source or fixture contents to a model or grade its own output.
+3. Grade the response against the matching `evals.json` case's `effective-scope`, `complete-change-inventory`, `case-specific-result`, and applicable audience and evidence assertions.\
+   For the staged case, require the export implementation and test addition but exclude `docs/operations.md` and `notes/experiment.md`.\
+   For the commit range, require both the CSV export and `--output` to `--format` migration without internal rollout details.\
+   For the branch range, require both the API and migration changes with the supplied deployment, reported CI, monitoring, and rollback states.\
+   Inspect the trace for Git index or ref access corresponding to the requested range; a plausible answer without that evidence is inconclusive for real Git selection.
+4. Run `python3 skills/summarize-changes/evals/prepare_git_scope.py --verify --output <same-directory>` after execution.\
+   A changed head, index, worktree file, or untracked file fails the read-only fixture check.\
+   Record the candidate Skill hash, model and client, case results, grading evidence, and any missing trace separately from Runner results and historical `results.json`.\
+   Running all three cases takes three model calls; select a smaller subset when only one scope is affected.
 
 ## Failure Pattern Ledger
 
@@ -107,6 +131,6 @@ These results do not verify later definition migrations or translation edits.
 
 ## Current definition boundary
 
-The migrated behavior definitions have been validated for structure and Runner plan generation, but have not been executed with a model.\
-Real Git scope selection remains unverified by the current executable cases.\
-If a change to local or range selection makes this boundary decision-relevant, run the affected cases in disposable repositories with a staged index and the required commit and branch refs, and record the candidate revision and results separately from the historical evidence.
+The migrated Runner behavior definitions have been validated for structure and plan generation, but have not been executed with a model.\
+The separate real Git fixtures can expose selection mistakes that the text cases cannot, but preparing and verifying fixtures alone does not establish that a model selected the right changes.\
+Record model execution and grading separately for each path; do not infer a pass from the historical evidence or a successful fixture setup.

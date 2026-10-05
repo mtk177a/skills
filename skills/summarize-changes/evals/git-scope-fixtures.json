@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "skill": "summarize-changes",
+  "cases": [
+    {
+      "id": "staged-only-pr-description",
+      "prompt": "Draft only the PR description for the staged invoice export change. Keep every unstaged and untracked change out. We have not run tests yet.",
+      "git": {
+        "head": {
+          "src/export.go": "package export\n\nfunc ExportInvoice(id string) string { return \"\" }\n",
+          "docs/operations.md": "# Operations\n",
+          "tests/export_test.go": "package tests\n"
+        },
+        "staged": {
+          "src/export.go": "package export\n\nfunc ExportInvoice(id string) string { return \"invoice:\" + id }\n",
+          "tests/export_test.go": "package tests\n\nfunc TestInvoiceExport() {}\n"
+        },
+        "unstaged": {
+          "docs/operations.md": "# Operations\n\nRotate the archive weekly.\n"
+        },
+        "untracked": {
+          "notes/experiment.md": "# Unrelated cache experiment\n"
+        }
+      }
+    },
+    {
+      "id": "commit-range-public-release",
+      "prompt": "Write public release notes for the exact range release-base..HEAD. Customers need to know about the CSV export and the renamed command flag. Internal rollout uses canary group blue, monitor queue lag for 30 minutes, and roll back by restoring image build-17; do not publish those operational details.",
+      "git": {
+        "head": {
+          "README.md": "# App\n",
+          "src/export.go": "package export\n",
+          "cmd/options.go": "package cmd\n\nconst Flag = \"--output\"\n"
+        },
+        "history": [
+          {
+            "ref": "release-base",
+            "message": "chore: mark release base",
+            "files": {}
+          },
+          {
+            "message": "feat: add customer CSV export",
+            "files": {
+              "src/export.go": "package export\n\nfunc CSV() string { return \"csv\" }\n"
+            }
+          },
+          {
+            "message": "feat!: rename output flag",
+            "files": {
+              "cmd/options.go": "package cmd\n\nconst Flag = \"--format\"\n",
+              "README.md": "# App\n\nUse --format instead of --output.\n"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "pr-range-operational-handoff",
+      "prompt": "Prepare an operational release handoff for main...feature. Deploy the API change after migration 20260729_add_region. CI unit tests reportedly passed, but you cannot inspect CI here. Monitor region_lookup_errors; rollback is to deploy api-2026.07.28 and leave the additive migration in place. The production smoke check is still unverified.",
+      "git": {
+        "head": {
+          "api/region.go": "package api\n\nfunc Region() string { return \"\" }\n",
+          "migrations/20260729_add_region.sql": "CREATE TABLE regions(id bigint);\n"
+        },
+        "history": [
+          {
+            "ref": "main",
+            "message": "chore: establish PR base",
+            "files": {}
+          },
+          {
+            "message": "feat: add region lookup",
+            "files": {
+              "api/region.go": "package api\n\nfunc Region() string { return \"ap-northeast-1\" }\n"
+            }
+          },
+          {
+            "ref": "feature",
+            "message": "feat: add region migration",
+            "files": {
+              "migrations/20260729_add_region.sql": "CREATE TABLE regions(id bigint, name text);\n"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
