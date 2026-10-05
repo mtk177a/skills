@@ -63,6 +63,12 @@ PERSONAL_PATH_EXCLUSIONS = {
     "scripts/check_repository.py",
     "tests/test_check_repository.py",
 }
+UPSTREAM_MIRRORS = {
+    "japanese-tech-writing": "https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d",
+    "cognitive-rhythm-writing": "https://gist.github.com/k16shikano/eb2929f13ed19c97188393d297be8432",
+}
+
+
 @dataclass(frozen=True, order=True)
 class Problem:
     path: str
@@ -258,7 +264,12 @@ def check_skill_packages(root: Path, problems: list[Problem]) -> None:
         for line, key in duplicates:
             add(problems, root, skill_file, line, f"duplicate frontmatter key `{key}`")
         normalized: dict[str, tuple[str, int]] = {}
-        for key in ("name", "description", "license"):
+        required_keys = (
+            ("name", "description")
+            if directory.name in UPSTREAM_MIRRORS
+            else ("name", "description", "license")
+        )
+        for key in required_keys:
             if key not in fields:
                 add(problems, root, skill_file, 1, f"required frontmatter `{key}` is missing or empty")
                 continue
@@ -294,8 +305,40 @@ def check_skill_packages(root: Path, problems: list[Problem]) -> None:
                 "frontmatter `description` exceeds 1024 characters",
             )
         eval_readme = directory / "evals" / "README.md"
-        if not eval_readme.is_file():
+        if directory.name not in UPSTREAM_MIRRORS and not eval_readme.is_file():
             add(problems, root, eval_readme, 1, "every Skill requires evals/README.md")
+
+
+def check_upstream_mirrors(root: Path, problems: list[Problem]) -> None:
+    for name, source in UPSTREAM_MIRRORS.items():
+        directory = root / "skills" / name
+        if not directory.is_dir():
+            continue
+        note = directory / "UPSTREAM.md"
+        skill = directory / "SKILL.md"
+        if not note.is_file():
+            add(problems, root, note, 1, "upstream mirror provenance is missing")
+            continue
+        body = note.read_text(encoding="utf-8")
+        if f"- Source: <{source}>" not in body:
+            add(problems, root, note, 1, "upstream mirror source is missing or incorrect")
+        if not re.search(r"^- Mirrored revision: `[0-9a-f]{40}`$", body, re.MULTILINE):
+            add(problems, root, note, 1, "upstream mirror revision is missing or invalid")
+        if not re.search(r"^- Retrieved: `[0-9]{4}-[0-9]{2}-[0-9]{2}`$", body, re.MULTILINE):
+            add(problems, root, note, 1, "upstream mirror retrieval date is missing or invalid")
+        license_recorded = re.search(r"^- License: Unlicense$", body, re.MULTILINE)
+        declaration_recorded = re.search(
+            r"^- License declaration: <https://gist\.github\.com/k16shikano/67625f2a7d96e3bbdfae8d571a936063>$",
+            body,
+            re.MULTILINE,
+        )
+        if not license_recorded or not declaration_recorded:
+            add(problems, root, note, 1, "upstream mirror license evidence is missing")
+        match = re.search(r"^- SKILL\.md SHA-256: `sha256:([0-9a-f]{64})`$", body, re.MULTILINE)
+        if not match:
+            add(problems, root, note, 1, "upstream mirror SHA-256 is missing or invalid")
+        elif skill.is_file() and hashlib.sha256(skill.read_bytes()).hexdigest() != match.group(1):
+            add(problems, root, skill, 1, "mirrored SKILL.md differs from recorded SHA-256")
 
 
 def markdown_without_code(text: str) -> str:
@@ -1005,6 +1048,7 @@ def check_repository(root: Path, ignored_report_skill: str | None = None) -> lis
     problems: list[Problem] = []
     catalog = check_catalogs(root, problems)
     check_skill_packages(root, problems)
+    check_upstream_mirrors(root, problems)
     check_markdown_links(root, problems)
     check_localization_notices(root, problems)
     check_json_assets(root, problems, ignored_report_skill)

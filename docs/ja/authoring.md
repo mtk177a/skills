@@ -2,7 +2,7 @@
 
 # Skill 作成ガイド
 
-この文書は、このリポジトリで管理する Skill の作成ガイドです。個別の Skill と一緒に配布する必要がある設計上の説明は、その Skill の `references/` ディレクトリに置きます。
+この文書は、このリポジトリで管理する Skill の作成ガイドです。元 Gist のコピー 2 件には後述の別の規則を適用し、この文書の作成規則を理由に `SKILL.md` を変更しません。個別の Skill と一緒に配布する必要がある設計上の説明は、その Skill の `references/` ディレクトリに置きます。
 
 ## 良い Skill の条件
 
@@ -69,7 +69,6 @@ Skill は原則として自己完結させます。併用関係は、一方の S
 
 | 関係 | 理由 | 導入方法と併用 Skill がない場合の動作 | 出典 | 評価 |
 | --- | --- | --- | --- | --- |
-| `cognitive-rhythm-writing` → `japanese-tech-writing` | 緩急の規範は、日本語技術文書の規範を置き換えず、その制約を前提に拡張する。 | `apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing` で両方を導入する。併用 Skill がない場合、`cognitive-rhythm-writing` は規範を適用せず停止する。 | [`skills/cognitive-rhythm-writing/UPSTREAM.md`](../../skills/cognitive-rhythm-writing/UPSTREAM.md)、[`skills/japanese-tech-writing/UPSTREAM.md`](../../skills/japanese-tech-writing/UPSTREAM.md)、[`THIRD_PARTY_NOTICES.md`](../../THIRD_PARTY_NOTICES.md) が Unlicense の出典とローカルでの改変内容を保持する。 | [`skills/cognitive-rhythm-writing/evals/README.md`](../../skills/cognitive-rhythm-writing/evals/README.md) が必須の読み込み順と、併用 Skill がない場合の経路を扱う。 |
 | `maintain-japanese-references` → `write-natural-japanese` | 英語版に書かれた内容を保ちながら、文脈に合う日本語で参考訳を書くため、両方を使用する。 | 両 Skill はこのリポジトリで管理する。リポジトリ内 Skill を使う前に `skills/write-natural-japanese/SKILL.md` と必要な参照資料を読む。リポジトリ内のファイルを読めない場合は、個人環境の同名 Skill で代用せず作業を止め、対象ファイルを報告する。 | 両 Skill はこのリポジトリで作成した。[#42](https://github.com/mtk177a/skills/pull/42) で日本語参考訳の保守用 Skill を追加し、[#77](https://github.com/mtk177a/skills/issues/77) に必須の併用関係と日本語で要件を定める例外を記録する。 | [リポジトリ内 Skill の評価記録](../../.agents/skills/maintain-japanese-references/evals/README.md) で、必須の併用、訳文の品質、併用先を読めない場合を確認する。どちらかの Skill または併用関係を変更したときは、この記録を見直す。 |
 
 ## description の書き方
@@ -134,7 +133,7 @@ Skill の責務が十分に狭く、名前を誤読できない場合に限り�
 
 ## 外部 Skill のフォーク・コピーについて
 
-外部 Skill はそのままコピーしません。外部 Skill のインストールは、dotfiles の `apm.yml` / `apm.lock.yaml` で管理します。
+下記の Gist 2 件を除き、外部 Skill はそのままコピーしません。外部 Skill のインストールは、dotfiles の `apm.yml` / `apm.lock.yaml` で管理します。
 
 次の条件を満たす場合のみ、このリポジトリに取り込みます:
 
@@ -145,6 +144,14 @@ Skill の責務が十分に狭く、名前を誤読できない場合に限り�
 取り込む場合でも、フロントマターと `description` をこのリポジトリの規約に合わせて見直します。そのままインポートしません。
 
 第三者の Skill を採用または改変する前に、出典、ライセンス、すべてのファイル、外部参照、スクリプト、ツールとネットワークの利用、組み合わせたときに得られる機能を確認します。Markdown の指示を本質的に安全な文章ではなく、実行に影響する入力として扱います。リポジトリのチェックリストは [セキュリティレビュー](security.md) に従います。
+
+### 元 Gist のコピー 2 件
+
+`japanese-tech-writing` と `cognitive-rhythm-writing` は、k16shikano の公開 Gist をコピーした Skill です。各 `SKILL.md` は、`UPSTREAM.md` に記録した版とバイト単位で一致させます。独自の規則、フロントマターの項目、本文の訂正、日本語参考訳は加えません。リポジトリ検査では、各ファイルと `UPSTREAM.md` に記録した SHA-256 の一致を確認します。Gist に新しい版があるかどうかは、別途確認する必要があります。
+
+更新時は、記録した版と現行 Gist を比較し、変更全体を [セキュリティレビュー](security.md) に従って確認します。受け入れた版を無改変でコピーし、版、ハッシュ、第三者資料の通知を更新します。そのまま受け入れられない場合は差分を記録し、独自の改変版を作りません。この 2 件には `evals/README.md` を必須としません。元 Gist の更新で変わった責務の確認に必要な場合だけ、モデル評価の定義を追加します。
+
+元の `cognitive-rhythm-writing` は、適用前に `../japanese-tech-writing/SKILL.md` を読むよう指示しています。`apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing` で両方を導入します。併用先がない場合の手順は、このリポジトリから元 Gist の本文へ追記しません。
 
 ## 秘密情報・個人情報の除外
 
@@ -216,7 +223,7 @@ Skill を変更するときは、評価証拠を選ぶ前に、影響を受け�
 プルリクエストを開く前に:
 
 - [ ] ディレクトリ名がケバブケースでフロントマターの `name` と一致している
-- [ ] `name`、`description`、`license` のフロントマターが揃った `SKILL.md` が存在する
+- [ ] `name`、`description`、`license` のフロントマターが揃った `SKILL.md` が存在する（文書化した Gist のコピー 2 件は元のフロントマターを維持する）
 - [ ] `description` が本文を読まなくても利用場面を明確に伝えている
 - [ ] 見出しテンプレートを機械的に写さず、本文に意味上必要な情報が揃っている
 - [ ] 本文が英語で書かれているか、日本語の執筆・推敲用 Skill の例外が文書化されている

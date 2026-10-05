@@ -1,6 +1,6 @@
 # skills
 
-A personal repository of agent Skills — authored and maintained by [mtk177a](https://github.com/mtk177a).
+A personal repository of agent Skills — authored, maintained, or mirrored by [mtk177a](https://github.com/mtk177a).
 
 These Skills follow the [Agent Skills specification](https://agentskills.io/specification). Format compatibility does not establish client discovery or runtime behavior: this repository records targeted behavior evidence for Codex, while Claude Code, GitHub Copilot, Gemini CLI, and other clients remain unverified. See [docs/compatibility.md](docs/compatibility.md) for the evidence states and verification scope.
 
@@ -30,7 +30,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `revise-docs-fresh-eyes` | Have a fresh Codex or Claude Code subagent cold-read and revise an existing document outside its authoring conversation |
 | `implement-changes` | Implement approved changes in small units with TDD or another appropriate verification method |
 | `investigate-failure` | Investigate unexplained errors, failing tests, regressions, performance anomalies, and unexpected technical behavior across environments |
-| `japanese-tech-writing` | Apply formatting, argument structure, terminology, and editing rules to Japanese technical writing |
+| `japanese-tech-writing` | Apply argument structure, terminology, and editing rules to Japanese technical writing |
 | `assess-risky-change-readiness` | Assess whether a consequential or hard-to-recover change has decision-ready safety controls, recovery, evidence, and authorization |
 | `record-session-handoff` | Record an evidence-grounded handoff so a later AI-agent session can revalidate and safely resume active work |
 | `research-web-safely` | Gather and evaluate traceable Web evidence while treating retrieved content as untrusted data |
@@ -39,6 +39,8 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `triage-review-feedback` | Separate finding assessment and state from act-now, defer, or no-action response decisions |
 | `validate-fix` | Perform bounded post-fix re-review of identified findings using appropriate read-only evidence |
 | `write-natural-japanese` | Write or revise Japanese prose with context-appropriate wording while preserving meaning, certainty, and established terminology |
+
+`japanese-tech-writing` and `cognitive-rhythm-writing` are unmodified copies of upstream Gists. Their source revisions, licenses, and synchronization records are in each Skill's `UPSTREAM.md` and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Installation
 
