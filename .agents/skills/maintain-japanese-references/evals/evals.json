@@ -8,12 +8,14 @@
       "fixture": {
         "files": {
           "docs/authoring.md": "If an English requirement changes, maintainers must update its Japanese reference before merging the pull request.\n",
-          "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳の更新を提供してもよい。\n"
+          "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳の更新を提供してもよい。\n",
+          "docs/localization.md": "# Localization\n\n| File | Canonical | Translation |\n| --- | --- | --- |\n| `CONTRIBUTING.md` | English | `CONTRIBUTING-ja.md` |\n| `docs/*.md` | English | `docs/ja/*.md` |\n"
         }
       },
       "baseline_files": {
         "docs/authoring.md": "If an English requirement changes, maintainers may update its Japanese reference before merging the pull request.\n",
-        "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳の更新を提供してもよい。\n"
+        "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳の更新を提供してもよい。\n",
+        "docs/localization.md": "# Localization\n\n| File | Canonical | Translation |\n| --- | --- | --- |\n| `CONTRIBUTING.md` | English | `CONTRIBUTING-ja.md` |\n| `docs/*.md` | English | `docs/ja/*.md` |\n"
       },
       "coexistence_skills": ["write-natural-japanese"],
       "assertions": [
@@ -29,12 +31,14 @@
       "fixture": {
         "files": {
           "docs/authoring.md": "If an English requirement changes, maintainers must update its Japanese reference before merging the pull request.\n",
-          "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新してもよい。\n"
+          "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新してもよい。\n",
+          "docs/localization.md": "# Localization\n\n| File | Canonical | Translation |\n| --- | --- | --- |\n| `CONTRIBUTING.md` | English | `CONTRIBUTING-ja.md` |\n| `docs/*.md` | English | `docs/ja/*.md` |\n"
         }
       },
       "baseline_files": {
         "docs/authoring.md": "If an English requirement changes, maintainers may update its Japanese reference before merging the pull request.\n",
-        "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新してもよい。\n"
+        "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新してもよい。\n",
+        "docs/localization.md": "# Localization\n\n| File | Canonical | Translation |\n| --- | --- | --- |\n| `CONTRIBUTING.md` | English | `CONTRIBUTING-ja.md` |\n| `docs/*.md` | English | `docs/ja/*.md` |\n"
       },
       "assertions": [
         {"id": "stop-without-companion", "text": "Do not decide or edit the translation when the repository copy of write-natural-japanese is absent, and do not substitute a personal Skill.", "critical": true},
@@ -48,18 +52,44 @@
       "fixture": {
         "files": {
           "docs/authoring.md": "If an English requirement changes, maintainers must update its Japanese reference before merging the pull request.\n",
-          "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新しなければならない。\n"
+          "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新しなければならない。\n",
+          "docs/localization.md": "# Localization\n\n| File | Canonical | Translation |\n| --- | --- | --- |\n| `CONTRIBUTING.md` | English | `CONTRIBUTING-ja.md` |\n| `docs/*.md` | English | `docs/ja/*.md` |\n"
         }
       },
       "baseline_files": {
         "docs/authoring.md": "If an English requirement changes,\nmaintainers must update its Japanese reference before merging the pull request.\n",
-        "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新しなければならない。\n"
+        "docs/ja/authoring.md": "英語の要件が変更された場合、保守者は pull request をマージする前に日本語参考訳を更新しなければならない。\n",
+        "docs/localization.md": "# Localization\n\n| File | Canonical | Translation |\n| --- | --- | --- |\n| `CONTRIBUTING.md` | English | `CONTRIBUTING-ja.md` |\n| `docs/*.md` | English | `docs/ja/*.md` |\n"
       },
       "coexistence_skills": ["write-natural-japanese"],
       "assertions": [
         {"id": "read-before-decision", "text": "Read both repository Skill files before deciding that no Japanese update is needed.", "critical": true},
         {"id": "unchanged-reference", "text": "Leave the aligned Japanese file byte-for-byte unchanged.", "critical": true},
         {"id": "no-op-reason", "text": "Explain that source-line reflow does not change the meaning conveyed by the Japanese reference.", "critical": false}
+      ]
+    },
+    {
+      "id": "L-contributing",
+      "title": "Contributing guide pair follows a changed obligation",
+      "prompt": "The English CONTRIBUTING.md now requires Issue tracking unless the maintainer explicitly waives it. Synchronize its Japanese reference with the changed English guide. Preserve the exception and leave the English file unchanged.",
+      "fixture": {
+        "files": {
+          "CONTRIBUTING.md": "Track work in an Issue unless the maintainer explicitly instructs you to omit Issue tracking.\n",
+          "CONTRIBUTING-ja.md": "> **注記:** この文書の内容は英語版 (`CONTRIBUTING.md`) を基準とします。このファイルは参考訳です。\n\n作業は Issue で追跡してもよい。\n",
+          "docs/localization.md": "# Localization\n\n| File | Canonical | Translation |\n| --- | --- | --- |\n| `CONTRIBUTING.md` | English | `CONTRIBUTING-ja.md` |\n| `docs/*.md` | English | `docs/ja/*.md` |\n"
+        }
+      },
+      "baseline_files": {
+        "CONTRIBUTING.md": "You may track work in an Issue.\n",
+        "CONTRIBUTING-ja.md": "> **注記:** この文書の内容は英語版 (`CONTRIBUTING.md`) を基準とします。このファイルは参考訳です。\n\n作業は Issue で追跡してもよい。\n",
+        "docs/localization.md": "# Localization\n\n| File | Canonical | Translation |\n| --- | --- | --- |\n| `CONTRIBUTING.md` | English | `CONTRIBUTING-ja.md` |\n| `docs/*.md` | English | `docs/ja/*.md` |\n"
+      },
+      "coexistence_skills": ["write-natural-japanese"],
+      "assertions": [
+        {"id": "new-pair-reads", "text": "Read the repository-local maintenance Skill, the repository copy of write-natural-japanese, and its full wording reference before editing.", "critical": true},
+        {"id": "mapping-read", "text": "Read docs/localization.md and confirm CONTRIBUTING-ja.md as the counterpart before editing; do not rely on the request, filenames, or a remembered mapping alone.", "critical": true},
+        {"id": "new-pair-update", "text": "Change only CONTRIBUTING-ja.md to make Issue tracking required unless the maintainer explicitly waives it; retain the English-source notice and leave CONTRIBUTING.md unchanged.", "critical": true},
+        {"id": "new-pair-report", "text": "Identify the CONTRIBUTING.md to CONTRIBUTING-ja.md pair and report why the translation changed and how it was checked.", "critical": false}
       ]
     }
   ]

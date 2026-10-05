@@ -1,46 +1,37 @@
 {
-  "skill": "draft-commit",
-  "version": 1,
-  "run_policy": {
-    "protocol": "Present each prompt and supplied conversation context as a Skill-selection task using only installed Skill names and descriptions. Open every selected SKILL.md so loading is observable, report selected names, and do not solve the underlying task.",
-    "count_only_observed_skill_loads": true,
-    "unobservable_result": "not exposed",
-    "repetition_rule": "Run each affected case once per condition, then repeat only when variation, an unexpected result, model differences, or failure impact makes another observation decision-relevant.",
-    "verdict_rule": "Record pass, fail, unstable, not exposed, or not executed for every case. Mixed observed results are unstable, not a pass."
+  "skill_name": "draft-commit",
+  "execution": {
+    "coexistence_skills": [
+      "summarize-changes",
+      "review-changes",
+      "implement-changes",
+      "validate-fix"
+    ]
   },
-  "coexistence_skills": [
-    "summarize-changes",
-    "review-changes",
-    "implement-changes",
-    "validate-fix"
-  ],
-  "cases": [
+  "evals": [
     {
       "id": "direct-message-draft",
-      "expected": "should_trigger",
-      "expected_handler": "draft-commit",
-      "category": "core",
-      "prompt": "Draft a Conventional Commit message for my staged changes."
+      "prompt": "Draft a Conventional Commit message for my staged changes.",
+      "expected_handlers": [
+        "draft-commit"
+      ]
     },
     {
       "id": "commit-split-plan",
-      "expected": "should_trigger",
-      "expected_handler": "draft-commit",
-      "category": "core",
-      "prompt": "Organize these staged, unstaged, and untracked changes into atomic commits without mixing unrelated work."
+      "prompt": "Organize these staged, unstaged, and untracked changes into atomic commits without mixing unrelated work.",
+      "expected_handlers": [
+        "draft-commit"
+      ]
     },
     {
       "id": "authorized-commit-preflight",
-      "expected": "should_trigger",
-      "expected_handler": "draft-commit",
-      "category": "workflow",
-      "prompt": "Commit the current staged changes. First draft the exact message and staging handoff, then let the authorized commit workflow continue."
+      "prompt": "Commit the current staged changes. First draft the exact message and staging handoff, then let the authorized commit workflow continue.",
+      "expected_handlers": [
+        "draft-commit"
+      ]
     },
     {
       "id": "scope-continuation",
-      "expected": "should_trigger",
-      "expected_handler": "draft-commit",
-      "category": "continuation",
       "conversation": [
         {
           "role": "user",
@@ -51,52 +42,53 @@
           "content": "Both staged and unstaged changes exist in the same file. Which change set should the draft cover?"
         }
       ],
-      "prompt": "Use only the staged hunks and leave every unstaged hunk out."
+      "prompt": "Use only the staged hunks and leave every unstaged hunk out.",
+      "expected_handlers": [
+        "draft-commit"
+      ]
     },
     {
       "id": "commit-and-pr-summary",
-      "expected": "should_trigger",
+      "prompt": "Draft atomic commit messages for these changes and also prepare a PR summary with impact and verification status.",
       "expected_handlers": [
         "draft-commit",
         "summarize-changes"
-      ],
-      "category": "coexistence",
-      "prompt": "Draft atomic commit messages for these changes and also prepare a PR summary with impact and verification status."
+      ]
     },
     {
       "id": "pr-description-only",
-      "expected": "should_not_trigger",
-      "expected_handler": "summarize-changes",
-      "category": "near_miss",
-      "prompt": "Write a PR description for this diff, including impact, tests, and remaining risks. I do not need commit messages."
+      "prompt": "Write a PR description for this diff, including impact, tests, and remaining risks. I do not need commit messages.",
+      "expected_handlers": [
+        "summarize-changes"
+      ]
     },
     {
       "id": "diff-review",
-      "expected": "should_not_trigger",
-      "expected_handler": "review-changes",
-      "category": "near_miss",
-      "prompt": "Review the current diff for correctness, security, compatibility, and missing tests. Do not draft a commit."
+      "prompt": "Review the current diff for correctness, security, compatibility, and missing tests. Do not draft a commit.",
+      "expected_handlers": [
+        "review-changes"
+      ]
     },
     {
       "id": "implement-approved-change",
-      "expected": "should_not_trigger",
-      "expected_handler": "implement-changes",
-      "category": "near_miss",
-      "prompt": "Implement the approved configuration change and run the relevant checks. Do not prepare commits."
+      "prompt": "Implement the approved configuration change and run the relevant checks. Do not prepare commits.",
+      "expected_handlers": [
+        "implement-changes"
+      ]
     },
     {
       "id": "validate-specific-fix",
-      "expected": "should_not_trigger",
-      "expected_handler": "validate-fix",
-      "category": "near_miss",
-      "prompt": "Verify whether the completed retry-loop fix resolves finding F-12. Do not review other changes or draft a message."
+      "prompt": "Verify whether the completed retry-loop fix resolves finding F-12. Do not review other changes or draft a message.",
+      "expected_handlers": [
+        "validate-fix"
+      ]
     },
     {
       "id": "commit-range-summary",
-      "expected": "should_not_trigger",
-      "expected_handler": "summarize-changes",
-      "category": "near_miss",
-      "prompt": "Summarize the existing commits from v2.1.0 to v2.2.0 for release handoff. No new commit is being prepared."
+      "prompt": "Summarize the existing commits from v2.1.0 to v2.2.0 for release handoff. No new commit is being prepared.",
+      "expected_handlers": [
+        "summarize-changes"
+      ]
     }
   ]
 }

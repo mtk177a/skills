@@ -69,7 +69,9 @@ Use the state that describes the next action:
 - `Continue calibration`: one material understanding gap still needs a focused explanation, question, or joint step before the affected action
 - `Blocked`: a required user-owned decision, authorization, or risk acceptance is unavailable
 
-Adapt the response to the task. Include only information that changes the next action:
+Preserve the originating workflow's required deliverable and verification result in its expected form; the calibration state and learning support do not replace them.
+
+Adapt additional learning support to the task. Include only information that changes the next action:
 
 - the understanding or decision being protected
 - the selected support method and reason

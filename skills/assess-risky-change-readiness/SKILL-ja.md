@@ -1,104 +1,113 @@
 ---
 name: assess-risky-change-readiness
-description: 重大または復旧困難な変更が実行へ移る前に、安全 control、recovery strategy、evidence、authorization state を評価して準備する。material な operational、data、security、external-state、irreversibility、recovery risk が通常の implementation handoff を超える control を必要とする場合、または別 workflow が不足する high-risk control を特定した場合に使う。通常の change design、control が揃った承認済み implementation、完了済み diff の review、failure investigation、一般的な security review、変更の実行には使わない。
+description: 重大な影響がある、または復旧が難しい変更について、実行前に必要な安全対策、復旧方法、根拠、承認状況を評価し、準備する。運用、データ、セキュリティ、外部の状態変更、不可逆性、復旧に関する実質的なリスクが通常の実装計画を超える対策を要する場合や、別の作業でその不足が判明した場合に使う。通常の変更設計、必要な対策と承認が揃った実装、完成した差分のレビュー、障害調査、一般的なセキュリティレビュー、変更の実行には使わない。
 license: MIT
 ---
 
 > **注記:** 英語版 (`SKILL.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。
 
-# Assess Risky Change Readiness
+# リスクのある変更の実行準備を評価する
 
 ## 目的
 
-- 重大または復旧困難な変更について、実行へ移れるだけの evidence、安全 control、recovery preparation、authority があるかを判断する。
-- 具体的な action、target、environment、execution boundary、material risk、責任ある handoff を decision-ready にする。
-- read-only な readiness または authorization handoff で止まり、変更を承認または実行しない。
+- 重大な影響がある、または復旧が難しい変更について、実行に移るための根拠、安全対策、復旧の準備、権限が揃っているか判断する。
+- 具体的な操作、対象、環境、実行の範囲、実質的なリスク、次の担当者へ渡す内容を、判断できる状態にする。
+- 読み取りによる準備状況の評価と承認・実行への引き継ぎまでにとどめ、変更を承認したり実行したりしない。
 
-## Evidence と入力
+## 根拠と入力
 
-利用できる範囲で次を集める:
+利用できる範囲で次を集める。
 
-- objective、選択済み approach、具体的な action、target、environment、revision、data scope、execution boundary
-- 影響を受ける user、system、data、external state、credential、依存 operation
-- precondition、backup または restore evidence、monitoring、validation、operational ownership
-- 提案済みの prevention、mitigation、detection、abort、recovery、compensation、containment control
-- 適用 policy、既存 authorization、必要な decision owner、risk tolerance、accepted loss
-- assumption、未解決 decision、unknown、現在の authority 内では取得できない evidence
+- 目的、選択済みの方法、具体的な操作、対象、環境、リビジョン、データの範囲、実行の範囲
+- 影響を受ける利用者、システム、データ、外部の状態、認証情報、依存する操作
+- 前提条件、バックアップや復元の裏付け、監視、検証、運用上の担当者
+- 提案されている予防、軽減、検知、中止、復旧、補償、影響の封じ込めの対策
+- 適用される規則、既存の承認、判断責任者、許容できるリスク、受容済みの損失
+- 仮定、未決定の事項、不明点、現在の権限では得られない根拠
 
-各 material input を `Confirmed`、`Reported`、`Inferred`、`Assumed`、`Unknown` のいずれかに分類する。
-報告された control、提案コマンド、予定された backup を confirmed evidence に変換しない。
+重要な入力ごとに、`Confirmed`、`Reported`、`Inferred`、`Assumed`、`Unknown` のいずれかに分類する。\
+報告された対策、提案されたコマンド、取得予定のバックアップを、確認済みの根拠として扱わない。
 
-## Risk assessment
+## リスクの評価
 
-category label だけで判断せず、追加 control が必要になる次の性質を評価する:
+分類名だけで判断せず、追加の対策が必要になる次の性質を評価する。
 
-- reversibility と reversal が不可能になる point
-- recovery time、cost、completeness、evidence を含む recoverability
-- user、system、region、tenant、record、external party にわたる blast radius
-- production、shared、persistent、externally controlled state の mutation
-- data loss、corruption、confidentiality、integrity、security、privacy、compliance impact
-- detectability、monitoring delay、abort signal の信頼性
-- action authority、separation of duties、responsible owner、escalation path
-- target、plan、dependency、control、expected outcome の uncertainty
+- 元に戻せるか、また元に戻せなくなる時点
+- 復旧にかかる時間と費用、復旧できる範囲、その裏付け
+- 利用者、システム、リージョン、テナント、レコード、外部の関係者に及ぶ影響範囲
+- 本番環境、共有・永続化された状態、外部が管理する状態の変更
+- データの喪失・破損、機密性・完全性、セキュリティ、プライバシー、法令順守への影響
+- 異常を検知できるか、監視に遅れがあるか、中止の判断に使う信号が信頼できるか
+- 実行権限、職務の分離、担当者、エスカレーション先
+- 対象、計画、依存関係、対策、想定結果についての不確実性
 
-これらの性質が追加の execution control を必要としない場合は、通常の change design を使う。
+これらの性質から追加の実行対策が不要と分かる場合は、通常の変更設計を使う。
 
-## Workflow
+## 手順
 
-1. 具体的な action、target、environment、revision または data scope、execution boundary、intended outcome、non-goals を確定する。
-2. risk property が通常の implementation handoff を超える control を必要とするか判断する。
-3. confirmed evidence を、reported claim、inference、assumption、unknown から分離する。
-4. 各 material risk を、それを防止または軽減する control、検知する evidence、中止する signal と threshold、責任を持つ人または workflow へ対応付ける。
-5. 各 material failure mode に対して、rollback、roll-forward、restore、compensation、containment、partial または manual recovery、irreversible loss の明示的受容から現実的な recovery treatment を選ぶ。
-6. precondition、go/no-go criteria、monitoring、abort authority、point of no return、recovery ownership、post-action verification が decision-ready か確認する。
-7. authority を付与したり重複承認を求めたりせず、具体的な scope と control の authorization state を判断する。
-8. completion state を一つだけ割り当て、handoff を作る。
+1. 具体的な操作、対象、環境、リビジョンまたはデータの範囲、実行の範囲、意図する結果、対象外を特定する。
+2. リスクの性質から、通常の実装計画を超える対策が必要か判断する。
+3. 確認済みの根拠を、報告、推論、仮定、不明点と分ける。
+4. 実質的なリスクごとに、予防・軽減策、検知の根拠、中止する信号としきい値、責任を持つ人や作業手順を対応付ける。
+5. 重大な失敗の形ごとに、ロールバック、ロールフォワード、復元、補償、影響の封じ込め、部分的または手動での復旧、回復不能な損失の明示的な受容から、現実的な対処を選ぶ。
+6. 前提条件、実行可否の判断基準、監視、中止する権限、元に戻せなくなる時点、復旧の担当者、実行後の検証が、判断できる状態にあるか確かめる。
+7. 権限を付与したり重複する承認を求めたりせず、具体的な範囲と対策について承認状況を確認する。
+8. 完了状態を一つだけ選び、次の担当者へ引き継ぐ内容をまとめる。
 
-target または execution boundary を特定できない場合は、plan を捏造せず `Blocked` とする。
-実行済みであることを supplied evidence が示さない限り、command は提案済みの未実行 action として扱う。
+実施方法や設計が未決定であること、運用上の対策が不足していること、承認待ちであることを区別する。\
+実施方法が未決定なら設計や選択肢の検討へ戻し、対策の不足は準備上の問題として示す。\
+それ以外の準備が揃っている場合、承認の判断は責任者に委ねる。
 
-## Completion states
+対象または実行の範囲を特定できない場合は、計画を作り上げず `Blocked` とする。\
+実行済みだと根拠で確認できないコマンドは、未実行の提案として扱う。
 
-次の順序で状態を一つだけ選ぶ:
+## 完了状態
 
-1. `Not applicable`: 通常の design または implementation handoff を超える safety control が不要である。
-2. `Blocked`: Skill は適用されるが、material な target、evidence、control、recovery、ownership、risk acceptance、authority の不足により、責任ある authorization または execution handoff ができない。
-3. `Ready for authorization`: material な control と evidence は decision-ready だが、責任ある authority が具体的な action、scope、residual risk を承認していない。
-4. `Ready for execution handoff`: material な control は decision-ready で、具体的な action と scope が特定された execution owner に対して承認済みである。
+次の順序で、一つだけ選ぶ。
 
-material な readiness gap が残る場合、authorization status より `Blocked` を優先する。
-この Skill は authorization を記録するが、作り出さない。
+1. `Not applicable`: 通常の設計や実装の引き継ぎを超える安全対策は必要ない。
+2. `Blocked`: この Skill の対象だが、対象、根拠、対策、復旧、担当者、または判断権限に重大な不足があり、責任を持って承認や実行へ引き継げない。\
+   判断責任者が分かっていて承認待ちであることだけでは、準備不足とみなさない。
+3. `Ready for authorization`: 実質的な対策と根拠が判断できる状態で、判断責任者も特定できているが、その責任者は具体的な操作、範囲、回復不能な損失を含む残るリスクをまだ承認していない。
+4. `Ready for execution handoff`: 実質的な対策が判断できる状態で、特定された実行担当者に対し、具体的な操作と範囲が承認されている。
 
-## Control と recovery の規則
+準備に重大な不足が残る場合は、承認状況にかかわらず `Blocked` を優先する。\
+この Skill は承認状況を記録するだけで、承認を与えない。
 
-- reversal が不可能、または別 treatment より危険な場合に rollback を必須にしない。
-- prerequisite、procedure、owner、expected limit が credible である evidence なしに、recovery が利用可能だと記述しない。
-- failure mode に rollback より適する場合は、roll-forward、restore、compensation、containment、explicit loss acceptance を使う。
-- material な irreversible loss に承認済み acceptance decision がない場合、または必要な recovery evidence が得られない場合は `Blocked` とする。
-- 具体的な scope と control が承認済みの場合は、一般的な再確認を求めない。
-- action、target、scope、control set、residual risk、適用 authority が承認内容から実質的に変わる場合だけ、新しい decision を必要とする。
+## 対策と復旧の規則
 
-## 報告契約
+- 元に戻せない場合や、別の対処より危険な場合は、ロールバックを必須にしない。
+- 復旧の前提条件、手順、担当者、見込まれる限界について信頼できる根拠がなければ、復旧できると記述しない。
+- 失敗の形に応じて、ロールバックより適切な場合は、ロールフォワード、復元、補償、影響の封じ込め、損失の明示的な受容を選ぶ。
+- 回復不能な重大な損失について、誰が、どの損失と範囲を受け入れる判断をするか特定する。\
+  対策と根拠が判断できる状態で、その責任者による受容判断だけが残る場合は `Ready for authorization` とする。\
+  この状態を、損失の受容や実行の許可として扱わない。\
+  判断権限者や、ほかの重大な準備条件が欠けている場合は `Blocked` とする。
+- 具体的な範囲と対策が承認済みなら、一般的な再確認を求めない。
+- 操作、対象、範囲、対策、残るリスク、適用される権限が承認内容から実質的に変わる場合に限り、判断をやり直す。
 
-変更に合わせた構成で、次を含める:
+## 報告内容
 
-- completion state とその理由
-- 具体的な action、target、environment、revision または data scope、execution boundary
-- material input と unknown の evidence state
-- applicability basis と material risk property
-- prevention または mitigation、detection、abort condition、recovery treatment、owner、residual risk を含む risk-to-control mapping
-- precondition、go/no-go criteria、monitoring、point of no return、post-action verification
-- authorization state、responsible decision owner、accepted loss
-- 次の handoff と、それを無効にする条件
+変更に合わせて構成し、次を含める。
 
-空の section と固定の step 数を強制しない。
-command が有用な場合は、確認した evidence に基づいて具体化し、未実行と明記する。
+- 完了状態とその理由
+- 具体的な操作、対象、環境、リビジョンまたはデータの範囲、実行の範囲
+- 重要な入力と不明点の根拠の状態
+- この Skill を適用する理由と実質的なリスクの性質
+- 予防・軽減、検知、中止条件、復旧の対処、担当者、残るリスクを対応付けた内容
+- 前提条件、実行可否の判断基準、監視、元に戻せなくなる時点、実行後の検証
+- 承認状況、判断責任者、受容済みの損失
+- 次の引き継ぎ先と、引き継ぎの判断を無効にする条件
+
+内容のない節や、固定の手順数を強制しない。\
+コマンドを示す場合は、確認済みの根拠に基づいて具体化し、未実行と明記する。
 
 ## 境界
 
-- objective、target、environment、authority、success criteria が評価できないほど未定義な場合は `clarify-request` を使う。
-- 実質的に異なる safety または rollout strategy が未確定な場合は `explore-decision-space` を使い、approach を選択してからここへ戻る。
-- 通常の implementation design には `design-changes` を使い、追加の high-risk control が必要な場合はその handoff を受け取る。
-- 承認済み implementation は `implement-changes` または元の authorized operator へ渡し、その実行責務を吸収しない。
-- 完了済み diff の review、failure investigation、一般的な security assessment、file modification、提案 operation の実行、変更の承認、変更の実行を行わない。
-- 隣接 Skill がなくても self-contained に動作し、別 agent または subagent を既定で導入しない。
+- 目的、対象、環境、権限、成功条件が評価できないほど曖昧なら、`clarify-request` を使う。
+- 実質的に異なる安全策や展開方法が未決定なら、`explore-decision-space` を使い、方法を選んでからこの Skill に戻る。
+- 通常の実装設計には `design-changes` を使い、追加の重大リスク対策が必要な場合は、その引き継ぎを受ける。
+- 承認済みの実装は `implement-changes` または元の実行担当者へ渡し、実行の責任を引き受けない。
+- 完成した差分のレビュー、障害調査、一般的なセキュリティ評価、ファイルの変更、提案された操作の実行、変更の承認、変更の実行は行わない。
+- 隣接する Skill が利用できなくても、この Skill 単体で進める。\
+  別のエージェントやサブエージェントを既定では導入しない。

@@ -1,52 +1,62 @@
 {
-  "skill": "triage-review-feedback",
-  "version": 1,
+  "skill_name": "triage-review-feedback",
   "execution": {
-    "catalog": [
+    "coexistence_skills": [
       "review-changes",
-      "triage-review-feedback",
       "validate-fix",
       "draft-review-comments",
       "implement-changes"
-    ],
-    "observable_activation": "The executor must open the selected SKILL.md and end with a machine-readable selected-skill line.",
-    "repetition": "Run one matched baseline and candidate observation. Repeat only after an unexpected or unstable selection."
+    ]
   },
-  "cases": [
+  "evals": [
     {
       "id": "triage-human-feedback",
-      "prompt": "人間のレビューコメントが5件あります。根拠を確認して採用、保留、却下に分け、対応方針を決めてください。",
-      "expected": "should_trigger"
+      "prompt": "人間のレビューコメント「設定ファイルの認証トークンをログへ出力する変更は、運用ログの閲覧者に秘密を公開する可能性がある」があります。指摘の根拠と現在の該当性を評価し、今対応するか、保留するか、対応しないかを決めてください。対象の差分とログ閲覧権限は未提供です。",
+      "expected_handlers": [
+        "triage-review-feedback"
+      ]
     },
     {
       "id": "triage-ai-review",
-      "prompt": "An AI reviewer left findings with mixed confidence. Assess whether each concern is supported and current, then decide Act now, Defer, or No action before we plan the fixes.",
-      "expected": "should_trigger"
+      "prompt": "An AI reviewer left this existing finding on the current change: 'auth/filter.go:18 removed the tenant_id predicate, possibly exposing another tenant's data.' Label: question; confidence: low; evidence: the reviewer saw a query filtered only by record_id; unconfirmed premise: whether the caller already enforces tenant ownership. Assess whether this concern is supported and current, then decide Act now, Defer, or No action before any fix is planned.",
+      "expected_handlers": [
+        "triage-review-feedback"
+      ]
     },
     {
       "id": "legacy-triage-wording",
-      "prompt": "Here are existing review findings. Decide which to accept, defer, or reject, preserve the reasons, and choose the response approach.",
-      "expected": "should_trigger"
+      "prompt": "Here is an existing review finding F-7: the changed parser returns null for an empty optional field; the reviewer says this may break a caller that expects an empty string. The caller contract and target revision are not supplied. Decide whether to accept, defer, or reject the concern, preserve the reasons and unknowns, and choose the response approach before any fix or comment is drafted.",
+      "expected_handlers": [
+        "triage-review-feedback"
+      ]
     },
     {
       "id": "discover-new-findings",
-      "prompt": "Review the current unstaged code and configuration diff for correctness, safety, and missing tests.",
-      "expected": "should_not_trigger"
+      "prompt": "Review this new code diff for correctness, safety, and missing tests, and identify any new findings. Before: `return records.filter(r => r.tenant_id === tenantId);` After: `return records;`. The current request is a fresh review, not a decision about a prior reviewer comment.",
+      "expected_handlers": [
+        "review-changes"
+      ]
     },
     {
       "id": "implement-accepted-feedback",
       "prompt": "The review findings have already been accepted and scoped. Implement the approved fixes now.",
-      "expected": "should_not_trigger"
+      "expected_handlers": [
+        "implement-changes"
+      ]
     },
     {
       "id": "validate-completed-fix",
       "prompt": "The fix for review thread 42 is complete. Verify whether that specific finding is resolved and report remaining risks.",
-      "expected": "should_not_trigger"
+      "expected_handlers": [
+        "validate-fix"
+      ]
     },
     {
       "id": "draft-pr-comments",
       "prompt": "Turn these already organized findings into GitHub PR inline comments with locations and a short review summary.",
-      "expected": "should_not_trigger"
+      "expected_handlers": [
+        "draft-review-comments"
+      ]
     }
   ]
 }

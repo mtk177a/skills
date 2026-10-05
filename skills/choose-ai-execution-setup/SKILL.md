@@ -21,8 +21,9 @@ Gather what is available:
 - available chats, coding agents, models, reasoning settings, tools, permissions, and execution environments
 - uncertainty, judgment, context volume, verification needs, reversibility, and consequence of error
 - user-provided cost, latency, token, or privacy constraints
+- user-stated priorities and trade-offs that could change which eligible setup to recommend
 
-Distinguish confirmed availability from a required capability. Do not invent a named product, model, profile, tool, permission, or topology when the available choices are unknown.
+Distinguish confirmed availability from a required capability. Verify decision-critical technical facts through available read-only tool or environment checks and authoritative documentation before asking the user to supply them. Treat reported availability as reported until checked, and state what cannot be verified. Do not invent a named product, model, profile, tool, permission, or topology when the available choices are unknown.
 
 ## Decision workflow
 
@@ -35,7 +36,7 @@ Distinguish confirmed availability from a required capability. Do not invent a n
 7. Choose the verification and review capability needed to establish the outcome.
 8. Choose one session, sequential handoffs, independent review, or parallel agents only when work units are already defined. If implementation units still need to be designed, return that need to the owning design workflow.
 9. Use parallel agents only when units are independent, do not contend for mutable state or files, have explicit ownership and completion checks, can be integrated by a parent, and save more than their coordination cost. Do not count an integrating parent as a worker or assign it a work unit unless its capability and availability for that unit are confirmed.
-10. Apply user-stated cost, latency, token, and privacy constraints across the eligible choices. Do not call one setup lighter or heavier without naming the dimension.
+10. Apply user-stated cost, latency, token, and privacy constraints across the eligible choices. Do not call one setup lighter or heavier without naming the dimension. When eligible choices differ materially on a trade-off the user has not resolved, explain the consequences and leave that preference to the user rather than silently choosing a priority.
 11. Map the requirements to confirmed available choices. Before using `Recommendation ready`, verify that every required access, tool, environment, permission, and verification capability is confirmed for that choice. Otherwise use the applicable conditional, setup-change, or insufficient-evidence state.
 12. State the recommendation, material alternatives, prerequisites, unknowns, and next actor.
 
@@ -56,6 +57,7 @@ Adapt the response to the decision. Include:
 - the recommended available setup or the capability-level recommendation
 - separate entries for access and tools, model capability, reasoning effort, context, permissions and side effects, verification and review, and topology; mark a dimension as unconfirmed or non-differentiating when it does not constrain the choice
 - material cost, latency, token, or privacy constraints supplied by the user
+- decision-critical technical facts checked, material trade-offs left for the user, and facts that remain unverified
 - prerequisites, unconfirmed assumptions, and the actor responsible for the next step
 - a task-design, configuration, or authorization handoff only when that boundary blocks the setup decision
 
@@ -70,6 +72,6 @@ Do not force a named model, profile, multiple agents, or a detailed comparison b
 ## Boundaries
 
 - Do not perform or orchestrate the task, create implementation work units, change client settings, switch models, grant permissions, or treat a recommendation as authorization.
-- Do not choose the user's objective, scope, risk tolerance, substantive implementation design, or final adoption decision.
+- Do not choose the user's objective, scope, priorities, risk tolerance, substantive implementation design, or final adoption decision.
 - Keep task-specific learning and understanding calibration with `calibrate-learning-support`; remain self-contained when that Skill is unavailable.
 - Keep automatic agent and tool orchestration in the active agent's durable instructions, client configuration, and agent definitions rather than this distributed Skill.

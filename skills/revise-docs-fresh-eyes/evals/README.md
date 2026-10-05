@@ -5,12 +5,13 @@
 Verify that `revise-docs-fresh-eyes` responds only to explicit fresh-context
 revision requests, starts a distinct subagent without authoring turns, and has
 that subagent complete the cold read and revision. The parent must not leak its
-diagnosis, rewrite the child's prose, or fall back to same-context editing.
+diagnosis, rewrite the child's prose, or fall back to same-context editing. It
+checks the result against supplied sources and preserves existing changes.
 
 Structured assets:
 
-- `triggers.json`: explicit triggers, near misses, and coexistence cases
-- `evals.json`: author-context, authority, and fail-closed behavior cases
+- `triggers.json`: executable explicit triggers, near misses, and coexistence cases
+- `evals.json`: executable author-context, authority, source-fidelity, and fail-closed behavior cases
 - `results.json`: added only after accepted Codex and Claude Code evidence exists
 
 ## Iter 0 — Static check
@@ -21,17 +22,21 @@ Structured assets:
 - Codex delegation excludes authoring turns and Claude Code uses a normal fresh
   `Agent` subagent
 - the parent neither creates a reader contract nor pre-reviews the artifact
+- still-operative explicit requirements remain available without transmitting
+  earlier author opinions or suspected defects
 - the child payload contains only the target, user-derived request and
-  constraints, output mode, and authority
+  constraints, user-supplied source material, output mode, and authority
 - earlier author preferences, attachment, suspected defects, and desired
-  conclusions never become child constraints unless the latest request repeats
-  them
+  conclusions never become child constraints unless the current revision
+  request reaffirms them
 - missing context stays grounded in supplied entities and actions; the child
   does not invent adjacent operational requirements or expand a short procedure
   into a speculative template
 - the child owns both cold review and revision
-- the parent performs only provenance, scope, authority, preservation, and
-  output-mode checks and does not rewrite prose
+- the parent confirms a successful spawn and observable child identifier before
+  reporting that a child started
+- the parent checks provenance, scope, authority, preservation, supplied source
+  material, and output mode, protects existing changes, and does not rewrite prose
 - comments-only mode requires an explicit user request
 - unavailable or prohibited subagents stop the workflow without a same-context
   assessment or revision
@@ -45,7 +50,9 @@ Structured assets:
 | Explicit trigger | Activates for ordinary trimming or proofreading | `triggers.json` | Observable Skill loads |
 | Fresh child | Reuses or forks the authoring conversation | `author-context-file-revision` | Child identity and spawn trace |
 | Payload integrity | Sends parent diagnosis or expected deletions | `author-context-file-revision` | Child payload inspection |
+| Operative requirements | Drops a still-valid constraint or forwards author bias | `source-and-existing-edit` | Child payload and final artifact |
 | Revision ownership | Child reviews, then parent rewrites | `author-context-file-revision` | Child output and parent trace |
+| Source fidelity and integration | Accepts unsupported text or overwrites a local edit | `source-and-existing-edit` | Source and before/after diff inspection |
 | Chat artifact relay | Parent summarizes text before delegation | `chat-artifact-revision` | Payload comparison |
 | Comments authority | Rewrites when comments only were requested | `comments-only` | Child and final output inspection |
 | Fail closed | Self-edits when delegation is prohibited | `subagents-prohibited` | No child, assessment, or revision |
@@ -54,8 +61,7 @@ Structured assets:
 
 ## Execution protocol
 
-1. Compare the candidate with commit `2f57393` as the previous behavior and
-   with no Skill when trigger selection needs a control.
+1. Select the least sufficient path and cases under `docs/evaluation.md`.
 2. Use an isolated disposable workspace and client home. Install only the target
    Skill and the adjacent Skills named by the case.
 3. For author-context cases, create an actual parent conversation containing the
@@ -64,10 +70,10 @@ Structured assets:
 4. Capture observable parent and child identifiers, spawn arguments, child
    payload, child result, file hashes, and final response. Keep raw traces
    outside the repository.
-5. Run the same fixture with Codex CLI and Claude Code. In Codex, confirm that
-   authoring turns were not forked. In Claude Code, confirm that a normal
-   `Agent` subagent, not a resumed or forked parent conversation, performed the
-   work.
+5. For a client-support claim, run the same fixture in each affected client. In
+   Codex, confirm that authoring turns were not forked. In Claude Code, confirm
+   that a normal `Agent` subagent performed the work without resuming or forking
+   the parent conversation.
 6. Grade output quality separately from orchestration. A fluent revision cannot
    compensate for failed context isolation.
 7. Record an unavailable observation as `not exposed` and an unrun client as
@@ -78,13 +84,13 @@ Structured assets:
 - every assigned critical assertion passes
 - every trigger case selects exactly the expected handler or handlers from
   observable Skill loads
-- both Codex and Claude Code expose a distinct child that performs the revision
+- each client claimed as verified exposes a distinct child that performs the revision
 - no child payload contains parent-only diagnosis, expected deletions, draft
   rationale, or hidden grading criteria
 - no parent trace contains discretionary prose repair after the child result
 - required facts, prohibitions, uncertainty, and output authority survive
-- the candidate improves author-context separation over the previous behavior
-  without regressing any assigned preservation assertion
+- any comparison invoked for a known regression shows no loss of author-context
+  separation or assigned preservation requirements
 
 ## Current result
 
@@ -113,3 +119,12 @@ Because dual-client evidence is incomplete, there is no accepted
 `results.json`. The previous `edit-for-readers` result evaluated a different
 responsibility and remains available in Git history at commit `2f57393`; it is
 not evidence for this Skill.
+
+During the 2026-10-04 audit, Codex CLI 0.155.1 completed the selected new case
+and an existing author-context case without an observable child-spawn event or
+an edited artifact. Both results reported a child despite that missing evidence.
+After the Skill added an explicit successful-spawn check, the new case timed
+out at 240 seconds with no observable spawn. These runs do not establish the
+candidate's runtime behavior; the unselected cases and Claude Code remain
+unverified. The raw traces stay outside the repository, and #72 records the
+selected cases and stopping reason.

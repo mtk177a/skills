@@ -6,8 +6,8 @@ Verify that `curate-repo-docs` decides whether repository documentation needs to
 
 ## Assets
 
-- `triggers.json`: trigger, non-trigger, near-miss, and coexistence cases
-- `evals.json`: realistic repository tasks, synthetic fixtures, and hidden assertion assignments
+- `triggers.json`: executable trigger, non-trigger, near-miss, and coexistence cases
+- `evals.json`: executable repository tasks, synthetic fixtures, and hidden grading assertions
 - `results.json`: compact historical comparison evidence and revision-bound targeted evidence
 - this README: static contract, coverage, protocols, and summarized results
 
@@ -52,7 +52,7 @@ preserved as historical evidence, not as the default path for later changes.
 8. Run candidate and baseline once. Repeat matched conditions only when an unexpected result, instability, fixture defect, or grader defect could change the decision.
 9. Keep prompts, responses, JSONL, grader output, temporary runner code, and disposable repositories outside this source repository.
 
-## Trigger execution protocol
+## Historical trigger execution protocol
 
 Present each case as a Skill-selection task using only the installed names and descriptions declared for that condition.
 Require the selector to open every selected `SKILL.md`, and count only an observed file read.
@@ -151,3 +151,18 @@ Evaluated on 2026-07-31 with Codex CLI 0.146.0, `gpt-5.6-sol`, high reasoning, w
 - Claude Code, GitHub Copilot, Gemini CLI, other models, repeated-run stability, live repositories, external documentation systems, and periodic freshness audits were not executed.
 
 See `results.json` for the compact case matrix, environment, hashes, and evaluation correction record.
+
+## Issue #57 audit — 2026-10-04
+
+The audit used the version 3 criteria in Issue #49 and started from `b88af0cdcd07138c8e7341a8423a34331b0a84b6` with a clean worktree.\
+The English `SKILL.md` and both runtime references match the SHA-256 values in the historical `results.json` candidate record.\
+Their responsibilities and discovery boundary did not change.
+
+All six behavior cases and 15 routing cases were migrated to the executable `{skill_name, evals}` format.\
+A direct comparison with the base definitions confirmed that prompts, fixtures, assigned requirements, expected handlers, and case order were retained.\
+The repository checker accepted both definitions.\
+The selected path was `static-only`; its plan estimated zero model calls because only evaluation format and Japanese reference wording changed.\
+The historical model results remain historical evidence, not a fresh execution of the migrated definitions.
+
+Unverified: execution of the migrated cases in the current Codex model and behavior in other clients.\
+A future runtime or discovery change, conflicting observation, or schema-related execution failure would make targeted model evaluation useful.

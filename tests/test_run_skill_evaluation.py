@@ -11,6 +11,7 @@ from unittest.mock import patch
 from scripts.run_skill_evaluation import (
     EvaluationError,
     attach_plan_digest,
+    build_executor_prompt,
     canonical_json,
     copy_baseline_skill,
     copy_case_files,
@@ -211,6 +212,19 @@ def create_manual_run(plan_path: Path, run_path: Path) -> None:
 
 
 class SkillEvaluationRunnerTests(unittest.TestCase):
+    def test_candidate_prompt_allows_required_companion_skills(self) -> None:
+        prompt = build_executor_prompt(
+            {"path": "targeted-candidate", "skill": "maintain-japanese-references"},
+            {"prompt": "Synchronize the Japanese reference."},
+        )
+        self.assertIn(
+            "use the `maintain-japanese-references` Skill at "
+            "`.agents/skills/maintain-japanese-references/SKILL.md`",
+            prompt,
+        )
+        self.assertNotIn("use only the", prompt)
+        self.assertIn("Do not read or use a same-name Skill outside", prompt)
+
     def test_runtime_skill_read_guard_uses_one_profile_with_personal_denials(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory) / "home"
@@ -1980,7 +1994,7 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             )
             self.assertTrue(
                 all(
-                    "use only the `alpha-skill` Skill at `.agents/skills/alpha-skill/SKILL.md`"
+                    "use the `alpha-skill` Skill at `.agents/skills/alpha-skill/SKILL.md`"
                     in invocation["prompt"]
                     for invocation in invocations
                 )
