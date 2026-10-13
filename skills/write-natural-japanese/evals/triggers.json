@@ -86,12 +86,12 @@
         },
         {
           "id": "d3-assertion-3",
-          "text": "Use write-natural-japanese for linguistic realization and wording.",
+          "text": "Use context-appropriate natural Japanese while preserving the meaning and uncertainty in the finished article fragment.",
           "critical": false
         },
         {
           "id": "d3-assertion-4",
-          "text": "Use japanese-tech-writing for headings, paragraphs, and argument structure.",
+          "text": "Make the relation between headings, paragraphs, and the argument clear in the finished article fragment.",
           "critical": false
         },
         {
