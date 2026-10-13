@@ -390,6 +390,42 @@
       ]
     },
     {
+      "id": "N5",
+      "title": "Infer the role of draft notes and delegated editing scope",
+      "prompt": "次の打ち合わせメモをもとに、利用者向けの短い日本語の案内を完成させてください。完成稿だけを返してください。\n\n- `sync_mode` の既定値は `manual`。`manual` では再読み込み後に設定変更が反映される。`auto` では即時反映される。\n- 担当者は冒頭を問いかけにする案を出したが、本文は未作成。\n- 打ち合わせ中の仮称は『青い企画』。公開する機能名はまだ決まっていない。\n- なぜこの仕様なのかは確認していない。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {"id": "n5-role", "text": "Treat the notes as drafting material, select the user-relevant behavior, and produce a standalone notice without requiring an existing draft.", "critical": true},
+        {"id": "n5-facts", "text": "Preserve the manual default, reload condition, and auto behavior with exact setting strings, without inventing the reason or an official feature name.", "critical": true},
+        {"id": "n5-editorial", "text": "Do not present the meeting's placeholder name or the editor's suggested opening as product information.", "critical": true}
+      ]
+    },
+    {
+      "id": "N6",
+      "title": "Separate unnecessary unknowns from indispensable missing details",
+      "prompt": "次の二つの利用者向け文章を作ってください。A は完成稿だけ、B は書ける完成稿と必要最小限の確認事項を分けて返してください。\n\nA：未対応の設定値は実行時の処理には使われません。理由は不明です。理由の説明は依頼していません。\nB：オンライン説明会の案内です。内容は新しい設定画面の紹介です。開催日と申込先は未定ですが、依頼者は日付と申込方法を必ず載せるよう指定しています。分かっている内容の案内は先に書いてください。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {"id": "n6-a", "text": "Finish A without asking for or inventing a reason that the requested text does not need.", "critical": true},
+        {"id": "n6-b", "text": "Write B's supported event description and isolate only the missing date and signup destination or method as confirmation needs.", "critical": true},
+        {"id": "n6-no-fiction", "text": "Do not make up an event date, signup method, reason, or promise, and do not present B as fully complete.", "critical": true}
+      ]
+    },
+    {
+      "id": "N7",
+      "title": "Respect expression-only and full-restructure authority",
+      "prompt": "次の Markdown 手順について、A は表現だけ自然に直し、B は全体の再構成も任せるので読みやすい完成稿にしてください。A と B を分けて返してください。条件、手順の依存、リンク先を守ってください。\n\n## apply\n`context-mode` が `apply` のときだけ変更を実行します。実行する前に下の確認をします。確認へのリンクは [確認](#check) です。\n\n## check\n変更候補を確認します。`context-mode` が `review` のときは候補を表示しますが、変更は実行しません。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {"id": "n7-a", "text": "A preserves section roles, heading/link target correspondence, and the expression-only scope while improving wording.", "critical": true},
+        {"id": "n7-b", "text": "B may reorder or rewrite headings to clarify checking before applying, while preserving the check-before-execute dependency and valid anchor/link correspondence.", "critical": true},
+        {"id": "n7-conditions", "text": "Both outputs preserve review as display-only and apply as the only condition for executing changes, with exact technical strings.", "critical": true}
+      ]
+    },
+    {
       "id": "K",
       "title": "Separate requested reasons from the final artifact",
       "prompt": "次の技術文書を、意味、確度、条件を変えずに自然な日本語へ整えてください。完成稿と、主な修正理由を分けて返してください。完成稿の中に理由や元の表現への批評を混ぜないでください。\n\n現時点では、起動直後の競合状態が原因である可能性があります。まず `storage state` を照合し、原因を切り分けます。設定キー `context-mode` の既定値は `review` です。",
