@@ -426,6 +426,18 @@
       ]
     },
     {
+      "id": "N8",
+      "title": "Keep a reader-relevant correction reason from drafting notes",
+      "prompt": "次のチーム内メモから、利用者向けの短い訂正案内を書いてください。前回の案内を訂正した事実と理由は、読者が変更を理解するために必要なので含めてください。完成稿だけを返してください。\n\n前回は『設定変更はすぐに反映される』と案内しました。検証で、`sync_mode` が `manual` の場合は再読み込み後に反映されると確認したため、この案内を訂正します。打ち合わせだけで使った作業名は『青い企画』です。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {"id": "n8-correction", "text": "State that the earlier guidance is being corrected and retain the supported reason for the correction and the manual reload condition.", "critical": true},
+        {"id": "n8-disclosure", "text": "Omit the irrelevant internal working name while preserving exact sync_mode and manual strings.", "critical": true},
+        {"id": "n8-no-invention", "text": "Do not add an unsupported cause for product behavior, a promise, or another technical condition.", "critical": true}
+      ]
+    },
+    {
       "id": "K",
       "title": "Separate requested reasons from the final artifact",
       "prompt": "次の技術文書を、意味、確度、条件を変えずに自然な日本語へ整えてください。完成稿と、主な修正理由を分けて返してください。完成稿の中に理由や元の表現への批評を混ぜないでください。\n\n現時点では、起動直後の競合状態が原因である可能性があります。まず `storage state` を照合し、原因を切り分けます。設定キー `context-mode` の既定値は `review` です。",
