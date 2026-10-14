@@ -1,0 +1,185 @@
+{
+  "schema_version": 2,
+  "skill": "make-it-click",
+  "skill_source": "public",
+  "evaluated_on": "2026-10-14",
+  "purpose": "Compare premise linking, uncertainty, and causal-evidence revision against no Skill",
+  "affected_responsibilities": [
+    "Case-specific premises and uncertainty in a finished explanation",
+    "Preserve observations while correcting unsupported causal certainty and pending decisions"
+  ],
+  "selection": {
+    "path": "baseline-comparison",
+    "cases": [
+      {
+        "id": "ja-tech-premise",
+        "conditions": [
+          "candidate",
+          "without-skill"
+        ]
+      },
+      {
+        "id": "en-revise-evidence",
+        "conditions": [
+          "candidate",
+          "without-skill"
+        ]
+      }
+    ]
+  },
+  "base": {
+    "commit": "cea5c19b3ca4ecadf333301f21440fa0e63b8f1c"
+  },
+  "candidate": {
+    "files": {
+      "SKILL-ja.md": {
+        "mode": "100644",
+        "sha256": "sha256:31396ecfb0907320b24f084c82e681ff5f8225d8c5f2d4a821e34e1a202049cb"
+      },
+      "SKILL.md": {
+        "mode": "100644",
+        "sha256": "sha256:291df87da1c9937c5db64e93407b244d92f48445143f037206762453e6a29747"
+      },
+      "references/explanation-examples.md": {
+        "mode": "100644",
+        "sha256": "sha256:35c197e8ac9d9c062ab1b122e9c941e03da6da009fa35214cdbe5cb8b4cb8673"
+      }
+    }
+  },
+  "evaluation_inputs": {
+    "evaluation_files": {
+      "skills/make-it-click/evals/evals.json": "sha256:a810a1f78f1c3ae6a74043f5f95f2936c965824819767ae07be6c1241b216853"
+    },
+    "case_files": {}
+  },
+  "environment": {
+    "client": "codex-cli 0.162.0-alpha.17.2",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max",
+    "sandbox": "read-only"
+  },
+  "checks": {
+    "repository": "pass"
+  },
+  "results": [
+    {
+      "case_id": "ja-tech-premise",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "mechanism",
+          "status": "pass",
+          "evidence": "Connects immediate main-store updates to reads from regional copies and the three-minute sync interval without a cache tutorial.",
+          "critical": true
+        },
+        {
+          "id": "uncertainty",
+          "status": "pass",
+          "evidence": "Preserves the unknown read destination and explicitly declines to identify the mechanism as this request's proven cause.",
+          "critical": true
+        },
+        {
+          "id": "output",
+          "status": "pass",
+          "evidence": "Returns a finished developer-facing explanation.",
+          "critical": false
+        }
+      ],
+      "evidence": "All three requirements pass; sync success is explicitly conditional.",
+      "status": "pass"
+    },
+    {
+      "case_id": "ja-tech-premise",
+      "condition": "without-skill",
+      "requirements": [
+        {
+          "id": "mechanism",
+          "status": "pass",
+          "evidence": "Explains the main-store versus regional-copy read path and sync delay without reteaching caching.",
+          "critical": true
+        },
+        {
+          "id": "uncertainty",
+          "status": "pass",
+          "evidence": "Treats sync delay as a possible cause and preserves the unknown processing region.",
+          "critical": true
+        },
+        {
+          "id": "output",
+          "status": "pass",
+          "evidence": "Returns a finished developer-facing explanation.",
+          "critical": false
+        }
+      ],
+      "evidence": "All three requirements pass; no assertion-level advantage or regression was observed for the candidate.",
+      "status": "pass"
+    },
+    {
+      "case_id": "en-revise-evidence",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "comparison",
+          "status": "pass",
+          "evidence": "Preserves both observed averages, sample counts, and differing difficulty; explains that the unmatched comparison cannot establish improvement.",
+          "critical": true
+        },
+        {
+          "id": "decision",
+          "status": "pass",
+          "evidence": "Removes the unsupported proven productivity claim and states that rollout is pending.",
+          "critical": true
+        },
+        {
+          "id": "proportion",
+          "status": "pass",
+          "evidence": "Returns a concise three-sentence stakeholder update.",
+          "critical": false
+        }
+      ],
+      "evidence": "All three requirements pass.",
+      "status": "pass"
+    },
+    {
+      "case_id": "en-revise-evidence",
+      "condition": "without-skill",
+      "requirements": [
+        {
+          "id": "comparison",
+          "status": "pass",
+          "evidence": "Preserves both observed averages, sample counts, and differing difficulty; explicitly identifies the comparison as unmatched.",
+          "critical": true
+        },
+        {
+          "id": "decision",
+          "status": "pass",
+          "evidence": "Does not claim proven productivity gain or a decided rollout; states the decision is pending.",
+          "critical": true
+        },
+        {
+          "id": "proportion",
+          "status": "pass",
+          "evidence": "Returns a concise four-sentence stakeholder update.",
+          "critical": false
+        }
+      ],
+      "evidence": "All three requirements pass; no assertion-level candidate advantage or regression observed.",
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "status": "pass",
+    "counts": {
+      "error": 0,
+      "fail": 0,
+      "inconclusive": 0,
+      "pass": 4
+    }
+  },
+  "stopping_reason": "Two separately planned matched comparisons completed; all selected requirements passed in both conditions. No assertion-level candidate advantage or regression was observed; these results answer the two selected review concerns without establishing general effectiveness.",
+  "unverified": [
+    "Unselected en-policy-conditions, ja-revise-disclosure, and ja-history-multiple-factors cases",
+    "Disclosure boundaries and implicit Skill routing",
+    "Repeatability, reader comprehension, other models and clients, and live source verification"
+  ]
+}
