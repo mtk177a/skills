@@ -6,20 +6,49 @@ license: MIT
 
 # Make It Click
 
-Produce the explanation the user requested, in the requested language and form. The intended reader may be the requester or someone the requester is writing for. Make that reader able to follow the answer and the relationships that support it, rather than merely simplifying words or shortening sentences. For a revision, preserve the source's supported meaning and the requested edit scope.
+Help the intended reader understand an answer and its reasons by supplying the premises and connections this explanation needs. Shorter sentences or simpler words alone cannot replace a missing connection. The reader may be the requester or someone the requester is writing for.
 
-## Work through the explanation
+## Build the explanation
 
-1. Identify the reader's actual question and the purpose of the explanation: what the reader should understand, compare, or decide after reading. Use the reader and context the request supplies. If these are unspecified, make a reasonable assumption and begin; ask only when a missing choice would materially change the answer.
-2. Select the information needed to answer that question. Check available evidence, the scope of the supplied material, essential premises, conditions, unknowns, and what may be disclosed. A knowledgeable reader may still lack a premise specific to this case; supply that connection without adding an unrelated basics lesson. Do not invent facts, causes, policy, or certainty to bridge a gap. If a decisive fact is unavailable, explain the supported part and state the precise limit or ask for that fact when completion depends on it.
-3. Map the relationships the reader must follow: cause and effect, condition and outcome, comparison, sequence, and whole and part, as applicable. Keep a particular example distinct from the general rule it illustrates. For history or complex phenomena, preserve multiple contributing factors where the evidence warrants them; distinguish established facts, interpretations, and hypotheses.
-4. Choose an order and form that serves this question. Introduce the answer, context, mechanism, evidence, or caveat where each becomes useful. Use paragraphs, bullets, steps, or a table according to the relationships and the reader's task. Show the link from premise to conclusion; do not assume that a list of facts makes the inference obvious. Use a concrete example when it clarifies a rule or distinction, and identify its scope. Do not impose a universal conclusion-first order, length, example count, or template.
-5. Read the completed explanation from the reader's position. Check that it answers the question, makes the reason and any material application conditions clear, calibrates uncertainty, and contains only appropriate disclosures. Remove internal drafting history, unsupported additions, and details that do not help this reader. Preserve relevant qualifications even if the result is longer.
+### 1. Identify the reader and purpose
 
-For a source passage, distinguish text that must remain faithful from notes that the user has authorized you to select and reorganize. Preserve claims, actors, conditions, negation, degree of certainty, and exact strings where they matter. If these conflict with an apparent desire for a cleaner explanation, make the conflict visible rather than silently changing the claim.
+- Identify the reader's actual question and what they should understand, compare, or decide after reading.
+- Use the reader and context supplied by the request.
+- If either is unspecified, make a reasonable assumption and begin. Ask only when a missing choice would materially change the answer.
 
-## Output and examples
+### 2. Select information and premises
 
-Return the finished explanation or revision in the requested format. Do not routinely expose an analysis worksheet, quiz the reader, or append next actions. Add a note about missing evidence only when it affects what the reader can conclude.
+- Select essential facts, case-specific premises, conditions, unknowns, and disclosure limits from the available evidence and material.
+- Supply a needed case-specific premise without adding an unrelated basics lesson. A reader's general knowledge does not establish that they know this case's premise.
+- If revising existing text, distinguish a passage whose supported meaning must remain faithful from notes the requester has authorized you to select and reorganize.
+- In that revision, preserve material claims, actors, conditions, negation, degree of certainty, exact strings, and the requested edit scope. If clarity appears to require changing one of these, make the conflict visible rather than silently changing the claim.
+- If a decisive fact is unavailable, explain the supported part and state the precise limit. Ask for the fact when completion depends on it; do not invent facts, causes, policy, or certainty to fill the gap.
 
-Read [explanation examples](references/explanation-examples.md) when working out which premises to include, how to separate an example from its rule, or how to order a difficult explanation. The examples illustrate judgments; they are not text or structures to reproduce in every answer.
+### 3. Map the relationships
+
+- Identify the relationships the reader must follow, such as cause and effect, condition and outcome, comparison, sequence, or whole and part.
+- Keep a particular example distinct from the general rule it illustrates.
+- For history or complex phenomena, preserve multiple contributing factors where warranted. Distinguish established facts, interpretations, and hypotheses.
+
+### 4. Choose the order and write
+
+- Place the answer, context, mechanism, evidence, and caveat where each helps this reader follow the explanation.
+- Choose paragraphs, bullets, steps, or a table according to the relationships and the reader's task.
+- Show how the premises support the conclusion rather than merely listing facts.
+- Use a concrete example when it clarifies a rule or distinction, and identify its scope.
+- Do not impose a universal conclusion-first order, length, example count, or template. Keep material qualifications even when the explanation becomes longer.
+
+### 5. Check from the reader's position
+
+- Read the completed explanation for an answer to the question and an understandable reason.
+- Check material application conditions, calibrated uncertainty, and appropriate disclosure.
+- Remove internal drafting history, unsupported additions, and details that do not help this reader.
+- Check that the selected form has not hidden a necessary relationship or qualification.
+
+## Deliver the explanation
+
+Return the finished explanation or revision in the requested language, form, and scope. Do not routinely expose an analysis worksheet, quiz the reader, or append next actions. Note missing evidence separately only when it affects what the reader can conclude.
+
+## Use the examples
+
+Consult [explanation examples](references/explanation-examples.md) when a concrete illustration would help decide what premises to include, how to separate an example from its rule, or how to order a difficult explanation. The examples inform judgment; their wording and structures are not required outputs.
