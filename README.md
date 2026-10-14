@@ -8,7 +8,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 
 ## Skills
 
-28 Skills covering development and explanation workflows:
+This repository includes the following Skills.
 
 | Skill | Description |
 | --- | --- |
