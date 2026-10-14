@@ -1,12 +1,12 @@
 ---
-name: write-clear-explanations
-description: Write or revise a reader-facing explanation of a specific topic, decision, process, rule, or mechanism in English or Japanese. Use when the user needs to understand why or how something works, what a conclusion depends on, or what information matters to a decision, including everyday and technical subjects. Not for routine replies without an explanation task, pure copyediting, or adding a learning program to an active task.
+name: make-it-click
+description: Write or revise a reader-facing explanation of a specific topic, decision, process, rule, or mechanism in English or Japanese. Use when the intended reader needs to understand why or how something works, what a conclusion depends on, or what information matters to a decision, including everyday and technical subjects. Not for routine replies without an explanation task, pure copyediting, or adding a learning program to an active task.
 license: MIT
 ---
 
-# Write Clear Explanations
+# Make It Click
 
-Produce the explanation the user requested, in the requested language and form. Make the reader able to follow the answer and the relationships that support it, rather than merely simplifying words or shortening sentences. For a revision, preserve the source's supported meaning and the requested edit scope.
+Produce the explanation the user requested, in the requested language and form. The intended reader may be the requester or someone the requester is writing for. Make that reader able to follow the answer and the relationships that support it, rather than merely simplifying words or shortening sentences. For a revision, preserve the source's supported meaning and the requested edit scope.
 
 ## Work through the explanation
 

@@ -43,7 +43,7 @@
 | `summarize-changes` | 差分またはコミット範囲をレビューや文書化のために要約する |
 | `triage-review-feedback` | 指摘の妥当性と現在の状態を、`Act now`・`Defer`・`No action` の対応方針とは分けて評価する |
 | `validate-fix` | 特定済みの指摘に対する通常の修正後レビューを、適切な読み取り専用の証拠を使って限定的に行う |
-| `write-clear-explanations` | 読者の疑問に答えるため、必要な前提、情報の関係、条件、不確実性を示して説明文を作成・修正する |
+| `make-it-click` | 読者の疑問に答えるため、必要な前提、情報の関係、条件、不確実性を示して説明文を作成・修正する |
 | `write-natural-japanese` | 意味、確度、定着した用語を保ちながら、文脈に合う表現で日本語の文章を作成・推敲する |
 
 `japanese-tech-writing` と `cognitive-rhythm-writing` は、元の Gist を改変せずに収録しています。出典の版、ライセンス、同期の記録は各 Skill の `UPSTREAM.md` と [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載しています。
