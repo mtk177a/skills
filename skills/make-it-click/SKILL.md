@@ -8,13 +8,13 @@ license: MIT
 
 Help the intended reader understand an answer and its reasons by supplying the premises and connections this explanation needs. Shorter sentences or simpler words alone cannot replace a missing connection. The reader may be the requester or someone the requester is writing for.
 
-## Build the explanation
+## Procedure
 
 ### 1. Identify the reader and purpose
 
 - Identify the reader's actual question and what they should understand, compare, or decide after reading.
 - Use the reader and context supplied by the request.
-- If either is unspecified, make a reasonable assumption and begin. Ask only when a missing choice would materially change the answer.
+- If the reader, purpose, or relevant context is unspecified, make a reasonable assumption and begin. Ask first only when that uncertainty would materially change the explanation.
 
 ### 2. Select information and premises
 
@@ -45,10 +45,10 @@ Help the intended reader understand an answer and its reasons by supplying the p
 - Remove internal drafting history, unsupported additions, and details that do not help this reader.
 - Check that the selected form has not hidden a necessary relationship or qualification.
 
-## Deliver the explanation
+## Output
 
-Return the finished explanation or revision in the requested language, form, and scope. Do not routinely expose an analysis worksheet, quiz the reader, or append next actions. Note missing evidence separately only when it affects what the reader can conclude.
+Return the finished explanation or revision in the requested language, form, and scope. Do not routinely expose an analysis worksheet, quiz the reader, or append next actions. Make an evidence gap clear only when it affects what the reader can conclude.
 
-## Use the examples
+## Examples
 
 Consult [explanation examples](references/explanation-examples.md) when a concrete illustration would help decide what premises to include, how to separate an example from its rule, or how to order a difficult explanation. The examples inform judgment; their wording and structures are not required outputs.
