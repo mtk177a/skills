@@ -8,7 +8,7 @@
       "assertions": [
         {"id": "mechanism", "text": "Connect the main-store update, read API copies, and sync interval to explain a possible stale value without reteaching cache basics.", "critical": true},
         {"id": "uncertainty", "text": "Do not claim that the specific observed read used a stale copy or that every read is stale; preserve the unknown destination.", "critical": true},
-        {"id": "output", "text": "Return a reader-facing explanation without an internal worksheet or routine quiz.", "critical": false}
+        {"id": "output", "text": "Return a finished explanation for the stated reader rather than instructions to the writer about how to explain the issue.", "critical": false}
       ]
     },
     {

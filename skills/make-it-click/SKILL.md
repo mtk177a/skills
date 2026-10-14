@@ -6,7 +6,7 @@ license: MIT
 
 # Make It Click
 
-Help the intended reader understand an answer and its reasons by supplying the premises and connections this explanation needs. Shorter sentences or simpler words alone cannot replace a missing connection. The reader may be the requester or someone the requester is writing for.
+Help the intended reader understand an answer and its reasons by supplying the premises and connections this explanation needs. Shorter sentences or simpler words alone cannot replace a missing connection.
 
 ## Procedure
 
@@ -16,9 +16,11 @@ Help the intended reader understand an answer and its reasons by supplying the p
 - Use the reader and context supplied by the request.
 - If the reader, purpose, or relevant context is unspecified, make a reasonable assumption and begin. Ask first only when that uncertainty would materially change the explanation.
 
-### 2. Select information and premises
+### 2. Establish the information needed
 
-- Select essential facts, case-specific premises, conditions, unknowns, and disclosure limits from the available evidence and material.
+- Check the supplied material and available evidence to establish the facts needed to answer the reader's question.
+- Identify the premises the reader needs to understand the answer and the conditions under which the conclusion holds.
+- Check what remains unsupported or unknown and what information may be disclosed.
 - Supply a needed case-specific premise without adding an unrelated basics lesson. A reader's general knowledge does not establish that they know this case's premise.
 - If revising existing text, distinguish a passage whose supported meaning must remain faithful from notes the requester has authorized you to select and reorganize.
 - In that revision, preserve material claims, actors, conditions, negation, degree of certainty, exact strings, and the requested edit scope. If clarity appears to require changing one of these, make the conflict visible rather than silently changing the claim.
@@ -47,7 +49,7 @@ Help the intended reader understand an answer and its reasons by supplying the p
 
 ## Output
 
-Return the finished explanation or revision in the requested language, form, and scope. Do not routinely expose an analysis worksheet, quiz the reader, or append next actions. Make an evidence gap clear only when it affects what the reader can conclude.
+Return the finished explanation or revision in the requested language, form, and scope. Make an evidence gap clear only when it affects what the reader can conclude.
 
 ## Examples
 
