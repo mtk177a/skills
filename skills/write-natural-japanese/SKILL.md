@@ -34,7 +34,7 @@ license: MIT
 
 ### 3. 参照資料を読む
 
-文章の新規執筆・翻訳・リライト・推敲に入る前に、[日本語表現の判断基準と例](references/wording-decisions.md) を全文読む。
+文章の新規執筆・翻訳・リライト・推敲に入る前に、 [日本語表現の判断基準と例](references/wording-decisions.md) を全文読む。
 
 ### 4. 根拠に沿って書き、不足を扱う
 
