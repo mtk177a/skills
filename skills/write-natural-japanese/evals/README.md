@@ -1,69 +1,49 @@
-# write-natural-japanese evals
+# write-natural-japanese の評価
 
-SKILL.md is intentionally Japanese-canonical because this Skill's responsibility is Japanese writing and editing.
-The Skill and its wording reference are original MIT-licensed material and do not adapt a third-party Skill.
+## 評価方法
 
-## Evaluation assets
+文章の仕上がりを試すケースは `evals.json`、Skill の選択を試すケースは `triggers.json` に置く。`../../../docs/evaluation.md` に従い、変更した判断に必要なケースだけを選び、`scripts/run_skill_evaluation.py plan` でモデル呼び出し数を確かめてから実行する。採点条件は実行時のエージェントへ渡さない。
 
-The behavior definitions live in evals.json and use the executable skill_name / evals format described in ../../../docs/evaluation.md.
-The routing definitions live in triggers.json and use the same format with expected_handlers for direct routing observations.
-The executor receives prompts without the assertions used for grading.
-No historical results.json is committed for this Skill, and raw prompts, responses, JSONL events, and temporary fixtures remain outside the repository.
-No report.json is committed for this change; the selected evidence is summarized here.
+意味・条件・確度・発話意図、根拠、開示、変更範囲、正確な文字列を先に判定し、自然さで失敗を相殺しない。出力品質と Skill の選択・参照資料の読込みを別々に確認する。prompt、出力、トレース、一時 fixture はリポジトリ外に置く。
 
-## Selection for Issue #47
+## 直近に実行したモデル評価
 
-The changed responsibility is to treat a rewritten document as a new final artifact and recheck its semantics, certainty, scope, terminology, protected strings, Markdown syntax, and newly introduced mixed-language expressions.
-The change also adds a conditional consistency pass for multiple related documents in one request.
-The wording reference now distinguishes translation sources and references from formal or defined uses of 正本 without introducing unsupported uniqueness.
-The evaluation definitions were fully migrated from the legacy scenarios format because this pull request materially changes the Skill and its evaluation definitions.
+評価対象は `7d9c2be` の `SKILL.md` と `references/wording-decisions.md`。Codex CLI 0.155.1、gpt-6-luna、max reasoning、読み取り専用の一時作業環境、既存の keyring 認証、一時 HOME で実行した。`plan` で 4 回のモデル呼び出しを確認し、H・A・I・N1 を各 1 回実行した。静的検査、Skill カタログへの表示、環境隔離はいずれも通過した。評価時のファイル SHA-256 と `7d9c2be` の内容も一致した。
 
-The selected model-backed paths are:
+4 つのケースすべてで、完成稿の出力前に参照資料 6,032 文字を全文 `cat` した記録がある。読込みの観測と完成稿の判定は分け、以下の選定条件を出力で確認した。
 
-- targeted-candidate: C, I, and K.
-- baseline-comparison: H, I, and J.
-- targeted-routing: D1, D2, and D3.
+| ケース | 完成稿で確認した結果 |
+| --- | --- |
+| H | 原文の要件、条件、識別子、製品名を保持した。本番環境へのデプロイ前に必要なレビュアーの承認を明記し、便宜上の呼び名を「最後の品質確認」と表した。DeployGuard Quality Gate の名前も保持した。 |
+| A | 一覧にない英語混在を文脈に合う日本語に整え、検証の順序、`strict_mode` の条件、警告後の処理継続と正式名称 CloudShield Rules を保持した。 |
+| I | 英語版を翻訳元として示し、法的な正本や唯一の参照元にしなかった。リンク先、URL、パス、`auto-review`、`request-changes` を保持した。 |
+| N1 | 単独で利用者向けの新規稿を完成し、`sync_mode` の既定値、`manual` の再読込み条件、`auto` の即時反映を保持した。非公開の作業名や執筆指示は出さなかった。 |
 
-C rechecks uncertainty, established terminology, quotation, and the existing investigation sequence.
-H rechecks source-language translation, contextual wording, protected identifiers, and the requirement to read the full reference.
-I checks the distinction between a translation source and a formal 正本 while preserving links, URLs, paths, and procedure names.
-J checks the final pass over two related documents, cross-document terminology consistency, conditions, protected technical strings, and long-document drift.
-K checks separation of a requested final artifact from requested editing reasons.
-D1, D2, and D3 preserve the ordinary-response, explicit-wording-deliverable, and explicitly selected coexistence boundaries.
+4 つのケースすべてで選定した意味・根拠・開示・文字列の条件を満たした。参照資料を全文読んだこと自体から、表現の改善効果までは推定しない。後続の `57e0d74` は参照リンク前の半角スペースだけを変更したため、静的検査で確認し、モデル評価は再実行していない。
 
-The remaining behavior cases A, B, E, F1, F2, and G were migrated but not rerun because the selected Issue #47 responsibilities do not require another observation of their unchanged acceptance questions.
-Repetition was not performed because the executed cases completed without conflicting or unstable evidence.
+## 先行する評価
 
-## Human grading procedure
+| 対象 | 確認した結果 |
+| --- | --- |
+| `32ce1c1` の H | 承認と確認、原文にある時点、固有名称を保持し、参照資料 6,032 文字の全文を読んだ。`7d9c2be` より前の参照読込み条件での結果である。 |
+| `7c7a926` の H | 本番環境へのデプロイ前に必要なレビュアーの承認を明記し、便宜上の呼び名を「最後の品質確認」と表した。製品機能名を保持し、参照資料 6,006 文字の全文を読んだ。その後、参照資料の一般則が承認と確認を混同し得ると分かり、`32ce1c1` で修正して H を再実行した。 |
+| `1492dd3` の N1・N2・N3・N4・N7 | モデル呼び出しを 6 回計画した。ここに挙げた 5 つのケースを 1 回ずつ実行し、N1 は単独の新規執筆と非公開情報の除外、N2 は忠実な推敲と任された要約の区別、N3 は未確認挙動を補わない完成稿、N4 は説明と API 名・画面表示の書き分け、N7 は表現だけの修正と再構成の範囲、条件・リンク先の保持を確認した。N4 は参照資料の該当節を読んだ。これらは `7c7a926` で再実行していない。 |
+| `1492dd3` の H | 参照資料全文を読んだが、一般的な reviewer approval を「最終品質ゲート」と表したため、表現の役割に関する必須条件を満たさなかった。 |
+| 修正途中の H | 参照資料のファイル SHA-256 が `e2476592885bf7f7f04770af4b738cd821f384d6971b3c09efdc83251a56dcf5` の未コミット版では「最後の品質ゲート」が残り、不合格だった。次の最小修正を `7c7a926` に含め、上記の H で再確認した。 |
+| Issue #98 着手時の main `fdb93fe` | N3 は「例外を送出しない」を「発生しない」に強め、N4 は一般説明の `storage state` を残した。これらが最初の修正対象だった。 |
+| N8 の比較 | 比較元 `c339813` と候補 `d92d6a3` はともに選定条件を満たし、出力改善は確認できなかった。 |
+| D1・D2 の呼出し | 隔離環境で D1 は `d92d6a3` の非呼出し、D2 は `c339813` の対象 Skill 読込みを直接観測した。元の HOME では fixture を読まない実行と個人側の同名 Skill を読む無効な実行があり、権限ガード不一致の原因は未解明。今回 `description` は変えていない。 |
 
-1. Generate a plan with scripts/run_skill_evaluation.py and inspect the estimated model-call count.
-2. Run each approved plan once with an explicit maximum equal to or greater than the estimate.
-3. Grade every planned assertion from the captured final output and direct routing observations.
-4. Treat a missing or incomplete routing stream as inconclusive rather than inferring a handler from the final response.
-5. Preview the change-scoped report without writing it when a committed report is not needed.
-6. Keep unselected responsibilities and untested client or model behavior explicit.
+Issue #47 の 2026-09-17 評価では、当時の Codex CLI 0.155.0-alpha.2.6 と gpt-5.6-luna で H の候補と比較元がともに参照全文を読んだ。D3 は 2 つの Skill を明示指定した併用試験であり、必須依存の証拠ではない。以前の詳しい経緯は Git 履歴と [PR #136](https://github.com/mtk177a/skills/pull/136) に残る。
 
-## Executed evidence — 2026-09-17
+## 未確認の範囲
 
-The evaluations were rerun after correcting the JSON newline escapes in I/J/K and adding a fenced code block and list to J.
-They ran in Codex CLI 0.155.0-alpha.2.6 with gpt-5.6-luna, max reasoning effort, and read-only execution.
-The candidate and baseline fixtures were isolated to the target Skill and the required wording reference.
-The repository static check embedded in each Runner execution passed.
+- `57e0d74` でのモデル評価と、`7d9c2be` での N2–N8、D1–D3 の再実行。過去のコミットの結果を `57e0d74` の通過とは扱わない。
+- 選定例の反復安定性、人の読解改善、共有スレッド文脈の直接試験。
+- 参照資料の全文読込みが出力品質へ与える因果効果、すべての Markdown・リンク、他のクライアント・モデルでの挙動。
 
-| Path | Cases and conditions | Result |
-| --- | --- | --- |
-| targeted-candidate | C, I, K under candidate | Pass; 3 of 3 cases passed |
-| baseline-comparison | H, I, J under candidate and baseline | Pass; all 6 case-condition results passed |
-| targeted-routing | D1, D2, D3 under candidate | Pass; all 3 routing observations matched |
+## 参考資料
 
-The direct routing observations were D1 with no handler, D2 with write-natural-japanese, and D3 with japanese-tech-writing plus write-natural-japanese.
-The candidate outputs preserved uncertainty and established terms in C, separated translation-source meaning from 正本 in I, preserved protected strings, conditions, code fences, and list structure in J, and separated the completed prose from reasons in K.
-The baseline comparison also passed the same I and J assertions, including the Markdown structure assertion.
-The H traces directly recorded reads of SKILL.md and the full wording reference for both candidate and baseline conditions.
+[Claude の Agent Skills ベストプラクティス](https://platform.claude.com/docs/ja/agents-and-tools/agent-skills/best-practices) と [OpenAI の Skills 作成ガイド](https://developers.openai.com/plugins/build/skills) を 2026-10-13 に参照し、簡潔な主指示、参照資料への明確なリンク、長い参照資料の案内を構成の参考にした。確認したページに版番号はなかった。外部本文・例の転載や翻案はしておらず、再配布・翻案条件は確認していない。
 
-## Acceptance scope and unverified boundaries
-
-The selected evidence supports the Issue #47 responsibilities in the recorded Codex and Luna environment.
-It does not establish behavior for unselected cases, other clients, other models, other reasoning settings, or repeated-run stability.
-It does not establish that every possible long document or multi-document request will be semantically consistent.
-The selected acceptance evidence is summarized in this README; no current results.json report is committed.
+Skill と参照資料は本リポジトリで作成した MIT ライセンスの内容であり、外部 Skill を翻案していない。

@@ -340,6 +340,104 @@
       ]
     },
     {
+      "id": "N1",
+      "title": "Draft a public notice from notes without another writing Skill",
+      "prompt": "次のメモから、利用者向けの短い日本語のお知らせを新規に書いてください。必要な構成と説明も整え、完成稿だけを返してください。\n\n公開する内容：設定キー `sync_mode` の既定値は `manual`。`manual` では変更は即時反映されず、利用者が再読み込みすると反映される。`auto` では変更が即時反映される。\n執筆用メモ：社内での仮の作業名は『青い企画』で公開不可。担当者は見出しを先に考えるよう依頼した。原因や今後の提供予定は未確認。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {"id": "n1-complete", "text": "Produce a usable standalone Japanese notice with the default, the manual reload condition, and the auto behavior.", "critical": true},
+        {"id": "n1-disclosure", "text": "Do not disclose the internal working name or the drafting instruction.", "critical": true},
+        {"id": "n1-grounding", "text": "Do not invent causes, future plans, or additional product behavior; preserve sync_mode, manual, and auto as exact strings.", "critical": true},
+        {"id": "n1-output", "text": "Return only the reader-facing notice, with natural wording and an appropriate compact structure.", "critical": false}
+      ]
+    },
+    {
+      "id": "N2",
+      "title": "Distinguish faithful polishing from delegated summary",
+      "prompt": "同じ原稿について二つの依頼に分けて答えてください。A は主張を削らない忠実な推敲、B は要約を任された利用者向けの短文です。A と B の完成稿だけを分けて返してください。\n\n原稿：起動直後に発生する競合状態が原因である可能性があります。`storage state` を照合して原因を切り分けます。`context-mode` が `review` の場合、変更候補を表示しますが、変更は実行しません。現時点で原因は確定していません。\n\nB では調査の手順の詳述を省いてよいですが、原因の未確定と `review` で変更しない条件は必要です。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {"id": "n2-faithful", "text": "A preserves every material claim, investigation step, condition, and uncertainty without deleting a claim merely as unnecessary to readers.", "critical": true},
+        {"id": "n2-summary", "text": "B may omit investigation detail but retains the unconfirmed cause and the review condition with no change execution.", "critical": true},
+        {"id": "n2-strings", "text": "Preserve storage state, context-mode, and review as exact technical strings wherever their claims are retained.", "critical": true},
+        {"id": "n2-output", "text": "Separate A and B clearly and do not mix editing reasons into either finished text.", "critical": false}
+      ]
+    },
+    {
+      "id": "N3",
+      "title": "Finish the supported part without inventing missing behavior",
+      "prompt": "利用者向けに次の一文を自然な日本語へ整えてください。完成稿だけを返してください。確認済み：未対応の設定値を指定しても例外は送出されず、その値は実行時の処理に使用されません。元の表現：『未対応の設定値は静かに失敗します』。ログと画面通知の有無は不明です。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {"id": "n3-known", "text": "State the supported exception and runtime-use behavior in a usable finished sentence.", "critical": true},
+        {"id": "n3-unknown", "text": "Do not claim whether a log or screen notification exists and do not silently treat either as confirmed.", "critical": true},
+        {"id": "n3-progress", "text": "Do not stop with a question when the stated behavior is sufficient to complete this sentence.", "critical": true}
+      ]
+    },
+    {
+      "id": "N4",
+      "title": "Distinguish explanatory wording, API identifier, and UI label",
+      "prompt": "次の利用者向け説明を、意味と各文字列の役割を保って自然な日本語へ書き直してください。完成稿だけを返してください。\n\n一般的な説明として storage state は保存された認証情報の状態を指します。API のメソッド名 `storageState` でその状態を取得します。画面では “Storage State” と表示されます。利用者はその表示を選択すると、保存された状態を確認できます。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {"id": "n4-roles", "text": "Naturalize the generic explanatory use of storage state while retaining storageState as the exact API method and Storage State as the exact UI label.", "critical": true},
+        {"id": "n4-meaning", "text": "Preserve what the state represents, what the method does, and what selecting the UI label permits, without adding behavior.", "critical": true},
+        {"id": "n4-natural", "text": "Use context-appropriate Japanese rather than a blanket replacement or a blanket ban on established English or katakana terms.", "critical": false}
+      ]
+    },
+    {
+      "id": "N5",
+      "title": "Infer the role of draft notes and delegated editing scope",
+      "prompt": "次の打ち合わせメモをもとに、利用者向けの短い日本語の案内を完成させてください。完成稿だけを返してください。\n\n- `sync_mode` の既定値は `manual`。`manual` では再読み込み後に設定変更が反映される。`auto` では即時反映される。\n- 担当者は冒頭を問いかけにする案を出したが、本文は未作成。\n- 打ち合わせ中の仮称は『青い企画』。公開する機能名はまだ決まっていない。\n- なぜこの仕様なのかは確認していない。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {"id": "n5-role", "text": "Treat the notes as drafting material, select the user-relevant behavior, and produce a standalone notice without requiring an existing draft.", "critical": true},
+        {"id": "n5-facts", "text": "Preserve the manual default, reload condition, and auto behavior with exact setting strings, without inventing the reason or an official feature name.", "critical": true},
+        {"id": "n5-editorial", "text": "Do not present the meeting's placeholder name or the editor's suggested opening as product information.", "critical": true}
+      ]
+    },
+    {
+      "id": "N6",
+      "title": "Separate unnecessary unknowns from indispensable missing details",
+      "prompt": "次の二つの利用者向け文章を作ってください。A は完成稿だけ、B は書ける完成稿と必要最小限の確認事項を分けて返してください。\n\nA：未対応の設定値は実行時の処理には使われません。理由は不明です。理由の説明は依頼していません。\nB：オンライン説明会の案内です。内容は新しい設定画面の紹介です。開催日と申込先は未定ですが、依頼者は日付と申込方法を必ず載せるよう指定しています。分かっている内容の案内は先に書いてください。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {"id": "n6-a", "text": "Finish A without asking for or inventing a reason that the requested text does not need.", "critical": true},
+        {"id": "n6-b", "text": "Write B's supported event description and isolate only the missing date and signup destination or method as confirmation needs.", "critical": true},
+        {"id": "n6-no-fiction", "text": "Do not make up an event date, signup method, reason, or promise, and do not present B as fully complete.", "critical": true}
+      ]
+    },
+    {
+      "id": "N7",
+      "title": "Respect expression-only and full-restructure authority",
+      "prompt": "次の Markdown 手順について、A は表現だけ自然に直し、B は全体の再構成も任せるので読みやすい完成稿にしてください。A と B を分けて返してください。条件、手順の依存、リンク先を守ってください。\n\n## apply\n`context-mode` が `apply` のときだけ変更を実行します。実行する前に下の確認をします。確認へのリンクは [確認](#check) です。\n\n## check\n変更候補を確認します。`context-mode` が `review` のときは候補を表示しますが、変更は実行しません。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {"id": "n7-a", "text": "A preserves section roles, heading/link target correspondence, and the expression-only scope while improving wording.", "critical": true},
+        {"id": "n7-b", "text": "B may reorder or rewrite headings to clarify checking before applying, while preserving the check-before-execute dependency and valid anchor/link correspondence.", "critical": true},
+        {"id": "n7-conditions", "text": "Both outputs preserve review as display-only and apply as the only condition for executing changes, with exact technical strings.", "critical": true}
+      ]
+    },
+    {
+      "id": "N8",
+      "title": "Keep a reader-relevant correction reason from drafting notes",
+      "prompt": "次のチーム内メモから、利用者向けの短い訂正案内を書いてください。前回の案内を訂正した事実と理由は、読者が変更を理解するために必要なので含めてください。完成稿だけを返してください。\n\n前回は『設定変更はすぐに反映される』と案内しました。検証で、`sync_mode` が `manual` の場合は再読み込み後に反映されると確認したため、この案内を訂正します。打ち合わせだけで使った作業名は『青い企画』です。",
+      "files": [],
+      "coexistence_skills": [],
+      "assertions": [
+        {"id": "n8-correction", "text": "State that the earlier guidance is being corrected and retain the supported reason for the correction and the manual reload condition.", "critical": true},
+        {"id": "n8-disclosure", "text": "Omit the irrelevant internal working name while preserving exact sync_mode and manual strings.", "critical": true},
+        {"id": "n8-no-invention", "text": "Do not add an unsupported cause for product behavior, a promise, or another technical condition.", "critical": true}
+      ]
+    },
+    {
       "id": "K",
       "title": "Separate requested reasons from the final artifact",
       "prompt": "次の技術文書を、意味、確度、条件を変えずに自然な日本語へ整えてください。完成稿と、主な修正理由を分けて返してください。完成稿の中に理由や元の表現への批評を混ぜないでください。\n\n現時点では、起動直後の競合状態が原因である可能性があります。まず `storage state` を照合し、原因を切り分けます。設定キー `context-mode` の既定値は `review` です。",
