@@ -1,5 +1,4 @@
-> **Note:** The English version (`SKILL.md`) is the canonical source.
-> This Japanese translation is provided as a reference only.
+> **注記:** このファイルは英語版 (`SKILL.md`) の参考訳です。内容に差異がある場合は英語版を優先してください。
 
 # 読み手に伝わる説明を書く
 
