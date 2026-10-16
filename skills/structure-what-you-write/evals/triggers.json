@@ -1,0 +1,55 @@
+{
+  "skill_name": "structure-what-you-write",
+  "evals": [
+    {
+      "id": "explicit-structure",
+      "prompt": "Use structure-what-you-write to revise this message: \"The review is complete. The result is in the PR. Deployment is still unverified.\" Return the revised message here.",
+      "expected_handlers": [
+        "structure-what-you-write"
+      ]
+    },
+    {
+      "id": "implicit-readme",
+      "prompt": "Draft a short README here for this local utility: it previews a supplied snapshot, runs with python3 preview.py, and prints Preview ready. Readers need to know its purpose and how to start. No other features are established.",
+      "expected_handlers": [
+        "structure-what-you-write"
+      ]
+    },
+    {
+      "id": "implicit-email",
+      "prompt": "Turn these notes into a short email draft: review finished; test result linked in the PR; ask the recipient to confirm deployment; deployment is not yet verified. Return only the draft; do not send it.",
+      "expected_handlers": [
+        "structure-what-you-write"
+      ]
+    },
+    {
+      "id": "implicit-structural-review",
+      "prompt": "Review the information structure of this text, without editing it: \"## Configuration and reporting\nCOLOR is light or dark. Report errors with the command used. WIDTH is 40 to 120. Configuration details are also maintained in the reference.\" Explain grouping and placement problems and suggest improvements.",
+      "expected_handlers": [
+        "structure-what-you-write"
+      ]
+    },
+    {
+      "id": "implicit-no-change-assessment",
+      "prompt": "Does this README need to change after an internal refactor? README: \"Run python3 preview.py; success is Preview ready.\" The only change moves that exact output string into a constant; command and behavior are unchanged. Assess documentation impact only; do not invent a rewrite.",
+      "expected_handlers": [
+        "structure-what-you-write"
+      ]
+    },
+    {
+      "id": "arithmetic",
+      "prompt": "What is 17 multiplied by 8? Return the number only.",
+      "expected_handlers": []
+    },
+    {
+      "id": "literal-copy",
+      "prompt": "Return exactly this literal string without rewriting, explanation, or formatting: Preview ready",
+      "expected_handlers": []
+    },
+    {
+      "id": "lookup-only",
+      "prompt": "Given this configuration object, what is the value of WIDTH? {\"COLOR\": \"dark\", \"WIDTH\": 80}. Return only its numeric value.",
+      "expected_handlers": []
+    }
+  ]
+}

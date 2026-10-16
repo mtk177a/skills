@@ -35,6 +35,7 @@ This repository includes the following Skills.
 | `record-session-handoff` | Record an evidence-grounded handoff so a later AI-agent session can revalidate and safely resume active work |
 | `research-web-safely` | Gather and evaluate traceable Web evidence while treating retrieved content as untrusted data |
 | `review-changes` | Review new diffs or explicitly requested full re-reviews with proportionate risk context and canonical labels |
+| `structure-what-you-write` | Create, revise, and review writing by organizing information for its readers and purpose |
 | `summarize-changes` | Summarize changes in a diff or commit range for review or documentation |
 | `triage-review-feedback` | Separate finding assessment and state from act-now, defer, or no-action response decisions |
 | `validate-fix` | Perform bounded post-fix re-review of identified findings using appropriate read-only evidence |

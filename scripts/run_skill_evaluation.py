@@ -666,12 +666,17 @@ def direct_skill_load_observation(events: list[dict[str, Any]], skill: str) -> s
             return any(needle.replace("\\", "/") in normalized for needle in needles)
         return False
 
+    uncertain = False
     for event in events:
         if event.get("type") != "item.completed" or not isinstance(event.get("item"), dict):
             continue
         item = event["item"]
         if item.get("type") == "command_execution" and item.get("exit_code") == 0 and visit(item):
             return "observed"
+        if item.get("type") == "command_execution" and visit(item):
+            # A later command can fail after a successful read in the same shell.
+            # The aggregate exit code cannot establish which part failed.
+            uncertain = True
         if (
             item.get("type") in {"file_read", "tool_call"}
             and item.get("status") not in {"error", "failed"}
@@ -679,7 +684,7 @@ def direct_skill_load_observation(events: list[dict[str, Any]], skill: str) -> s
             and visit(item)
         ):
             return "observed"
-    return "not_exposed"
+    return "uncertain" if uncertain else "not_exposed"
 
 
 def personal_skill_load_observation(events: list[dict[str, Any]], skill: str) -> str:
@@ -717,7 +722,10 @@ def personal_skill_load_observation(events: list[dict[str, Any]], skill: str) ->
 def observed_skill_handlers(events: list[dict[str, Any]], skills: list[str]) -> dict[str, Any]:
     if not any(event.get("type") == "turn.completed" for event in events):
         return {"status": "not_exposed", "handlers": []}
-    observed = sorted(skill for skill in skills if direct_skill_load_observation(events, skill) == "observed")
+    observations = {skill: direct_skill_load_observation(events, skill) for skill in skills}
+    if "uncertain" in observations.values():
+        return {"status": "not_exposed", "handlers": []}
+    observed = sorted(skill for skill, observation in observations.items() if observation == "observed")
     return {"status": "observed", "handlers": observed}
 
 
@@ -1306,7 +1314,7 @@ def make_report(
                 if observation.get("handlers") != []:
                     raise EvaluationError("run routing observation is invalid")
                 routing_status = "inconclusive"
-                routing_evidence = "Codex did not expose a completed Skill read."
+                routing_evidence = "The trace did not establish a complete, unambiguous Skill selection observation."
             else:
                 handlers = observation.get("handlers")
                 if not isinstance(handlers, list) or not all(isinstance(value, str) for value in handlers):
