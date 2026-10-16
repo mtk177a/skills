@@ -407,8 +407,11 @@ Invalid definitions fail before a model is invoked, including unknown fields, un
 
 Routing evaluation counts only successful read or tool events for installed Skills that Codex exposes in JSONL.\
 The Runner treats the routing event stream as complete only when it contains `turn.completed`.\
-A complete stream with no successful Skill read records `observed` with an empty handler array, which can pass a case whose `expected_handlers` is empty.\
-Without `turn.completed`, the Runner records `not_exposed` and grades routing as `inconclusive`; it never infers a handler from the final response wording.
+A complete stream with neither a successful Skill read nor an ambiguous read attempt records `observed` with an empty handler array, which can pass a case whose `expected_handlers` is empty.\
+Without `turn.completed`, the Runner records `not_exposed` and grades routing as `inconclusive`; it never infers a handler from the final response wording.\
+A completed shell command that references an installed Skill but has a nonzero or missing exit code also leaves selection uncertain unless another successful read confirms that Skill.\
+A compound command can read the Skill successfully before a later command fails, so its aggregate exit code proves neither successful reading nor non-selection.\
+The Runner records this ambiguous observation as `not_exposed` and grades routing as `inconclusive` rather than an empty observed handler set; inspect the command and output separately before drawing a stronger conclusion.
 
 ## Plan before spending tokens
 

@@ -940,6 +940,55 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
             self.assertIn("companion beta-skill Skill manifest changed after planning", result.stderr)
             self.assertFalse((Path(output) / "artifacts").exists())
 
+    def test_routing_failed_compound_read_is_inconclusive(self) -> None:
+        events = [
+            {
+                "type": "item.completed",
+                "item": {
+                    "type": "command_execution",
+                    "command": "cat .agents/skills/alpha-skill/SKILL.md && rg --files -g 'README*'",
+                    "exit_code": 1,
+                    "aggregated_output": "The Skill body was printed before rg found no matching files.",
+                },
+            },
+            {"type": "turn.completed"},
+        ]
+        self.assertEqual("uncertain", direct_skill_load_observation(events, "alpha-skill"))
+        self.assertEqual(
+            {"status": "not_exposed", "handlers": []},
+            observed_skill_handlers(events, ["alpha-skill"]),
+        )
+
+    def test_routing_failed_read_does_not_establish_selection_or_non_selection(self) -> None:
+        events = [
+            {
+                "type": "item.completed",
+                "item": {
+                    "type": "command_execution",
+                    "command": "cat .agents/skills/alpha-skill/SKILL.md",
+                    "exit_code": 1,
+                    "aggregated_output": "cat: Permission denied",
+                },
+            },
+            {"type": "turn.completed"},
+        ]
+        self.assertEqual(
+            {"status": "not_exposed", "handlers": []},
+            observed_skill_handlers(events, ["alpha-skill"]),
+        )
+        events.insert(1, {
+            "type": "item.completed",
+            "item": {
+                "type": "command_execution",
+                "command": "cat .agents/skills/alpha-skill/SKILL.md",
+                "exit_code": 0,
+            },
+        })
+        self.assertEqual(
+            {"status": "observed", "handlers": ["alpha-skill"]},
+            observed_skill_handlers(events, ["alpha-skill"]),
+        )
+
     def test_routing_observation_requires_completed_successful_read(self) -> None:
         skill_path = "/tmp/fixture/.agents/skills/alpha-skill/SKILL.md"
         events = [
@@ -952,7 +1001,8 @@ class SkillEvaluationRunnerTests(unittest.TestCase):
                 "item": {"type": "command_execution", "command": f"cat {skill_path}", "exit_code": 1},
             },
         ]
-        self.assertEqual("not_exposed", direct_skill_load_observation(events, "alpha-skill"))
+        self.assertEqual("not_exposed", direct_skill_load_observation(events[:1], "alpha-skill"))
+        self.assertEqual("uncertain", direct_skill_load_observation(events, "alpha-skill"))
         events[-1]["item"]["exit_code"] = 0
         self.assertEqual("observed", direct_skill_load_observation(events, "alpha-skill"))
 
