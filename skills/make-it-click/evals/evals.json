@@ -1,0 +1,55 @@
+{
+  "skill_name": "make-it-click",
+  "evals": [
+    {
+      "id": "ja-tech-premise",
+      "title": "Connect a known concept to a case-specific premise",
+      "prompt": "チームの開発者向けに、なぜ新しいデプロイの直後でも古い設定値が返ることがあるのか説明してください。読者はキャッシュの基本を知っています。今回分かっていること: 設定の更新は主ストアへすぐ反映される。読み取り API は各拠点のコピーを参照する。コピーの同期は最大 3 分間隔。今回の特定の読み取りがどの拠点に行ったかは未確認です。",
+      "assertions": [
+        {"id": "mechanism", "text": "Connect the main-store update, read API copies, and sync interval to explain a possible stale value without reteaching cache basics.", "critical": true},
+        {"id": "uncertainty", "text": "Do not claim that the specific observed read used a stale copy or that every read is stale; preserve the unknown destination.", "critical": true},
+        {"id": "output", "text": "Return a finished explanation for the stated reader rather than instructions to the writer about how to explain the issue.", "critical": false}
+      ]
+    },
+    {
+      "id": "en-policy-conditions",
+      "title": "Explain a nontechnical eligibility rule and its limits",
+      "prompt": "Explain to a resident whether a neighborhood library's late-fee waiver applies to them. They returned a book four days late. The supplied policy says fees are waived for returns up to five days late only when the book is returned at the same branch where it was borrowed. The resident has not said which branch they used. Write the response for the resident; do not invent other policy terms.",
+      "assertions": [
+        {"id": "conditional-answer", "text": "Give the actionable conditional answer: four days meets the time condition, while eligibility also depends on returning to the borrowing branch.", "critical": true},
+        {"id": "missing-fact", "text": "Do not assert full eligibility or invent a branch, fee amount, or other policy; identify the missing branch fact succinctly.", "critical": true},
+        {"id": "form", "text": "Answer the resident directly rather than giving a generic policy lecture or mandatory next-step checklist.", "critical": false}
+      ]
+    },
+    {
+      "id": "ja-revise-disclosure",
+      "title": "Revise an overfull public explanation",
+      "prompt": "次の利用者向けのお知らせを、必要な理由が伝わる文章に書き直してください。内部の会議経緯は載せないでください。事実: 申請フォームは 11 月 2 日の 9 時から 11 時まで利用できません。この間に保存されていない入力は送信されません。理由は保存機能の更新です。原案:『先週の 3 回の会議で担当者が変更し、当初は火曜日を予定しましたが関係部署との調整で延期しました。11 月 2 日の 9 時から 11 時までフォームを停止します。ご理解ください。』",
+      "assertions": [
+        {"id": "reader-facts", "text": "Preserve the outage window, the storage-feature update as the reason, and the effect on unsaved inputs in clear Japanese.", "critical": true},
+        {"id": "omit-history", "text": "Remove meeting, staffing, and scheduling history that does not help the user.", "critical": true},
+        {"id": "output", "text": "Return a finished notice, not an editing analysis or speculative instruction to users.", "critical": false}
+      ]
+    },
+    {
+      "id": "en-revise-evidence",
+      "title": "Repair an unsupported causal conclusion in a revision",
+      "prompt": "Revise this short project update for stakeholders. Keep the observed numbers and a useful answer, but do not add facts. Draft: 'The new intake form cut average handling time from 12 minutes to 8 minutes, proving a 33% productivity improvement. We should roll it out.' Notes: The 12-minute average came from 20 complex cases last month. The 8-minute average came from 20 simple cases in the trial. No like-for-like comparison was done. The rollout decision is pending.",
+      "assertions": [
+        {"id": "comparison", "text": "State the two observed averages and explain that case difficulty differs, so the form's causal effect cannot be inferred from the figures alone.", "critical": true},
+        {"id": "decision", "text": "Do not say rollout is decided or that a 33% productivity gain is proven.", "critical": true},
+        {"id": "proportion", "text": "Stay suitable for a short stakeholder update rather than turning it into a statistical tutorial.", "critical": false}
+      ]
+    },
+    {
+      "id": "ja-history-multiple-factors",
+      "title": "Explain a mixed-cause nontechnical change",
+      "prompt": "町の説明会で配る短い文章として、なぜ公園の利用者が減ったのか、次の調査結果だけを使って説明してください。昨年は利用者 1,000 人、今年は 760 人。改修工事で東入口が 2 か月閉鎖された。雨天日も昨年より多かった。アンケートでは一部の人が入口の閉鎖を理由に挙げたが、要因別の減少人数は調べていない。改修の是非はまだ判断しません。",
+      "assertions": [
+        {"id": "facts", "text": "Distinguish the measured decline, entrance closure, rainy days, and survey reports from an inferred explanation.", "critical": true},
+        {"id": "causality", "text": "Do not attribute all 240 fewer users to one cause or quantify either factor's effect; state the attribution limit.", "critical": true},
+        {"id": "scope", "text": "Write a short public explanation without deciding whether the renovation was good or bad.", "critical": false}
+      ]
+    }
+  ]
+}

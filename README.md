@@ -8,7 +8,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 
 ## Skills
 
-27 Skills covering common development workflows:
+This repository includes the following Skills.
 
 | Skill | Description |
 | --- | --- |
@@ -38,6 +38,7 @@ These Skills follow the [Agent Skills specification](https://agentskills.io/spec
 | `summarize-changes` | Summarize changes in a diff or commit range for review or documentation |
 | `triage-review-feedback` | Separate finding assessment and state from act-now, defer, or no-action response decisions |
 | `validate-fix` | Perform bounded post-fix re-review of identified findings using appropriate read-only evidence |
+| `make-it-click` | Write or revise an explanation that answers the reader's question with the needed premises, relationships, conditions, and uncertainty |
 | `write-natural-japanese` | Write or revise Japanese prose with context-appropriate wording while preserving meaning, certainty, and established terminology |
 
 `japanese-tech-writing` and `cognitive-rhythm-writing` are unmodified copies of upstream Gists. Their source revisions, licenses, and synchronization records are in each Skill's `UPSTREAM.md` and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

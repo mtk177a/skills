@@ -237,9 +237,7 @@ def check_catalogs(root: Path, problems: list[Problem]) -> set[str]:
         for unexpected in sorted(entry_names - names):
             line = next(line for entry, line in entries if entry == unexpected)
             add(problems, root, path, line, f"catalog references unknown Skill `{unexpected}`")
-        if declared_count is None:
-            add(problems, root, path, 1, "catalog does not declare its Skill count")
-        elif declared_count != len(names):
+        if declared_count is not None and declared_count != len(names):
             add(
                 problems,
                 root,

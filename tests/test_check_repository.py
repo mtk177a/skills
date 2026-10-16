@@ -192,6 +192,19 @@ class CheckerCliTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertEqual(before, tree_hash(root))
 
+    def test_catalogs_can_omit_declared_count(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            english = root / "README.md"
+            japanese = root / "README.ja.md"
+            english.write_text(english.read_text().replace("1 Skills.", "This repository includes the following Skills."))
+            japanese.write_text(japanese.read_text().replace("1 の Skill。", "以下の Skill を収録しています。"))
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
     def assert_fixture_failure(self, mutate, expected: str) -> str:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
