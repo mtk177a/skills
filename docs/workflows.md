@@ -91,13 +91,13 @@ Do not run every downstream step mechanically. `break-failure-loop` may return d
 
 Use diagnosis only when behavior or root cause is uncertain:
 
-`audit-agent-guidance` → `design-skill` or `design-agent-instructions` → `design-changes` → authorized implementation → targeted evaluation
+`audit-agent-guidance` → `design-skill` or `design-agent-instructions` → `design-changes` → authorized implementation → verification of the work performed
 
 - `audit-agent-guidance`: Diagnose existing guidance behavior, evidence gaps, loading, authority, triggers, and root causes
-- `design-skill`: Decide whether to keep, update, merge, split, remove, or create a Skill and define its evaluation strategy
+- `design-skill`: Decide whether to keep, update, merge, split, remove, or create a Skill and define its implementation handoff
 - `design-agent-instructions`: Design the document set and source-of-truth relationships for the target clients
 - `design-changes`: Turn the selected design into scoped change units, risks, and verification coverage
-- targeted evaluation: Validate the material claims, changed behavior, regressions, and relevant coexistence risks without imposing a universal case count
+- verification of the work performed: Check the implemented result and relevant safety boundaries
 
 Skip the audit when the diagnosis is already supported by evidence. Do not use design work to claim that an unobserved behavior has been fixed.
 

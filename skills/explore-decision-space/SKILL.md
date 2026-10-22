@@ -39,7 +39,7 @@ Identify the unsettled layer:
 5. For `Solution space`, identify diversity axes that change mechanism, responsibility boundary, state representation, processing order, tool boundary, operational model, or another decision-relevant structure. Develop alternatives until the material axes and trade-offs needed for this decision are covered; do not target a fixed candidate count.
 6. Compare frames or options against explicit criteria. Keep observed performance separate from predicted properties and mark unavailable comparisons as unknown.
 7. Narrow only when evidence, constraints, or an authorized user preference supports it. Otherwise return the distinguishing evidence, decision, or experiment needed next. Never declare a winner merely to complete the workflow.
-8. Return one completion state and hand control back without editing files, executing experiments, changing evaluation assets, or implementing an option.
+8. Return one completion state and hand control back without editing files, executing experiments, or implementing an option.
 
 ## Completion states
 
@@ -64,7 +64,7 @@ Adapt the structure to the decision. Include:
 
 ## Boundaries
 
-- Keep the workflow read-only. Read evidence already within scope, but do not edit files, run the proposed experiment, alter evaluation cases or graders, implement an option, or make external writes.
+- Keep the workflow read-only. Read evidence already within scope, but do not edit files, run the proposed experiment, implement an option, or make external writes.
 - Do not invent requirements, evidence, authority, diversity, or certainty.
 - Do not count wording variants as materially different frames or options.
 - Do not force a fixed number of frames, options, iterations, or agents.

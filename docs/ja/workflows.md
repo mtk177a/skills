@@ -96,13 +96,13 @@ PR 全体へのコメント案またはレビュー要約が求められたら�
 
 挙動または根本原因が不確かな場合だけ診断を使います。
 
-`audit-agent-guidance` → `design-skill` または `design-agent-instructions` → `design-changes` → 承認済みの実装 → targeted evaluation
+`audit-agent-guidance` → `design-skill` または `design-agent-instructions` → `design-changes` → 承認済みの実装 → 作業結果の確認
 
 - `audit-agent-guidance`: 既存 guidance の挙動、証拠不足、loading、authority、trigger、根本原因を診断する
-- `design-skill`: Skill を維持、更新、統合、分割、削除、新規作成のどれにするかを判断し、評価戦略を定義する
+- `design-skill`: Skill を維持、更新、統合、分割、削除、新規作成のどれにするかを判断し、実装へ引き継ぐ内容を定める
 - `design-agent-instructions`: 対象 client 向けの文書セットと source-of-truth 関係を設計する
 - `design-changes`: 選んだ設計を、scope のある変更単位、risk、verification coverage へ落とす
-- targeted evaluation: 普遍的なケース数を課さず、重要な claim、変更した挙動、regression、関連する coexistence risk を検証する
+- 作業結果の確認: 実装した結果と関係する安全上の境界を確認する
 
 診断がすでに evidence で裏付けられている場合は audit を省きます。未観測の挙動が修正済みだと design work だけで主張しません。
 

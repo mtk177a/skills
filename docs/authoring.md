@@ -34,7 +34,7 @@ Check for these semantic responsibilities:
 - workflow or decision logic
 - required output information or an exact output format when a downstream consumer needs one
 - authority, failure handling, and safety or permission boundaries when material
-- verification or evaluation of the behavior that can fail
+- verification of the work performed and relevant safety conditions
 - bundled resources and the conditions under which they should be read or executed
 
 Use the smallest structure that expresses those responsibilities. Two common archetypes are:
@@ -63,18 +63,15 @@ An approved relationship must record:
 - the supported installation path
 - the behavior when the companion is unavailable, including whether work stops
 - provenance and local adaptations that introduced or maintain the relationship
-- the evaluation coverage and the update trigger for keeping the relationship
-  correct
 
 When either Skill, the relationship, the installation path, or its missing-
-companion behavior changes, review this record and the affected evaluation
-assets together.
+companion behavior changes, review this record and verify the affected behavior.
 
 ### Approved relationship
 
-| Relationship | Rationale | Installation and missing-companion behavior | Provenance | Evaluation |
-| --- | --- | --- | --- | --- |
-| `maintain-japanese-references` → `write-natural-japanese` | Translation maintenance needs both fidelity to the English source and context-appropriate Japanese wording. | Both Skills are tracked in this repository. Read `skills/write-natural-japanese/SKILL.md` and its required references before applying the repository-local Skill; stop and report a missing repository file without substituting a personal copy. | Both Skills are original repository material; the repository-local Skill began in [#42](https://github.com/mtk177a/skills/pull/42), and [#77](https://github.com/mtk177a/skills/issues/77) records the required relationship and Japanese-canonical exception. | [The repository-local evaluation record](../.agents/skills/maintain-japanese-references/evals/README.md) covers required use, translation quality, and the missing-companion path. Review it when either Skill or this relationship changes. |
+| Relationship | Rationale | Installation and missing-companion behavior | Provenance |
+| --- | --- | --- | --- |
+| `maintain-japanese-references` → `write-natural-japanese` | Translation maintenance needs both fidelity to the English source and context-appropriate Japanese wording. | Both Skills are tracked in this repository. Read `skills/write-natural-japanese/SKILL.md` and its required references before applying the repository-local Skill; stop and report a missing repository file without substituting a personal copy. | Both Skills are original repository material; the repository-local Skill began in [#42](https://github.com/mtk177a/skills/pull/42), and [#77](https://github.com/mtk177a/skills/issues/77) records the required relationship and Japanese-canonical exception. |
 
 ## Writing the description
 
@@ -154,7 +151,7 @@ Before adopting or adapting a third-party Skill, review its provenance, license,
 
 `japanese-tech-writing` and `cognitive-rhythm-writing` are copies of k16shikano's public Gists. Their `SKILL.md` files match the revisions recorded in each `UPSTREAM.md` byte for byte. Do not add local rules, frontmatter fields, editorial corrections, or a Japanese reference translation to either file. The repository checker verifies each copy against the SHA-256 recorded in `UPSTREAM.md`; checking whether a newer Gist revision exists requires an explicit upstream comparison.
 
-When updating a mirror, compare the recorded revision with the current Gist, inspect the complete change under [Security review](security.md), then copy the accepted revision without modification and update its revision, hash, and third-party notice. If the new upstream file cannot be accepted as-is, record the difference and do not create a local variant. Neither mirror requires an `evals/README.md`; add model-backed evaluation definitions only if evidence is needed for a responsibility changed by the upstream revision.
+When updating a mirror, compare the recorded revision with the current Gist, inspect the complete change under [Security review](security.md), then copy the accepted revision without modification and update its revision, hash, and third-party notice. If the new upstream file cannot be accepted as-is, record the difference and do not create a local variant.
 
 The upstream `cognitive-rhythm-writing` file instructs the agent to read `../japanese-tech-writing/SKILL.md` before applying its rules. Install the pair with `apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing`. This repository does not add a missing-companion procedure to the upstream file.
 
@@ -181,28 +178,6 @@ For environment-specific information, use variable names or placeholders.
 - Do not mix generated artifacts or caches into the repository
 
 Avoid scripts that break compatibility with both macOS M1 and Windows WSL unless the need is explicitly justified.
-
-## Evaluation assets
-
-When changing a Skill, identify the affected responsibility before selecting evaluation evidence.
-
-- Skill-level scenarios and checklists go in `skills/<skill-name>/evals/`
-- Multi-Skill flow evaluations go in `docs/` (see `evaluation.md`)
-- Follow the path-selection rules in `evaluation.md`; do not run all cases merely because `SKILL.md` changed
-- In each Issue #49 Skill audit Sub Issue, migrate that Skill's complete existing `evals.json` and `triggers.json` set to the executable `{skill_name, evals}` format regardless of whether the Skill changes; outside the audit, migrate a still-legacy set on the first material change to its instructions, runtime resources, discovery, responsibility, safety boundary, or evaluation definitions
-- If model-backed evaluation is needed and no executable definition covers the changed responsibility, create the needed definition in that format before execution
-- Outside Issue #49 audits, do not require migration solely for README, reference-translation, meaning-preserving documentation or metadata, or legacy-result-only changes; do not migrate unrelated Skills
-- Treat definition migration and evaluation execution separately: after migrating the complete definition set, execute only cases needed for the changed responsibility
-- Use `scripts/run_skill_evaluation.py plan` before model-backed execution and inspect the estimated call count
-- If executable behavior, discovery, and responsibility boundaries are unaffected, use `static-only` and stop after deterministic validation
-- If runtime behavior changes, map only the affected responsibility to a plausible failure, a case that can expose it, and a grading method
-- Add routing, near-miss, or coexistence cases only when discovery or an adjacent responsibility boundary changes; do not add unrelated core, routing, or coexistence coverage automatically
-- Add baseline comparison or repetition only when an escalation condition in `evaluation.md` makes the additional evidence decision-relevant
-- Keep desired answers and grading criteria out of the executor input
-- Keep raw execution artifacts outside the repository and write `evals/report.json` only when a compact change-scoped record is useful for review
-- Do not refresh unrelated legacy `results.json` files, unselected cases, or reports for unchanged Skills
-
-The purpose of evaluation is to collect enough evidence for the current acceptance decision, not to maximize the number of runs.
 
 ## Notes on references/
 
@@ -234,8 +209,7 @@ Before opening a pull request for a new Skill:
 - [ ] No secrets, personal information, or internal URLs
 - [ ] Third-party provenance and capability risks have been reviewed when external material is included
 - [ ] `scripts/`, `references/`, `assets/` contain only what the Skill needs (empty directories removed)
-- [ ] The selected evaluation path covers the affected responsibility, and any unverified boundary is explicit
-- [ ] Any committed `evals/report.json` contains only the selected change-scoped evidence and passes repository validation
+- [ ] The repository checker and tests for retained code pass, and the Skill's work results and safety boundaries have been checked as appropriate
 
 ## Making a Codex-only Skill work across agents
 

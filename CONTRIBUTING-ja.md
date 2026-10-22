@@ -26,7 +26,7 @@ Skill を変更する場合は、[AGENTS.md](AGENTS.md) と [Skill 作成ガイ�
 ### 変更を検証する
 
 変更した挙動と、関連する失敗条件を確認できる検証方法を選ぶ。\
-[AGENTS.md](AGENTS.md) が求める場合はリポジトリ検査と単体テストを実行し、Skill の評価は [評価ガイド](docs/evaluation.md) に沿って選ぶ。\
+[AGENTS.md](AGENTS.md) に従ってリポジトリ検査と残すコードのテストを実行する。作業結果と安全上の境界も確認する。\
 実施した確認、その結果、重要な未確認事項を PR に記録する。\
 実行していない確認を、通過したものとして報告しない。
 
@@ -70,7 +70,7 @@ GitHub が生成する merge commit と、手を加えずに採用する Dependa
 | `docs` | 管理対象 Skill の挙動を変えず、説明、手順、参照資料を改善する |
 | `chore` | 能力の追加や不具合修正を伴わず、依存、設定値、保守方針を更新する |
 | `refactor` | 挙動を変えずに構成を整理する |
-| `test` | 管理対象の挙動を変えず、テストや評価ツールを主目的として変更する |
+| `test` | 管理対象の挙動を変えず、テストを主目的として変更する |
 | `ci` | CI の設定や実行条件を主目的として変更する |
 
 Skill の指示は、文章で書かれていても利用時の挙動を定める。\
@@ -90,13 +90,11 @@ Skill の指示は、文章で書かれていても利用時の挙動を定め�
 | `scope` | 対象 |
 | --- | --- |
 | `clarify-request` | `clarify-request` Skill と関連ファイル |
-| `evaluation` | 共通の Skill 評価機能とツール |
 
 #### 例
 
 ```text
-feat(evaluation): add a cost-bounded Skill evaluation runner
 fix(clarify-request): align clarification boundaries
-docs: explain change-aware evaluation selection
+docs: clarify repository verification steps
 refactor: distribute Skills as a native APM bundle
 ```

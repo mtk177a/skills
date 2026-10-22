@@ -1,6 +1,6 @@
 ---
 name: design-skill
-description: Designs whether and how to create, merge, split, or substantially rescope an Agent Skill before implementation. Use when defining a Skill's responsibility, trigger boundary, reusable resources, and evaluation strategy; not for routine wording edits, audits of existing behavior, or implementation itself.
+description: Designs whether and how to create, merge, split, or substantially rescope an Agent Skill before implementation. Use when defining a Skill's responsibility, trigger boundary, and reusable resources; not for routine wording edits, audits of existing behavior, or implementation itself.
 license: MIT
 ---
 
@@ -9,7 +9,7 @@ license: MIT
 ## Objective
 
 - Decide whether a reusable Skill is the right intervention before drafting one.
-- Produce an evidence-grounded design that an implementation workflow can apply without rediscovering the responsibility, trigger, resource, or evaluation decisions.
+- Produce an evidence-grounded design that an implementation workflow can apply without rediscovering the responsibility, trigger, or resource decisions.
 - Keep diagnosis, design, and implementation distinct. An existing audit may supply evidence, but this Skill must remain usable without one.
 
 ## Evidence
@@ -19,7 +19,6 @@ Use `references/authoring-guide.md` for the details that apply to the design:
 - **Design discovery metadata:** when drafting or revising `name` and `description`
 - **Separate portable and client-specific layers:** when client-specific metadata or controls are needed
 - **Review third-party and executable capabilities:** when adapting third-party material or designing executable resources
-- **Design evaluation before extensive instructions:** when defining evaluation inputs, grading, comparison, or escalation
 
 Read the relevant sections rather than requiring the whole guide for every task.
 
@@ -42,10 +41,9 @@ Treat applicable local instructions as authoritative within their scope. Use the
 4. Inspect adjacent Skills and distribution surfaces. Resolve responsibility overlap, trigger competition, context cost, coexistence risks, and any third-party trust or capability boundary before choosing an artifact.
 5. Choose one coherent unit of responsibility. Define its target user, in-scope tasks, exclusions, inputs, outputs, and failure handling.
 6. Draft a `name` and `description`. Put the complete implicit-trigger context in `description`, including a negative boundary when it prevents a likely collision.
-7. Allocate only non-obvious reusable content across `SKILL.md`, `references/`, `scripts/`, `assets/`, and evaluation assets. Keep the portable metadata draft limited to the common contract and list client-specific additions separately in the handoff. Add an extension only when invocation control, UI, tool dependencies, or permission behavior requires it; if the format places it in the same file, label its target and verify that other clients tolerate it. Match instruction freedom to task fragility instead of fixing every workflow to one level of detail.
+7. Allocate only non-obvious reusable content across `SKILL.md`, `references/`, `scripts/`, and `assets/`. Keep the portable metadata draft limited to the common contract and list client-specific additions separately in the handoff. Add an extension only when invocation control, UI, tool dependencies, or permission behavior requires it; if the format places it in the same file, label its target and verify that other clients tolerate it. Match instruction freedom to task fragility instead of fixing every workflow to one level of detail.
 8. Define safety or permission boundaries only where the workflow needs them. When external instructions, scripts, tools, filesystem access, or network access are involved, trace the combined data and capability path and move hard guarantees to enforceable client controls when available. Preserve required safety properties without forcing a particular heading template.
-9. Design evaluation before extensive authoring. Map each material responsibility, trigger boundary, safety property, and changed behavior to a plausible failure, a scenario or check, and a grading method. State whether static validation, targeted regression, or repeated empirical tuning is warranted and what evidence would escalate to the next level. Include trigger, baseline, isolation, coexistence, instruction-following, output-quality, client, or model coverage only when it addresses a relevant risk; do not target a universal case or run count.
-10. Identify only the target surfaces actually affected by the design and produce an implementation handoff. Do not edit or implement the Skill as part of this workflow.
+9. Identify only the target surfaces actually affected by the design and produce an implementation handoff. Include the checks needed for retained code, structure, and safety where applicable. Do not edit or implement the Skill as part of this workflow.
 
 ## Decision criteria
 
@@ -66,7 +64,7 @@ Use a structure suited to the decision rather than a fixed proposal template. In
 - content and resource allocation
 - portable metadata and content, separately listed client-specific additions, plus any third-party provenance requirements
 - safety, data-flow, and permission properties that must survive implementation
-- evaluation coverage, grading approach, selected depth and escalation conditions, and rollout strategy
+- checks needed for the resulting work and rollout strategy
 - affected target surfaces and an implementation-ready handoff
 
 Do not force a Skill proposal when the evidence supports no durable guidance or a different intervention. Do not implement files, add dependencies, or alter repository policy; leave those actions to the authorized implementation workflow.

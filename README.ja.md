@@ -17,7 +17,7 @@
 
 | Skill | 説明 |
 | --- | --- |
-| `audit-agent-guidance` | 継続的に適用するエージェント向け指示を、期待する挙動、観測済みの利用状況、クライアントの仕様、評価結果に照らして監査する |
+| `audit-agent-guidance` | 継続的に適用するエージェント向け指示を、期待する挙動、観測済みの利用状況、クライアントの仕様、利用できる証拠に照らして監査する |
 | `break-failure-loop` | 新しい証拠がないまま同じ仮説で同等の試行を繰り返す状況を止め、診断、進行不能の報告、別案の探索のいずれへ引き継ぐかを選ぶ |
 | `calibrate-learning-support` | 作業を続けながら、その作業に関する理解、判断の主体性、検証可能性を保てるように AI による学習支援を調整する |
 | `choose-ai-execution-setup` | 具体的な作業に使う AI の実行環境を、アクセス手段、モデル、推論、コンテキスト、権限、検証方法、エージェント構成の観点から提案する |
@@ -91,24 +91,7 @@ apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tec
 python3 scripts/check_repository.py
 ```
 
-リポジトリに不整合がなければ終了コード `0`、対応が必要な不整合を検出した場合は `1`、呼び出し方法または検査自体に失敗した場合は `2` を返します。LLM を呼び出したりリポジトリの内容を変更したりせず、構造、メタデータ、リンク、参考訳の注記、評価結果、配備時に生成されるファイルを確認します。
-
-この検査は、Skill 評価の静的検証を担います。挙動、呼び出し、比較、モデルを使う評価が必要な場合に、それらを置き換えるものではありません。
-
-## Skill 評価 Runner
-
-Codex を呼び出す前に、共通 Runner で対象を選択し、評価コストを確認します。
-
-```bash
-python3 scripts/run_skill_evaluation.py plan --help
-```
-
-Runner は編集後に評価を自動実行せず、全ケースを暗黙に選択しません。\
-モデルを使う経路では、実行可能な `{skill_name, evals}` 形式を使用します。\
-旧形式の評価定義は、Issue #49 でその Skill を監査するとき、または監査以外で初めて実質的に変更するときに、Skill 単位で移行します。\
-モデル評価に必要な定義がなければ新形式で作成します。\
-実行可能な定義がなくても `static-only` は使用できます。\
-経路の選択、実行、採点、簡潔な評価記録の扱いは [docs/ja/evaluation.md](docs/ja/evaluation.md) を参照してください。
+リポジトリに不整合がなければ終了コード `0`、対応が必要な不整合を検出した場合は `1`、呼び出し方法または検査自体に失敗した場合は `2` を返します。LLM を呼び出したりリポジトリの内容を変更したりせず、構造、メタデータ、リンク、参考訳の注記、併用 Skill の関係、配備時に生成されるファイルを確認します。
 
 ## リポジトリ構成
 
@@ -128,7 +111,6 @@ Runner は編集後に評価を自動実行せず、全ケースを暗黙に選�
 ├── docs/
 │   ├── authoring.md
 │   ├── compatibility.md
-│   ├── evaluation.md
 │   ├── localization.md
 │   ├── security.md
 │   └── workflows.md
@@ -136,13 +118,12 @@ Runner は編集後に評価を自動実行せず、全ケースを暗黙に選�
 │   └── <skill-name>/
 │       ├── SKILL.md
 │       ├── SKILL-ja.md  # 任意の日本語参考訳
-│       ├── evals/
 │       ├── references/
 │       ├── scripts/
 │       └── assets/
 ```
 
-`evals/`、`references/`、`scripts/`、`assets/` は任意であり、必要な Skill だけが持ちます。
+`references/`、`scripts/`、`assets/` は任意であり、必要な Skill だけが持ちます。
 
 ## 作成と貢献
 
