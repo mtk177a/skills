@@ -46,6 +46,12 @@ This repository includes the following Skills.
 
 ## Installation
 
+### Plugin (ChatGPT, Codex, and Cursor)
+
+The portable `mtk177a-skills` plugin packages the same public Skills from a fixed commit.
+See [Plugin distribution](docs/distribution.md) for building the ZIP, personal installation and updates, and [Compatibility](docs/compatibility.md#plugin-runtime-requirements) for execution requirements and verification limits.
+Choose plugin or standalone installation for overlapping Skills in each runtime; do not enable both or retain the probe alongside the formal plugin.
+
 ### Claude Code (APM)
 
 ```bash

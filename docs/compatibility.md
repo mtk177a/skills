@@ -109,3 +109,49 @@ These commands do not prove triggering, instruction following, permission behavi
 - [Claude Skills for enterprise](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise)
 
 Client extensions and runtime behavior change more frequently than the core package format. Recheck the current official source when one of those details affects a design or audit.
+
+## Plugin runtime requirements
+
+The `mtk177a-skills` 0.1.0 package includes all 29 public Skills without changing their bodies.
+The following inventory describes required evidence and capabilities, not unconditional client support.
+All included references must be readable by the executing agent; none of the current Skills bundles an executable script or requires installing a Python dependency.
+Tool-dependent tasks still need the target environment's tools and authorization.
+
+| Skills | Required inputs or execution conditions |
+| --- | --- |
+| `clarify-request`, `define-referents`, `explore-decision-space`, `calibrate-learning-support` | Conversation/task evidence; `define-referents` must also read its packaged reference. External facts require access when material. |
+| `make-it-click`, `structure-what-you-write`, `write-natural-japanese` | Supplied text and context, plus the packaged references selected or required by the Skill; persistence requires authorized write access. |
+| `japanese-tech-writing`, `cognitive-rhythm-writing` | Text to write/revise; `cognitive-rhythm-writing` must read the adjacent `japanese-tech-writing/SKILL.md`. Both unmodified mirrors and provenance files are included. |
+| `choose-ai-execution-setup`, `assess-risky-change-readiness` | Evidence of available environments, capabilities, controls and authority; advice does not provision them or authorize execution. |
+| `design-changes`, `design-agent-instructions`, `design-skill` | Access to the relevant existing implementation or instructions and constraints; `design-skill` includes its authoring reference. Design does not execute changes. |
+| `audit-agent-guidance`, `investigate-failure`, `break-failure-loop` | In-scope guidance, failure/attempt evidence and relevant read-only inspection tools; missing behavioral evidence must remain unverified. |
+| `curate-repo-docs`, `implement-changes` | Target files, applicable repository rules, authorized write access and the required validation tools; packaged references support document decisions or TDD. Missing execution capability is not successful implementation. |
+| `review-changes`, `validate-fix`, `triage-review-feedback` | Actual diff/fix/findings and relevant source/specification evidence; commands or live checks require available tools. Untested claims remain unverified. |
+| `draft-commit`, `draft-issue`, `draft-review-comments`, `summarize-changes` | A scoped change set, grounded request, or supplied findings as required by each Skill; repository/tracker access is conditional on the evidence needed. Drafting does not publish. |
+| `record-session-handoff` | Current task evidence; authorized persistence if available, otherwise the Skill's explicit draft/not-written result. |
+| `research-web-safely` | Live search/retrieval and observable citations for web verification; unavailable sources or tools cannot be reported as verified. |
+| `revise-docs-fresh-eyes` | Codex or Claude Code with an authorized independent fresh subagent and access to the artifact; unavailable or prohibited subexecution must stop the workflow. Same-context rewriting is not a substitute. |
+
+Repository-only `maintain-japanese-references` is excluded; its dependency on `write-natural-japanese` does not make it a public Skill.
+References to other workflows do not automatically make those Skills mandatory companions.
+When resources or instructions change, recheck the affected row and package references together.
+
+## Plugin evidence and remaining checks
+
+[Issue #100](https://github.com/mtk177a/skills/issues/100) records the personal probe `mtk177a-skills-probe` update from 0.1.0 to 0.1.1.
+This evidence concerns three Skills and must not be treated as verification of the formal 29-Skill package.
+
+| Surface | Evidence | Limits |
+| --- | --- | --- |
+| ChatGPT personal plugin | User-reported archive installation/update, with UI version and Skill count changing from two to three | Formal package upload remains user-operated; no auto-sync or downgrade evidence |
+| Codex | Probe `explore-decision-space` appeared in the available catalog and its body was read; the seven uploaded source files were previously compared byte for byte | On 2026-10-23 the installed cache also contained `.codex-plugin/plugin.json`; installed file-set equality is not established, and the stage that added the compatibility file was not observed |
+| Chat | Provided conversation PDFs show explicit requests for `define-referents` and `explore-decision-space` and outputs consistent with them | No independent tool trace proves body loading |
+| dots | User relayed a dot's report that it read `clarify-request` and `define-referents` | Self-report, not an independently observed execution trace |
+| Work | No separate runtime test recorded | Not executed |
+| Cursor | Official documentation supports root `plugin.json` and local plugin loading | Not executed for this package |
+
+Probe client/model versions and permission modes were not fully recorded; do not generalize these observations to other environments.
+Formal-package verification remains pending upload and should cover a tool-independent Skill (`explore-decision-space`), references (`define-referents`), the mirror pair, and the unavailable-subagent boundary of `revise-docs-fresh-eyes` on affected surfaces.
+Record version, date, installation route, explicit request, observable loading, output, missing capabilities, and `not exposed`/`not executed` separately.
+Do not change account settings or create subagents just to manufacture a pass without authorization.
+See [distribution](distribution.md) for build, installation, update, duplicate avoidance, and recovery.
