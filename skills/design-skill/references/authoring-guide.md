@@ -36,33 +36,6 @@ When instructions can lead to scripts, tools, filesystem access, credentials, ne
 
 Prefer the least authority and smallest data scope that satisfies the responsibility. Use enforceable permission, sandbox, hook, or CI controls for hard guarantees when the client provides them. Reject or leave the design unverified when provenance, executable behavior, or outbound data flow cannot be established.
 
-## Design evaluation before extensive instructions
-
-Evaluation should determine whether the Skill adds value, not merely whether its text looks complete. Cover the dimensions that matter:
-
-- should-trigger, should-not-trigger, and near-miss selection
-- baseline without the Skill or with the prior version
-- isolation and coexistence with adjacent Skills
-- instruction following and output quality on realistic tasks
-- supported clients and models when behavior may differ
-- scripts and critical operations with executable verification
-
-Before adding scenarios, map each material claim or design change to a plausible failure, a scenario or check that can expose it, and a grading method. A scenario earns its place by covering a distinct responsibility, boundary, coexistence risk, or known regression. Do not add or remove scenarios to satisfy a universal count.
-
-Keep expected conclusions and grading criteria out of executor inputs. Prefer deterministic checks for objective outcomes and a separate grader or reviewer for judgment-heavy requirements. Executor self-report is diagnostic evidence, not the sole pass/fail authority.
-
-Use the same inputs, environment, and grading policy for baseline and candidate comparisons. Count trigger activation only from observable client evidence. Repeat runs only when variation, an unexpected result, model differences, or the consequence of failure makes another observation decision-relevant. Record skipped or unavailable observations as unexecuted or unexposed rather than passing them.
-
-Choose evaluation depth proportionally:
-
-- static validation for metadata, consistency, boundaries, references, and self-containment
-- targeted behavioral regression for changed instructions, triggering, coexistence, safety, or output requirements
-- repeated empirical prompt tuning for observed failures, high-impact or unstable behavior, or substantial redesigns
-
-State the selected depth and the evidence that would justify escalating to the next level. Do not describe a targeted regression or a variable-output smoke test as empirical tuning unless it actually runs repeated baseline/candidate cycles to resolve observed instability or failure.
-
-There is no universal `/eval` command. Record the exact client workflow, command, script, or manual procedure used, and introduce a wrapper only when it improves repeated execution materially.
-
 ## Canonical sources
 
 This guide summarizes, rather than replaces, the [Agent Skills specification](https://agentskills.io/specification), [Agent Skills authoring best practices](https://agentskills.io/skill-creation/best-practices), [OpenAI Build skills guide](https://learn.chatgpt.com/docs/build-skills), [Anthropic Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices), and [Anthropic enterprise Skill review guidance](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise).

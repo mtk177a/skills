@@ -22,7 +22,7 @@ For a Skill change, follow the structure and authoring rules in [AGENTS.md](AGEN
 ### Verify the change
 
 Choose checks that cover the changed behavior and its relevant failure conditions.\
-Run the repository checker and unit tests when required by [AGENTS.md](AGENTS.md); select Skill evaluations according to [the evaluation guide](docs/evaluation.md).\
+Run the repository checker and tests for retained code as required by [AGENTS.md](AGENTS.md). Verify the results and safety boundaries of the work performed.\
 Record the checks performed, their results, and material gaps in the pull request.\
 Do not present an unrun check as a passing result.
 
@@ -66,7 +66,7 @@ If a generated title or message is edited, follow this convention.
 | `docs` | Improve explanation, instructions, or reference material without changing the behavior of a maintained Skill |
 | `chore` | Update dependencies, configuration values, or maintenance policy without adding a capability or fixing a defect |
 | `refactor` | Reorganize structure without changing behavior |
-| `test` | Change tests or evaluation tooling as the primary purpose without changing maintained behavior |
+| `test` | Change tests as the primary purpose without changing maintained behavior |
 | `ci` | Change CI configuration or execution conditions as the primary purpose |
 
 Skill instructions define behavior even though they are written as text.\
@@ -86,13 +86,11 @@ Reuse an existing name for the same target rather than inventing an alias.
 | `scope` | Target |
 | --- | --- |
 | `clarify-request` | The `clarify-request` Skill and its related assets |
-| `evaluation` | Shared Skill evaluation behavior and tooling |
 
 #### Examples
 
 ```text
-feat(evaluation): add a cost-bounded Skill evaluation runner
 fix(clarify-request): align clarification boundaries
-docs: explain change-aware evaluation selection
+docs: clarify repository verification steps
 refactor: distribute Skills as a native APM bundle
 ```

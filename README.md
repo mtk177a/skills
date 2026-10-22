@@ -12,7 +12,7 @@ This repository includes the following Skills.
 
 | Skill | Description |
 | --- | --- |
-| `audit-agent-guidance` | Audit durable agent guidance against intended behavior, observed usage, client semantics, and evaluation evidence |
+| `audit-agent-guidance` | Audit durable agent guidance against intended behavior, observed usage, client semantics, and available evidence |
 | `break-failure-loop` | Pause equivalent same-hypothesis attempts without new evidence and select a diagnostic, blocker, or diversification handoff |
 | `calibrate-learning-support` | Adjust AI learning support so task-specific understanding, decision ownership, and verification are preserved while work continues |
 | `choose-ai-execution-setup` | Advise which available AI execution setup should handle a concrete task across access, model, reasoning, context, permission, verification, and topology dimensions |
@@ -84,23 +84,7 @@ Run the deterministic, read-only consistency checker from the repository root:
 python3 scripts/check_repository.py
 ```
 
-The command exits with status `0` when the repository is consistent, `1` when it finds actionable inconsistencies, and `2` when invocation or checker execution fails. It checks repository structure, metadata, links, localization notices, evaluation evidence, and deployment artifacts without invoking an LLM or modifying repository content.
-
-This checker is the static validation layer for Skill evaluation. It does not replace behavioral, routing, comparative, or model-backed evaluation when those forms of evidence are required.
-
-## Skill evaluation runner
-
-Use the common Runner to select and cost a targeted evaluation before invoking Codex:
-
-```bash
-python3 scripts/run_skill_evaluation.py plan --help
-```
-
-The Runner does not evaluate automatically after an edit and does not select all cases implicitly.\
-Model-backed paths use the executable `{skill_name, evals}` format; existing legacy assets migrate per Skill during its Issue #49 audit, or on its first material change outside that audit.\
-Missing definitions needed for model-backed evaluation are created in that format.\
-`static-only` remains available without executable definitions.\
-See [docs/evaluation.md](docs/evaluation.md) for path selection, execution, grading, and compact report handling.
+The command exits with status `0` when the repository is consistent, `1` when it finds actionable inconsistencies, and `2` when invocation or checker execution fails. It checks repository structure, metadata, links, localization notices, companion relationships, and deployment artifacts without invoking an LLM or modifying repository content.
 
 ## Repository structure
 
@@ -120,7 +104,6 @@ See [docs/evaluation.md](docs/evaluation.md) for path selection, execution, grad
 ├── docs/
 │   ├── authoring.md
 │   ├── compatibility.md
-│   ├── evaluation.md
 │   ├── localization.md
 │   ├── security.md
 │   └── workflows.md
@@ -128,13 +111,12 @@ See [docs/evaluation.md](docs/evaluation.md) for path selection, execution, grad
 │   └── <skill-name>/
 │       ├── SKILL.md
 │       ├── SKILL-ja.md  # optional Japanese reference translation
-│       ├── evals/
 │       ├── references/
 │       ├── scripts/
 │       └── assets/
 ```
 
-`evals/`, `references/`, `scripts/`, and `assets/` are optional — only Skills that need them include them.
+`references/`, `scripts/`, and `assets/` are optional — only Skills that need them include them.
 
 ## Authoring and contribution
 

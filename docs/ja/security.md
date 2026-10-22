@@ -80,7 +80,7 @@ Skill の責務を果たせる最小の authority と data scope を優先しま
 - network destination、送信 data、必要 credential、failure behavior を明示する
 - provenance、behavior、outbound data flow を確定できない Skill は reject または quarantine する
 
-disposition を accepted、accepted with controls、rejected、unverified のいずれかで記録します。観測した挙動と static inference を分けます。static review は runtime safety を証明しません。executable または client-dependent behavior が重要な場合は、isolated execution と targeted evaluation を使います。
+disposition を accepted、accepted with controls、rejected、unverified のいずれかで記録します。観測した挙動と static inference を分けます。static review は runtime safety を証明しません。実行可能な処理やクライアント固有の挙動が作業上重要な場合は、隔離した環境で確認します。
 
 ## Repository handoff
 
@@ -92,7 +92,7 @@ review 済み Skill をこの repository で公開する前に:
 - 該当する format、metadata、script、targeted behavior、非配布 APM check を実行する
 - 利用できない client または runtime check を `not executed` と記録する
 
-Skill 構造は [authoring.md](authoring.md)、client/runtime の区別は [compatibility.md](compatibility.md)、evidence requirement は [evaluation.md](evaluation.md) を参照してください。
+Skill 構造は [authoring.md](authoring.md)、client/runtime の区別は [compatibility.md](compatibility.md) を参照してください。
 
 ## 現行情報源
 

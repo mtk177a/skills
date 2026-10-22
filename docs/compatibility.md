@@ -2,14 +2,13 @@
 
 This document separates portable Agent Skills format compatibility from client-specific discovery, invocation, permissions, and execution behavior. A Skill can be structurally valid and still fail to load, trigger, or execute as intended in a particular client.
 
-The repository uses four evidence states. Each state applies only to the scope recorded for it and does not imply any unrecorded client behavior.
+The repository uses three evidence states. Each state applies only to the scope recorded for it and does not imply any unrecorded client behavior.
 
 | State | Meaning |
 | --- | --- |
 | Format-compatible | The Skill package follows the Agent Skills specification. This does not establish that a client discovers or runs it. |
 | Documented | Current official client documentation describes the relevant discovery, invocation, extension, or runtime behavior. The repository has not necessarily executed it. |
 | Locally verified | The repository records a client version, date, and observed discovery or invocation result. Unobserved invocation paths remain unverified. |
-| Behavior-tested | Targeted evaluation evidence records whether the Skill was selected and followed for a defined scenario set. This is scoped evidence, not a general support guarantee. |
 
 ## Compatibility layers
 
@@ -23,13 +22,13 @@ The repository uses four evidence states. Each state applies only to the scope r
 | Runtime | Are scripts, dependencies, filesystem access, and network access available in the target environment? |
 | Verification | Which of the preceding behaviors has been observed locally with a recorded version and date? |
 
-Format compatibility is not evidence of client discovery, invocation, or behavioral compatibility. Official documentation establishes documented client behavior; only recorded local execution establishes local verification or behavior-tested status.
+Format compatibility is not evidence of client discovery, invocation, or behavioral compatibility. Official documentation establishes documented client behavior; only recorded local execution establishes local verification.
 
 ## Client matrix
 
 | Client or layer | Documented posture | Repository evidence | Current state |
 | --- | --- | --- | --- |
-| Codex | Official documentation describes implicit selection and, in Codex CLI or the IDE extension, explicit invocation through `/skills` or a `$` Skill mention. Optional `agents/openai.yaml` provides OpenAI-specific appearance and dependency metadata. Sandbox, approval, rules, tools, and runtime access remain separate from Skill prose. | Repository-local discovery and targeted implicit selection and behavior have been observed. Explicit `/skills` and `$` invocation, UI behavior, and live permission behavior have not been executed for this repository. | Documented; locally verified and behavior-tested for the recorded scenarios; explicit invocation unverified locally |
+| Codex | Official documentation describes implicit selection and, in Codex CLI or the IDE extension, explicit invocation through `/skills` or a `$` Skill mention. Optional `agents/openai.yaml` provides OpenAI-specific appearance and dependency metadata. Sandbox, approval, rules, tools, and runtime access remain separate from Skill prose. | Repository-local discovery has been observed. Explicit `/skills` and `$` invocation, UI behavior, and live permission behavior have not been executed for this repository. | Documented; repository-local discovery locally verified; explicit invocation unverified locally |
 | Claude Code | Official documentation describes its own Skill discovery, invocation, frontmatter, permission, and hook behavior. These client-specific controls do not follow from portable Skill format compatibility. | No repository installation, discovery, explicit or implicit invocation, permission, or behavior run has been recorded. | Format-compatible; runtime behavior unverified |
 | GitHub Copilot / `gh skill` | Client-specific discovery, invocation, metadata, permissions, and runtime behavior must be checked against current official documentation and the target version. | No repository installation, discovery, invocation, permission, or behavior run has been recorded. | Format-compatible; runtime behavior unverified |
 | Gemini CLI | Client-specific discovery, invocation, metadata, permissions, and runtime behavior must be checked against current official documentation and the target version. | No repository installation, discovery, invocation, permission, or behavior run has been recorded. | Format-compatible; runtime behavior unverified |
@@ -41,21 +40,18 @@ Do not add client-specific metadata to every Skill merely because a client suppo
 ## Representative verification snapshot
 
 The table preserves representative observations from recorded repository checks, not support claims inferred from documentation.
-It is not a current or exhaustive inventory of later Skill-level evaluations.
-Record later Skill-level behavior results in the relevant Skill evaluation assets under the path-dependent evidence responsibilities in [evaluation.md](evaluation.md).
-When that evidence supports a client-specific compatibility state, include the relevant client version, date, and scenario scope.
+For later client-specific compatibility checks, record the client version, date, and observed scope.
 
 | Target | Version | Verified date | Observed scope |
 | --- | --- | --- | --- |
 | Claude Code | — | — | Not executed; installation, discovery, explicit and implicit invocation, permissions, and behavior are unverified |
-| Codex | 0.145.0 | 2026-07-24 | Repository-local discovery, observable target Skill open in 16 baseline/candidate selection runs, and 29 candidate/baseline behavior runs including five affected reruns; explicit `/skills` and `$` invocation, UI, and live permission behavior not executed |
+| Codex | 0.145.0 | 2026-07-24 | Repository-local discovery observed; explicit `/skills` and `$` invocation, UI, and live permission behavior not executed |
 | GitHub Copilot / `gh skill` | — | — | Not executed; installation, discovery, invocation, permissions, and behavior are unverified |
 | Gemini CLI | — | — | Not executed; installation, discovery, invocation, permissions, and behavior are unverified |
 | APM | 0.26.0 | 2026-09-15 | native bundle installation, `--skill` selection, individual Skill path installation, consumer-side frozen install, audit |
 | Other clients, including `npx skills add` consumers | — | — | Not executed unless separately recorded |
 
 When adding a client-level result to this snapshot, include the client and version, date, installation path, explicit and implicit invocation results when observable, adjacent Skills, model, permission mode, and any unexposed behavior.
-Record Skill-level behavior results in that Skill's evaluation assets.
 `not exposed` and `not executed` are not passes.
 
 ## Installation paths
@@ -98,7 +94,7 @@ apm install --frozen --dry-run --no-policy
 apm audit --ci --no-policy
 ```
 
-These commands do not prove triggering, instruction following, permission behavior, or output quality. Use the targeted evaluation procedure in [evaluation.md](evaluation.md) for those claims and [security.md](security.md) for third-party and executable capability review.
+These commands do not prove triggering, instruction following, permission behavior, or output quality. Use [security.md](security.md) for third-party and executable capability review.
 
 ## Current sources
 

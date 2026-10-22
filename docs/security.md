@@ -78,7 +78,7 @@ Prefer the least authority and smallest data scope that lets the Skill perform i
 - Make network destinations, data sent, required credentials, and failure behavior explicit.
 - Reject or quarantine a Skill when provenance, behavior, or outbound data flow cannot be established.
 
-Document the disposition as accepted, accepted with controls, rejected, or unverified. Separate observed behavior from static inference. A static review does not prove runtime safety; use isolated execution and targeted evaluation when executable or client-dependent behavior is material.
+Document the disposition as accepted, accepted with controls, rejected, or unverified. Separate observed behavior from static inference. A static review does not prove runtime safety; check executable or client-dependent behavior in an isolated environment when it is material to the work.
 
 ## Repository handoff
 
@@ -90,7 +90,7 @@ Before publishing a reviewed Skill in this repository:
 - run format, metadata, script, targeted behavior, and non-deploying APM checks that apply
 - record unavailable client or runtime checks as `not executed`
 
-See [authoring.md](authoring.md) for Skill structure, [compatibility.md](compatibility.md) for client/runtime distinctions, and [evaluation.md](evaluation.md) for evidence requirements.
+See [authoring.md](authoring.md) for Skill structure and [compatibility.md](compatibility.md) for client/runtime distinctions.
 
 ## Current sources
 
