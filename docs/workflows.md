@@ -3,24 +3,20 @@
 Start with the task you need to complete.\
 These connections help select the next Skill; they are not an instruction to run every step or permission to perform its actions.
 
-## Choose the starting point
+Choose the first Skill from the [task catalog](../README.md#skills).\
+Use this guide for the conditions that govern the next handoff.
 
-| Task | Start with | Next step |
-| --- | --- | --- |
-| Clarify an ambiguous request | `clarify-request` | Design or implementation once the objective, scope, and authority are clear |
-| Define ambiguous terms | `define-referents` | Return to the task with agreed meanings |
-| Compare consequential alternatives | `explore-decision-space` | `design-changes` after selecting an approach |
-| Plan an understood change | `design-changes` | `implement-changes` once the approach and authority are clear |
-| Implement an agreed change | `implement-changes` | `review-changes` for a new diff; `validate-fix` for identified corrections |
-| Diagnose unexpected behavior | `investigate-failure` | Design a correction or use the direct handoff below |
-| Review a new diff or the entire updated diff | `review-changes` | Triage findings; draft a requested summary when there are no findings |
-| Assess existing review feedback | `triage-review-feedback` | Implement authorized work or draft comments from the supplied decisions |
-| Recheck identified fixes | `validate-fix` | Resolve remaining or fix-induced work |
-| Diagnose problems with durable agent guidance | `audit-agent-guidance` | `design-skill` or `design-agent-instructions` |
+- [Changes and failures](#change-and-failure-handling): when to move from design to implementation.
+- [Reviews and corrections](#review-and-corrections): triage, comment drafting, and rechecks.
+- [Risk and stalled work](#risk-and-stalled-work): when to pause and resume.
+- [Agent guidance](#durable-agent-guidance): when to audit or design instructions.
 
-Use the [Skill catalog](../README.md#skills) for other tasks and each Skill's instructions for its inputs, outputs, and boundaries.
+Follow each Skill for its inputs, outputs, and boundaries.
 
 ## Change and failure handling
+
+Use `define-referents` for ambiguous terms, then return to the task with agreed meanings.\
+Use `explore-decision-space` for consequential alternatives, then `design-changes` after choosing an approach.
 
 A typical change follows `clarify-request` → `design-changes` → `implement-changes` → `review-changes`.\
 Skip clarification or design when their decisions are already sufficiently clear and authorized.

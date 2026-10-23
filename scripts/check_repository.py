@@ -15,7 +15,11 @@ TRACKED_REPOSITORY_LOCAL_SKILLS = {"maintain-japanese-references"}
 
 
 KEBAB_CASE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-CATALOG_ROW = re.compile(r"^\|\s*`([a-z0-9-]+)`\s*\|", re.MULTILINE)
+CATALOG_ROW = re.compile(
+    r"^\|\s*`(?P<plain>[a-z0-9-]+)`\s*\|"
+    r"|^\|[^|\n]+\|\s*\[`(?P<linked>[a-z0-9-]+)`\]\(skills/[^)\s]+/SKILL(?:-ja)?\.md\)\s*\|[ \t]*$",
+    re.MULTILINE,
+)
 INLINE_LINK = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 REFERENCE_LINK = re.compile(r"^\s*\[[^\]]+\]:\s*(\S+)", re.MULTILINE)
 COMPANION_ROW = re.compile(r"^\|\s*`([^`]+)`\s*→\s*`([^`]+)`\s*\|(.+)$", re.MULTILINE)
@@ -175,7 +179,10 @@ def skill_directories(root: Path) -> list[Path]:
 
 def parse_catalog(path: Path) -> tuple[list[tuple[str, int]], int | None]:
     text = path.read_text(encoding="utf-8")
-    entries = [(match.group(1), line_number(text, match.start())) for match in CATALOG_ROW.finditer(text)]
+    entries = [
+        (match.group("plain") or match.group("linked"), line_number(text, match.start()))
+        for match in CATALOG_ROW.finditer(text)
+    ]
     count_match = re.search(r"\b(\d+)\s+(?:の\s+)?Skills?\b", text, re.IGNORECASE)
     return entries, int(count_match.group(1)) if count_match else None
 

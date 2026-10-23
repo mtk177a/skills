@@ -4,9 +4,13 @@ This is the authoring guide for Skills maintained in this repository.\
 The two upstream Gist mirrors follow the separate copying rules below; the authoring rules do not change their `SKILL.md` files.\
 Portable Skill design guidance that must travel with an individual Skill should live inside that Skill's own `references/` directory.
 
+- **Create a Skill**: decide its [responsibility](#what-makes-a-good-skill), [name](#naming-a-skill), [trigger](#writing-the-description), and [body](#use-a-semantic-contract-not-a-heading-template).
+- **Import external material**: check the [adoption and Gist rules](#when-to-fork-or-copy-an-external-skill).
+- **Prepare a PR**: use the [new Skill checklist](#new-skill-checklist).
+
 ## What makes a good Skill
 
-A good Skill lets an agent decide when to use it without hesitation, and contains the right amount of detail — no more, no less.
+**Define one responsibility and a clear usage context.**
 
 Follow [Localization](localization.md) for source languages and translation updates.
 
@@ -19,6 +23,30 @@ Prioritize these design decisions:
 
 When comparing against existing Skills, inspect the relevant examples needed to resolve responsibility overlap and converge on a judgment.\
 Stop when that purpose is met; do not impose an arbitrary count or scan the full catalog without a reason.
+
+## Naming a Skill
+
+Use action + object in kebab-case, such as `clarify-request` or `design-changes`, to make the responsibility and usage context clear.\
+Prefer clarity over brevity and avoid names that imply broader scope.\
+Use a single word such as `build` only when the responsibility is narrow enough to avoid ambiguity.
+
+## Writing the description
+
+The `description` is the entry point for usage decisions, not a general explanation.\
+Include:
+
+- What situation triggers this Skill
+- What kind of work it assists with
+- If it depends on a specific agent, what that dependency is
+- Focus on usage context over execution mechanics
+- Put all information needed for implicit selection in `description`; move loaded-time roles, orchestration, and execution mechanics to the body
+
+Avoid:
+
+- Vague descriptions where the usage context is unclear
+- Subjective phrases like "a useful Skill"
+- Descriptions that assume Codex without stating it
+- Frontmatter stuffed with internal implementation details
 
 ## Use a semantic contract, not a heading template
 
@@ -69,35 +97,15 @@ An approved relationship must record:
 
 When either Skill, the relationship, the installation path, or its missing-companion behavior changes, review this record and verify the affected behavior.
 
-### Approved relationship
+### Approved: Japanese reference maintenance
 
-| Relationship | Rationale | Installation and missing-companion behavior | Provenance |
-| --- | --- | --- | --- |
-| `maintain-japanese-references` → `write-natural-japanese` | Translation maintenance needs both fidelity to the English source and context-appropriate Japanese wording. | Both Skills are tracked in this repository. Read `skills/write-natural-japanese/SKILL.md` and its required references before applying the repository-local Skill; stop and report a missing repository file without substituting a personal copy. | Both Skills are original repository material; the repository-local Skill began in [#42](https://github.com/mtk177a/skills/pull/42), and [#77](https://github.com/mtk177a/skills/issues/77) records the required relationship and Japanese-canonical exception. |
+| Required relationship | Provenance |
+| --- | --- |
+| `maintain-japanese-references` → `write-natural-japanese` | Original repository material. [#42](https://github.com/mtk177a/skills/pull/42) introduced the maintenance Skill; [#77](https://github.com/mtk177a/skills/issues/77) records the required relationship and Japanese-canonical exception |
 
-## Writing the description
-
-The `description` is the entry point for usage decisions, not a general explanation.\
-Include:
-
-- What situation triggers this Skill
-- What kind of work it assists with
-- If it depends on a specific agent, what that dependency is
-- Focus on usage context over execution mechanics
-- Put all information needed for implicit selection in `description`; move loaded-time roles, orchestration, and execution mechanics to the body
-
-Avoid:
-
-- Vague descriptions where the usage context is unclear
-- Subjective phrases like "a useful Skill"
-- Descriptions that assume Codex without stating it
-- Frontmatter stuffed with internal implementation details
-
-## Naming a Skill
-
-Use action + object in kebab-case, such as `clarify-request` or `design-changes`, to make the responsibility and usage context clear.\
-Prefer clarity over brevity and avoid names that imply broader scope.\
-Use a single word such as `build` only when the responsibility is narrow enough to avoid ambiguity.
+- **Reason**: preserve English meaning and use context-appropriate Japanese wording.
+- **Location**: both Skills are tracked in this repository.
+- **Before use**: read `skills/write-natural-japanese/SKILL.md` and its required references. If a repository file is unavailable, stop and report it without substituting a personal copy.
 
 ## Shared Skills vs. agent-specific Skills
 
@@ -109,6 +117,37 @@ First, ask whether you can express the Skill without agent dependencies.
 This repository avoids classification directories.\
 Express differences in Skill names or `description` instead.\
 If agent specificity matters, include that context in the name or description.
+
+## Making a Codex-only Skill work across agents
+
+When adapting a Codex-specific Skill for Claude Code or GitHub Copilot, review whether Codex-specific language should stay.
+
+Do not infer instruction-file discovery, loading, precedence, or Skill invocation from format compatibility.\
+When these behaviors affect a design, consult the current official documentation for each target client and verify behavior in the target version or environment where the documentation is conditional or incomplete.\
+Use the result for the current decision instead of maintaining a client-behavior inventory here.
+
+### Shared and client-specific instructions
+
+**Keep shared repository instructions in `AGENTS.md`.**
+
+- **Copilot bridge**: instruct Copilot to read `AGENTS.md`; if unavailable, stop without modifying files, running commands, or changing external state.
+- **Surfaces without automatic loading**: repeat only the minimum safety and approval rules needed to preserve those boundaries in the bridge. This delivery fallback is not a second canonical source.
+- **Updates**: check and update the fallback with any related `AGENTS.md` rule. Do not duplicate other shared rules.
+
+### Checks when adapting for another agent
+
+- Over-reliance on specific tool names
+- Whether the request format and output format make sense for other agents
+- Whether steps assume Codex-specific features
+- Whether agent-specific differences are adequately described in `description` or the body
+- Whether shared guidance has one canonical source and client-specific bridge files duplicate only a documented minimum safety and approval fallback
+- Whether a retained safety and approval fallback remains aligned with its canonical rules
+- Whether a requirement needs behavioral guidance or a client-enforced policy, permission, or hook
+
+Keep Codex-specific language only when that specificity is the core value of the Skill.\
+Otherwise, rewrite around purpose and decision criteria, making the mechanics swappable.
+
+Current client documentation: [Codex `AGENTS.md`](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [Claude Code project instructions](https://code.claude.com/docs/en/memory), [GitHub Copilot custom instructions support](https://docs.github.com/en/copilot/reference/custom-instructions-support).
 
 ## When to fork or copy an external Skill
 
@@ -153,10 +192,11 @@ Never include the following in Skill bodies, helper scripts, reference materials
 Write Skills assuming they may be referenced from other environments and agents.\
 For environment-specific information, use variable names or placeholders.
 
-## Notes on Skills with scripts
+## Bundle only the resources needed
 
-`scripts/` directories are useful but fragile.\
-Handle with care.
+### Scripts
+
+When adding `scripts/`, check runtime requirements and side effects.
 
 - Minimize shell, OS, and architecture dependencies
 - Document any additional dependencies
@@ -166,7 +206,7 @@ Handle with care.
 
 Avoid scripts that break compatibility with both macOS M1 and Windows WSL unless the need is explicitly justified.
 
-## Notes on references/
+### References
 
 `references/` directories hold materials the Skill needs at judgment time — formats, specs, decision criteria.
 
@@ -175,7 +215,7 @@ Avoid scripts that break compatibility with both macOS M1 and Windows WSL unless
 - Do not store temporary notes or customer-specific information
 - Check the license of any material you include; do not bundle content under incompatible licenses
 
-## Notes on assets/
+### Assets
 
 `assets/` directories hold distributable supplementary materials — images, reusable templates, or small structured data.
 
@@ -197,33 +237,3 @@ Before opening a pull request for a new Skill:
 - [ ] Third-party provenance and capability risks have been reviewed when external material is included
 - [ ] `scripts/`, `references/`, `assets/` contain only what the Skill needs (empty directories removed)
 - [ ] The repository checker and tests for retained code pass, and the Skill's work results and safety boundaries have been checked as appropriate
-
-## Making a Codex-only Skill work across agents
-
-When adapting a Codex-specific Skill for Claude Code or GitHub Copilot, review whether Codex-specific language should stay.
-
-Do not infer instruction-file discovery, loading, precedence, or Skill invocation from format compatibility.\
-When these behaviors affect a design, consult the current official documentation for each target client and verify behavior in the target version or environment where the documentation is conditional or incomplete.\
-Use the result for the current decision instead of maintaining a client-behavior inventory here.
-
-For this repository, `AGENTS.md` is the canonical source for shared repository instructions.\
-The GitHub Copilot bridge instructs Copilot to read that source and, when it is unavailable, to stop instead of modifying files, running commands, or making external changes.\
-For surfaces that load the bridge without automatically loading `AGENTS.md`, the bridge repeats only the minimum safety and approval rules needed to preserve those boundaries.\
-This limited fallback is a delivery-layer exception, not a second canonical source.\
-When a related rule changes in `AGENTS.md`, verify and update the fallback at the same time.\
-Do not repeat other shared rules in a client-specific bridge file.
-
-Check:
-
-- Over-reliance on specific tool names
-- Whether the request format and output format make sense for other agents
-- Whether steps assume Codex-specific features
-- Whether agent-specific differences are adequately described in `description` or the body
-- Whether shared guidance has one canonical source and client-specific bridge files duplicate only a documented minimum safety and approval fallback
-- Whether a retained safety and approval fallback remains aligned with its canonical rules
-- Whether a requirement needs behavioral guidance or a client-enforced policy, permission, or hook
-
-Keep Codex-specific language only when that specificity is the core value of the Skill.\
-Otherwise, rewrite around purpose and decision criteria, making the mechanics swappable.
-
-Current client documentation: [Codex `AGENTS.md`](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [Claude Code project instructions](https://code.claude.com/docs/en/memory), [GitHub Copilot custom instructions support](https://docs.github.com/en/copilot/reference/custom-instructions-support).

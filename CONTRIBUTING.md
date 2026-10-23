@@ -1,17 +1,20 @@
 # Contributing Guide
 
-This guide is for the maintainer of this personal repository and AI agents working on the maintainer's behalf.\
-External contributions are not normally expected.\
-It covers how to track, check, and submit changes, including commit messages and pull request titles.
+For the maintainer and AI agents working on the maintainer’s behalf.\
+External contributions are not normally expected.
+
+Follow [Issue tracking and preparation](#make-a-change) → [verification](#verify-the-change) → [commit and PR](#commit-and-open-a-pull-request).\
+For message syntax, see [commit messages and PR titles](#commit-messages-and-pull-request-titles).
 
 ## Make a change
 
 ### Track the work in an Issue
 
-Track work in [GitHub Issues](https://github.com/mtk177a/skills/issues), using an existing Issue or opening one for the work.\
-Only omit Issue tracking when the maintainer explicitly instructs you to do so.\
-State the purpose, scope, and completion criteria, and use the applicable sections of the [Issue template](.github/ISSUE_TEMPLATE/default.md).\
-Write the Issue title and `Summary` in English; write the remaining sections in Japanese by default, as specified by the template.
+Use an existing [GitHub Issue](https://github.com/mtk177a/skills/issues) or open one for the work.
+
+- **Content**: purpose, scope, and completion criteria, using the applicable [Issue template](.github/ISSUE_TEMPLATE/default.md) sections.
+- **Language**: title and `Summary` in English; other sections in Japanese by default.
+- **Exception**: omit tracking only when the maintainer explicitly instructs you to do so.
 
 ### Check before changing files
 
@@ -42,9 +45,10 @@ For distribution changes, also follow the [archive and APM checks](docs/distribu
 ## Commit and open a pull request
 
 Commit in units whose purpose and verification can be followed without mixing unrelated changes.\
-When opening a pull request, use the [pull request template](.github/pull_request_template.md) to describe the result and verification.\
-Link an Issue with `Closes #123` when the pull request completes it, or `Refs #123` when it only refers to it.\
-Write the pull request `Summary` in English and the remaining sections in Japanese by default, as specified by the template.
+Use the [PR template](.github/pull_request_template.md) to describe the result and verification.
+
+- **Issue link**: `Closes #123` when completed by the PR, or `Refs #123` for a reference only.
+- **Language**: `Summary` in English; other sections in Japanese by default.
 
 ### Commit messages and pull request titles
 

@@ -21,39 +21,62 @@ Choose one delivery route for overlapping Skills in each environment.
 
 ## Skills
 
-This repository includes the following Skills.
+Choose by task, then follow the linked Skill for its conditions and boundaries.\
+See [workflows](docs/workflows.md) for sequencing and handoffs.
 
-| Skill | Description |
+### Clarify and choose an approach
+
+| Task | Skill |
 | --- | --- |
-| `assess-risky-change-readiness` | Assess whether a consequential or hard-to-recover change has decision-ready safety controls, recovery, evidence, and authorization |
-| `audit-agent-guidance` | Audit durable agent guidance against intended behavior, observed usage, client semantics, and available evidence |
-| `break-failure-loop` | Pause equivalent same-hypothesis attempts without new evidence and select a diagnostic, blocker, or diversification handoff |
-| `calibrate-learning-support` | Adjust AI learning support so task-specific understanding, decision ownership, and verification are preserved while work continues |
-| `choose-ai-execution-setup` | Advise which available AI execution setup should handle a concrete task across access, model, reasoning, context, permission, verification, and topology dimensions |
-| `clarify-request` | Iteratively clarify or structure an ambiguous request until the next workflow can start, proceed under low-impact assumptions, or report a blocker |
-| `cognitive-rhythm-writing` | Design pacing in explanatory Japanese writing by managing cognitive rhythm and unresolved tension |
-| `curate-repo-docs` | Keep repository-managed documentation minimal, evidence-backed, correctly placed, and validated |
-| `define-referents` | Ground ambiguous terms in concrete referents and return naming constraints to the originating workflow |
-| `design-agent-instructions` | Design AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md instruction sets |
-| `design-changes` | Design change scope, impact, risk, and verification approach before implementing |
-| `design-skill` | Decide whether and how to create, merge, split, or substantially rescope a Skill before implementation |
-| `draft-commit` | Draft atomic commit plans and Conventional Commits messages while preserving Git staging boundaries |
-| `draft-issue` | Draft an evidence-grounded, tracker-aware Issue and filing handoff without writing to the tracker |
-| `draft-review-comments` | Draft unposted PR comments from decided findings or a finding-free review with a supplied conclusion, scope, checks, and limitations |
-| `explore-decision-space` | Expand problem frames or solution options before a consequential decision converges prematurely |
-| `implement-changes` | Implement approved changes in small units with TDD or another appropriate verification method |
-| `investigate-failure` | Investigate unexplained errors, failing tests, regressions, performance anomalies, and unexpected technical behavior across environments |
-| `japanese-tech-writing` | Apply argument structure, terminology, and editing rules to Japanese technical writing |
-| `make-it-click` | Write or revise an explanation that answers the reader's question with the needed premises, relationships, conditions, and uncertainty |
-| `record-session-handoff` | Record an evidence-grounded handoff so a later AI-agent session can revalidate and safely resume active work |
-| `research-web-safely` | Gather and evaluate traceable Web evidence while treating retrieved content as untrusted data |
-| `review-changes` | Review new diffs or explicitly requested full re-reviews with proportionate risk context and canonical labels |
-| `revise-docs-fresh-eyes` | Have a fresh Codex or Claude Code subagent cold-read and revise an existing document outside its authoring conversation |
-| `structure-what-you-write` | Create, revise, and review writing by organizing information for its readers and purpose |
-| `summarize-changes` | Summarize changes in a diff or commit range for review or documentation |
-| `triage-review-feedback` | Separate finding assessment and state from act-now, defer, or no-action response decisions |
-| `validate-fix` | Perform bounded post-fix re-review of identified findings using appropriate read-only evidence |
-| `write-natural-japanese` | Write or revise Japanese prose with context-appropriate wording while preserving meaning, certainty, and established terminology |
+| Clarify an ambiguous request | [`clarify-request`](skills/clarify-request/SKILL.md) |
+| Define what ambiguous terms refer to | [`define-referents`](skills/define-referents/SKILL.md) |
+| Compare different problem frames and solutions | [`explore-decision-space`](skills/explore-decision-space/SKILL.md) |
+| Choose an AI execution environment for the task | [`choose-ai-execution-setup`](skills/choose-ai-execution-setup/SKILL.md) |
+| Preserve understanding and decision ownership while using AI | [`calibrate-learning-support`](skills/calibrate-learning-support/SKILL.md) |
+
+### Design, implement, and investigate
+
+| Task | Skill |
+| --- | --- |
+| Plan scope, risks, and verification before implementation | [`design-changes`](skills/design-changes/SKILL.md) |
+| Implement an authorized change and verify it | [`implement-changes`](skills/implement-changes/SKILL.md) |
+| Investigate unexpected behavior and failures | [`investigate-failure`](skills/investigate-failure/SKILL.md) |
+| Assess safety, recovery, and authorization before a consequential action | [`assess-risky-change-readiness`](skills/assess-risky-change-readiness/SKILL.md) |
+| Stop repeated failed attempts and choose the next diagnostic step | [`break-failure-loop`](skills/break-failure-loop/SKILL.md) |
+
+### Review and communicate changes
+
+| Task | Skill |
+| --- | --- |
+| Review a new diff or explicitly requested full re-review | [`review-changes`](skills/review-changes/SKILL.md) |
+| Assess findings and decide how to respond | [`triage-review-feedback`](skills/triage-review-feedback/SKILL.md) |
+| Recheck identified fixes against their original findings | [`validate-fix`](skills/validate-fix/SKILL.md) |
+| Draft PR comments from supplied review decisions | [`draft-review-comments`](skills/draft-review-comments/SKILL.md) |
+| Draft an Issue without posting it | [`draft-issue`](skills/draft-issue/SKILL.md) |
+| Plan commit units and draft their messages | [`draft-commit`](skills/draft-commit/SKILL.md) |
+| Summarize a diff or commit range for its readers | [`summarize-changes`](skills/summarize-changes/SKILL.md) |
+| Record evidence for resuming work in another session | [`record-session-handoff`](skills/record-session-handoff/SKILL.md) |
+
+### Research and write
+
+| Task | Skill |
+| --- | --- |
+| Research the Web with traceable evidence | [`research-web-safely`](skills/research-web-safely/SKILL.md) |
+| Select and organize information for the reader | [`structure-what-you-write`](skills/structure-what-you-write/SKILL.md) |
+| Explain an answer and the reasoning needed to understand it | [`make-it-click`](skills/make-it-click/SKILL.md) |
+| Write and revise natural Japanese without changing meaning | [`write-natural-japanese`](skills/write-natural-japanese/SKILL.md) |
+| Apply Japanese technical-writing rules | [`japanese-tech-writing`](skills/japanese-tech-writing/SKILL.md) |
+| Design pacing in explanatory Japanese prose | [`cognitive-rhythm-writing`](skills/cognitive-rhythm-writing/SKILL.md) |
+| Choose what repository documentation needs and where it belongs | [`curate-repo-docs`](skills/curate-repo-docs/SKILL.md) |
+| Have an authorized independent subagent revise a document | [`revise-docs-fresh-eyes`](skills/revise-docs-fresh-eyes/SKILL.md) |
+
+### Maintain Skills and agent instructions
+
+| Task | Skill |
+| --- | --- |
+| Diagnose gaps between agent guidance and behavior | [`audit-agent-guidance`](skills/audit-agent-guidance/SKILL.md) |
+| Design a Skill’s responsibility and boundaries | [`design-skill`](skills/design-skill/SKILL.md) |
+| Design instruction files and client loading relationships | [`design-agent-instructions`](skills/design-agent-instructions/SKILL.md) |
 
 `japanese-tech-writing` and `cognitive-rhythm-writing` are unmodified copies of upstream Gists.\
 Their source revisions, licenses, and synchronization records are in each Skill's `UPSTREAM.md` and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
@@ -64,7 +87,6 @@ Their source revisions, licenses, and synchronization records are in each Skill'
 | --- | --- |
 | Verify changes and prepare Issues, commits, and pull requests | [Contributing](CONTRIBUTING.md) |
 | Author a Skill | [Authoring](docs/authoring.md) |
-| Choose Skills for a task | [Workflows](docs/workflows.md) |
 | Build a distribution ZIP | [Build and verify an archive](docs/distribution.md#build-and-verify-an-archive) |
 | Review third-party material and executable capabilities | [Security review](docs/security.md) |
 | Maintain Japanese translations | [Localization](docs/localization.md) |

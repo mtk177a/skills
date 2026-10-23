@@ -120,6 +120,25 @@ class CheckerCliTests(unittest.TestCase):
 
             self.assertEqual(0, result.returncode, result.stderr)
 
+    def test_task_catalog_links_preserve_membership_checks(self) -> None:
+        cases = [
+            ("alpha-skill", "", 0, ""),
+            ("alpha-skill", "| Again | [`alpha-skill`](skills/alpha-skill/SKILL.md) |\n", 1, "duplicate catalog entry"),
+            ("unknown-skill", "", 1, "catalog references unknown Skill"),
+            (None, "", 1, "catalog is missing Skill"),
+        ]
+        for name, extra, code, diagnostic in cases:
+            with self.subTest(name=name, extra=extra), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                create_valid_repository(root)
+                for filename, entrypoint in [("README.md", "SKILL.md"), ("README.ja.md", "SKILL-ja.md")]:
+                    row = f"| Check a fixture | [`{name}`](skills/{name}/{entrypoint}) |\n" if name else ""
+                    write(root / filename, "# Catalog\n\n### Check changes\n\n| Task | Skill |\n| --- | --- |\n" + row + extra)
+                result = run_checker(root)
+                self.assertEqual(code, result.returncode, result.stderr)
+                if diagnostic:
+                    self.assertIn(diagnostic, result.stderr)
+
     def assert_fixture_failure(self, mutate, expected: str) -> str:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
