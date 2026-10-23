@@ -90,6 +90,7 @@ When generated reference data is the canonical source, link to it or use the est
 - Explain important dependencies and why they matter to the reader's investigation or maintenance task.
 - Label what is directly verified and where current behavior remains unknown.
 - Do not infer an original design rationale, business requirement, or promised future behavior from implementation alone.
+- When describing current behavior from implementation, present it as descriptive rather than normative, and record the examined revision when practical.
 - Separate the current architecture from a proposal to change it or from a historical decision record.
 
 ## Procedures, how-to guides, and runbooks
@@ -98,9 +99,11 @@ When generated reference data is the canonical source, link to it or use the est
 
 - Start with the outcome and relevant prerequisites.
 - Express actions in the order in which they must be performed; show conditionals at the relevant decision point.
+- Put a condition before the action it governs, and replace vague conditions such as "as needed" with observable criteria.
+- Prefer commands that can be copied as written. Give placeholders meaningful names and explain them next to the example.
 - Give each step a recognizable action, with subordinate details, commands, cautions, and checks placed beneath that step when appropriate.
 - State expected results and practical completion checks rather than declaring success after an attempted action.
-- Include failure branches, escalation, rollback, or recovery only when evidenced, authorized, and relevant.
+- Include failure branches, escalation, rollback, or recovery only when evidenced, authorized, and relevant. Do not invent them to make a procedure look complete; report the missing requirement instead.
 - Keep conceptual education and exhaustive command references elsewhere if they distract from execution.
 
 A tutorial is for learning through a guided experience; a how-to is for accomplishing an actual task.

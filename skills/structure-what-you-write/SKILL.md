@@ -1,6 +1,6 @@
 ---
 name: structure-what-you-write
-description: Creates, revises, and reviews writing by organizing information for its readers and purpose. Use for docs, issues, PRs, emails, comments, and messages.
+description: Creates, revises, and reviews writing by selecting and organizing information for its readers and purpose. Use for repository documentation, READMEs, guides, issues, PRs, emails, comments, and messages.
 license: MIT
 ---
 
@@ -29,6 +29,7 @@ Work at the level the information requires, from an individual sentence to a col
 - Identify the information needed for the reader to understand, decide, or act.
 - Distinguish established facts, authorized decisions, assumptions, interpretations, and unknowns.
 - Use appropriate primary sources for material factual claims. Do not invent missing facts, decisions, requirements, or rationale.
+- Treat code and other implementation evidence as establishing current behavior only. It does not by itself establish requirements, design rationale, policy, ownership, or acceptable risk.
 - Distinguish faithful editing of supplied content from authoring where content selection is permitted.
 - Preserve required claims, conditions, uncertainty, commitments, permissions, and safety constraints when restructuring existing content.
 - Before revising operational instructions, identify the supplied inputs, required outputs, selection rules, permissions, prohibitions, and failure handling as working notes tied to their sources. Mark unspecified behavior as unspecified. Separate maintainer duties from safeguards the executing reader still needs.
@@ -131,6 +132,7 @@ The workflow must remain usable without unrelated Skills or external services.
 
 - For creation or authorized revision, produce the requested finished content rather than a description of how to write it.
 - For review-only requests, identify structural problems, explain their effects, and propose improvements without modifying the target.
+- When assessing whether repository documentation needs to change, conclude with one result: update required; no documentation impact, with the reason; or blocked by unknowns, naming the missing evidence or decision.
 - When no change is needed, preserve the existing content instead of manufacturing an improvement.
 - When required information or authority is missing, identify the specific uncertainty and complete independent work where possible.
 - Keep authoring notes, discarded alternatives, and internal revision history out of the finished content unless they serve its readers.

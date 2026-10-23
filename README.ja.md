@@ -70,7 +70,6 @@ Plugin と単体・APM 導入は、同じ `skills/` の原本を使う。\
 | 意味を保ちながら自然な日本語に整える | [`write-natural-japanese`](skills/write-natural-japanese/SKILL.md) |
 | 日本語技術文書の論証・用語・推敲の規範を適用する | [`japanese-tech-writing`](skills/japanese-tech-writing/SKILL.md) |
 | 日本語の説明文に緩急を設計する | [`cognitive-rhythm-writing`](skills/cognitive-rhythm-writing/SKILL.md) |
-| リポジトリ文書に残す情報と配置を決める | [`curate-repo-docs`](skills/curate-repo-docs/SKILL-ja.md) |
 | 許可された独立サブエージェントに初見で改稿させる | [`revise-docs-fresh-eyes`](skills/revise-docs-fresh-eyes/SKILL-ja.md) |
 
 ### Skill・エージェント向け指示を整える
