@@ -12,9 +12,9 @@ Check the [runtime requirements](docs/users/compatibility.md) before installatio
 
 | Target | Instructions |
 | --- | --- |
-| ChatGPT and Codex | [Install or update a personal plugin](docs/users/installation.md#chatgpt-and-codex) |
-| Cursor | [Install or update a local plugin](docs/users/installation.md#cursor) |
-| Claude Code and other APM targets | [Install the bundle, selected Skills, or an individual Skill](docs/users/installation.md#install-through-apm) |
+| ChatGPT and Codex | [Install or update a personal plugin](docs/users/installation.md#upload-the-plugin-zip-to-chatgpt) |
+| Cursor | [Install or update a local plugin](docs/users/installation.md#extract-the-plugin-zip-for-cursor) |
+| Claude Code and other APM targets | [Install the bundle, selected Skills, or an individual Skill](docs/users/installation.md#install-with-apm) |
 
 Plugin and standalone/APM installations use the same `skills/` sources.\
 Choose one delivery route for overlapping Skills in each environment.

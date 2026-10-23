@@ -3,9 +3,10 @@
 
 # Plugin の ZIP を作る
 
-この文書は保守者向けに、新しいバージョンの Plugin の ZIP を作り、push したコミットを APM で導入できることを確かめる手順と、ZIP の仕様を説明する。\
+この手引きは、保守者と、保守者の代わりに作業するエージェントに向けたものである。\
+新しいバージョンの Plugin の ZIP を作り、push したコミットを APM で導入できることを確かめる手順と、ZIP の仕様を説明する。\
 ZIP を ChatGPT や Cursor に導入する方法は、[導入ガイド](../users/installation.md) を参照する。\
-GitHub Releases などでの公開は、この文書の対象に含めない。
+GitHub Releases などでの公開は、この手引きの対象外とする。
 
 ## 必要な環境
 

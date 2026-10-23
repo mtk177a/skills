@@ -1,55 +1,71 @@
-# Compatibility and runtime requirements
+# Runtime requirements and client differences
 
-A valid Agent Skills package is not enough to establish that a client can discover, invoke, or execute a Skill.\
-Check the intended client's capabilities and the requirements of the task before choosing an [installation route](installation.md#choose-an-installation-route).
+This guide is for people choosing where to run the Skills.\
+It lists what the agent needs in order to do the work and how clients differ in finding and running Skills.\
+Check it before you choose an [installation method](installation.md#choose-an-installation-method).
 
-## Common requirements
+A Skill that follows the Agent Skills format is not guaranteed to work in every client.\
+The client must be able to find, invoke, and run the Skill, and the agent needs the tools and permissions that the work requires.
 
-- The agent can read the Skill body and bundled resources; each Skill specifies which resources to read.
-- Tool-dependent work has the required repository, filesystem, network, or external-service access.
-- Writes, external actions, and subagent execution have the required authorization.\
-  Installing a plugin does not grant it.
+## Requirements for every Skill
 
-The public Skills currently bundle no executable scripts or additional Python dependencies.\
-That does not remove a task's need for tools, permissions, or external evidence.
+- The agent can read the Skill body and the resources bundled with it.\
+  Each Skill states which resources to read.
+- For work that uses tools, the agent can access the required repository, files, network, or external services.
+- Writing files, acting on external services, and running subagents are authorized.\
+  Installing a Skill or plugin does not authorize them.
 
-## Plugin runtime requirements
+The public Skills bundle no executable scripts and require no additional Python libraries.\
+The work itself may still require tools, permissions, or external evidence.
 
-`mtk177a-skills` packages all public Skills without changing their instructions.\
-The following requirements need particular attention when choosing an environment:
+## Requirements for specific Skills
 
-| Task or Skill | Requirement |
+The plugin contains all public Skills with their instructions unchanged.\
+Check these requirements in particular when choosing an environment.
+
+| Skill or work | Requirement |
 | --- | --- |
-| `define-referents` | Read its required bundled reference before applying the Skill |
-| `cognitive-rhythm-writing` | Read the adjacent `japanese-tech-writing/SKILL.md`; install the pair together |
-| Writing and design Skills | Read the references selected or required by each Skill; `write-natural-japanese` requires its complete wording reference |
-| Repository editing, investigation, and review | Access the actual files, differences, and evidence; executing checks requires the corresponding tools |
-| `research-web-safely` | Live search/retrieval and observable source citations |
-| `revise-docs-fresh-eyes` | Codex or Claude Code with an authorized independent subagent that does not inherit the authoring conversation; stop if subexecution is unavailable or prohibited |
+| `define-referents` | The agent reads its required bundled reference before applying the Skill. |
+| `cognitive-rhythm-writing` | The agent reads `japanese-tech-writing/SKILL.md`, so both Skills are installed together. |
+| `write-natural-japanese` | The agent reads its wording reference in full. |
+| Other writing and design Skills | The agent reads the references that each Skill selects or requires. |
+| Editing, investigating, or reviewing a repository | The agent can access the actual files, differences, and evidence, and the tools for any checks it runs. |
+| `research-web-safely` | The agent can search and retrieve web content and cite observable sources. |
+| `revise-docs-fresh-eyes` | The agent runs in Codex or Claude Code and is allowed to start an independent subagent that does not inherit the authoring conversation. |
 
-Other workflow mentions are not automatically mandatory companion dependencies.\
-Check the individual Skill for its output, missing-input handling, and stopping conditions.\
-When instructions or resources change, review the affected requirements and package references together.
+If an independent subagent is unavailable or prohibited, `revise-docs-fresh-eyes` stops.
 
-## Client-specific behavior
+Apart from `cognitive-rhythm-writing`, no Skill requires another Skill.\
+The connections in the [Skill workflow guide](workflows.md) are suggestions for choosing the next Skill, not dependencies.\
+See each Skill for its output, its handling of missing input, and when it stops.
 
-| Client or tool | What to distinguish |
-| --- | --- |
-| Codex | CLI/IDE explicit invocation through `/skills` or `$` and implicit selection are client behavior. Optional `agents/openai.yaml` supplies OpenAI-specific display and dependency metadata. Sandbox, approvals, rules, and tool access are separate controls |
-| Claude Code | Its discovery, invocation, frontmatter, permissions, and hooks are client-specific; portable format compatibility does not establish those behaviors |
-| Cursor | Use the [local plugin procedure](installation.md#cursor), then verify discovery and explicit use in the target version |
-| Other clients, including GitHub Copilot and Gemini CLI | Check current official documentation and the target version for discovery, invocation, metadata, permissions, and runtime behavior |
-| APM | An installation tool for the root `skills/` catalog, not an execution client |
+## Differences between clients
 
-Add client-specific metadata only when a Skill needs the corresponding invocation control, UI, dependency declaration, or permission behavior.\
-Keep `name`, `description`, instructions, and resources portable otherwise.
+Clients differ in how they find, invoke, and constrain Skills:
 
-## Verify the required behavior
+- **Codex**:
+  - Explicit invocation through `/skills` or `$` in the CLI and IDE, and implicit selection, are features of the client.
+  - The optional `agents/openai.yaml` supplies OpenAI-specific display and dependency metadata.
+  - Sandbox, approvals, rules, and tool access are separate controls.
+- **Claude Code**: discovery, invocation, frontmatter, permissions, and hooks are specific to the client.\
+  Compatibility with the portable format does not establish how they behave.
+- **Cursor**: follow the [Cursor installation steps](installation.md#extract-the-plugin-zip-for-cursor), then check discovery and explicit invocation in your Cursor version.
+- **Other clients, such as GitHub Copilot and Gemini CLI**: check discovery, invocation, metadata, permissions, and runtime behavior in the current official documentation and in your client version.
+- **APM**: installs the `skills/` directory; it does not run Skills.
 
-Check format, installation/discovery, invocation, client extensions, enforced permissions, and runtime access separately.
+## Check that the Skills work in your client
+
+Check each of the following separately, because passing one does not establish the others:
+
+- The package format is valid.
+- The client installs and lists the Skills.
+- You can invoke a Skill.
+- Client-specific extensions behave as expected.
+- The client enforces the permissions you rely on.
+- The agent can access what the work needs.
 
 Client behavior changes independently of the package format.\
-Consult current official documentation when a detail affects the task:
+When a detail matters to your work, check the current official documentation:
 
 - [Agent Skills specification](https://agentskills.io/specification)
 - [OpenAI Build skills](https://learn.chatgpt.com/docs/build-skills)
@@ -57,5 +73,3 @@ Consult current official documentation when a detail affects the task:
 - [Claude Skill authoring](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
 - [Claude Skills for enterprise](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise)
 - [Cursor Plugins](https://cursor.com/docs/plugins)
-
-Use [security review](../maintainers/security.md) when third-party material or executable capabilities are involved.
