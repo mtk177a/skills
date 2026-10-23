@@ -4,10 +4,10 @@
 
 [mtk177a](https://github.com/mtk177a) が作成・保守する Skill と、元資料をコピーして収録する Skill の個人用リポジトリです。
 
-各 Skill は [Agent Skills 仕様](https://agentskills.io/specification) に準拠しています。
-形式上の互換性だけでは、クライアントによる探索や実行時の動作まで確認できません。
-このリポジトリには Codex を対象とした限定的な動作確認結果がありますが、Claude Code、GitHub Copilot、Gemini CLI などのクライアントは未検証です。
-証拠の状態と検証範囲は [docs/ja/compatibility.md](docs/ja/compatibility.md) を参照してください。
+各 Skill は [Agent Skills 仕様](https://agentskills.io/specification) に準拠しています。\
+形式上の互換性だけでは、クライアントによる探索や実行時の動作まで確認できません。\
+利用先の機能と Skill の実行条件を確認してください。\
+互換性の確認事項と検証方法は [docs/ja/compatibility.md](docs/ja/compatibility.md) を参照してください。
 
 > **無保証。** このリポジトリは、個人が可能な範囲で保守しています。Skill は予告なく変更・削除される場合があります。自己責任でご利用ください。
 
@@ -55,10 +55,10 @@
 
 `mtk177a-skills` は、固定した Git コミットから公開 Skill をまとめ、複数のクライアントで扱える共通形式の Agent Plugin として配布します。\
 ZIP を ChatGPT の個人用 Plugin としてアップロードするか、Cursor のローカル Plugin ディレクトリに展開して使います。\
-導入・更新方法、単体・APM 導入との重複回避、正式版を有効にする前の検証用 Plugin の無効化・削除については、[Plugin の配布手順](docs/ja/distribution.md#導入方法を選ぶ) を参照してください。
+導入・更新方法、単体・APM 導入や別の Plugin との重複回避については、[Plugin の配布手順](docs/ja/distribution.md#導入方法を選ぶ) を参照してください。
 
 同梱されている Skill が、すべてのクライアントで実行できるとは限りません。\
-目的の作業について、[実行条件と検証記録](docs/ja/compatibility.md#plugin-の実行条件) を確認してください。\
+目的の作業について、[実行条件](docs/ja/compatibility.md#plugin-の実行条件) を確認してください。\
 保守者は、単体導入と同じ原本から [アーカイブを生成・検証](docs/ja/distribution.md#アーカイブを生成検証する) できます。
 
 ### Claude Code (APM)

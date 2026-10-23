@@ -1,11 +1,11 @@
 # Plugin distribution
 
-`mtk177a-skills` distributes the public `skills/` catalog as one portable Agent Plugin, starting at version `0.1.0`.\
+`mtk177a-skills` distributes the public `skills/` catalog as one portable Agent Plugin.\
 The plugin and standalone/APM installations use the same Skill sources, so maintainers can update `skills/` without maintaining separate distribution copies.
 
 For installation, start with [Choose an installation route](#choose-an-installation-route).\
 For archive preparation, follow [Build and verify an archive](#build-and-verify-an-archive).\
-The [compatibility guide](compatibility.md#plugin-runtime-requirements) records execution requirements, observed behavior, and checks still pending for the formal package.
+The [compatibility guide](compatibility.md#plugin-runtime-requirements) describes the capabilities and inputs required by each Skill.
 
 ## Choose an installation route
 
@@ -17,9 +17,9 @@ Choose one delivery route for overlapping Skills in each runtime:
 | Cursor | Extract the same ZIP into Cursor's local plugin directory |
 | Claude Code | Continue using the existing [APM installation](../README.md#claude-code-apm); this package does not add a Claude-specific plugin manifest |
 
-Before enabling the formal plugin, identify and disable or remove `mtk177a-skills-probe` and overlapping standalone/APM installations using the client's supported controls.\
+Before enabling the plugin, identify and disable or remove overlapping plugin, standalone, or APM installations using the client's supported controls.\
 Do not remove unrelated Skills or credentials, or rely on undocumented precedence or namespaces to resolve duplicates.\
-Retain the previous archive for recovery and verify the formal plugin in a new conversation.
+Retain the previous archive for recovery and verify the plugin in a new conversation.
 
 Installing a plugin makes its packaged instructions available; it does not grant shell access, repository access, external connections, subagents, or write permissions.\
 A Skill can therefore be installed but still lack the capabilities required for a particular task.
@@ -39,13 +39,11 @@ The builder does not upload files or change account settings.
 4. In each intended surface, check Skill discovery, body/reference reading when observable, and the resulting output separately.
 
 Chat, Work, dots, and Codex may differ in invocation syntax and runtime capabilities.\
-A plausible answer alone does not prove that the Skill was loaded, and automatic selection remains unverified without a recorded test.\
-Use the [formal-package checks](compatibility.md#plugin-evidence-and-remaining-checks) to distinguish observed behavior from unavailable or untested capabilities.
+A plausible answer alone does not prove that the Skill was loaded; distinguish observed loading from the resulting output.
 
 ### Cursor
 
-[Cursor's documentation](https://cursor.com/docs/plugins) describes support for portable Agent Plugins and local testing under `~/.cursor/plugins/local/<plugin-name>/`.\
-This is a documented installation route; this package's behavior in Cursor remains unverified until tested.
+[Cursor's documentation](https://cursor.com/docs/plugins) describes support for portable Agent Plugins and local testing under `~/.cursor/plugins/local/<plugin-name>/`.
 
 1. Extract the ZIP into `~/.cursor/plugins/local/mtk177a-skills/`, with `plugin.json` directly inside that directory.\
    When updating, preserve any needed backup and replace the old extracted directory as a whole.\
@@ -73,7 +71,6 @@ The builder selects files from the requested Git commit:
 Included files retain their original bytes.\
 New tracked files under `skills/` are distribution candidates, so review additions before committing for scripts, external references, credentials, and generated output.
 
-Version `0.1.0` contains 29 Skills, 14 reference files, two provenance files, and three root files: 48 ZIP entries in total.\
 There is no enclosing directory above `plugin.json` and `skills/`.\
 All public Skills are packaged, but their [runtime requirements](compatibility.md#plugin-runtime-requirements) still apply.
 
@@ -136,8 +133,4 @@ When a Skill changes, separately review generic examples, plain-text references,
 
 ## Recover from a faulty version
 
-Restore the needed previous source content and distribute it under a new version, using the same build and verification steps.\
-Direct downgrade has not been verified, so retaining an old archive does not establish that it can be reinstalled as a downgrade.
-
-Static checks and consumer installation checks establish package consistency and delivery, not runtime behavior.\
-A formal package remains behavior-unverified until the user-uploaded archive has been checked on its intended surfaces.
+Restore the needed previous source content and distribute it under a new version, using the same build, installation, and verification steps.

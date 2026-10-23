@@ -2,7 +2,9 @@
 
 A personal repository of agent Skills — authored, maintained, or mirrored by [mtk177a](https://github.com/mtk177a).
 
-These Skills follow the [Agent Skills specification](https://agentskills.io/specification). Format compatibility does not establish client discovery or runtime behavior: this repository records targeted behavior evidence for Codex, while Claude Code, GitHub Copilot, Gemini CLI, and other clients remain unverified. See [docs/compatibility.md](docs/compatibility.md) for the evidence states and verification scope.
+These Skills follow the [Agent Skills specification](https://agentskills.io/specification).\
+Format compatibility does not establish client discovery or runtime behavior: check the target client's capabilities and the Skill's requirements.\
+See [docs/compatibility.md](docs/compatibility.md) for compatibility considerations and validation methods.
 
 > **No warranty.** This is a personal repository, maintained by one person on a best-effort basis. Skills may change or be removed without notice. Use at your own risk.
 
@@ -50,10 +52,10 @@ This repository includes the following Skills.
 
 `mtk177a-skills` packages the public Skills from a fixed Git commit as one portable Agent Plugin.\
 Upload its ZIP as a personal ChatGPT plugin, or extract it into Cursor's local plugin directory.\
-See [Plugin distribution](docs/distribution.md#choose-an-installation-route) for installation and updates, including how to avoid overlapping standalone/APM installations and disable or remove the test plugin before enabling the formal one.
+See [Plugin distribution](docs/distribution.md#choose-an-installation-route) for installation and updates, including how to avoid duplicate Skills across plugin and standalone/APM installations.
 
 Packaging does not establish that every Skill can run in every client.\
-Check the [runtime requirements and verification record](docs/compatibility.md#plugin-runtime-requirements) for the intended task.\
+Check the [runtime requirements](docs/compatibility.md#plugin-runtime-requirements) for the intended task.\
 Maintainers can [build and verify an archive](docs/distribution.md#build-and-verify-an-archive) from the same sources used for standalone installation.
 
 ### Claude Code (APM)
