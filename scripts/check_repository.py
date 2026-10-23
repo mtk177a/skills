@@ -453,7 +453,7 @@ def check_localization_notices(root: Path, problems: list[Problem]) -> None:
 
 
 def check_companion_relationships(root: Path, problems: list[Problem], catalog: set[str]) -> None:
-    registry = root / "docs" / "authoring.md"
+    registry = root / "docs" / "maintainers" / "authoring.md"
     if not registry.is_file():
         return
     text = registry.read_text(encoding="utf-8")

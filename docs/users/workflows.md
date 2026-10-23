@@ -3,7 +3,7 @@
 Start with the task you need to complete.\
 These connections help select the next Skill; they are not an instruction to run every step or permission to perform its actions.
 
-Choose the first Skill from the [task catalog](../README.md#skills).\
+Choose the first Skill from the [task catalog](../../README.md#skills).\
 Use this guide for the conditions that govern the next handoff.
 
 - [Changes and failures](#change-and-failure-handling): when to move from design to implementation.

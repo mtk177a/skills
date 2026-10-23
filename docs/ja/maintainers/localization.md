@@ -1,4 +1,4 @@
-> この文書は [英語版 localization.md](../localization.md) の日本語参考訳です。\
+> この文書は [英語版 localization.md](../../maintainers/localization.md) の日本語参考訳です。\
 > 内容が異なる場合は英語版を優先してください。
 
 # 言語と日本語参考訳の方針
@@ -12,7 +12,7 @@ Skill と文書に使う言語、英語版と日本語参考訳の対応、更�
 | Issue・PR の残りの本文とコメント | 原則は日本語。全文を日英で重複させる必要はない |
 
 コミットの要約は短く具体的に書く。\
-形式は [変更の進め方](../../CONTRIBUTING-ja.md) に従う。
+形式は [変更の進め方](../../../CONTRIBUTING-ja.md) に従う。
 
 ## Skill の内容を定めるファイルの言語
 
@@ -46,7 +46,7 @@ Skill と文書に使う言語、英語版と日本語参考訳の対応、更�
 | `CONTRIBUTING.md` | 英語 | `CONTRIBUTING-ja.md` |
 | `AGENTS.md` | 英語 | `AGENTS-ja.md` |
 | `CLAUDE.md` | 英語 | `CLAUDE-ja.md` |
-| `docs/*.md` | 英語 | `docs/ja/*.md` |
+| `docs/<audience>/*.md` | 英語 | `docs/ja/<audience>/*.md` |
 | `.agents/skills/<tracked-skill>/SKILL.md` | 原則は英語。文書化した日本語の執筆・推敲用 Skill は日本語 | 英語版を基準とする場合は `.agents/skills/<tracked-skill>/SKILL-ja.md` |
 
 表から対応するファイルを一つに特定できない場合は、ファイル名を推測したり参考訳を作成したりせず、未決定の組を報告する。\

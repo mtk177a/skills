@@ -1,10 +1,10 @@
-> この文書は [英語版 compatibility.md](../compatibility.md) の日本語参考訳です。\
+> この文書は [英語版 compatibility.md](../../users/compatibility.md) の日本語参考訳です。\
 > 内容が異なる場合は英語版を優先してください。
 
 # 互換性と実行条件
 
 Agent Skills の形式に適合していても、クライアントが Skill を検出・呼び出し・実行できるとは限らない。\
-[導入方法](distribution.md#導入方法を選ぶ) を選ぶ前に、利用先の機能と作業の実行条件を確認する。
+[導入方法](installation.md#導入方法を選ぶ) を選ぶ前に、利用先の機能と作業の実行条件を確認する。
 
 ## 共通の実行条件
 
@@ -41,7 +41,7 @@ Agent Skills の形式に適合していても、クライアントが Skill を
 | --- | --- |
 | Codex | CLI・IDE での `/skills`・`$` による明示指定と暗黙の選択は、クライアント側の機能。任意の `agents/openai.yaml` は OpenAI 固有の表示・依存情報を指定する。サンドボックス、承認、ルール、ツールへのアクセスは別の制御となる |
 | Claude Code | 検出、呼び出し、フロントマター、権限、フックはクライアント固有であり、共通形式への適合だけでは動作を確認できない |
-| Cursor | [ローカル導入手順](distribution.md#cursor) に従い、対象バージョンでの検出と明示的な実行を確認する |
+| Cursor | [ローカル導入手順](installation.md#cursor) に従い、対象バージョンでの検出と明示的な実行を確認する |
 | GitHub Copilot・Gemini CLI など | 検出、呼び出し、メタデータ、権限、実行時の動作を、最新の公式資料と対象バージョンで確認する |
 | APM | ルートの `skills/` を導入するツールであり、実行クライアントではない |
 
@@ -62,4 +62,4 @@ Agent Skills の形式に適合していても、クライアントが Skill を
 - [Claude の企業向け Skills](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise)
 - [Cursor の Plugins](https://cursor.com/docs/plugins)
 
-第三者の資料や実行機能を含む場合は、[セキュリティレビュー](security.md) も行う。
+第三者の資料や実行機能を含む場合は、[セキュリティレビュー](../maintainers/security.md) も行う。

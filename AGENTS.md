@@ -12,7 +12,7 @@ If a deeper `AGENTS.md` exists in a subdirectory, that file takes precedence.
 ## Read first
 
 - `README.md`
-- `docs/authoring.md`
+- `docs/maintainers/authoring.md`
 - `CONTRIBUTING.md` for Issue, commit, and pull request conventions
 
 When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files needed to resolve responsibility overlap and converge on a judgment. Stop when that purpose is met; do not impose an arbitrary count.
@@ -44,7 +44,7 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 
 - Keep `skills/japanese-tech-writing/SKILL.md` and `skills/cognitive-rhythm-writing/SKILL.md` byte-for-byte identical to the recorded upstream Gist revisions. Do not add local instructions, metadata, corrections, or translations to these files.
 - Record each source URL, mirrored revision, retrieval date, file SHA-256, and license evidence in its `UPSTREAM.md`; summarize source and license in `THIRD_PARTY_NOTICES.md`. Keep repository installation guidance outside the mirrored files.
-- Before updating either mirror, compare the recorded revision with the current Gist and review the complete upstream change under `docs/security.md`. If it cannot be accepted as an unmodified copy, report the difference instead of patching the Skill locally.
+- Before updating either mirror, compare the recorded revision with the current Gist and review the complete upstream change under `docs/maintainers/security.md`. If it cannot be accepted as an unmodified copy, report the difference instead of patching the Skill locally.
 
 ## Repository-local operational Skills
 

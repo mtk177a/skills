@@ -1,7 +1,7 @@
 # Compatibility and runtime requirements
 
 A valid Agent Skills package is not enough to establish that a client can discover, invoke, or execute a Skill.\
-Check the intended client's capabilities and the requirements of the task before choosing an [installation route](distribution.md#choose-an-installation-route).
+Check the intended client's capabilities and the requirements of the task before choosing an [installation route](installation.md#choose-an-installation-route).
 
 ## Common requirements
 
@@ -37,7 +37,7 @@ When instructions or resources change, review the affected requirements and pack
 | --- | --- |
 | Codex | CLI/IDE explicit invocation through `/skills` or `$` and implicit selection are client behavior. Optional `agents/openai.yaml` supplies OpenAI-specific display and dependency metadata. Sandbox, approvals, rules, and tool access are separate controls |
 | Claude Code | Its discovery, invocation, frontmatter, permissions, and hooks are client-specific; portable format compatibility does not establish those behaviors |
-| Cursor | Use the [local plugin procedure](distribution.md#cursor), then verify discovery and explicit use in the target version |
+| Cursor | Use the [local plugin procedure](installation.md#cursor), then verify discovery and explicit use in the target version |
 | Other clients, including GitHub Copilot and Gemini CLI | Check current official documentation and the target version for discovery, invocation, metadata, permissions, and runtime behavior |
 | APM | An installation tool for the root `skills/` catalog, not an execution client |
 
@@ -58,4 +58,4 @@ Consult current official documentation when a detail affects the task:
 - [Claude Skills for enterprise](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise)
 - [Cursor Plugins](https://cursor.com/docs/plugins)
 
-Use [security review](security.md) when third-party material or executable capabilities are involved.
+Use [security review](../maintainers/security.md) when third-party material or executable capabilities are involved.

@@ -9,7 +9,7 @@ This document defines source languages, translation pairs, and update rules.
 | Other Issue/PR sections and comments | Japanese by default; full bilingual duplication is not required |
 
 Keep commit summaries short and specific.\
-Follow [Contributing](../CONTRIBUTING.md) for their format.
+Follow [Contributing](../../CONTRIBUTING.md) for their format.
 
 ## Canonical source language
 
@@ -41,7 +41,7 @@ Use it to identify the Japanese reference for a changed English file; add a new 
 | `CONTRIBUTING.md` | English | `CONTRIBUTING-ja.md` |
 | `AGENTS.md` | English | `AGENTS-ja.md` |
 | `CLAUDE.md` | English | `CLAUDE-ja.md` |
-| `docs/*.md` | English | `docs/ja/*.md` |
+| `docs/<audience>/*.md` | English | `docs/ja/<audience>/*.md` |
 | `.agents/skills/<tracked-skill>/SKILL.md` | English by default; Japanese for a documented Japanese writing/editing exception | `.agents/skills/<tracked-skill>/SKILL-ja.md` when English is canonical |
 
 If the table does not identify a unique counterpart, do not infer a filename or create a translation.\
