@@ -67,7 +67,6 @@ See [workflows](docs/users/workflows.md) for sequencing and handoffs.
 | Write and revise natural Japanese without changing meaning | [`write-natural-japanese`](skills/write-natural-japanese/SKILL.md) |
 | Apply Japanese technical-writing rules | [`japanese-tech-writing`](skills/japanese-tech-writing/SKILL.md) |
 | Design pacing in explanatory Japanese prose | [`cognitive-rhythm-writing`](skills/cognitive-rhythm-writing/SKILL.md) |
-| Choose what repository documentation needs and where it belongs | [`curate-repo-docs`](skills/curate-repo-docs/SKILL.md) |
 | Have an authorized independent subagent revise a document | [`revise-docs-fresh-eyes`](skills/revise-docs-fresh-eyes/SKILL.md) |
 
 ### Maintain Skills and agent instructions
