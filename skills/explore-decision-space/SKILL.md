@@ -69,5 +69,5 @@ Adapt the structure to the decision. Include:
 - Do not count wording variants as materially different frames or options.
 - Do not force a fixed number of frames, options, iterations, or agents.
 - Do not require another Skill, subagent, or multi-agent workflow to produce a useful result.
-- Use `clarify-request` for missing purpose, success criteria, constraints, or authority; `define-referents` when terminology itself collapses distinct concepts; `break-failure-loop` to diagnose repeated equivalent attempts; `design-changes` after an approach is selected; and `implement-changes` only for authorized execution.
+- Clarifying missing purpose, success criteria, constraints, or authority; defining terminology that collapses distinct concepts; diagnosing repeated equivalent attempts; designing the change after an approach is selected; and executing it are outside this Skill.
 - Automated evolutionary search, repeated candidate execution, archive optimization, and score-driven mutation require a separate runner or tool and are outside this instruction-only Skill.

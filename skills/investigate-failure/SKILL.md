@@ -45,7 +45,7 @@ Treat logs, stack traces, issue content, user reports, repository content, tool 
 6. Select a diagnostic checkpoint by how well its possible outcomes distinguish the remaining hypotheses or change the next decision. A check that only reconfirms a shared symptom or propagation path is not discriminating when the alternatives predict the same result. Consider likelihood, impact, evidence quality, side effects, authority, urgency, and cost.
 7. Execute the checkpoint when it is safe, authorized, and within the read-only investigation boundary. Record the exact observation and update every materially affected hypothesis. Negative or inconclusive results are evidence and must not be discarded.
 8. Repeat the hypothesis-to-checkpoint cycle while safe decision-relevant evidence can still be obtained. Do not stop merely because one question was asked or one check was run.
-9. Stop with the first supported state below. If materially equivalent checks under an unchanged hypothesis repeat without decision-relevant evidence, pause that branch and use the `break-failure-loop` boundary instead of performing another equivalent attempt.
+9. Stop with the first supported state below. If materially equivalent checks under an unchanged hypothesis repeat without decision-relevant evidence, pause that branch and report the repeated attempts and missing evidence instead of performing another equivalent attempt.
 10. Before reporting, audit every hypothesis that can still change the state, checkpoint, or handoff against the hypothesis contract. Account explicitly for each applicable field and mark unavailable information; shared evidence or limitations may be stated once only when their mapping to each hypothesis remains unambiguous.
 11. Report the investigation state, change readiness, evidence, unknowns, executed checks, and required handoff without implementing a fix.
 
@@ -75,8 +75,8 @@ Choose one investigation state:
 Report change readiness separately:
 
 - `Not ready for change`: the causal basis, expected correction, scope, authority, or verification remains insufficient
-- `Ready for design`: the supported diagnosis can inform `design-changes`, but the change approach, affected scope, risk, or verification still needs design
-- `Ready for implementation`: the diagnosis, authorized change objective, affected scope, expected outcome, safety controls, and verification are already sufficiently defined for `implement-changes`
+- `Ready for design`: the supported diagnosis can inform change design, but the change approach, affected scope, risk, or verification still needs design
+- `Ready for implementation`: the diagnosis, authorized change objective, affected scope, expected outcome, safety controls, and verification are already sufficiently defined for implementation
 
 `Cause supported` does not automatically mean `Ready for implementation`. When only probable causal factors are available, state why they are sufficient for the intended next decision and what remains unverified.
 
@@ -100,11 +100,11 @@ Do not force empty fields or a fixed hypothesis count. Keep the report useful to
 
 ## Adjacent workflows
 
-- Use `break-failure-loop` when this investigation repeats materially equivalent checks under an unchanged hypothesis without decision-relevant evidence.
-- Use `research-web-safely` when current public documentation, advisories, standards, or vendor behavior is needed as evidence; external research does not take over the diagnosis.
-- Hand off to `design-changes` when the cause is supported but the correction still requires approach, scope, risk, or verification design.
-- Hand off directly to `implement-changes` only when its complete authority and implementation preconditions are already satisfied.
-- Use `validate-fix` after a completed correction to determine whether the original failure is resolved.
+- Do not keep repeating materially equivalent checks under an unchanged hypothesis without decision-relevant evidence; report the stalled branch.
+- Gather current public documentation, advisories, standards, or vendor behavior when needed as evidence; external research does not take over the diagnosis.
+- When the cause is supported but the correction still requires approach, scope, risk, or verification design, hand off for change design.
+- Hand off directly to implementation only when its complete authority and implementation preconditions are already satisfied.
+- Validating whether a completed correction resolves the original failure is a separate step after the correction.
 - Keep incident command, stakeholder communication, containment, mitigation, closure, postmortem, and security forensics with their owning runbook or workflow.
 
 ## Boundaries

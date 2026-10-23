@@ -487,6 +487,31 @@ def check_companion_relationships(root: Path, problems: list[Problem], catalog: 
             add(problems, root, registry, line, "companion registry row must reference provenance")
 
 
+def check_skill_name_references(root: Path, problems: list[Problem], catalog: set[str]) -> None:
+    # Skills must work alone; relationships between Skills belong in docs/users/workflows.md.
+    registry = root / "docs" / "maintainers" / "authoring.md"
+    allowed: set[tuple[str, str]] = set()
+    if registry.is_file():
+        allowed = {match.groups()[:2] for match in COMPANION_ROW.finditer(registry.read_text(encoding="utf-8"))}
+    for name in sorted(catalog - set(UPSTREAM_MIRRORS)):
+        for filename in ("SKILL.md", "SKILL-ja.md"):
+            path = root / "skills" / name / filename
+            if not path.is_file():
+                continue
+            text = path.read_text(encoding="utf-8")
+            for other in sorted(catalog - {name}):
+                if (name, other) in allowed:
+                    continue
+                for match in re.finditer(rf"(?<![\w-]){re.escape(other)}(?![\w-])", text):
+                    add(
+                        problems,
+                        root,
+                        path,
+                        line_number(text, match.start()),
+                        f"Skill instructions must not name another Skill `{other}`; describe the needed input or boundary instead",
+                    )
+
+
 def repository_text_files(root: Path) -> list[Path]:
     candidates: list[Path] = []
     for path in root.rglob("*"):
@@ -537,6 +562,7 @@ def check_repository(root: Path) -> list[Problem]:
     check_markdown_links(root, problems)
     check_localization_notices(root, problems)
     check_companion_relationships(root, problems, catalog)
+    check_skill_name_references(root, problems, catalog)
     check_personal_paths(root, problems)
     check_deployment_artifacts(root, problems)
     return sorted(set(problems))
