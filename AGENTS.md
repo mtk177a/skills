@@ -68,7 +68,7 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 
 ## APM Skill bundle workflow
 
-- This repository publishes the root `skills/` directory as a native APM `SKILL_BUNDLE`. Do not add a root `apm.yml` or `apm.lock.yaml`; consumer repositories own their manifests and lockfiles.
+- This repository distributes the root `skills/` catalog through APM. Do not add a root `apm.yml` or `apm.lock.yaml`; consumer repositories own their manifests and lockfiles.
 - Before committing a public Skill change, run the repository checker and the unit tests for retained code. Verify the changed work and its safety boundaries as appropriate to the task.
 - When distribution behavior changes, commit and push the candidate source, then verify the exact pushed commit from disposable consumer directories outside this repository.
 - Verify the full bundle, any affected `--skill` selection path, and any affected individual `skills/<name>` installation path. Run consumer-side frozen install and audit checks against the generated consumer lockfile.
