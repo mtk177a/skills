@@ -38,7 +38,7 @@ Skill を作成・編集する際は、責務の重複を解消し、判断が�
 ## 構成ルール
 
 - 基本単位は `skills/<skill-name>/SKILL.md`
-- `<skill-name>` は ケバブケース
+- `<skill-name>` はケバブケース
 - `SKILL.md` のフロントマターには最低限 `name`、`description`、`license` を入れる。\
   ただし、指定した 2 件の Gist のコピーは元のフロントマターを維持する
 - `references/`、`scripts/`、`assets/` は必要な場合のみ追加する
@@ -59,7 +59,7 @@ Skill を作成・編集する際は、責務の重複を解消し、判断が�
 - このリポジトリ自体の保守専用で、公開 Skill カタログに配布しない運用 Skill に限り、`.agents/skills/<skill-name>/` に配置できる
 - Git で明示的に追跡しているリポジトリ内の運用 Skill はソースファイルであり、APM が配備時に生成するファイルとして扱わない
 - リポジトリ内の運用 Skill を公開 Skill カタログや配布バンドルに追加しない
-- リポジトリ内 Skill の名前は ケバブケース とし、`SKILL.md` を置く。\
+- リポジトリ内 Skill の名前はケバブケースとし、`SKILL.md` を置く。\
   英語の `SKILL.md` には `SKILL-ja.md` を付ける。\
   日本語の執筆・推敲用 Skill を日本語で書く例外を文書化した場合は、重複する `SKILL-ja.md` を置かない。\
   補助ファイルは必要な場合だけ追加する

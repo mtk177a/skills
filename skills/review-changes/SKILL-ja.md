@@ -102,7 +102,7 @@ license: MIT
 
 ## 指摘に含める内容
 
-- `Label`
+- 指摘のラベル（`Label`）
   - `must`: 重要なリスクが十分に支持され、それを十分に扱える低コストな対応がなく、マージ前の修正が必要
   - `should`: 原則修正推奨。\
     代替案や制約を相談できる
@@ -110,24 +110,24 @@ license: MIT
   - `question`: 次の行動が前提や意図の確認
   - `nit`: 軽微で任意の修正
   - `note`: 対応不要の情報
-- `Confidence`: `high` / `medium` / `low`
-- `Finding`: 具体的な問題、提案、質問、補足
-- `Evidence`: 根拠となる位置、契約、挙動、確認結果、リポジトリ内の先例
-- `Impact`: 利用可能な根拠が裏付ける影響。\
+- 確信度（`Confidence`）: `high` / `medium` / `low`
+- 指摘内容（`Finding`）: 具体的な問題、提案、質問、補足
+- 根拠（`Evidence`）: 根拠となる位置、仕様、挙動、確認結果、リポジトリ内の先例
+- 影響（`Impact`）: 利用可能な根拠が裏付ける影響。\
   明示した未確認の前提がある場合は、その前提が確認されたときに生じること。\
   未確認の後続処理を想定しない
-- `Exposure and preconditions`: 求める対応に重要な場合、根拠が裏付ける条件、到達可能な経路、頻度、影響する利用者の範囲。\
+- 問題が起こり得る範囲と前提（`Exposure and preconditions`）: 求める対応に重要な場合、根拠が裏付ける条件、到達可能な経路、頻度、影響する利用者の範囲。\
   重要でも利用できない場合は `Unknown`
-- `Criticality and blast radius`: 求める対応に重要な場合、影響する製品、ツール、データ、仕様、運用の重要度と、裏付けられた影響範囲
-- `Detectability, recovery, and workaround`: 求める対応に重要な場合、適用可能な検知、封じ込め、復旧、ロールバック、実用的な回避策の根拠
-- `Remediation cost and trade-offs`: 求める対応に重要な場合、現在の根拠が裏付ける実装、検証、複雑性、回帰、遅延、保守に伴う重要な費用
-- `Verification`: 確認、再現、反証の方法
-- `Unconfirmed premises`: 指摘、記載した影響、リスクの判断材料、求める対応が依存する前提や不明点。\
+- 対象の重要度と影響の広がり（`Criticality and blast radius`）: 求める対応に重要な場合、影響する製品、ツール、データ、仕様、運用の重要度と、裏付けられた影響範囲
+- 検知方法、復旧方法、回避策（`Detectability, recovery, and workaround`）: 求める対応に重要な場合、適用可能な検知、封じ込め、復旧、ロールバック、実用的な回避策の根拠
+- 修正費用と得失（`Remediation cost and trade-offs`）: 求める対応に重要な場合、現在の根拠が裏付ける実装、検証、複雑性、回帰、遅延、保守に伴う重要な費用
+- 確認方法（`Verification`）: 確認、再現、反証の方法
+- 未確認の前提（`Unconfirmed premises`）: 指摘、記載した影響、リスクの判断材料、求める対応が依存する前提や不明点。\
   該当しない場合は `none identified` とし、未確認範囲や残るリスクと照合する。\
   根拠、影響、確認方法でこの項目を代用しない
-- `Re-review state`: 明示的な全面再レビューだけで `Resolved`、`Remaining`、`New`
-- `New finding origin`: `New` の指摘だけで `Fix-induced`、`Newly observable`、`Late-discovered`
-- `Generalizable check`: 今回の差分を超えて再利用できる学びがある場合だけ
+- 再レビューでの状態（`Re-review state`）: 明示的な全面再レビューだけで `Resolved`、`Remaining`、`New`
+- 新しい指摘が見つかった経緯（`New finding origin`）: `New` の指摘だけで `Fix-induced`、`Newly observable`、`Late-discovered`
+- 他の変更にも使える確認観点（`Generalizable check`）: 今回の差分を超えて再利用できる学びがある場合だけ
 
 `Must-fix`、`Should-fix`、`Nice-to-have` は互換入力として受け取り、`must`、`should`、`suggestion` または `nit` へ正規化する。\
 好みだけの指摘に `must` や `should` を使わない。\

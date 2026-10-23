@@ -32,26 +32,48 @@ Inferred の情報を事実として掲載しない。
 
 1. 依頼された成果、編集権限、対象範囲、適用されるリポジトリ指示を確認する。\
    説明、評価、レビューの依頼は、編集も許可されていない限り読み取り専用の作業として扱う。
+
 2. 読者、読者が完了すべきタスク、文書の役割を特定する。\
    文書の種類を選択または新規作成する場合は、[document-kinds.md](references/document-kinds.md) を読む。
+
 3. 掲載候補の主張について、確認の基準となる情報源を特定する。\
    手作業で複製した参照資料より、生成可能または実行可能な情報源を優先する。
+
 4. 文書への影響を、次のいずれか 1 つとして判断する。
-   - `Update required`
-   - `No documentation impact`
-   - `Blocked by unknowns`
-5. 執筆前に、`Audience`、`Reader task`、`Document role`、`Canonical sources`、`Claims to publish`、`Explicit decisions`、`Excluded context`、`Unknowns`、`Validation`、`Update triggers` を含む一時的な文書の判断メモを作る。\
+   - 更新が必要（`Update required`）
+   - 文書への影響なし（`No documentation impact`）
+   - 不明点のため進行不能（`Blocked by unknowns`）
+
+5. 執筆前に、次の項目を含む一時的な判断メモを作る。\
    ユーザーが求めた場合、またはリポジトリが文書のメタデータとして定義している場合を除き、このメモは保存しない。
+
+   | 項目 | 英語版の表記 |
+   | --- | --- |
+   | 読者 | `Audience` |
+   | 読者が完了すべき作業 | `Reader task` |
+   | 文書の役割 | `Document role` |
+   | 確認の基準となる情報源 | `Canonical sources` |
+   | 掲載する主張 | `Claims to publish` |
+   | 明示的に決まったこと | `Explicit decisions` |
+   | 掲載しない背景情報 | `Excluded context` |
+   | 不明点 | `Unknowns` |
+   | 検証方法 | `Validation` |
+   | 文書を更新する条件 | `Update triggers` |
+
 6. 次の両方を満たす主張だけを掲載する。
    - 読者のタスク、正確性、安全性のいずれかに必要である
    - Verified または Normative である
+
 7. 許可された更新では、[repository-writing.md](references/repository-writing.md) を読み、既存の言語と有用な構造を維持し、必要な最小限のまとまった節だけを編集する。\
    情報源の内容を複製せず、そこへリンクする。
+
 8. 調査経緯、棄却した仮説、一般的な推奨事項の説明、ひな形を埋めるためだけの節、重複する例、関係のない書き換えを削除する。\
    見出し、段落、例を削除してもタスクの完了、正確性、安全性が損なわれない場合は削除する。
+
 9. 変更内容に関係するリポジトリ既定の検査を実行する。\
    この手順を完了するためだけに新しい文書用ツールを導入しない。\
    実行できない検査は、成功ではなく未実行として記録する。
+
 10. 報告前に、実行したと記載する各検査を、観測済みのコマンド実行または実行記録と照合する。\
     実行記録にない検査を実行済みとして記載せず、調査から導いた結論を、実行時に観測した結果として記載しない。
 
