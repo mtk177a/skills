@@ -84,7 +84,7 @@ Create this table only after the Grounding table is complete:
 
 - Do not require user confirmation when the mapping is complete and only a low-impact, local, reversible naming choice remains.
 - Do not treat this Skill as authorization to write the target document, design, report, or code.
-- Do not clarify the overall request when the ambiguity is not specifically about referents or terminology; return that responsibility to `clarify-request` or the originating workflow.
+- Do not clarify the overall request when the ambiguity is not specifically about referents or terminology; return that responsibility to the originating workflow, or report that the overall request needs clarification.
 - Do not force every referent into a closed role list or split tables at a fixed row count.
 - Do not use a corrected-word blacklist as the main safeguard.
 - Do not introduce a new term without a precise mapping and first-use definition.

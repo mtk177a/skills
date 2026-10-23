@@ -78,6 +78,17 @@ license: MIT
     write(root / "docs" / "maintainers" / "authoring.md", "# Authoring\n")
 
 
+def add_fixture_skill(root: Path, name: str) -> None:
+    write(
+        root / "skills" / name / "SKILL.md",
+        f"---\nname: {name}\ndescription: Checks another fixture Skill.\nlicense: MIT\n---\n\n# Fixture\n",
+    )
+    for readme in ("README.md", "README.ja.md"):
+        path = root / readme
+        text = path.read_text(encoding="utf-8").replace("1 Skills.", "2 Skills.").replace("1 の Skill。", "2 の Skill。")
+        path.write_text(text + f"| `{name}` | Fixture |\n", encoding="utf-8")
+
+
 def rename_fixture_skill(root: Path, name: str) -> None:
     source = root / "skills" / "alpha-skill"
     target = root / "skills" / name
@@ -444,6 +455,48 @@ class CheckerCliTests(unittest.TestCase):
             write(root / ".agents" / "skills" / "deployed-skill" / "SKILL.md", "# generated\n")
 
         self.assert_fixture_failure(mutate, "unexpected APM-deployed Skill")
+
+    def test_skill_instructions_naming_another_skill_are_detected(self) -> None:
+        def mutate(root: Path) -> None:
+            add_fixture_skill(root, "beta-skill")
+            path = root / "skills" / "alpha-skill" / "SKILL-ja.md"
+            path.write_text(path.read_text(encoding="utf-8") + "\n差分のレビューには `beta-skill` を使う。\n", encoding="utf-8")
+
+        stderr = self.assert_fixture_failure(mutate, "Skill instructions must not name another Skill `beta-skill`")
+        self.assertIn("skills/alpha-skill/SKILL-ja.md", stderr)
+
+    def test_registered_companion_may_be_named(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            add_fixture_skill(root, "beta-skill")
+            write(
+                root / "skills" / "alpha-skill" / "SKILL.md",
+                """---
+name: alpha-skill
+description: Checks a fixture Skill.
+license: MIT
+---
+
+# Alpha Skill
+
+Read ../beta-skill/SKILL.md first.
+Install with `apm install mtk177a/skills --skill alpha-skill --skill beta-skill`.
+""",
+            )
+            write(
+                root / "docs" / "maintainers" / "authoring.md",
+                """# Authoring
+
+| Relationship | Rationale | Installation | Provenance |
+| --- | --- | --- | --- |
+| `alpha-skill` → `beta-skill` | test | install | [#42](https://github.com/mtk177a/skills/pull/42) |
+""",
+            )
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
 
     def test_missing_companion_registry_is_detected(self) -> None:
         def mutate(root: Path) -> None:

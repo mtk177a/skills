@@ -21,7 +21,7 @@ Gather what is available:
 
 - the approved objective, expected behavior, scope, exclusions, and stop
   conditions
-- output from `design-changes` or another accepted implementation handoff
+- an accepted change design or another accepted implementation handoff
 - planned reviewer context when available: product or operational criticality, affected users, data and contracts, exposure, accepted trade-offs, detection and recovery controls, evidence states (`Observed` / `Reported` / `Inferred` / `Unknown` / `Conflicting`), and requested review focus
 - an accepted diagnosis or other evidence for the required change boundary, when applicable
 - target files, repository guidance, existing behavior, and affected consumers
@@ -29,7 +29,7 @@ Gather what is available:
 - authorization and controls for dependency, destructive, migration,
   authentication, authorization, credential, permission, or cryptographic changes
 
-`design-changes` output is optional. Infer low-impact local details from the
+A separate change design is optional. Infer low-impact local details from the
 request and existing implementation, but do not invent requirements, authority,
 or risk acceptance. If a missing item could materially change the implementation,
 stop as `Blocked`.
@@ -41,7 +41,7 @@ When upstream review feedback uses the current response contract, implement only
 1. Confirm the objective, authorization, entry conditions, scope, exclusions, and
    stop conditions before editing.
 
-2. For a high-risk change, confirm that its exact action, scope, required controls, residual risk, and execution authority are ready for implementation. If not, stop before editing and identify the missing target, evidence, control, recovery, risk-acceptance, or authorization decision. Use `assess-risky-change-readiness` as an optional readiness handoff when available, but provide a self-contained stop report.
+2. For a high-risk change, confirm that its exact action, scope, required controls, residual risk, and execution authority are ready for implementation. If not, stop before editing and identify the missing target, evidence, control, recovery, risk-acceptance, or authorization decision. Provide a self-contained stop report.
 
 3. Inspect the relevant implementation and guidance. Confirm that the planned work
    units collectively cover the accepted coherent change boundary; do not narrow

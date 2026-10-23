@@ -60,8 +60,8 @@ Distinguish a value that exists but has not been supplied or observed from a dec
 ## Decision criteria
 
 - Do not impose a fixed number of questions, clarification turns, options, or assumptions. Continue only while another exchange can change readiness or safety.
-- For `design-changes`, require a sufficiently confirmed outcome, success boundary, accepted scope and non-goals, material constraints, and authority to design. Leave implementation structure, affected files, vendor or dependency selection, detailed data mapping, and verification design open when resolving them is explicitly part of the design responsibility and the user has supplied the criteria needed to make those decisions.
-- For direct `implement-changes`, require the implementation approach, authorized scope, exclusions, material risk decisions, and usable verification basis to be sufficiently settled; route unresolved design choices to `design-changes`.
+- For a handoff to change design, require a sufficiently confirmed outcome, success boundary, accepted scope and non-goals, material constraints, and authority to design. Leave implementation structure, affected files, vendor or dependency selection, detailed data mapping, and verification design open when resolving them is explicitly part of the design responsibility and the user has supplied the criteria needed to make those decisions.
+- For a direct handoff to implementation, require the implementation approach, authorized scope, exclusions, material risk decisions, and usable verification basis to be sufficiently settled; leave unresolved design choices for change design.
 - Offer options only when they accurately represent the material choices. Give a recommendation only when evidence, an established default, or explicit trade-offs support it.
 - When a request contains multiple goals, determine whether they form one coherent outcome. Propose separation or ask for priority only when treating them together would change scope, sequencing, authorization, or reviewability.
 - Do not reconcile apparently conflicting requirements by inventing phases, ordering, exceptions, or other connecting logic. Ask for reconciliation unless a later explicit answer clearly replaces the earlier condition.
@@ -103,8 +103,8 @@ For `Blocked`, state the unresolved material gap, what evidence or decision is m
 
 ## Boundaries
 
-- Identify `design-changes` as a possible next workflow after the request is understood when implementation approach, affected boundaries, risks, or verification need design.
-- A direct `implement-changes` handoff is appropriate only when the change is sufficiently clear, authorized, and low enough in uncertainty that a separate design handoff is unnecessary.
+- Identify change design as a possible next step after the request is understood when implementation approach, affected boundaries, risks, or verification need design.
+- A direct implementation handoff is appropriate only when the change is sufficiently clear, authorized, and low enough in uncertainty that a separate design handoff is unnecessary.
 - For a clarification-only request, finish with the agreed request and wait for the user's next instruction; agreement on meaning is not authorization to start design or execution. When clarification occurs within an already authorized task, return control to the owning workflow under its existing scope and authority without demanding a redundant generic approval. Do not perform that workflow's work as part of this Skill.
 - Preserve targets and verification constraints supplied by the user or authoritative guidance, but do not invent or choose downstream implementation file boundaries, implementation approaches, or verification strategies. Do not implement changes, review a diff, or treat clarification as approval for destructive or external actions.
 - Keep the workflow useful without requiring another Skill. Name a downstream Skill only when it helps make the handoff explicit.
