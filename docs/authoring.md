@@ -1,30 +1,29 @@
 # Skill Authoring Guide
 
-This is the authoring guide for Skills maintained in this repository. The two upstream Gist mirrors follow the separate copying rules below; the authoring rules do not change their `SKILL.md` files. Portable Skill design guidance that must travel with an individual Skill should live inside that Skill's own `references/` directory.
+This is the authoring guide for Skills maintained in this repository.\
+The two upstream Gist mirrors follow the separate copying rules below; the authoring rules do not change their `SKILL.md` files.\
+Portable Skill design guidance that must travel with an individual Skill should live inside that Skill's own `references/` directory.
 
 ## What makes a good Skill
 
 A good Skill lets an agent decide when to use it without hesitation, and contains the right amount of detail — no more, no less.
 
-Write the body in English by default. A Skill whose core purpose is Japanese writing or editing may keep a Japanese `SKILL.md` as the canonical source instead of maintaining a duplicate Japanese translation. Document that exception and the Skill's provenance. Use proper nouns, configuration keys, and established technical terms as-is.
+Follow [Localization](localization.md) for source languages and translation updates.
 
-Prioritize:
+Prioritize these design decisions:
 
-- A short, clear statement of what the Skill is for
-- When to use it and when not to
-- Readable preconditions, inputs, and expected outputs
-- Minimal agent-specific language
-- Clear scope for any helper scripts or reference materials
 - High-judgment workflows designed from the intended outcome and evidence, not from a predetermined artifact
 - Instruction freedom matched to task fragility and context dependence: goals and constraints when multiple approaches are valid; concise ordered steps and verification when sequence or completeness affects correctness
 - Complete diagnosis kept separate from staged implementation or rollout
 - Discovery and findings without arbitrary numeric limits
 
-When comparing against existing Skills, inspect the relevant examples needed to resolve responsibility overlap and converge on a judgment. Stop when that purpose is met; do not impose an arbitrary count or scan the full catalog without a reason.
+When comparing against existing Skills, inspect the relevant examples needed to resolve responsibility overlap and converge on a judgment.\
+Stop when that purpose is met; do not impose an arbitrary count or scan the full catalog without a reason.
 
 ## Use a semantic contract, not a heading template
 
-Skills do not need identical headings. They do need enough information for a blank-slate agent to select, execute, and verify the workflow without inventing missing policy.
+Skills do not need identical headings.\
+They do need enough information for a blank-slate agent to select, execute, and verify the workflow without inventing missing policy.
 
 Check for these semantic responsibilities:
 
@@ -34,27 +33,31 @@ Check for these semantic responsibilities:
 - workflow or decision logic
 - required output information or an exact output format when a downstream consumer needs one
 - authority, failure handling, and safety or permission boundaries when material
-- verification or evaluation of the behavior that can fail
+- verification of the work performed and relevant safety conditions
 - bundled resources and the conditions under which they should be read or executed
 
-Use the smallest structure that expresses those responsibilities. Two common archetypes are:
+Use the smallest structure that expresses those responsibilities.\
+Two common archetypes are:
 
 | Archetype | Typical semantic structure |
 | --- | --- |
 | Judgment-oriented | Objective, Evidence, Workflow, optional decision criteria or dimensions, Reporting contract, Boundaries |
 | Operational | Objective, Inputs or Preconditions, ordered Steps, Output format, Verification, Boundaries |
 
-These are review models, not mandatory headings. A Skill may mix them when contextual judgment selects an approach and a fragile operation then requires an exact sequence.
+These are review models, not mandatory headings.\
+A Skill may mix them when contextual judgment selects an approach and a fragile operation then requires an exact sequence.
 
-Do not add a body-level `When to use` section merely to repeat `description`. Keep one only when the agent needs loaded-time branching after the Skill has already been selected. Likewise, use exact output templates, `Always` / `Ask first` / `Never`, companion-Skill sections, and self-review checklists only when their distinctions materially change execution.
+Do not add a body-level `When to use` section merely to repeat `description`.\
+Keep one only when the agent needs loaded-time branching after the Skill has already been selected.\
+Likewise, use exact output templates, `Always` / `Ask first` / `Never`, companion-Skill sections, and self-review checklists only when their distinctions materially change execution.
+
+When replacing a guardrail, define how to verify equivalent or stronger protection.
 
 ## Companion Skills
 
-Skills are self-contained by default. A companion relationship is a narrow,
-approved exception in which one Skill deliberately requires another to apply
-its rules correctly. Do not use it for convenience, related subject matter, or
-an arbitrary dependency graph; accidental cross-Skill coupling remains a
-design problem.
+Skills are self-contained by default.\
+A companion relationship is a narrow, approved exception in which one Skill deliberately requires another to apply its rules correctly.\
+Do not use it for convenience, related subject matter, or an arbitrary dependency graph; accidental cross-Skill coupling remains a design problem.
 
 An approved relationship must record:
 
@@ -63,22 +66,19 @@ An approved relationship must record:
 - the supported installation path
 - the behavior when the companion is unavailable, including whether work stops
 - provenance and local adaptations that introduced or maintain the relationship
-- the evaluation coverage and the update trigger for keeping the relationship
-  correct
 
-When either Skill, the relationship, the installation path, or its missing-
-companion behavior changes, review this record and the affected evaluation
-assets together.
+When either Skill, the relationship, the installation path, or its missing-companion behavior changes, review this record and verify the affected behavior.
 
 ### Approved relationship
 
-| Relationship | Rationale | Installation and missing-companion behavior | Provenance | Evaluation |
-| --- | --- | --- | --- | --- |
-| `maintain-japanese-references` → `write-natural-japanese` | Translation maintenance needs both fidelity to the English source and context-appropriate Japanese wording. | Both Skills are tracked in this repository. Read `skills/write-natural-japanese/SKILL.md` and its required references before applying the repository-local Skill; stop and report a missing repository file without substituting a personal copy. | Both Skills are original repository material; the repository-local Skill began in [#42](https://github.com/mtk177a/skills/pull/42), and [#77](https://github.com/mtk177a/skills/issues/77) records the required relationship and Japanese-canonical exception. | [The repository-local evaluation record](../.agents/skills/maintain-japanese-references/evals/README.md) covers required use, translation quality, and the missing-companion path. Review it when either Skill or this relationship changes. |
+| Relationship | Rationale | Installation and missing-companion behavior | Provenance |
+| --- | --- | --- | --- |
+| `maintain-japanese-references` → `write-natural-japanese` | Translation maintenance needs both fidelity to the English source and context-appropriate Japanese wording. | Both Skills are tracked in this repository. Read `skills/write-natural-japanese/SKILL.md` and its required references before applying the repository-local Skill; stop and report a missing repository file without substituting a personal copy. | Both Skills are original repository material; the repository-local Skill began in [#42](https://github.com/mtk177a/skills/pull/42), and [#77](https://github.com/mtk177a/skills/issues/77) records the required relationship and Japanese-canonical exception. |
 
 ## Writing the description
 
-The `description` is the entry point for usage decisions, not a general explanation. Include:
+The `description` is the entry point for usage decisions, not a general explanation.\
+Include:
 
 - What situation triggers this Skill
 - What kind of work it assists with
@@ -93,38 +93,11 @@ Avoid:
 - Descriptions that assume Codex without stating it
 - Frontmatter stuffed with internal implementation details
 
-## Writing operational boundaries
-
-Use `Always`, `Ask first`, and `Never` only when those categories carry meaningful distinctions for the workflow. Do not add empty sections or treat the presence of all three headings as a universal quality requirement.
-
-Express the required behavior and safety properties rather than copying a boundary template mechanically. If an existing guardrail is replaced, define how to verify that the replacement preserves equivalent or stronger protection.
-
 ## Naming a Skill
 
-Choose a name where the responsibility and usage context are clear at first glance.
-This repository uses `action + object` kebab-case as the default pattern.
-
-- Start with a short verb describing what the Skill does
-- Add the object it acts on
-- Prioritize names that make the usage context and responsibility boundary obvious
-- When in doubt, prefer clarity over brevity
-
-Examples:
-
-- `clarify-request`
-- `design-changes`
-- `implement-changes`
-- `review-changes`
-- `triage-review-feedback`
-- `summarize-changes`
-
-Avoid:
-
-- Single words like `build`, `design`, `release`
-- Names that read as broader than the actual scope
-- Names where the responsibility boundary is hard to infer
-
-Single words are acceptable only when the Skill's responsibility is narrow enough that the name cannot be misread.
+Use action + object in kebab-case, such as `clarify-request` or `design-changes`, to make the responsibility and usage context clear.\
+Prefer clarity over brevity and avoid names that imply broader scope.\
+Use a single word such as `build` only when the responsibility is narrow enough to avoid ambiguity.
 
 ## Shared Skills vs. agent-specific Skills
 
@@ -133,12 +106,14 @@ First, ask whether you can express the Skill without agent dependencies.
 - Shared Skill: usable across multiple agents for the same purpose with the same steps
 - Agent-specific Skill: steps, tool availability, or I/O format are tightly coupled to one agent
 
-This repository avoids classification directories. Express differences in Skill names or `description` instead.
+This repository avoids classification directories.\
+Express differences in Skill names or `description` instead.\
 If agent specificity matters, include that context in the name or description.
 
 ## When to fork or copy an external Skill
 
-Except for the two Gist mirrors below, external Skills are not copied into this repository as-is. External Skill installation is managed in dotfiles via `apm.yml` / `apm.lock.yaml`.
+Except for the two Gist mirrors below, external Skills are not copied into this repository as-is.\
+External Skill installation is managed in dotfiles via `apm.yml` / `apm.lock.yaml`.
 
 Bring a Skill into this repository only when:
 
@@ -148,15 +123,23 @@ Bring a Skill into this repository only when:
 
 Even then, review the `frontmatter` and `description` to align with this repository's conventions — do not import verbatim.
 
-Before adopting or adapting a third-party Skill, review its provenance, license, complete file set, external references, scripts, tool and network use, and combined capabilities. Treat Markdown instructions as executable influence rather than inherently safe text. Follow [Security review](security.md) for the repository checklist.
+Before adopting or adapting a third-party Skill, review its provenance, license, complete file set, external references, scripts, tool and network use, and combined capabilities.\
+Treat Markdown instructions as executable influence rather than inherently safe text.\
+Follow [Security review](security.md) for the repository checklist.
 
 ### Two upstream Gist mirrors
 
-`japanese-tech-writing` and `cognitive-rhythm-writing` are copies of k16shikano's public Gists. Their `SKILL.md` files match the revisions recorded in each `UPSTREAM.md` byte for byte. Do not add local rules, frontmatter fields, editorial corrections, or a Japanese reference translation to either file. The repository checker verifies each copy against the SHA-256 recorded in `UPSTREAM.md`; checking whether a newer Gist revision exists requires an explicit upstream comparison.
+`japanese-tech-writing` and `cognitive-rhythm-writing` are copies of k16shikano's public Gists.\
+Their `SKILL.md` files match the revisions recorded in each `UPSTREAM.md` byte for byte.\
+Do not add local rules, frontmatter fields, editorial corrections, or a Japanese reference translation to either file.\
+The repository checker verifies each copy against the SHA-256 recorded in `UPSTREAM.md`; checking whether a newer Gist revision exists requires an explicit upstream comparison.
 
-When updating a mirror, compare the recorded revision with the current Gist, inspect the complete change under [Security review](security.md), then copy the accepted revision without modification and update its revision, hash, and third-party notice. If the new upstream file cannot be accepted as-is, record the difference and do not create a local variant. Neither mirror requires an `evals/README.md`; add model-backed evaluation definitions only if evidence is needed for a responsibility changed by the upstream revision.
+When updating a mirror, compare the recorded revision with the current Gist, inspect the complete change under [Security review](security.md), then copy the accepted revision without modification and update its revision, hash, and third-party notice.\
+If the new upstream file cannot be accepted as-is, record the difference and do not create a local variant.
 
-The upstream `cognitive-rhythm-writing` file instructs the agent to read `../japanese-tech-writing/SKILL.md` before applying its rules. Install the pair with `apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing`. This repository does not add a missing-companion procedure to the upstream file.
+The upstream `cognitive-rhythm-writing` requires `../japanese-tech-writing/SKILL.md` before use.\
+Install both through [selected installation](distribution.md#install-through-apm).\
+Do not add a local missing-companion procedure to the upstream file.
 
 ## Keeping secrets and private information out
 
@@ -167,12 +150,13 @@ Never include the following in Skill bodies, helper scripts, reference materials
 - Internal URLs, internal procedures, non-public operational information
 - References to secret files that only exist in a local environment
 
-Write Skills assuming they may be referenced from other environments and agents.
+Write Skills assuming they may be referenced from other environments and agents.\
 For environment-specific information, use variable names or placeholders.
 
 ## Notes on Skills with scripts
 
-`scripts/` directories are useful but fragile. Handle with care.
+`scripts/` directories are useful but fragile.\
+Handle with care.
 
 - Minimize shell, OS, and architecture dependencies
 - Document any additional dependencies
@@ -181,28 +165,6 @@ For environment-specific information, use variable names or placeholders.
 - Do not mix generated artifacts or caches into the repository
 
 Avoid scripts that break compatibility with both macOS M1 and Windows WSL unless the need is explicitly justified.
-
-## Evaluation assets
-
-When changing a Skill, identify the affected responsibility before selecting evaluation evidence.
-
-- Skill-level scenarios and checklists go in `skills/<skill-name>/evals/`
-- Multi-Skill flow evaluations go in `docs/` (see `evaluation.md`)
-- Follow the path-selection rules in `evaluation.md`; do not run all cases merely because `SKILL.md` changed
-- In each Issue #49 Skill audit Sub Issue, migrate that Skill's complete existing `evals.json` and `triggers.json` set to the executable `{skill_name, evals}` format regardless of whether the Skill changes; outside the audit, migrate a still-legacy set on the first material change to its instructions, runtime resources, discovery, responsibility, safety boundary, or evaluation definitions
-- If model-backed evaluation is needed and no executable definition covers the changed responsibility, create the needed definition in that format before execution
-- Outside Issue #49 audits, do not require migration solely for README, reference-translation, meaning-preserving documentation or metadata, or legacy-result-only changes; do not migrate unrelated Skills
-- Treat definition migration and evaluation execution separately: after migrating the complete definition set, execute only cases needed for the changed responsibility
-- Use `scripts/run_skill_evaluation.py plan` before model-backed execution and inspect the estimated call count
-- If executable behavior, discovery, and responsibility boundaries are unaffected, use `static-only` and stop after deterministic validation
-- If runtime behavior changes, map only the affected responsibility to a plausible failure, a case that can expose it, and a grading method
-- Add routing, near-miss, or coexistence cases only when discovery or an adjacent responsibility boundary changes; do not add unrelated core, routing, or coexistence coverage automatically
-- Add baseline comparison or repetition only when an escalation condition in `evaluation.md` makes the additional evidence decision-relevant
-- Keep desired answers and grading criteria out of the executor input
-- Keep raw execution artifacts outside the repository and write `evals/report.json` only when a compact change-scoped record is useful for review
-- Do not refresh unrelated legacy `results.json` files, unselected cases, or reports for unchanged Skills
-
-The purpose of evaluation is to collect enough evidence for the current acceptance decision, not to maximize the number of runs.
 
 ## Notes on references/
 
@@ -234,8 +196,7 @@ Before opening a pull request for a new Skill:
 - [ ] No secrets, personal information, or internal URLs
 - [ ] Third-party provenance and capability risks have been reviewed when external material is included
 - [ ] `scripts/`, `references/`, `assets/` contain only what the Skill needs (empty directories removed)
-- [ ] The selected evaluation path covers the affected responsibility, and any unverified boundary is explicit
-- [ ] Any committed `evals/report.json` contains only the selected change-scoped evidence and passes repository validation
+- [ ] The repository checker and tests for retained code pass, and the Skill's work results and safety boundaries have been checked as appropriate
 
 ## Making a Codex-only Skill work across agents
 
@@ -262,7 +223,7 @@ Check:
 - Whether a retained safety and approval fallback remains aligned with its canonical rules
 - Whether a requirement needs behavioral guidance or a client-enforced policy, permission, or hook
 
-Keep Codex-specific language only when that specificity is the core value of the Skill.
+Keep Codex-specific language only when that specificity is the core value of the Skill.\
 Otherwise, rewrite around purpose and decision criteria, making the mechanics swappable.
 
 Current client documentation: [Codex `AGENTS.md`](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [Claude Code project instructions](https://code.claude.com/docs/en/memory), [GitHub Copilot custom instructions support](https://docs.github.com/en/copilot/reference/custom-instructions-support).

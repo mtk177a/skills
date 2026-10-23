@@ -1,8 +1,7 @@
-> **注記:** この文書の内容は英語版 (`CONTRIBUTING.md`) を基準とします。
-> このファイルは参考訳です。
-> 内容に差異がある場合は英語版を優先してください。
+> この文書は [英語版 CONTRIBUTING.md](CONTRIBUTING.md) の日本語参考訳です。\
+> 内容が異なる場合は英語版を優先してください。
 
-# コントリビューションガイド
+# 変更の進め方
 
 このガイドは、個人用のこのリポジトリを変更する本人と、本人に代わって作業する AI エージェントを対象とする。\
 外部からの貢献は通常想定していない。\
@@ -26,9 +25,22 @@ Skill を変更する場合は、[AGENTS.md](AGENTS.md) と [Skill 作成ガイ�
 ### 変更を検証する
 
 変更した挙動と、関連する失敗条件を確認できる検証方法を選ぶ。\
-[AGENTS.md](AGENTS.md) が求める場合はリポジトリ検査と単体テストを実行し、Skill の評価は [評価ガイド](docs/evaluation.md) に沿って選ぶ。\
+[AGENTS.md](AGENTS.md) に従ってリポジトリ検査と残すコードのテストを実行する。\
+作業結果と安全上の境界も確認する。\
 実施した確認、その結果、重要な未確認事項を PR に記録する。\
 実行していない確認を、通過したものとして報告しない。
+
+リポジトリのルートで次を実行する。
+
+```bash
+python3 -B scripts/check_repository.py
+python3 -B -m unittest discover -s tests
+git diff --check
+```
+
+整合性検査は、構成、メタデータ、リンク、参考訳の注記、併用関係、配備時に生成されるファイルを読み取りだけで確認する。\
+終了コードは、問題なしが `0`、対応が必要な不整合が `1`、呼び出しや検査自体の失敗が `2` となる。\
+配布動作を変更する場合は、[アーカイブと APM の検証](docs/ja/distribution.md#アーカイブを生成検証する) も行う。
 
 ## コミットと PR を作る
 
@@ -42,7 +54,7 @@ PR で Issue を完了する場合は `Closes #123`、参照だけの場合は `
 このリポジトリで作成・編集するコミットメッセージと PR タイトルには、Conventional Commits 形式を使う。\
 PR タイトルは PR 全体の主目的、各コミットの要約はそのコミットで変えた内容を表す。
 
-GitHub が生成する merge commit と、手を加えずに採用する Dependabot の自動生成タイトル・コミットメッセージは対象外とする。\
+GitHub が生成するマージコミットと、手を加えずに採用する Dependabot の自動生成タイトル・コミットメッセージは対象外とする。\
 生成されたタイトルやメッセージを編集する場合は、この規約に合わせる。
 
 #### 形式
@@ -70,7 +82,7 @@ GitHub が生成する merge commit と、手を加えずに採用する Dependa
 | `docs` | 管理対象 Skill の挙動を変えず、説明、手順、参照資料を改善する |
 | `chore` | 能力の追加や不具合修正を伴わず、依存、設定値、保守方針を更新する |
 | `refactor` | 挙動を変えずに構成を整理する |
-| `test` | 管理対象の挙動を変えず、テストや評価ツールを主目的として変更する |
+| `test` | 管理対象の挙動を変えず、テストを主目的として変更する |
 | `ci` | CI の設定や実行条件を主目的として変更する |
 
 Skill の指示は、文章で書かれていても利用時の挙動を定める。\
@@ -90,13 +102,11 @@ Skill の指示は、文章で書かれていても利用時の挙動を定め�
 | `scope` | 対象 |
 | --- | --- |
 | `clarify-request` | `clarify-request` Skill と関連ファイル |
-| `evaluation` | 共通の Skill 評価機能とツール |
 
 #### 例
 
 ```text
-feat(evaluation): add a cost-bounded Skill evaluation runner
 fix(clarify-request): align clarification boundaries
-docs: explain change-aware evaluation selection
+docs: clarify repository verification steps
 refactor: distribute Skills as a native APM bundle
 ```

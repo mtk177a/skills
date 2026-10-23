@@ -1,12 +1,23 @@
 # skills
 
-A personal repository of agent Skills — authored, maintained, or mirrored by [mtk177a](https://github.com/mtk177a).
+A personal collection of agent Skills authored or maintained by [mtk177a](https://github.com/mtk177a), plus two designated unmodified Gist mirrors.
 
-These Skills follow the [Agent Skills specification](https://agentskills.io/specification).\
-Format compatibility does not establish client discovery or runtime behavior: check the target client's capabilities and the Skill's requirements.\
-See [docs/compatibility.md](docs/compatibility.md) for compatibility considerations and validation methods.
+The Skills follow the [Agent Skills specification](https://agentskills.io/specification).\
+Using them also requires client discovery and the tools and permissions needed for the task.\
+Check the [runtime requirements](docs/compatibility.md) before installation.
 
-> **No warranty.** This is a personal repository, maintained by one person on a best-effort basis. Skills may change or be removed without notice. Use at your own risk.
+> **No warranty:** This personal repository is maintained on a best-effort basis. Skills may change or be removed without notice. Use at your own risk.
+
+## Install
+
+| Target | Instructions |
+| --- | --- |
+| ChatGPT and Codex | [Install or update a personal plugin](docs/distribution.md#chatgpt-and-codex) |
+| Cursor | [Install or update a local plugin](docs/distribution.md#cursor) |
+| Claude Code and other APM targets | [Install the bundle, selected Skills, or an individual Skill](docs/distribution.md#install-through-apm) |
+
+Plugin and standalone/APM installations use the same `skills/` sources.\
+Choose one delivery route for overlapping Skills in each environment.
 
 ## Skills
 
@@ -14,7 +25,8 @@ This repository includes the following Skills.
 
 | Skill | Description |
 | --- | --- |
-| `audit-agent-guidance` | Audit durable agent guidance against intended behavior, observed usage, client semantics, and evaluation evidence |
+| `assess-risky-change-readiness` | Assess whether a consequential or hard-to-recover change has decision-ready safety controls, recovery, evidence, and authorization |
+| `audit-agent-guidance` | Audit durable agent guidance against intended behavior, observed usage, client semantics, and available evidence |
 | `break-failure-loop` | Pause equivalent same-hypothesis attempts without new evidence and select a diagnostic, blocker, or diversification handoff |
 | `calibrate-learning-support` | Adjust AI learning support so task-specific understanding, decision ownership, and verification are preserved while work continues |
 | `choose-ai-execution-setup` | Advise which available AI execution setup should handle a concrete task across access, model, reasoning, context, permission, verification, and topology dimensions |
@@ -25,142 +37,43 @@ This repository includes the following Skills.
 | `design-agent-instructions` | Design AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md instruction sets |
 | `design-changes` | Design change scope, impact, risk, and verification approach before implementing |
 | `design-skill` | Decide whether and how to create, merge, split, or substantially rescope a Skill before implementation |
-| `explore-decision-space` | Expand problem frames or solution options before a consequential decision converges prematurely |
 | `draft-commit` | Draft atomic commit plans and Conventional Commits messages while preserving Git staging boundaries |
 | `draft-issue` | Draft an evidence-grounded, tracker-aware Issue and filing handoff without writing to the tracker |
 | `draft-review-comments` | Draft unposted PR comments from decided findings or a finding-free review with a supplied conclusion, scope, checks, and limitations |
-| `revise-docs-fresh-eyes` | Have a fresh Codex or Claude Code subagent cold-read and revise an existing document outside its authoring conversation |
+| `explore-decision-space` | Expand problem frames or solution options before a consequential decision converges prematurely |
 | `implement-changes` | Implement approved changes in small units with TDD or another appropriate verification method |
 | `investigate-failure` | Investigate unexplained errors, failing tests, regressions, performance anomalies, and unexpected technical behavior across environments |
 | `japanese-tech-writing` | Apply argument structure, terminology, and editing rules to Japanese technical writing |
-| `assess-risky-change-readiness` | Assess whether a consequential or hard-to-recover change has decision-ready safety controls, recovery, evidence, and authorization |
+| `make-it-click` | Write or revise an explanation that answers the reader's question with the needed premises, relationships, conditions, and uncertainty |
 | `record-session-handoff` | Record an evidence-grounded handoff so a later AI-agent session can revalidate and safely resume active work |
 | `research-web-safely` | Gather and evaluate traceable Web evidence while treating retrieved content as untrusted data |
 | `review-changes` | Review new diffs or explicitly requested full re-reviews with proportionate risk context and canonical labels |
+| `revise-docs-fresh-eyes` | Have a fresh Codex or Claude Code subagent cold-read and revise an existing document outside its authoring conversation |
 | `structure-what-you-write` | Create, revise, and review writing by organizing information for its readers and purpose |
 | `summarize-changes` | Summarize changes in a diff or commit range for review or documentation |
 | `triage-review-feedback` | Separate finding assessment and state from act-now, defer, or no-action response decisions |
 | `validate-fix` | Perform bounded post-fix re-review of identified findings using appropriate read-only evidence |
-| `make-it-click` | Write or revise an explanation that answers the reader's question with the needed premises, relationships, conditions, and uncertainty |
 | `write-natural-japanese` | Write or revise Japanese prose with context-appropriate wording while preserving meaning, certainty, and established terminology |
 
-`japanese-tech-writing` and `cognitive-rhythm-writing` are unmodified copies of upstream Gists. Their source revisions, licenses, and synchronization records are in each Skill's `UPSTREAM.md` and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+`japanese-tech-writing` and `cognitive-rhythm-writing` are unmodified copies of upstream Gists.\
+Their source revisions, licenses, and synchronization records are in each Skill's `UPSTREAM.md` and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-## Installation
+## Maintain
 
-### Plugin (ChatGPT, Codex, and Cursor)
+| Task | Guide |
+| --- | --- |
+| Verify changes and prepare Issues, commits, and pull requests | [Contributing](CONTRIBUTING.md) |
+| Author a Skill | [Authoring](docs/authoring.md) |
+| Choose Skills for a task | [Workflows](docs/workflows.md) |
+| Build a distribution ZIP | [Build and verify an archive](docs/distribution.md#build-and-verify-an-archive) |
+| Review third-party material and executable capabilities | [Security review](docs/security.md) |
+| Maintain Japanese translations | [Localization](docs/localization.md) |
 
-`mtk177a-skills` packages the public Skills from a fixed Git commit as one portable Agent Plugin.\
-Upload its ZIP as a personal ChatGPT plugin, or extract it into Cursor's local plugin directory.\
-See [Plugin distribution](docs/distribution.md#choose-an-installation-route) for installation and updates, including how to avoid duplicate Skills across plugin and standalone/APM installations.
-
-Packaging does not establish that every Skill can run in every client.\
-Check the [runtime requirements](docs/compatibility.md#plugin-runtime-requirements) for the intended task.\
-Maintainers can [build and verify an archive](docs/distribution.md#build-and-verify-an-archive) from the same sources used for standalone installation.
-
-### Claude Code (APM)
-
-```bash
-apm install mtk177a/skills
-```
-
-Or declare as a dependency in your `apm.yml`:
-
-```yaml
-dependencies:
-  apm:
-    - mtk177a/skills
-```
-
-### Individual Skill
-
-```bash
-apm install mtk177a/skills/skills/review-changes
-```
-
-`cognitive-rhythm-writing` requires `japanese-tech-writing`; install the pair from the bundle:
-
-```bash
-apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing
-```
-
-### Other clients
-
-Clients that discover standard `skills/<name>/SKILL.md` packages may be format-compatible, but this repository does not claim runtime support without recorded client evidence. See [docs/compatibility.md](docs/compatibility.md) for documented behavior, local verification, and installation paths.
-
-## Repository validation
-
-Run the deterministic, read-only consistency checker from the repository root:
-
-```bash
-python3 scripts/check_repository.py
-```
-
-The command exits with status `0` when the repository is consistent, `1` when it finds actionable inconsistencies, and `2` when invocation or checker execution fails. It checks repository structure, metadata, links, localization notices, evaluation evidence, and deployment artifacts without invoking an LLM or modifying repository content.
-
-This checker is the static validation layer for Skill evaluation. It does not replace behavioral, routing, comparative, or model-backed evaluation when those forms of evidence are required.
-
-## Skill evaluation runner
-
-Use the common Runner to select and cost a targeted evaluation before invoking Codex:
-
-```bash
-python3 scripts/run_skill_evaluation.py plan --help
-```
-
-The Runner does not evaluate automatically after an edit and does not select all cases implicitly.\
-Model-backed paths use the executable `{skill_name, evals}` format; existing legacy assets migrate per Skill during its Issue #49 audit, or on its first material change outside that audit.\
-Missing definitions needed for model-backed evaluation are created in that format.\
-`static-only` remains available without executable definitions.\
-See [docs/evaluation.md](docs/evaluation.md) for path selection, execution, grading, and compact report handling.
-
-## Repository structure
-
-```text
-.
-├── README.md
-├── README.ja.md
-├── CONTRIBUTING.md
-├── CONTRIBUTING-ja.md
-├── LICENSE
-├── plugin.json
-├── AGENTS.md
-├── AGENTS-ja.md
-├── CLAUDE.md
-├── CLAUDE-ja.md
-├── .github/
-│   └── copilot-instructions.md
-├── docs/
-│   ├── authoring.md
-│   ├── compatibility.md
-│   ├── distribution.md
-│   ├── evaluation.md
-│   ├── localization.md
-│   ├── security.md
-│   └── workflows.md
-├── skills/
-│   └── <skill-name>/
-│       ├── SKILL.md
-│       ├── SKILL-ja.md  # optional Japanese reference translation
-│       ├── evals/
-│       ├── references/
-│       ├── scripts/
-│       └── assets/
-```
-
-`evals/`, `references/`, `scripts/`, and `assets/` are optional — only Skills that need them include them.
-
-## Authoring and contribution
-
-This is a personal repository. External contributions are not expected.
-
-See the [contributing guide](CONTRIBUTING.md) for the maintainer's and AI agents' Issue, verification, commit, and pull request workflow.\
-The [Japanese reference translation](CONTRIBUTING-ja.md) is also available.
-
-Original code and content authored for this repository may be used and adapted under the MIT License. Third-party-derived files retain their individual licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). See [docs/authoring.md](docs/authoring.md) for how Skills are structured and [docs/security.md](docs/security.md) for third-party and executable Skill review.
+External contributions are not normally expected.
 
 ## License
 
-Original code and content in this repository are licensed under the [MIT License](LICENSE). Third-party-derived material remains subject to the terms listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Original code and content are licensed under the [MIT License](LICENSE).\
+Third-party material retains the terms listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Copyright (c) 2026 mtk177a

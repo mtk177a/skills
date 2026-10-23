@@ -25,7 +25,6 @@ class PluginBuildTests(unittest.TestCase):
         self.write('skills/example/SKILL.md', '---\nname: example\ndescription: Example\nlicense: MIT\n---\nRead [guide](references/guide.md).\n')
         self.write('skills/example/references/guide.md', '# Guide\n')
         self.write('skills/example/SKILL-ja.md', 'reference translation')
-        self.write('skills/example/evals/cases.json', '{}')
         self.write('.agents/skills/private/SKILL.md', 'not distributed')
         self.commit()
 
@@ -60,7 +59,7 @@ class PluginBuildTests(unittest.TestCase):
         self.assertEqual(record['skills'], ['example'])
 
     def test_missing_packaged_reference_fails_before_output(self):
-        self.write('skills/example/references/guide.md', 'Read [evaluation](../evals/cases.json).')
+        self.write('skills/example/references/guide.md', 'Read [translation](../SKILL-ja.md).')
         self.commit()
         result = self.build()
         self.assertNotEqual(result.returncode, 0)

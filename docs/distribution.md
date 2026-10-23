@@ -1,4 +1,4 @@
-# Plugin distribution
+# Installation, updates, and distribution
 
 `mtk177a-skills` distributes the public `skills/` catalog as one portable Agent Plugin.\
 The plugin and standalone/APM installations use the same Skill sources, so maintainers can update `skills/` without maintaining separate distribution copies.
@@ -15,7 +15,7 @@ Choose one delivery route for overlapping Skills in each runtime:
 | --- | --- |
 | ChatGPT and Codex | Upload the ZIP as a personal ChatGPT plugin, then check availability in each intended surface |
 | Cursor | Extract the same ZIP into Cursor's local plugin directory |
-| Claude Code | Continue using the existing [APM installation](../README.md#claude-code-apm); this package does not add a Claude-specific plugin manifest |
+| Claude Code | Continue using the [APM installation](#install-through-apm); this package does not add a Claude-specific plugin manifest |
 
 Before enabling the plugin, identify and disable or remove overlapping plugin, standalone, or APM installations using the client's supported controls.\
 Do not remove unrelated Skills or credentials, or rely on undocumented precedence or namespaces to resolve duplicates.\
@@ -54,6 +54,33 @@ A plausible answer alone does not prove that the Skill was loaded; distinguish o
 This Skills-only package does not need `.cursor-plugin/plugin.json`.\
 Marketplace submission is outside this workflow.
 
+## Install through APM
+
+Use APM for Claude Code or another supported APM target.
+
+| Selection | Command |
+| --- | --- |
+| All Skills | `apm install mtk177a/skills` |
+| Selected Skills | `apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing` |
+| Individual path | `apm install mtk177a/skills/skills/review-changes` |
+
+`cognitive-rhythm-writing` reads the adjacent `japanese-tech-writing` Skill; install both using the selection above.
+
+Alternatively, declare the bundle in the consumer's `apm.yml`:
+
+```yaml
+dependencies:
+  apm:
+    - mtk177a/skills
+```
+
+After installation, check the resolved location, discovery, and explicit use in the intended client.\
+A successful APM install does not establish client runtime behavior.
+
+## Recover from a faulty version
+
+Restore the needed previous source content and distribute it under a new version, using the same build, installation, and verification steps.
+
 ## Package contents and source files
 
 The root `plugin.json` is the only maintained plugin manifest and declares the Agent Plugins 1.0.0 schema.\
@@ -65,7 +92,7 @@ The builder selects files from the requested Git commit:
 
 - Include root `plugin.json`, `LICENSE`, and `THIRD_PARTY_NOTICES.md`.
 - Include tracked files under public `skills/`, including references, runtime resources, metadata, both upstream mirrors, and their `UPSTREAM.md` provenance files.\
-  Exclude `evals/` directories and filenames ending in `-ja.md` or `.ja.md`.
+  Exclude filenames ending in `-ja.md` or `.ja.md`.
 - Exclude repository instructions, tests, documentation, and repository maintenance Skills under `.agents/`.
 
 Included files retain their original bytes.\
@@ -99,7 +126,7 @@ The builder uses no additional Python dependencies and performs no network reque
    Existing output files cause an error rather than being overwritten.
 
 3. **Verify installation from the pushed commit.**\
-   Push the candidate branch, then follow the [APM checks](compatibility.md#validation) against that exact commit from disposable consumer directories outside this repository.\
+   Push the candidate branch, then follow the [APM distribution checks](#apm-distribution-checks) against that exact commit from disposable consumer directories outside this repository.\
    Cover the full bundle, affected selections and individual paths, frozen install, and audit.\
    Do not run non-dry-run APM installation in the source checkout.
 
@@ -107,6 +134,23 @@ The builder uses no additional Python dependencies and performs no network reque
    Keep the ZIP, hash, source commit, change summary, and verification results together.\
    The user can then upload the archive and check the update using the installation steps above.\
    Publishing artifacts through GitHub Releases requires separate authorization.
+
+### APM distribution checks
+
+When distribution behavior changes, install the pushed candidate commit from disposable consumer directories outside the source checkout.\
+Check the full bundle, affected `--skill` selections, and affected individual paths separately, using each consumer's generated lockfile.
+
+```bash
+apm install 'mtk177a/skills#<commit>' --target agent-skills --no-policy
+apm install --frozen --dry-run --no-policy
+apm audit --ci --no-policy
+```
+
+Replace `<commit>` with the full pushed commit ID.\
+Use that same commit for selected and individual installations.\
+Do not run non-dry-run `apm install` or `apm update` in the source repository.
+
+These checks cover installation and dependency integrity, not client invocation or instruction following.
 
 ### Generated files
 
@@ -128,9 +172,5 @@ The builder checks:
 - Absence of symlinks and submodules in included paths.
 - Every ZIP entry's contents and file mode against the original Git blob and mode.
 
-These checks cover specific packaging failures; they are not complete JSON Schema validation, full Markdown parsing, or behavioral evaluation.\
+These checks cover specific packaging failures; they are not complete JSON Schema validation, full Markdown parsing, or runtime verification.\
 When a Skill changes, separately review generic examples, plain-text references, tool availability, and conditional instructions that these checks cannot establish.
-
-## Recover from a faulty version
-
-Restore the needed previous source content and distribute it under a new version, using the same build, installation, and verification steps.

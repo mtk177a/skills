@@ -1,103 +1,110 @@
-> **注記:** 英語版 (`docs/security.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。
+> この文書は [英語版 security.md](../security.md) の日本語参考訳です。\
+> 内容が異なる場合は英語版を優先してください。
 
-# Skill セキュリティレビュー
+# Skill のセキュリティレビュー
 
-この文書では、第三者 Skill または executable Skill を採用、改変、公開、または実質的に更新する前に行う security review を定義します。
+第三者由来の Skill や実行機能を持つ Skill を採用・改変・公開・実質的に更新する前に、以下を確認する。
 
-入口が Markdown であるという理由だけで Skill を安全とみなしません。その指示により、agent はファイルを読み、script を実行し、tool を呼び、外部 content を取得し、data を送信できます。各 permission を個別に評価するのではなく、capability chain 全体を確認します。
+Markdown の指示だけでも、エージェントにファイルの読み取り、スクリプトの実行、ツールの呼び出し、外部情報の取得、データの送信を促すことができる。\
+権限を個別に見るだけでなく、入力から実行・送信までのつながりを確認する。
 
-## Capability から review の深さを選ぶ
+## 確認の深さを決める
 
-外部 content、code、tool call、機密 data access を含まない instruction-only Skill には軽量な static review を使います。Skill が次のいずれかを含む、または誘導する場合は、より深い review を行います:
+外部情報、コード、ツールの呼び出し、機密情報へのアクセスを伴わない Skill は、ファイルを読む簡潔な確認でよい。\
+次の機能を含むか、エージェントに実行させる場合は、より詳しく確認する。
 
-- scripts、binaries、package installation、生成 command、破壊的操作
-- network request、remote resource、redirect、webhook、外部 upload
-- MCP server、connector、plugin、hook、privileged tool
-- 広い filesystem access、credentials、environment variables、private data
-- import された指示、信頼できない文書、間接 prompt injection を含み得る content
-- client 固有の permission bypass、preapproval、automatic invocation
+- スクリプト、バイナリ、パッケージの導入、生成したコマンド、破壊的操作
+- ネットワーク通信、外部資料の取得、リダイレクト、Webhook、外部へのアップロード
+- MCP サーバー、コネクター、Plugin、フック、特権を持つツール
+- 広範なファイルアクセス、認証情報、環境変数、非公開情報の読み取り
+- 取り込んだ指示、信頼できない文書、間接的なプロンプトインジェクションを含み得る内容
+- クライアント固有の権限制御の回避、事前承認、自動呼び出し
 
-upstream revision、dependency graph、外部 endpoint、runtime、permission model、capability の組み合わせが変わった場合は再確認します。
+取り込み元の版、依存関係、外部の接続先、実行環境、権限の仕組み、機能の組み合わせが変わったら、再確認する。
 
-## Provenance と scope を確定する
+## 出典と確認範囲を特定する
 
-次を記録します:
+| 記録するもの | 内容 |
+| --- | --- |
+| 出典 | 作成者、元の URL、固定したコミットまたはリリース、取得日 |
+| ライセンス | 再配布・改変が認められるか |
+| 取り込んだ内容 | 収録・除外したファイルと独自の変更 |
+| 保守 | 担当者と今後の差分確認の手順 |
+| 利用条件 | 対象クライアント、実行環境の前提、配布経路 |
 
-- upstream owner、canonical URL、固定した commit または release、取得日
-- license と、ローカル再配布・改変が許可されるか
-- import したファイル、省略したファイル、ローカル変更
-- maintainership と、今後の upstream 差分を比較する手順
-- 対象 client、runtime assumption、distribution path
+配布する全ファイルと、`SKILL.md` が直接参照する全ファイルを読む。\
+外部 URL は、実際の参照先と、そこで提供される指示や実行可能な内容を特定できるまで確認する。\
+転送前の URL だけで信頼できる範囲を判断しない。
 
-配布する全ファイルと、`SKILL.md` から直接参照する全ファイルを確認します。frontmatter や主 instructions だけを review しません。外部 URL は、Skill が依存する実際の destination と指示または executable content を識別できるところまで辿り、redirect URL を最終的な trust boundary とみなしません。
+## 入力・実行・送信のつながりを追う
 
-## Instructions と capabilities を追跡する
+各処理経路について、次の順に確認する。
 
-Skill 内の各経路について次を特定します:
+1. エージェントの判断に影響する入力
+2. 読み取り可能なファイルと秘密情報
+3. 呼び出せるコマンド、スクリプト、ツール、サービス
+4. 外部へ送信できるデータと送信先
+5. 操作を制限する承認、サンドボックス、権限設定、機械的な検査
 
-1. どの input が agent に影響できるか
-2. どのファイルまたは secret を agent が読めるか
-3. どの command、script、tool、service を呼べるか
-4. どの data が環境外へ出られ、どこへ送られるか
-5. どの approval、sandbox、permission、deterministic check が操作を制約するか
+| 組み合わせ | 確認する点 |
+| --- | --- |
+| ファイルの読み取りとネットワーク送信 | 非公開情報を外部へ送信できないか |
+| 認証情報へのアクセスとコマンド生成 | 認証情報を不適切に使ったり露出させたりしないか |
+| 信頼できない文書と特権ツール | 文書内の指示が権限を持つ操作につながらないか |
+| 自動呼び出しと破壊的操作・外部への変更 | 意図しないタイミングで影響が生じないか |
+| 外部から取得する指示とスクリプト実行 | 外部の変更によって実行内容が変わらないか |
 
-特に次の組み合わせへ注意します:
+個別には一般的な機能でも、組み合わせると情報流出や不正な改変につながる場合がある。
 
-- filesystem read と network send
-- credential access と生成 command
-- 信頼できない document content と privileged tool
-- automatic invocation と破壊的または外部に見える副作用
-- remote instructions と script execution
+## 問題の兆候を確認する
 
-個別には一般的な capability でも、組み合わさると重大な exfiltration または integrity risk になり得ます。
+次の記述や挙動には、理由の説明、削除、または明示的な制御が必要となる。
 
-## Review indicators
+- 優先される指示の無視、挙動の隠蔽、レビューの回避を求める
+- 難読化したコマンド、符号化したデータ、説明のないダウンロード、内容が変わる外部スクリプトを使う
+- 作業に不要な範囲までファイルを再帰的に探索する
+- 秘密値、認証情報の場所、非公開 URL、顧客情報を埋め込む
+- 責務と無関係な接続先や、リポジトリ・環境・会話・認証情報の外部送信を指定する
+- 未記載の依存関係や、再現できない実行時の導入処理がある
+- 未確定の変数、ワイルドカード、未検証の入力からコマンドの対象を決める
+- 事前承認を、操作を禁止する仕組みやセキュリティ上の制限として説明する
+- クライアントで強制できるポリシー、権限、サンドボックス、フック、CI があるのに、安全要件を文章だけに任せる
 
-次の項目は、説明、除去、または明示的な control を必要とする finding として扱います:
+外部文書とツールの出力は未検証の入力として扱う。\
+作業に必要な情報を取り出しても、権限・送信先・範囲を変えようとする埋め込み指示には従わない。
 
-- 上位 authority の guidance を無視する、挙動を隠す、review を回避する指示
-- 難読化 command、encoded payload、説明のない download、変更可能な remote script
-- task scope 上の必要性がない広範な recursive file discovery
-- hard-coded secret、credential location、private URL、customer data
-- 責務と無関係な network destination
-- repository、environment、conversation、credential data を外部送信する指示
-- 宣言されていない dependency、または再現できない runtime installation
-- unresolved variable、glob、信頼できない input から対象を決める command
-- permission preapproval を prohibition または security boundary として説明すること
-- client に強制可能な policy、permission、sandbox、hook、CI があるのに、安全特性を prose だけで表すこと
+## 対策と採否を決める
 
-外部 document と tool output は未検証入力として扱います。task に必要な情報は抽出しますが、authority、permission、destination、scope を変えようとする埋め込み指示には従いません。
+責務を果たせる範囲で、権限と扱うデータを最小限にする。
 
-## Control と disposition を決める
+- 実行用のファイルに明確な利点がなければ、指示だけで構成する。
+- 再現性が重要なら、依存関係と取り込み元の版を固定する。
+- 繰り返し生成する壊れやすいコマンドは、用途を限定した検証済みスクリプトに置き換える。
+- 強制すべき条件は、利用可能な権限設定・サンドボックス・フック・CI などで制御する。
+- クライアントが対応していれば、破壊的操作や外部に影響する作業には明示的な呼び出しを求める。
+- 接続先、送信データ、必要な認証情報、失敗時の挙動を明示する。
+- 出典・挙動・外部へ送る情報を確認できない Skill は、採用しないか隔離する。
 
-Skill の責務を果たせる最小の authority と data scope を優先します。
+判断は「採用」「対策を条件に採用」「不採用」「未確認」に分けて記録する。\
+実際に観測した挙動と、ファイルを読んだ結果からの推測を区別する。\
+ファイルの確認だけでは実行時の安全性を保証できないため、判断に重要な実行処理やクライアント固有の挙動は隔離環境で確認する。
 
-- executable resource が実証済みの価値を加えない限り、Skill を instruction-only に保つ
-- 再現性が重要な場合、dependency と upstream revision を固定する
-- 繰り返し生成する壊れやすい command を、狭く test 済みの script に置き換える
-- 利用可能な場合、hard guarantee を permission setting、sandbox policy、hook、CI、その他の deterministic control に置く
-- client が対応する場合、破壊的または外部に見える workflow は明示 invocation を要求する
-- network destination、送信 data、必要 credential、failure behavior を明示する
-- provenance、behavior、outbound data flow を確定できない Skill は reject または quarantine する
+## リポジトリへ反映する
 
-disposition を accepted、accepted with controls、rejected、unverified のいずれかで記録します。観測した挙動と static inference を分けます。static review は runtime safety を証明しません。executable または client-dependent behavior が重要な場合は、isolated execution と targeted evaluation を使います。
+公開前に、次を確認する。
 
-## Repository handoff
+- 第三者由来の内容を `THIRD_PARTY_NOTICES.md` に記録し、継続的な同期が必要なら取り込み元の記録も残す。
+- 英語版と日本語参考訳を揃える。
+- 特定したリスクを確認するために必要な項目と状況に絞って検証する。
+- 形式、メタデータ、スクリプト、対象の挙動、利用先へ配備しない APM 検査のうち、該当するものを実施する。
+- 実行できなかったクライアント・実行環境の確認は、未実施と記録する。
 
-review 済み Skill をこの repository で公開する前に:
+構成は [作成ガイド](authoring.md)、クライアントと実行環境の違いは [互換性](compatibility.md) を参照する。
 
-- `THIRD_PARTY_NOTICES.md` に第三者 provenance を記録し、継続同期に必要なら local upstream note も残す
-- 英語 canonical Skill と日本語 reference translation を同期する
-- 特定した capability risk を露出するために必要な security assertion と scenario だけを追加する
-- 該当する format、metadata、script、targeted behavior、非配布 APM check を実行する
-- 利用できない client または runtime check を `not executed` と記録する
+## 公式資料
 
-Skill 構造は [authoring.md](authoring.md)、client/runtime の区別は [compatibility.md](compatibility.md)、evidence requirement は [evaluation.md](evaluation.md) を参照してください。
-
-## 現行情報源
-
-- [Agent Skills specification](https://agentskills.io/specification)
-- [OpenAI Build skills](https://learn.chatgpt.com/docs/build-skills)
-- [Claude Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
-- [Claude Skills for enterprise](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise)
-- [Claude Code Skills](https://code.claude.com/docs/en/slash-commands)
+- [Agent Skills 仕様](https://agentskills.io/specification)
+- [OpenAI の Skill 作成ガイド](https://learn.chatgpt.com/docs/build-skills)
+- [Claude の Skill 作成ガイド](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
+- [Claude の企業向け Skills](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise)
+- [Claude Code の Skills](https://code.claude.com/docs/en/slash-commands)

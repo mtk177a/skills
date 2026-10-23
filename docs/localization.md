@@ -4,40 +4,21 @@ This document describes the language policy for Skills and documentation in this
 
 ## Canonical source language
 
-`SKILL.md` is the single canonical source for each Skill. It is written in English by default.
-A Skill whose core purpose is Japanese writing or editing may use a Japanese `SKILL.md` as its canonical source. In that case, document the exception and provenance and do not add a duplicate `SKILL-ja.md`.
-
-Required frontmatter:
-
-```yaml
----
-name: skill-name
-description: What the Skill does and when it should be used.
-license: MIT
----
-```
+`SKILL.md` is the single canonical source for each Skill.\
+It is written in English by default.\
+A Skill whose core purpose is Japanese writing or editing may use a Japanese `SKILL.md` as its canonical source.\
+In that case, document the exception and provenance and do not add a duplicate `SKILL-ja.md`.
 
 ## Japanese reference translations
 
-Japanese reference translations are maintained as a reusable comprehension and review cache for the primary maintainer.\
-They reduce the need to translate the same technical material again whenever it is read or edited.
+Japanese translations help the maintainer understand and review the repository without translating the same material repeatedly.\
+The English file defines requirements; translations must preserve its meaning without adding requirements.
 
-English remains the public and normative canonical source.\
-A Japanese translation does not define requirements and must not introduce meaning that is absent from its canonical file.
-
-When `SKILL.md` is canonical English, `SKILL-ja.md` is a non-canonical Japanese translation placed alongside it:
-
-```
-skills/<skill-name>/
-├── SKILL.md       # English canonical
-└── SKILL-ja.md   # Japanese reference translation
-```
-
-`SKILL-ja.md` must begin with a notice stating that the English version is the canonical source:
+Use this notice at the start of every Japanese reference (after frontmatter, if present), with the source filename and relative link adjusted for that file:
 
 ```markdown
-> **Note:** The English version (`SKILL.md`) is the canonical source.
-> This Japanese translation is provided as a reference only.
+> この文書は [英語版 SKILL.md](SKILL.md) の日本語参考訳です。\
+> 内容が異なる場合は英語版を優先してください。
 ```
 
 The following table defines the maintained canonical-to-reference file pairs.\
@@ -79,10 +60,11 @@ Japanese-canonical Skills remain outside this workflow and do not receive a dupl
 
 Commit message summaries are written in English and kept short and specific.
 
-See `CONTRIBUTING.md` for the full commit message and pull request title convention.
+See [Contributing](../CONTRIBUTING.md) for the full commit message and pull request title convention.
 
 ## Language in Issues and pull requests
 
 Write Issue and pull request titles and their `Summary` sections in English so the public repository remains discoverable and scannable.
 
-Write the remaining body sections and comments in Japanese by default. A full English and Japanese duplication of the body is not required.
+Write the remaining body sections and comments in Japanese by default.\
+A full English and Japanese duplication of the body is not required.

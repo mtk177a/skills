@@ -36,7 +36,6 @@ def included(name: str) -> bool:
         return True
     parts = PurePosixPath(name).parts
     return (len(parts) >= 3 and parts[0] == 'skills'
-            and 'evals' not in parts[2:]
             and not parts[-1].endswith(('-ja.md', '.ja.md')))
 
 
@@ -49,7 +48,7 @@ def source_files(repo: Path, ref: str) -> tuple[str, dict[str, tuple[str, bytes]
         meta, raw_name = entry.split(b'\t', 1)
         mode, kind, oid = meta.decode().split()
         name = raw_name.decode('utf-8')
-        if kind == 'commit' and name.startswith('skills/') and '/evals/' not in name:
+        if kind == 'commit' and name.startswith('skills/'):
             raise BuildError(f'{name}: only regular files are supported (submodule)')
         if not included(name):
             continue
