@@ -1,9 +1,9 @@
 # Build a plugin archive
 
-This document is for maintainers.\
+This guide is for maintainers and the agents working for them.\
 It describes how to build a new plugin version as a ZIP, confirm that the pushed commit installs through APM, and what the ZIP contains.\
 To install the ZIP in ChatGPT or Cursor, see the [installation guide](../users/installation.md).\
-Publishing through GitHub Releases or elsewhere is outside this document's scope.
+Publishing through GitHub Releases or elsewhere is outside this guide.
 
 ## Requirements
 

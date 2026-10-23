@@ -1,90 +1,54 @@
 > この文書は [英語版 installation.md](../../users/installation.md) の日本語参考訳です。\
 > 内容が異なる場合は英語版を優先してください。
 
-# 導入と更新
+# Skill を導入・更新する
 
-`mtk177a-skills` は、公開している `skills/` を 1 つの Agent Plugin として配布する。\
-Plugin と単体・APM 導入で同じ原本を使い、配布用のコピーは別管理しない。
+この手引きは、このリポジトリの Skill を使いたい人に向けたものである。\
+クライアントごとの導入と更新の方法、Skill が使えることの確かめ方を説明する。
 
-- **利用する**: [導入方法を選ぶ](#導入方法を選ぶ) → [実行条件を確認する](compatibility.md#plugin-の実行条件)。
-- **ZIP を作る**: [Plugin の ZIP を作る](../maintainers/packaging.md)。
+Skill の導入方法は、APM で導入する方法と、Plugin の ZIP で導入する方法の 2 つがある。\
+どちらの方法でも、このリポジトリの `skills/` にある同じ Skill が導入される。\
+APM は、このリポジトリから直接導入する。\
+Plugin の ZIP は公開していないので、使う場合は [Plugin の ZIP を作る](../maintainers/packaging.md) に従って自分で作る必要がある。
 
 ## 導入方法を選ぶ
 
-同じ実行環境で Skill が重複しないよう、導入方法を一つに揃える。
-
-| 利用先 | 導入方法 |
+| クライアント | 導入方法 |
 | --- | --- |
-| ChatGPT と Codex | ZIP を ChatGPT の個人用 Plugin としてアップロードし、利用する画面や環境ごとに使えるか確認する |
-| Cursor | 同じ ZIP を Cursor のローカル Plugin ディレクトリに展開する |
-| Claude Code | [APM による導入](#apm-で導入する) を使う。このパッケージでは Claude 固有の Plugin マニフェストを追加しない |
+| Claude Code、その他 APM が対応するクライアント | [APM で導入する](#apm-で導入する) |
+| ChatGPT と Codex | [Plugin の ZIP を ChatGPT にアップロードする](#plugin-の-zip-を-chatgpt-にアップロードする) |
+| Cursor | [Plugin の ZIP を Cursor 用に展開する](#plugin-の-zip-を-cursor-用に展開する) |
 
-**有効化する前に、重複する導入を整理する。**
+このパッケージには Claude 専用の Plugin マニフェストがないため、Claude Code では APM を使う。
 
-- **対象**: 別の Plugin や単体・APM 導入との重複を特定し、クライアントが提供する操作で無効化または削除する。
-- **保護するもの**: 無関係な Skill や認証情報は削除しない。\
-  文書化されていない優先順位や名前空間に依存しない。
-- **復旧と確認**: 前のアーカイブを保管し、新しい会話で Plugin を確認する。
+Skill を導入すると、その指示をクライアントが使えるようになる。\
+ただし、シェル、リポジトリ、外部サービス、サブエージェント、書き込みのアクセス権がエージェントに与えられるわけではない。\
+クライアントを選ぶ前に、予定している作業の [実行条件](compatibility.md) を確認する。
 
-導入で利用可能になるのは同梱された指示であり、シェル・リポジトリ・外部接続・サブエージェント・書き込み権限は別途必要となる。\
-導入できても、作業に必要な機能や権限が不足する場合がある。
+## 重複して導入しない
 
-## Plugin を導入・更新する
+一つの環境では、各 Skill を一つの方法だけで導入する。\
+同じ Skill を別の Plugin、単体の導入、APM のいずれかですでに導入している場合は、Plugin を有効にする前に、重複している方を無効にするか削除する。
 
-### ChatGPT と Codex
+- 無効化や削除は、クライアントが提供する操作で行う。
+- 関係のない Skill や認証情報は削除しない。
+- 重複したときにどちらが使われるかを、文書化されていない優先順位や名前空間に頼って決めない。
 
-アーカイブはユーザーが手動でアップロードする。\
-生成スクリプトは、アップロードやアカウント設定の変更を行わない。
-
-1. **ZIP をアップロードする。**
-   - 初回: ChatGPT の個人用 Plugin のアーカイブアップロードを使う。
-   - 更新: 別の Plugin を作らず、既存 Plugin のメニューで「新しいバージョンをアップロード」を選ぶ。
-
-2. **バージョンと Skill 一覧を確認する。**\
-   確認後、新しい会話を開始する。
-
-3. **Plugin と Skill を指定する。**\
-   利用可能な UI で Plugin を選び、依頼文で使う Skill を指定する。\
-   たとえば、「`mtk177a-skills` の `define-referents` を使い、参照資料を読んでから命名案を出してください」と依頼する。
-
-4. **利用先ごとに結果を確認する。**
-   - 検出: Skill が一覧に現れるか。
-   - 読み込み: 本文・参照資料を読めたか。\
-     実際に観測できる場合に確認する。
-   - 出力: どのような回答が得られたか。\
-     回答の妥当性だけで読み込み済みと判断しない。
-
-Chat、Work、dots、Codex では、呼び出し方や使える機能が異なる場合がある。
-
-### Cursor
-
-[Cursor の公式資料](https://cursor.com/docs/plugins) では、共通形式の Agent Plugin への対応と、`~/.cursor/plugins/local/<plugin-name>/` でのローカル検証が案内されている。
-
-1. **ZIP を展開する。**\
-   `~/.cursor/plugins/local/mtk177a-skills/` の直下に `plugin.json` を置く。\
-   更新時は必要なバックアップを確保し、展開先の古いディレクトリを丸ごと入れ替える。\
-   ファイルを上書きするだけでは、新版で削除された Skill が残る可能性がある。
-2. **再読み込みする。**\
-   Cursor を再起動するか、**Developer: Reload Window** を実行する。
-3. **動作を確認する。**\
-   Skill が認識され、明示的に指定して使えることを確認する。
-
-この Skill のみを含むパッケージでは、`.cursor-plugin/plugin.json` は不要である。\
-マーケットプレイスへの申請は、この手順の対象外とする。
+元に戻せるように前の ZIP を保管し、新しい会話で Plugin を確かめる。
 
 ## APM で導入する
 
-Claude Code など、APM が対象とするクライアントで使用する。
+導入したい範囲に合わせてコマンドを選ぶ。
 
-| 対象 | コマンド |
+| 導入する範囲 | コマンド |
 | --- | --- |
-| 全 Skill | `apm install mtk177a/skills` |
+| すべての Skill | `apm install mtk177a/skills` |
 | 選んだ Skill | `apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing` |
-| 個別パス | `apm install mtk177a/skills/skills/review-changes` |
+| パスを指定した一つの Skill | `apm install mtk177a/skills/skills/review-changes` |
 
-`cognitive-rhythm-writing` は隣接する `japanese-tech-writing` を読むため、上表の選択導入で両方を導入する。
+`cognitive-rhythm-writing` は `japanese-tech-writing` を読み込むので、上の「選んだ Skill」の例のように 2 つを一緒に導入する。
 
-利用側の `apm.yml` で全体を依存として宣言することもできる。
+すべての Skill を依存関係として宣言する場合は、利用側の `apm.yml` にこのリポジトリを追加する。
 
 ```yaml
 dependencies:
@@ -92,5 +56,36 @@ dependencies:
     - mtk177a/skills
 ```
 
-導入後は、利用先での配置場所と Skill の検出・明示的な実行を確認する。\
-APM の導入成功だけでは、そのクライアントでの動作を確認したことにはならない。
+導入したら、クライアントで Skill の配置場所、Skill が一覧に表示されること、Skill を明示的に呼び出せることを確かめる。\
+`apm install` が成功しても、クライアントで Skill を使えることまでは分からない。
+
+## Plugin の ZIP を ChatGPT にアップロードする
+
+ZIP を個人用 Plugin として ChatGPT にアップロードし、Codex を含め、使う予定の各画面で確かめる。
+
+1. ZIP をアップロードする。\
+   初めて導入するときは、ChatGPT の Plugin 画面にある個人用 Plugin のアーカイブアップロードを使う。\
+   更新するときは、別の Plugin を作らず、既存の Plugin のメニューから **Upload new version** を選ぶ。
+2. Plugin に新しいバージョンと想定どおりの Skill が表示されることを確かめてから、新しい会話を始める。
+3. 画面で Plugin を選び、依頼文で使う Skill を指定する。\
+   たとえば、「`mtk177a-skills` の `define-referents` を使い、参照資料を読んでから命名案を出してください」と依頼する。
+4. 使う予定の各画面で、次の点を確かめる。
+   - 検出: Skill が一覧に表示される。
+   - 読み込み: Skill の本文と参照資料を読んだことが、クライアントの表示で分かる（表示できる場合）。
+   - 出力: 得られた回答。\
+     回答がもっともらしいだけでは、Skill を読み込んだとは言えない。
+
+Chat、Work、dots、Codex などの画面によって、呼び出し方や使える機能が異なる場合がある。
+
+## Plugin の ZIP を Cursor 用に展開する
+
+[Cursor の公式資料](https://cursor.com/docs/plugins) では、共通形式の Agent Plugin に対応していることと、`~/.cursor/plugins/local/<plugin-name>/` でのローカル検証の方法が説明されている。
+
+1. `plugin.json` が `~/.cursor/plugins/local/mtk177a-skills/` の直下に来るように ZIP を展開する。\
+   更新するときは、必要なら古いディレクトリをバックアップしてから、ディレクトリごと入れ替える。\
+   古いファイルの上に新しいファイルをコピーすると、新しい版で削除された Skill が残ることがある。
+2. Cursor を再起動するか、**Developer: Reload Window** を実行する。
+3. Cursor が Skill を一覧に表示し、Skill を明示的に呼び出せることを確かめる。
+
+このパッケージは Skill だけで構成されているため、`.cursor-plugin/plugin.json` は不要である。\
+Cursor のマーケットプレイスへの申請は、この手引きの対象外とする。
