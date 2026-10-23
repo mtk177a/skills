@@ -455,6 +455,7 @@ def check_localization_notices(root: Path, problems: list[Problem]) -> None:
 def check_companion_relationships(root: Path, problems: list[Problem], catalog: set[str]) -> None:
     registry = root / "docs" / "maintainers" / "authoring.md"
     if not registry.is_file():
+        add(problems, root, registry, 1, "companion relationship registry is missing")
         return
     text = registry.read_text(encoding="utf-8")
     for match in COMPANION_ROW.finditer(text):
