@@ -49,7 +49,7 @@ Clients differ in how they find, invoke, and constrain Skills:
   - Sandbox, approvals, rules, and tool access are separate controls.
 - **Claude Code**: discovery, invocation, frontmatter, permissions, and hooks are specific to the client.\
   Compatibility with the portable format does not establish how they behave.
-- **Cursor**: follow the [Cursor installation steps](installation.md#extract-the-plugin-zip-for-cursor), then check discovery and explicit invocation in your Cursor version.
+- **Cursor**: follow the [Cursor installation steps](installation.md#use-the-plugin-in-cursor), then check discovery and explicit invocation in your Cursor version.
 - **Other clients, such as GitHub Copilot and Gemini CLI**: check discovery, invocation, metadata, permissions, and runtime behavior in the current official documentation and in your client version.
 - **APM**: installs the `skills/` directory; it does not run Skills.
 
