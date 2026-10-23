@@ -259,7 +259,7 @@ Markdown の指示は、それ自体が安全な文章ではなく、エージ�
 新しい上流のファイルをそのまま採用できない場合は、差分を記録し、このリポジトリ独自の版は作らない。
 
 上流の `cognitive-rhythm-writing` は、使う前に `../japanese-tech-writing/SKILL.md` を読むことを求めている。\
-[選んだ Skill の導入](../users/installation.md#apm-で導入する) で、両方を一緒に導入する。\
+[選んだ Skill の導入](../users/installation.md#apm-でインストールする) で、両方を一緒に導入する。\
 併用する Skill がない場合の手順を、上流のファイルに追加しない。
 
 ## プルリクエストを作る前に新しい Skill を確認する
