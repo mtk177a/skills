@@ -70,8 +70,8 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 
 - This repository distributes the root `skills/` catalog through APM. Do not add a root `apm.yml` or `apm.lock.yaml`; consumer repositories own their manifests and lockfiles.
 - Before committing a public Skill change, run the repository checker and the unit tests for retained code. Verify the changed work and its safety boundaries as appropriate to the task.
-- When distribution behavior changes, commit and push the candidate source, then verify the exact pushed commit from disposable consumer directories outside this repository.
-- Verify the full bundle, any affected `--skill` selection path, and any affected individual `skills/<name>` installation path. Run consumer-side frozen install and audit checks against the generated consumer lockfile.
+- When distribution behavior changes or a new plugin version is built, commit and push the candidate source, then verify the exact pushed commit from disposable consumer directories outside this repository.
+- Verify the full bundle, the `cognitive-rhythm-writing` and `japanese-tech-writing` selection, and the `skills/define-referents` individual path, as listed in `docs/maintainers/packaging.md`. Run consumer-side frozen install and audit checks against the generated consumer lockfile.
 - Do not run a non-dry-run `apm install` or `apm update` in this repository. They create consumer manifests, lockfiles, and deployment artifacts in the source checkout.
 - An empty `.agents/` directory may exist because agent tools can create it.
 - Do not store review notes, temporary files, or other working artifacts under `.agents/`; use a temporary directory outside this repository instead.
@@ -86,6 +86,7 @@ Follow `CONTRIBUTING.md` for commit messages and pull request titles.
 - Editing `AGENTS.md`, `CLAUDE.md`, or `.github/copilot-instructions.md`
 - Editing `skills/*/SKILL.md`, `docs/*`, or other operational rule documents
 - Importing external Skills, adding dependencies, or changing distribution sources
+- Publishing plugin archives, such as through GitHub Releases
 - Changes that alter the repository's purpose or directory structure policy
 
 ## Avoid
