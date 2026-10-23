@@ -46,41 +46,61 @@ The original label, potential impact, confidence, assessment, state, response de
 ## Workflow
 
 1. Establish the set of existing findings and the target revision or context when available.
+
 2. Preserve each finding's upstream fields and assign an internal reference without silently strengthening, discarding, or fabricating information. Put newly identified uncertainty in triage assumptions and unknowns rather than rewriting upstream unconfirmed premises.
+
 3. Separate observed facts, upstream claims, triage evidence, assumptions, and unknowns. Check whether the finding is current, applicable, and sufficiently supported.
+
 4. Assign `Finding assessment` and `Finding state` from current evidence without rewriting the upstream claim.
+
 5. Compare expected risk reduction with the total response cost using the affected criticality, exposure and preconditions, blast radius, detectability, recovery and workaround, implementation and verification burden, added complexity, regression risk, delay, and maintenance cost supported by evidence. Keep material unknowns explicit and do not treat missing context as low risk.
+
 6. Assign `Response decision` and record its reason. For `Act now`, assign implementation priority and choose an actionable response approach, which may differ from the reviewer's proposal. For `Defer`, record the owner or next check and reconsideration condition. For `No action`, identify the contradiction, inapplicability, lifecycle state, or proportionality basis that makes current action unwarranted.
+
 7. Reconcile the collection: identify duplicates, shared root causes, incompatible response proposals, ordering dependencies, and findings that should share implementation or verification.
+
 8. Report the assessments, states, response decisions, relationships, checks performed, unchecked scope, and the appropriate next handoff.
 
 ## Reporting contract
 
 Adapt the presentation to the request, but retain the following information for each finding when applicable:
 
+### Original finding and decision context
+
 - `Reference`: supplied identifier, source or thread, location, and target revision; distinguish any locally assigned identifier
 - `Finding`
 - `Original label`
 - `Original confidence`
 - `Upstream evidence`
+- `Verification`
+- `Upstream unconfirmed premises`
+- `Re-review state and new finding origin`
+
+### Impact and response cost
+
 - `Impact`
 - `Exposure and preconditions`
 - `Criticality and blast radius`
 - `Detectability, recovery, and workaround`
 - `Remediation cost and trade-offs`
-- `Verification`
-- `Upstream unconfirmed premises`
-- `Re-review state and new finding origin`
+
+### Current assessment
+
 - `Triage evidence and checks`
 - `Triage assumptions and unknowns`
 - `Finding assessment`: `Supported`, `Not verified`, `Contradicted`, or `Not applicable`
 - `Finding state`: `Open`, `Resolved`, `Duplicate`, or `Superseded`
+
+### Response decision and follow-up
+
 - `Response decision`: `Act now`, `Defer`, or `No action`
 - `Response decision reason`
 - `Implementation priority and reason`: `Act now` findings only
 - `Response approach`
 - `Follow-up owner or next check and reconsideration condition`: `Defer` findings only
 - `Related findings`: duplicates, shared causes, conflicts, or dependencies
+
+### Overall conclusion and handoff
 
 Also include a concise review summary, collection-level relationships, checks performed, unchecked or unavailable information, and the next handoff. Do not hide missing decision material inside a confident summary.
 

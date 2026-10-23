@@ -19,13 +19,13 @@ Review again when the upstream revision, dependency graph, external endpoint, ru
 
 ## Establish provenance and scope
 
-Record:
-
-- upstream owner, canonical URL, pinned commit or release, and retrieval date
-- license and whether local redistribution and modification are permitted
-- files imported, files omitted, and local modifications
-- maintainership and the process for comparing future upstream changes
-- target clients, runtime assumptions, and distribution path
+| Record | Content |
+| --- | --- |
+| Source | Upstream owner, canonical URL, pinned commit or release, retrieval date |
+| License | Whether local redistribution and modification are permitted |
+| Imported content | Files imported, files omitted, local modifications |
+| Maintenance | Maintainer and process for comparing future upstream changes |
+| Usage conditions | Target clients, runtime assumptions, distribution path |
 
 Inspect every distributed file and every file directly referenced by `SKILL.md`. Do not review only frontmatter or the main instructions. Follow external URLs far enough to identify the actual destination and the instructions or executable content the Skill depends on; do not treat a redirecting URL as the final trust boundary.
 
@@ -34,18 +34,24 @@ Inspect every distributed file and every file directly referenced by `SKILL.md`.
 For each path through the Skill, identify:
 
 1. what input can influence the agent
+
 2. what files or secrets the agent can read
+
 3. what commands, scripts, tools, or services it can invoke
+
 4. what data can leave the environment and where it can go
+
 5. what approval, sandbox, permission, or deterministic check constrains the action
 
-Pay particular attention to combinations such as:
+Pay particular attention to these combinations and their risks:
 
-- filesystem read plus network send
-- credential access plus generated commands
-- untrusted document content plus privileged tool use
-- automatic invocation plus destructive or external side effects
-- remote instructions plus script execution
+| Capability combination | Risk to examine |
+| --- | --- |
+| Filesystem read plus network send | Private data sent outside the environment |
+| Credential access plus generated commands | Credentials misused or exposed |
+| Untrusted document content plus privileged tool use | Document instructions influencing privileged actions |
+| Automatic invocation plus destructive or external side effects | Effects occurring at an unintended time |
+| Remote instructions plus script execution | External changes altering what runs |
 
 A set of individually ordinary capabilities can form a material exfiltration or integrity risk when combined.
 

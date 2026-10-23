@@ -34,19 +34,42 @@ It does not by itself establish business requirements, design rationale, policy,
 ## Workflow
 
 1. Confirm the requested outcome, edit authority, target scope, and applicable repository instructions. Treat a request to explain, assess, or review as read-only unless it also authorizes editing.
+
 2. Determine the reader, the task the reader must complete, and the document's role. When selecting or creating a document kind, read [document-kinds.md](references/document-kinds.md).
+
 3. Identify the canonical sources for the claims under consideration. Prefer a generated or executable source over a manually duplicated reference.
+
 4. Decide exactly one documentation-impact state:
    - `Update required`
    - `No documentation impact`
    - `Blocked by unknowns`
-5. Before drafting, form a temporary document contract containing: `Audience`, `Reader task`, `Document role`, `Canonical sources`, `Claims to publish`, `Explicit decisions`, `Excluded context`, `Unknowns`, `Validation`, and `Update triggers`. Do not persist this contract unless the user asks for it or the repository defines it as document metadata.
+
+5. Before drafting, form a temporary document contract with these fields.\
+   Do not persist it unless the user asks for it or the repository defines it as document metadata.
+
+   | Field | Content |
+   | --- | --- |
+   | `Audience` | Who will read it |
+   | `Reader task` | What the reader needs to do |
+   | `Document role` | What this document is for |
+   | `Canonical sources` | Where the information is maintained |
+   | `Claims to publish` | What the document will state |
+   | `Explicit decisions` | What has been decided |
+   | `Excluded context` | What does not belong in the document |
+   | `Unknowns` | What is not established |
+   | `Validation` | How to verify the document |
+   | `Update triggers` | When the document needs updating |
+
 6. Admit a claim only when both conditions hold:
    - it is necessary for the reader's task, accuracy, or safety
    - it is Verified or Normative
+
 7. For an authorized update, read [repository-writing.md](references/repository-writing.md), preserve the existing language and useful structure, and edit the smallest coherent section. Link to the canonical source instead of duplicating it.
+
 8. Remove investigation narrative, discarded hypotheses, generic best-practice filler, template-only sections, redundant examples, and unrelated rewrites. Delete a heading, paragraph, or example when removing it does not reduce task completion, correctness, or safety.
+
 9. Run the repository-provided checks relevant to the changed content. Do not install a new documentation tool merely to complete this workflow. Record an unavailable check as unperformed, not passing.
+
 10. Before reporting, reconcile every claimed check with the observed command or execution trace. Do not name a check as run when the trace does not show it, and do not present a conclusion derived from inspection as an observed execution result.
 
 ## Decision handling

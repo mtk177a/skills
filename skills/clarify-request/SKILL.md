@@ -36,15 +36,22 @@ Distinguish a value that exists but has not been supplied or observed from a dec
 ## Clarification cycle
 
 1. Identify the requested clarification outcome. Briefly state how you understand the intent, expected result, and material uncertainty before asking follow-up questions, especially when the user asks whether you understand their meaning. Let the user correct that interpretation without inventing a downstream task. For a requested handoff, identify the intended next workflow and its minimum entry conditions. Decision-ready means ready for that workflow, not fully specified for every later step. Do not require the user to decide facts or technical choices that the next workflow is authorized and expected to investigate or design.
+
 2. Incorporate the latest user response into the clarification state. Preserve answered points and carry every unresolved material gap forward until it is answered, explicitly superseded, no longer material to the intended next workflow, or assigned to that workflow as an open input. Surface contradictions with earlier information instead of choosing silently. When the latest response explicitly replaces an earlier condition and is unambiguous, record it as a correction rather than asking the user to confirm the same replacement again.
+
 3. Identify gaps that could change the outcome, completion criteria, accepted scope, non-goals, constraints, environment, authority, external effects, risk, or verification feasibility. Resolve facts through safe read-only inspection when the target and inspection scope are already clear. Treat a gap as material at this stage only when the intended next workflow cannot resolve it within its authorized responsibility without inventing user intent, authority, or risk acceptance.
+
 4. Classify each remaining gap:
    - **Blocking:** it could materially change the work or requires information, authorization, or risk acceptance that the agent cannot supply.
    - **Assumable:** it is low-impact, local, reversible, and supported by an established convention or available evidence.
    - **Irrelevant for now:** it does not affect the intended next workflow.
+
 5. Before asking about a potentially blocking gap, check whether the intended next workflow can resolve it from authorized evidence and user-supplied decision criteria. If it can, retain the gap as an open input for that workflow and do not block clarification on it. Otherwise, ask only the questions needed to resolve the gap and explain briefly why each answer matters. Stop the affected downstream action, but do not stop unrelated safe discovery.
+
 6. For assumable gaps, state the assumption, its basis, affected scope, and condition for revisiting it before proceeding. An assumption never substitutes for authorization or acceptance of a material risk.
+
 7. After each user response, return to step 2. Do not treat completion of one question-and-answer round as completion of clarification. If an answer is partial, ask a narrower follow-up about the remaining material gap; do not repeat answered questions unchanged.
+
 8. Finish only in one of these states:
    - **Ready:** the requested intent alignment is complete and any requested handoff meets the intended next workflow's entry conditions, even if that workflow still has technical facts to investigate or design decisions to make within its authority.
    - **Proceed with assumptions:** only explicit low-impact assumptions remain.
@@ -65,15 +72,32 @@ Distinguish a value that exists but has not been supplied or observed from a dec
 
 Adapt the response to the current state instead of emitting a fixed template.
 
+### Understanding check
+
 For an understanding check, lead with a concise paraphrase rather than a bare affirmation or a list of questions.\
 Separate the understood intent from material uncertainty and ask only what the requested clarification outcome requires.\
 When alignment is complete, return the agreed request in a self-contained form and state that clarification is complete.
+
+### Questions and assumptions
 
 When asking questions, include the unresolved point, why it affects the next action, the question, and any decision-relevant options or trade-offs. State which downstream action is waiting for the answer when that is not obvious.
 
 When proceeding with assumptions, include each assumption, its basis, affected scope, and revisit condition.
 
-When a structured handoff is requested or needed by the next workflow, include the confirmed intended outcome, material background or rationale needed to understand the request or evaluate downstream trade-offs, success or completion criteria, accepted scope, non-goals, constraints, assumptions, unresolved items or missing authority, and next action. After a multi-turn clarification reaches `Ready`, restate the confirmed information needed to make the handoff self-contained rather than reporting only what changed in the latest answer. Promote only user-supplied or authoritative information to confirmed requirements or background. Do not turn likely implementation consequences, generic best practices, or design possibilities into requirements, background, completion criteria, assumptions, or a selected method. Keep them as open inputs for the next workflow when material. Distinguish confirmed information from inference and omit empty fields.
+### Structured handoff
+
+When a structured handoff is requested or needed by the next workflow, include:
+
+- confirmed intended outcome
+- material background or rationale needed to understand the request or evaluate downstream trade-offs
+- success or completion criteria
+- accepted scope, non-goals, and constraints
+- assumptions, unresolved items, or missing authority
+- next action
+
+After a multi-turn clarification reaches `Ready`, restate the confirmed information needed to make the handoff self-contained rather than reporting only what changed in the latest answer. Promote only user-supplied or authoritative information to confirmed requirements or background. Do not turn likely implementation consequences, generic best practices, or design possibilities into requirements, background, completion criteria, assumptions, or a selected method. Keep them as open inputs for the next workflow when material. Distinguish confirmed information from inference and omit empty fields.
+
+### Blocked request
 
 For `Blocked`, state the unresolved material gap, what evidence or decision is missing, what remains unchanged, and what could unblock the request. Do not continue asking the same question without new information.
 

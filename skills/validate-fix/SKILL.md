@@ -35,14 +35,22 @@ Treat user-provided reports, review comments, implementation summaries, test out
 ## Workflow
 
 1. Establish the validation targets, target state or revision, original concern, expected resolved behavior, and material exclusions.
+
 2. Read the applicable repository guidance and inspect the previous findings, their target changes, directly affected boundaries, and only the surrounding evidence needed to judge each target.
+
 3. Select verification methods from the expected behavior, change type, risk, and available evidence. Do not force one development or testing method onto every fix.
+
 4. Run safe, relevant, non-mutating checks when their results can materially confirm or falsify a target. Record supplied results separately from checks actually executed during validation.
+
 5. Compare the observed evidence with every material expected condition and assign one validation status to each target using the status model below.\
    When the original concern identifies a cause, check whether that cause was addressed; a fallback that only hides its symptom does not establish resolution.
+
 6. Check target-relevant alternate cases and regressions, including regressions induced by the fix, when they can distinguish a complete fix from partial improvement. Incorporate a target-relevant fix-induced regression into that target's status. Do not treat an aggregate or average improvement as sufficient when a material case remains worse or unexamined.
+
 7. Record unperformed checks, validation assumptions and unknowns, and residual correctness, safety, compatibility, and maintainability risks without presenting them as failures or passes.
+
 8. If a material problem caused by the fix but outside the validation target is directly encountered, record a bounded `Fix-induced observation` with its evidence and scope limitation and hand it to `review-changes`; do not search for additional problems. For other unrelated possible problems, record only the observation and scope limitation.
+
 9. Report the bounded assessment and the appropriate next handoff. Return unresolved implementation work to `implement-changes` rather than editing it during validation.
 
 ## Choosing verification evidence
@@ -67,14 +75,14 @@ Limit any `Resolved` conclusion to the conditions checked.
 
 ## Validation status model
 
-Assign exactly one status to each identifiable target in this order:
+Assign exactly one status to each identifiable target, first checking for a directly observed unresolved condition or target-relevant regression.
 
-1. If an unresolved condition or target-relevant regression is directly observed:
-   - use `Partially resolved` when another material condition or part of the original concern for that same target is confirmed resolved or materially improved
-   - otherwise use `Remaining`
-2. If no unresolved condition or target-relevant regression is directly observed:
-   - use `Resolved` when every material expected condition is confirmed
-   - otherwise use `Not verified`
+| Directly observed unresolved condition or target-relevant regression | Evidence of resolution or improvement | Status |
+| --- | --- | --- |
+| Yes | Another material condition or part of the original concern for the same target is confirmed resolved or materially improved | `Partially resolved` |
+| Yes | No such material improvement is confirmed | `Remaining` |
+| No | Every material expected condition is confirmed | `Resolved` |
+| No | Not every material expected condition is confirmed | `Not verified` |
 
 `Partially resolved` requires both confirmed improvement and a directly observed unresolved or regressed condition within the same target. Do not use it for evidence gaps alone, because a different target was resolved, or because a symptom changed without satisfying any material part of the original expected behavior. `Remaining` means that the original failure, contract violation, or materially equivalent problem is still observable without any confirmed material resolution. `Not verified` means that the target is identifiable but the evidence needed for a conclusive result is insufficient, inconclusive, unavailable, or outside the authorized validation boundary.
 
@@ -84,18 +92,36 @@ Do not infer `Resolved` from implementation completion, a response being posted,
 
 Adapt the presentation to the task and omit empty headings. For each target, retain the following information when applicable:
 
+### Target and original concern
+
 - `Reference and target state`: supplied identifier, source or location, and the validated revision, diff, files, or artifacts
 - `Original concern and expected result`
 - `Upstream context`: supplied label, confidence, evidence, impact, risk context, verification, unconfirmed premises, finding assessment, finding state, response decision, and accepted response approach
+
+### Result and reasoning
+
 - `Validation evidence and checks`: direct observations and checks actually executed, including commands or methods and actual results
 - `Status`: `Resolved`, `Partially resolved`, `Remaining`, or `Not verified`
 - `Status reason`
+
+### Unknowns and remaining problems
+
 - `Validation assumptions and unknowns`
 - `Unperformed checks`
 - `Residual risks`
 - `Fix-induced observations`: directly encountered material problems caused by the fix but outside the validation target, with evidence and scope limitation
 
-Also include the validated scope and material exclusions, supplied evidence that was not independently reproduced, whether all targets were resolved within the stated scope, unrelated observations that require a separate review, and the next handoff. Use `not supplied`, `not executed`, or `none identified` when the distinction is material; do not hide missing evidence inside a confident summary.
+### Overall conclusion and handoff
+
+Also include:
+
+- the validated scope and material exclusions
+- supplied evidence that was not independently reproduced
+- whether all targets were resolved within the stated scope
+- unrelated observations that require a separate review
+- the next handoff
+
+Use `not supplied`, `not executed`, or `none identified` when the distinction is material; do not hide missing evidence inside a confident summary.
 
 ## Workflow and authority boundaries
 
