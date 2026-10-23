@@ -1,4 +1,4 @@
-# Build a plugin archive
+# Build the plugin ZIP
 
 This guide is for maintainers and the agents working for them.\
 It describes how to build a new plugin version as a ZIP, confirm that the pushed commit installs through APM, and what the ZIP contains.\
