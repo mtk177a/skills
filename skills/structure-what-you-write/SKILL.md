@@ -29,6 +29,7 @@ Work at the level the information requires, from an individual sentence to a col
 - Identify the information needed for the reader to understand, decide, or act.
 - Distinguish established facts, authorized decisions, assumptions, interpretations, and unknowns.
 - Use appropriate primary sources for material factual claims. Do not invent missing facts, decisions, requirements, or rationale.
+- In a revision, check the existing claims that affect the reader's decisions, not only the existing structure and wording.
 - Treat code and other implementation evidence as establishing current behavior only. It does not by itself establish requirements, design rationale, policy, ownership, or acceptable risk.
 - Distinguish faithful editing of supplied content from authoring where content selection is permitted.
 - Preserve required claims, conditions, uncertainty, commitments, permissions, and safety constraints when restructuring existing content.
@@ -45,6 +46,7 @@ Identify meaningful information units before choosing a presentation format.
 - Determine the subject, purpose, and information type of each unit, such as a definition, fact, attribute, condition, rule, procedure, constraint, or example.
 - Identify relationships between units, including equivalence, contrast, membership, containment, sequence, dependency, and cause.
 - Group information by a consistent, meaningful criterion rather than arbitrary proximity or convenient list length.
+- Choose the grouping by the decision the reader makes. When one item fits several options, organize by the options and list the item under each option it fits.
 - Keep related definitions, conditions, exceptions, and examples together when readers need them together.
 - Separate information that serves different subjects or purposes, even when it appears in the same original paragraph or section.
 - Preserve meaningful connections between related information instead of fragmenting it into isolated statements.
@@ -67,7 +69,7 @@ Determine how the information should be organized before drafting its final form
 - Consider whether sections or files should remain as they are, be split, be combined, or have content relocated.
 - When multiple artifacts are involved, consider their distinct purposes, canonical sources, navigation, and maintenance responsibilities.
 - Preserve the information required by artifacts that must operate independently, even when some duplication is necessary.
-- Avoid additional hierarchy, files, or cross-references unless they improve comprehension, use, or maintainability.
+- Use hierarchy to represent containment. Do not place different kinds of content at one level merely to avoid depth, and do not add files or cross-references unless they improve comprehension, use, or maintainability.
 
 Evaluate structural problems at the appropriate level. A problem visible in one paragraph may require reorganizing a section, document, or document set.
 
@@ -79,7 +81,7 @@ Choose the presentation form according to the information's meaning, relationshi
 
 - Prose: Explain a coherent subject, reasoning, context, or causal relationship.
 - Bulleted lists: Present distinct, parallel items without an inherent execution order.
-- Numbered lists: Present ordered steps or sequences whose steps are short. When a step contains several paragraphs or code blocks, give each step its own heading instead.
+- Numbered lists: Present ordered steps or sequences whose steps are short. When an item has a few short details, give it a bold label and nest the details as bullets beneath it. When a step contains several paragraphs or code blocks, give each step its own heading instead.
 - Nested lists: Express genuine containment or parent-child relationships, not decorative indentation.
 - Tables: Present repeated attributes, definitions, conditions, or comparisons across clearly identified dimensions. When a cell needs several sentences or independent conditions, use headings or lists instead.
 - Code blocks: Show exact syntax, configuration, commands, output formats, or other literal structures.
@@ -114,6 +116,7 @@ Check that:
 - Headings accurately describe their contents without implying an incorrect scope.
 - Reading only the headings, a reader can tell which topic each section belongs to.
 - The opening sentences of each section state its point.
+- When several sections or documents are revised together, each section has been checked against these criteria. Fixing the structure alone does not complete the revision.
 - Related information can be found and understood together.
 - Presentation forms make information easier to locate, compare, understand, or use.
 - The structure is not unnecessarily fragmented, repetitive, or complicated.
@@ -147,4 +150,4 @@ The workflow must remain usable without unrelated Skills or external services.
 - When required information or authority is missing, identify the specific uncertainty and complete independent work where possible.
 - Keep authoring notes, discarded alternatives, and internal revision history out of the finished content unless they serve its readers.
 - Do not treat Skill invocation as permission to edit files, publish material, contact others, or expand the authorized scope.
-- Report completed changes, checks actually performed, unresolved issues, and proposed out-of-scope changes concisely.
+- Report completed changes, checks actually performed, unresolved issues, and proposed out-of-scope changes concisely. Distinguish structural changes from sentence-level rewriting, and state where the depth of revision differs between sections.
