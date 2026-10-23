@@ -62,6 +62,71 @@ client が対応しているという理由だけで、client 固有 metadata �
 Skill-level の behavior result は、その Skill の評価資産に記録します。
 `not exposed` と `not executed` は pass ではありません。
 
+## Plugin の実行条件
+
+`mtk177a-skills` 0.1.0 は、公開する 29 個の Skill の指示を変更せずに同梱する。\
+パッケージには指示と参照資料が揃っているが、それを実行するためのツールや権限まで含まれるわけではない。\
+次の一覧で目的の作業に必要な条件を確認し、実際に確認できた動作は [検証記録](#plugin-の検証結果と残る確認) を参照する。
+
+実行するエージェントは、同梱資料をすべて読める必要がある。\
+作業中にどの資料を読むかは、各 Skill の指示に従う。\
+現在の Skill に実行スクリプトの同梱や Python ライブラリの追加要件はないが、ツールを使う作業には、対象環境のツールと操作権限が必要となる。
+
+| 作業と Skill | 必要な入力・機能 |
+| --- | --- |
+| 依頼や判断を整理する: `clarify-request`、`define-referents`、`explore-decision-space`、`calibrate-learning-support` | 会話と依頼の文脈。外部の事実が判断に影響する場合は、それを取得する手段。`define-referents` では同梱の参照資料も必ず読む |
+| 執筆・説明する: `make-it-click`、`structure-what-you-write`、`write-natural-japanese` | 文章と文脈、および各 Skill が必須とする、または必要に応じて選ぶ同梱資料。結果を保存する場合は、許可された書き込み手段も必要 |
+| 日本語の技術文書を書く: `japanese-tech-writing`、`cognitive-rhythm-writing` | 執筆・推敲する文章。`cognitive-rhythm-writing` では、隣接する `japanese-tech-writing/SKILL.md` を必ず読む |
+| 実行条件を評価する: `choose-ai-execution-setup`、`assess-risky-change-readiness` | 利用可能な環境、機能、制御、権限についての証拠。助言を得ても、それらの機能が使えるようになったり、実行が許可されたりするわけではない |
+| 変更を設計する: `design-changes`、`design-agent-instructions`、`design-skill` | 関係する既存実装、指示、制約へのアクセス。成果は設計であり、変更の実装ではない |
+| 指示や障害を調査する: `audit-agent-guidance`、`investigate-failure`、`break-failure-loop` | 対象範囲の指示、障害・試行の証拠、必要な読み取り用の調査手段。動作の証拠がなければ未確認とする |
+| リポジトリ内のファイルを編集する: `curate-repo-docs`、`implement-changes` | 対象ファイル、適用されるリポジトリ規則、許可された書き込み手段、必要な検証ツール。実行に必要な機能が足りない場合、実装に成功したとは扱わない |
+| 変更や指摘をレビューする: `review-changes`、`validate-fix`、`triage-review-feedback` | 実際の差分・修正・指摘と、関連する原本・仕様の証拠。コマンド実行や実環境の確認には、それに対応するツールが必要。未検証の主張は未確認のまま扱う |
+| 変更概要や課題管理用の文面を下書きする: `draft-commit`、`draft-issue`、`draft-review-comments`、`summarize-changes` | 各 Skill が要求する、範囲の定まった変更、根拠のある依頼、提供された指摘。証拠の取得に必要な場合は、リポジトリや課題管理システムへのアクセスも必要。下書きの作成では投稿しない |
+| 引き継ぎを記録する: `record-session-handoff` | 現在の作業の証拠と、利用可能な場合は許可された保存手段。保存できない場合は、Skill が定める下書きや未保存の結果を返す |
+| Web で調査する: `research-web-safely` | 実際の検索・取得手段と、確認できる引用元。資料やツールを利用できなかった場合は、検証済みとする根拠にはできない |
+| 別のエージェントで改稿する: `revise-docs-fresh-eyes` | Codex または Claude Code、成果物へのアクセス、執筆時の会話を引き継がない独立したサブエージェントの利用許可。子実行が利用できない、または禁止されている場合は中止し、同じ文脈内での改稿で代用しない |
+
+パッケージには、`design-skill` の作成ガイド、編集用 Skill が使う文書判断・TDD の参照資料、未改変の Gist ミラー 2 個と来歴文書を含める。\
+ミラーを隣接して配置することで、一方がもう一方の本文を必ず読むという関係を保つ。\
+別の作業手順への言及があるだけでは、その Skill を必須の併用先とはみなさない。
+
+リポジトリ保守専用の `maintain-japanese-references` は、公開配布の対象外とする。\
+公開 Skill の `write-natural-japanese` を必要とすることは、保守用 Skill 自体を公開する理由にはならない。\
+指示や関連ファイルを変更した場合は、上記の該当する実行条件と、パッケージ内の参照関係を一緒に見直す。
+
+## Plugin の検証結果と残る確認
+
+29 個の Skill を含む正式版は、アップロードと動作検証が未完了である。\
+次の記録は、[Issue #100](https://github.com/mtk177a/skills/issues/100) にある、3 個の Skill を含む検証用 Plugin `mtk177a-skills-probe` の 0.1.0 から 0.1.1 への更新に関するものである。\
+確認できた範囲は表に記載した内容に限られ、正式版の検証結果としては扱わない。
+
+| 利用先 | 検証用 Plugin で得た証拠 | 未確認の範囲 |
+| --- | --- | --- |
+| ChatGPT 個人用 Plugin | ユーザーからアーカイブの導入・更新の報告があり、UI でもバージョン変更と Skill 数の 2 個から 3 個への増加を確認した | 自動同期と直接のダウングレード。正式版のアップロードもユーザーが行う |
+| Codex | `explore-decision-space` が利用可能な一覧に現れ、本文を読めた。アップロードした原本 7 ファイルは、以前バイト単位での一致を確認した | 配置された全ファイルがアップロード内容と一致するか。2026-10-23 のキャッシュには `.codex-plugin/plugin.json` もあったが、どの段階で追加されたかは観測していない |
+| Chat | 提供された会話 PDF に、`define-referents` と `explore-decision-space` を明示的に指定した依頼と、それに沿った出力がある | 本文の読み込み。読み込んだことを証明する独立したツール実行記録はない |
+| dots | `clarify-request` と `define-referents` を読んだという dot の応答を、ユーザーから報告された | 独立した確認。証拠は自己申告であり、実行記録を直接観測したものではない |
+| Work | 個別の動作検証記録なし | 実行時の動作。検証は未実行 |
+
+これらの検証では、クライアント・モデルのバージョンと権限モードを完全には記録していないため、結果を別の環境へ一般化できない。\
+Cursor では、ルートの `plugin.json` とローカル Plugin の読み込みが公式資料に記載されているが、このパッケージでは試していない。
+
+正式版をユーザーがアップロードした後、対象となる画面や環境で次を確認する。
+
+| 確認項目 | 使用する Skill | 確認する内容 |
+| --- | --- | --- |
+| ツールに依存しない作業 | `explore-decision-space` | 主な作業にツールを必要としない Skill を、明示的に指定して使えるか |
+| 同梱資料の読み込み | `define-referents` | Skill に付属する参照資料を読めるか |
+| 必須の併用先の読み込み | `cognitive-rhythm-writing` と `japanese-tech-writing` | 一方のミラーがもう一方を必ず読むという関係を保てるか |
+| 必要な実行機能がない場合 | `revise-docs-fresh-eyes` | 独立したサブエージェントを使えない場合に中止するか |
+
+バージョン、日付、導入経路、明示的に指定した依頼、観測できた読み込み、出力、不足する機能を記録する。\
+観測手段がない動作（`not exposed`）と、実行していない検証（`not executed`）を区別し、どちらも成功とは扱わない。\
+成功という結果を得るためだけに、許可なくアカウント設定を変更したり、サブエージェントを作成したりしない。
+
+生成、導入、更新、重複回避、不具合のある版からの復旧は [Plugin の配布手順](distribution.md) を参照する。
+
 ## Installation paths
 
 ### APM 経由の Claude Code
@@ -113,51 +178,3 @@ apm audit --ci --no-policy
 - [Claude Skills for enterprise](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise)
 
 client extension と runtime behavior は core package format より頻繁に変わります。設計または監査に影響する場合は、現行公式情報を再確認します。
-
-## Plugin の実行条件
-
-`mtk177a-skills` 0.1.0 は、公開 29 Skill の本文を変更せずに同梱する。
-次の一覧は必要な証拠と能力を示すもので、各クライアントで無条件に動くことを示すものではない。
-同梱する参照資料は、実行するエージェントが読める必要がある。
-現在の Skill に実行スクリプトの同梱や Python 依存のインストール要件はない。
-ツールを使う作業では、対象環境のツールと操作権限が別途必要になる。
-
-| Skill | 必要な入力・実行条件 |
-| --- | --- |
-| `clarify-request`、`define-referents`、`explore-decision-space`、`calibrate-learning-support` | 会話・依頼の証拠。`define-referents` は同梱の参照資料も必ず読む。外部の事実が判断に影響する場合は、その取得手段が必要 |
-| `make-it-click`、`structure-what-you-write`、`write-natural-japanese` | 提供された文章と文脈、各 Skill が選択または必須とする同梱資料。保存には許可された書込手段が必要 |
-| `japanese-tech-writing`、`cognitive-rhythm-writing` | 執筆・推敲する文章。後者は隣接する `japanese-tech-writing/SKILL.md` を必ず読む。未改変の両ミラーと来歴文書を同梱する |
-| `choose-ai-execution-setup`、`assess-risky-change-readiness` | 利用可能な環境、能力、制御、権限の証拠。助言によってそれらが提供されたり、実行が許可されたりするわけではない |
-| `design-changes`、`design-agent-instructions`、`design-skill` | 関係する既存実装・指示と制約へのアクセス。`design-skill` には作成ガイドを同梱する。設計では変更を実行しない |
-| `audit-agent-guidance`、`investigate-failure`、`break-failure-loop` | 対象範囲の指示、障害・試行の証拠、必要な読み取り用の調査手段。動作の証拠がなければ未確認とする |
-| `curate-repo-docs`、`implement-changes` | 対象ファイル、適用されるリポジトリ規則、許可された書込手段、必要な検証ツール。文書判断や TDD の参照資料を同梱する。実行能力の不足を実装成功と扱わない |
-| `review-changes`、`validate-fix`、`triage-review-feedback` | 実際の差分・修正・指摘と、関連する原本・仕様の証拠。コマンドや実環境の確認には対応するツールが必要。未検証の主張は未確認のまま扱う |
-| `draft-commit`、`draft-issue`、`draft-review-comments`、`summarize-changes` | 各 Skill が要求する範囲確定済みの変更、根拠のある依頼、または提供された指摘。必要な証拠に応じてリポジトリ・課題管理へのアクセスが必要。下書き作成では投稿しない |
-| `record-session-handoff` | 現在の作業の証拠。許可された保存手段があれば記録し、なければ Skill が定める下書き・未保存の結果を返す |
-| `research-web-safely` | Web 検証には実際の検索・取得手段と観測可能な引用が必要。資料やツールが利用できない場合は検証済みとしない |
-| `revise-docs-fresh-eyes` | 許可された独立した新規サブエージェントと、成果物へのアクセスを持つ Codex または Claude Code。子実行が利用できない、または禁止されている場合は中止する。同じ文脈内での改稿では代用しない |
-
-リポジトリ保守専用の `maintain-japanese-references` は除外する。
-この Skill が `write-natural-japanese` を必要とすることは、公開配布する理由にはならない。
-別の作業手順への言及だけで、その Skill を必須併用先とはみなさない。
-資源や指示が変わる場合は、該当する行と配布物の参照関係を一緒に見直す。
-
-## Plugin の検証結果と残る確認
-
-[Issue #100](https://github.com/mtk177a/skills/issues/100) には、個人用の検証 Plugin `mtk177a-skills-probe` を 0.1.0 から 0.1.1 へ更新した記録がある。
-この証拠は 3 Skill に関するもので、29 Skill を含む正式版の検証結果として扱わない。
-
-| 利用先 | 証拠 | 限界 |
-| --- | --- | --- |
-| ChatGPT 個人用 Plugin | ユーザーによるアーカイブ導入・更新の報告と、バージョン・Skill 数が 2 個から 3 個へ変わった UI | 正式版もユーザーがアップロードする。自動同期・ダウングレードの証拠はない |
-| Codex | probe の `explore-decision-space` が利用可能な一覧に現れ、本文を読めた。アップロードした原本 7 ファイルは以前バイト一致を確認した | 2026-10-23 の配置済みキャッシュには `.codex-plugin/plugin.json` も存在した。配置済みの全ファイル集合の一致は確認しておらず、互換ファイルが追加された段階も未観測 |
-| Chat | 提供された会話 PDF に、`define-referents` と `explore-decision-space` の明示依頼と、それに沿う出力がある | 本文の読み込みを証明する独立したツール実行記録はない |
-| dots | `clarify-request` と `define-referents` を読んだという dot の応答を、ユーザーから報告された | 自己申告であり、独立して観測した実行記録ではない |
-| Work | 個別の動作検証記録なし | 未実行 |
-| Cursor | 公式資料にルート `plugin.json` とローカル Plugin 読み込みの対応がある | このパッケージでは未実行 |
-
-probe のクライアント・モデルのバージョンと権限モードは完全には記録されていないため、別の環境へ一般化しない。
-正式版の検証はアップロード待ちであり、影響する利用先で、ツール非依存の `explore-decision-space`、参照資料を持つ `define-referents`、ミラーの組、サブエージェントがない場合の `revise-docs-fresh-eyes` を確認する。
-バージョン、日付、導入経路、明示依頼、観測できた読み込み、出力、不足する能力、`not exposed`・`not executed` を分けて記録する。
-検証を成功扱いにするためだけに、許可なくアカウント設定を変えたりサブエージェントを作ったりしない。
-生成、導入、更新、重複回避、復旧は [配布手順](distribution.md) を参照する。

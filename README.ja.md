@@ -53,9 +53,13 @@
 
 ### Plugin（ChatGPT、Codex、Cursor）
 
-portable 形式の `mtk177a-skills` Plugin は、固定コミットから同じ公開 Skill をまとめて配布します。
-ZIP の生成、個人用 Plugin の導入・更新は [Plugin 配布](docs/ja/distribution.md)、実行条件と検証の限界は [互換性](docs/ja/compatibility.md#plugin-の実行条件) を参照してください。
-同じ実行環境では、重複する Skill の導入元を Plugin または単体導入のどちらかに揃え、正式版と検証用 Plugin も併用しないでください。
+`mtk177a-skills` は、固定した Git コミットから公開 Skill をまとめ、複数のクライアントで扱える共通形式の Agent Plugin として配布します。\
+ZIP を ChatGPT の個人用 Plugin としてアップロードするか、Cursor のローカル Plugin ディレクトリに展開して使います。\
+導入・更新方法、単体・APM 導入との重複回避、正式版を有効にする前の検証用 Plugin の無効化・削除については、[Plugin の配布手順](docs/ja/distribution.md#導入方法を選ぶ) を参照してください。
+
+同梱されている Skill が、すべてのクライアントで実行できるとは限りません。\
+目的の作業について、[実行条件と検証記録](docs/ja/compatibility.md#plugin-の実行条件) を確認してください。\
+保守者は、単体導入と同じ原本から [アーカイブを生成・検証](docs/ja/distribution.md#アーカイブを生成検証する) できます。
 
 ### Claude Code (APM)
 
@@ -125,6 +129,7 @@ Runner は編集後に評価を自動実行せず、全ケースを暗黙に選�
 ├── CONTRIBUTING.md
 ├── CONTRIBUTING-ja.md
 ├── LICENSE
+├── plugin.json
 ├── AGENTS.md
 ├── AGENTS-ja.md
 ├── CLAUDE.md
@@ -134,6 +139,7 @@ Runner は編集後に評価を自動実行せず、全ケースを暗黙に選�
 ├── docs/
 │   ├── authoring.md
 │   ├── compatibility.md
+│   ├── distribution.md
 │   ├── evaluation.md
 │   ├── localization.md
 │   ├── security.md

@@ -48,9 +48,13 @@ This repository includes the following Skills.
 
 ### Plugin (ChatGPT, Codex, and Cursor)
 
-The portable `mtk177a-skills` plugin packages the same public Skills from a fixed commit.
-See [Plugin distribution](docs/distribution.md) for building the ZIP, personal installation and updates, and [Compatibility](docs/compatibility.md#plugin-runtime-requirements) for execution requirements and verification limits.
-Choose plugin or standalone installation for overlapping Skills in each runtime; do not enable both or retain the probe alongside the formal plugin.
+`mtk177a-skills` packages the public Skills from a fixed Git commit as one portable Agent Plugin.\
+Upload its ZIP as a personal ChatGPT plugin, or extract it into Cursor's local plugin directory.\
+See [Plugin distribution](docs/distribution.md#choose-an-installation-route) for installation and updates, including how to avoid overlapping standalone/APM installations and disable or remove the test plugin before enabling the formal one.
+
+Packaging does not establish that every Skill can run in every client.\
+Check the [runtime requirements and verification record](docs/compatibility.md#plugin-runtime-requirements) for the intended task.\
+Maintainers can [build and verify an archive](docs/distribution.md#build-and-verify-an-archive) from the same sources used for standalone installation.
 
 ### Claude Code (APM)
 
@@ -117,6 +121,7 @@ See [docs/evaluation.md](docs/evaluation.md) for path selection, execution, grad
 ├── CONTRIBUTING.md
 ├── CONTRIBUTING-ja.md
 ├── LICENSE
+├── plugin.json
 ├── AGENTS.md
 ├── AGENTS-ja.md
 ├── CLAUDE.md
@@ -126,6 +131,7 @@ See [docs/evaluation.md](docs/evaluation.md) for path selection, execution, grad
 ├── docs/
 │   ├── authoring.md
 │   ├── compatibility.md
+│   ├── distribution.md
 │   ├── evaluation.md
 │   ├── localization.md
 │   ├── security.md
