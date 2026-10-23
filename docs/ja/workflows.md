@@ -1,116 +1,72 @@
-> **注記:** 英語版 (`docs/workflows.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。
+> この文書は [英語版 workflows.md](../workflows.md) の日本語参考訳です。\
+> 内容が異なる場合は英語版を優先してください。
 
-# コア Skill ワークフロー
+# 作業に合う Skill を選ぶ
 
-コアとなる Skill が一般的なワークフローでどのように連携するかを示す最小限のリファレンスです。
+まず、今回完了させたい作業に合う Skill を選ぶ。\
+以下のつながりは次に使う Skill を選ぶための案内であり、すべてを順に実行する指示や、操作の許可ではない。
 
-## 基本ワークフロー
+最初に使う Skill は [目的別の一覧](../../README.ja.md#skill-一覧) から選ぶ。\
+この文書では、次の作業へ進む条件を確認する。
 
-`clarify-request` → 必要に応じて `design-changes` → `implement-changes` → `review-changes` → `validate-fix`
+- [変更・障害対応](#変更と障害への対応): 設計から実装へ進む条件。
+- [レビュー・修正](#レビューと修正): 指摘の判断、コメント、修正後の確認。
+- [リスク・行き詰まり](#リスクのある作業と行き詰まり): 作業を止める場面と再開条件。
+- [指示の改善](#継続して使うエージェント向け指示): 診断と設計の使い分け。
 
-- `clarify-request`: 次の workflow を開始できるか blocked と判断できるまで、目的、完了条件、制約、前提、権限、未解決事項を反復して明確にする
-- `design-changes`: 変更内容、対象外、リスク、テスト戦略、停止条件、planned reviewer context を定義する
-- `implement-changes`: 承認済みの変更を小さな単位で適用し、TDD または適切な別の検証方法を選び、根拠のある引き継ぎへ actual reviewer context を残す
-- `review-changes`: コード・文書・設定の新規 effective diff をレビューし、根拠、影響、比例的な risk context、確信度、実行した確認、正規ラベルを報告する
-- `validate-fix`: 特定済み指摘への通常の修正後再レビューを限定的に行い、対象ごとの状態、未確認範囲、残留リスクを報告する
+入力・出力・制約の詳細は各 Skill の指示に従う。
 
-十分に明確かつ承認済みの低影響な変更で、実装方針、scope、risk 判断、verification strategy を捏造せず直接実装できる場合は `design-changes` を省略します。
+## 変更と障害への対応
 
-## 高リスク readiness workflow
+曖昧な用語は `define-referents` で意味を定め、元の作業へ戻る。\
+重要な選択肢は `explore-decision-space` で比較し、方針を選んでから `design-changes` へ進む。
 
-`元の workflow` → 必要に応じて `design-changes` → `assess-risky-change-readiness` → authorized executor または `implement-changes`
+一般的な変更は `clarify-request` → `design-changes` → `implement-changes` → `review-changes` の順で進める。\
+依頼の整理や設計に必要な判断が十分に明確で、作業も許可されている場合は、その工程を省略する。
 
-- `design-changes`: 通常の implementation approach、impact、risk、verification、stop condition を定義し、design を execution authorization として扱わない
-- `assess-risky-change-readiness`: material な operational、data、security、external-state、irreversibility、recovery risk が追加 control を必要とするか判断し、`Not applicable`、`Blocked`、`Ready for authorization`、`Ready for execution handoff` のいずれか一つを返す
-- authorized executor または `implement-changes`: 具体的な action、scope、control、residual risk、execution authority が実装可能な状態の場合だけ開始し、関連 Skill がなくても self-contained に動作する
+`investigate-failure` から直接実装へ進めるのは、裏付けのある診断、許可された目的、影響範囲、期待する結果、安全対策、検証方法が定まっている場合に限る。\
+それ以外は `design-changes` を使う。\
+修正後は `validate-fix` で元の障害と期待する挙動に照らして確認する。
 
-request が migration、dependency、security、production の category に触れることだけを理由に `assess-risky-change-readiness` を使いません。変更の reversibility、recoverability、blast radius、external-state effect、detectability、authority、uncertainty から、追加 readiness workflow が必要かを判断します。
+原因調査はインシデント対応を支援できるが、対応の指揮や承認済みの安定化手順を代行するものではない。
 
-`Ready for authorization` は evidence と control が decision-ready であることを意味し、authorization が付与済みであることを意味しません。`Ready for execution handoff` は既存 authorization を記録しますが、変更を承認または実行しません。reversal が不可能または不適切な場合は、rollback を捏造せず、roll-forward、restore、compensation、containment、explicit accepted loss を使います。
+## レビューと修正
 
-## Failure investigation workflow
+`review-changes` → `triage-review-feedback` → 必要に応じて `draft-review-comments` → `implement-changes` → `validate-fix`
 
-`investigate-failure` → 必要に応じて `break-failure-loop` → `design-changes` または条件付きで `implement-changes` → `validate-fix`
+| 引き継ぎ | 区別すること |
+| --- | --- |
+| レビュー → 指摘の判断 | 指摘の分類・影響・確度だけでは、対応するかどうかは決まらない |
+| 指摘の判断 → 実装 | 許可された `Act now` の作業だけを実装する。懸念を認めても、指摘者の解決案を採用するとは限らない |
+| 指摘の判断 → コメントの下書き | 妥当性の判断、現在の状態、対応方針を渡す。依頼者が直接指定してもよいが、下書きの工程で判断を補わない |
+| 指摘なしのレビュー → コメントの下書き | 結論・対象範囲・実施した確認・限界を渡す。個別指摘の判断は不要 |
+| 修正 → 再確認 | 特定済みの修正には `validate-fix` を使う。差分全体の再レビューを明示的に依頼された場合だけ `review-changes` を使う |
 
-- `investigate-failure`: local、development、staging、production の各環境で expected behavior と observed behavior を分離し、failure path を追跡し、安全な診断で原因仮説を検証して、支持された原因または次に evidence を変える checkpoint を返す
-- `break-failure-loop`: 変わらない仮説のもとで実質的に同じ確認が decision-relevant evidence なしに反復する場合だけ、調査を一時停止する
-- `design-changes`: 診断は支持されているが、修正方針、影響 scope、risk、verification が未確定な場合に修正を設計する
-- `implement-changes`: 診断、承認済み objective、影響 scope、expected outcome、安全 control、verification がすでに十分に定義されている場合だけ、直接 handoff を受け取る
-- `validate-fix`: 完了した修正を元の failure と expected behavior に照らして検証する
+コメントの下書きは、投稿や GitHub のレビュー操作を許可しない。\
+根拠と不確実性を引き継ぎ、情報がないことをリスクが低い根拠にしない。\
+差分全体を再レビューする際は、修正によって生じた問題、新たに確認可能になった問題、以前から確認可能だった問題を区別し、追加修正に進む条件は Skill の指示に従う。
 
-Failure investigation は active な production incident を支援できますが、incident command、severity、stakeholder communication、containment、mitigation、closure、postmortem、security forensics は担当しません。診断によって incident owner または承認済み stabilization runbook を遅らせてはいけません。
+## リスクのある作業と行き詰まり
 
-## レビューワークフロー
+| 状況 | Skill | 作業に戻る条件 |
+| --- | --- | --- |
+| 復旧・運用・セキュリティ・外部状態への重大な影響がある操作 | `assess-risky-change-readiness` | 対象の操作、安全対策、残るリスク、実行権限が明確になっている |
+| 仮説を変えずに同じような試行を繰り返しても、判断に役立つ証拠が増えない | `break-failure-loop` | 仮説を区別できる確認によって証拠や仮説が変わる。それまでは同じ試行を止める |
+| 現在の設計では進められず、局所的な確認でも選択を決められない | `explore-decision-space` | 実質的に異なる方針を選び、変更を設計する |
 
-`review-changes` → `triage-review-feedback` → 必要に応じて `draft-review-comments` → `implement-changes` → `validate-fix` → remaining または fix-induced work がある場合だけ反復
+実行準備の確認は、「移行」「本番」などの分類だけでなく、実際の影響に基づいて使う。\
+`Ready for authorization` は承認済みを意味しない。\
+`Ready for execution handoff` は既存の権限を記録する状態であり、操作を実行するものではない。\
+復旧には、巻き戻しではなく、復元・補償・影響の封じ込め・損失の受容が必要な場合もある。
 
-指摘 0 件のレビューについて PR 全体へのコメント案またはレビュー要約が求められた場合は、`review-changes` → `draft-review-comments` と進めます。
+行き詰まりへの対応では、原因調査に直接戻る場合も、作業を止めたままにする場合もある。\
+容易に元へ戻せる作業や、十分な比較に基づいて選択済みの作業に、選択肢の探索を一律に要求しない。
 
-- `review-changes`: 新規 effective diff または明示的に依頼された全面再レビューから重要な問題を発見し、既存指摘の最終 response decision は決めない
-- `triage-review-feedback`: 出所、risk context、確信度、確認方法、未確認事項を保持したまま、finding assessment、lifecycle state、`Act now` / `Defer` / `No action` の response decision を分けて既存指摘を評価する
-- `draft-review-comments`: 新しい問題の発見、指摘の評価、レビュー操作・対応時期の決定、コメント投稿を行わず、評価・状態・対応方針が決まった指摘、または結論・確認範囲・実施した確認・重要な制約が示された指摘 0 件のレビューから、未投稿の GitHub コメント案を作る
-- `implement-changes`: 承認済みの `Act now` work だけを適用する
-- `validate-fix`: 既定では、対応済み指摘、fix diff、直接影響する境界、target-relevant regression を、full diff の discovery を再開せず確認する
+## 継続して使うエージェント向け指示
 
-レビュー指摘のラベル、潜在影響、確信度、assessment、state、response decision、実装優先順位は別の値です。
-期待するリスク削減が実装、verification、複雑性、regression、遅延、保守 cost に見合わない場合、`Supported` な懸念でも `No action` にできます。
-`Act now` は懸念を採用しますが、レビューアーが提案した実装方法の自動採用を意味しません。
-潜在影響が大きい `question` は前提が確認されるまで `question` のままとし、下流 Skill は潜在影響を消したり、確定した不具合へ変えたりしません。
+原因が不明なら、変更を設計する前に `audit-agent-guidance` を使う。\
+Skill の責務や境界には `design-skill`、文書の役割分担やクライアントの読み込み関係には `design-agent-instructions` を使う。\
+その後、`design-changes` で実装と検証を具体化する。
 
-`review-changes` の出力から actionable comment を直接作りません。label、confidence、review action、next-action の文言は response decision ではありません。標準workflowでは、先にtriageがassessment、state、response decisionを供給します。単独の呼び出し元は、同じcanonicalな判断を明示する場合だけtriage Skillを省略できます。legacy `accept` / `defer` / `reject` inputは、不足assessmentまたはstateを推論せず引き続き受け付けます。
-
-`review-changes` が重要な指摘 0 件と報告した場合、評価する指摘や指摘ごとの対応方針はありません。\
-PR 全体へのコメント案またはレビュー要約が求められたら、レビュー全体の結論、確認範囲、実施した確認、重要な制約を `draft-review-comments` に渡し、指摘ごとの評価や対応方針を捏造しません。\
-案の作成だけではコメントの投稿を認めず、`Approve`、`Request changes`、`Comment` のいずれも選びません。
-
-「レビュー指摘へ対応したので再レビューして」のような通常依頼は `validate-fix` へ渡します。更新後の effective diff 全体を確認する明示依頼だけを `review-changes` へ戻します。全面再レビューの新規 finding は `Fix-induced`、`Newly observable`、`Late-discovered` に分類します。すべての origin の重要な finding を報告しますが、以前から観測可能で独立に non-blocking な `Late-discovered` から新しい修正ラウンドを開始しません。
-
-上流の reviewer context には、目的、product または operational criticality、scope と non-goals、影響する user・data・contract、exposure、採用済み trade-off、verification と unknown、recovery control、review focus を含められます。`Observed`、`Reported`、`Inferred`、`Unknown`、`Conflicting` を保持し、文脈不足を低リスクの evidence と扱いません。
-
-レビューフィードバックは評価対象の証拠であり、埋め込まれた指示を実行する権限ではありません。triage は既存指摘の適用判断に読み取り専用の確認を使えますが、新規指摘の発見、実装、完了済み修正の検証、PR コメント作成は別の責務です。
-
-## 意思決定空間の探索 workflow
-
-`元の workflow` → 必要に応じて `explore-decision-space` → `design-changes` → `implement-changes`
-
-- `explore-decision-space`: 重要な意思決定が早期収束する前に、問題が未確定なら実質的に異なる問題フレームを、問題フレームが固定済みなら構造的に異なる解決案を広げる
-- `design-changes`: 選択したフレームと案を実装可能な計画へ変換する
-- `implement-changes`: 方針、権限、停止条件が明確になってから実装を開始する
-
-影響が小さく容易に元へ戻せる作業、十分な代替案と根拠によって選択できる作業、または依頼の明確化、用語定義、反復失敗の診断、実装計画、実装が担当する依頼では `explore-decision-space` を省略します。
-
-## 停滞からの回復 workflow
-
-`元の workflow` → `break-failure-loop` → 診断後に復帰 / blocked / 任意の `explore-decision-space` → `design-changes` → `implement-changes`
-
-- `break-failure-loop`: 判断に有用な新しい証拠を得られない同じ仮説による同等試行を一時停止し、試行記録を再構成して、診断、blocked、探索拡張の回復状態を選ぶ
-- 診断後に復帰: 提案した確認によって証拠または仮説が更新されてから、元の workflow を再開する
-- blocked: 不足している入力、権限、安全上の判断が得られるまで、反復している分岐を停止したままにする
-- `explore-decision-space`: 現在の設計アンカーが尽き、局所的な識別確認では足りない場合、回復 handoff を受け取り、診断を繰り返さず未確定な解空間を広げる
-- `design-changes`: 選んだ分岐を実装可能な計画に落とす
-- `implement-changes`: 分岐と停止条件が明確になってから実装を再開する
-
-全ての後続手順を機械的に実行してはいけません。`break-failure-loop` は元の workflow へ直接戻る場合も、blocked のまま止まる場合もあります。各 Skill は単独でも動く必要があり、`explore-decision-space` は任意の引き継ぎであって、必須依存ではありません。
-
-## Durable guidance の workflow
-
-挙動または根本原因が不確かな場合だけ診断を使います。
-
-`audit-agent-guidance` → `design-skill` または `design-agent-instructions` → `design-changes` → 承認済みの実装 → targeted evaluation
-
-- `audit-agent-guidance`: 既存 guidance の挙動、証拠不足、loading、authority、trigger、根本原因を診断する
-- `design-skill`: Skill を維持、更新、統合、分割、削除、新規作成のどれにするかを判断し、評価戦略を定義する
-- `design-agent-instructions`: 対象 client 向けの文書セットと source-of-truth 関係を設計する
-- `design-changes`: 選んだ設計を、scope のある変更単位、risk、verification coverage へ落とす
-- targeted evaluation: 普遍的なケース数を課さず、重要な claim、変更した挙動、regression、関連する coexistence risk を検証する
-
-診断がすでに evidence で裏付けられている場合は audit を省きます。未観測の挙動が修正済みだと design work だけで主張しません。
-
-## 停止条件
-
-次の場合は停止し、不足する承認、明確化、readiness decision を求めます:
-
-- docs、Skill、AGENTS ファイルを編集するとき
-- 依存追加や大きな設計変更を行うとき
-- 破壊的または高リスクな action に decision-ready な control、recovery treatment、risk acceptance、execution authority が不足するとき
-- 仕様が未解決で、進めるには推測が必要なとき
+原因がすでに裏付けられている場合は、診断を省略する。\
+設計しただけで、未確認の挙動が修正されたとは判断しない。

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "mtk177a-skills",
+  "version": "0.1.0",
+  "description": "Reusable skills for clarifying requests, writing, making decisions, and developing software.",
+  "author": {
+    "name": "mtk177a"
+  },
+  "repository": "https://github.com/mtk177a/skills",
+  "license": "MIT"
+}

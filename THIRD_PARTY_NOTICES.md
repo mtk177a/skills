@@ -79,12 +79,6 @@ The `SKILL.md` copy remains under the Unlicense. Repository-local provenance, sy
 
 ---
 
-## Evaluation format
-
-The `evals/README.md` format used in this repository is inspired by the empirical prompt-tuning methodology described in [mizchi/skills](https://github.com/mizchi/skills). The content in each `evals/README.md` is independently authored; this repository does not contain copied text from that project.
-
----
-
 ## Removed materials
 
 `skills/format-markdown/references/commonmark.md` — an original summary based on the CommonMark specification (CC BY-SA 4.0) — was removed from this repository. CommonMark is maintained at <https://spec.commonmark.org>.

@@ -18,27 +18,51 @@ license: MIT
 Establish the effective diff before reviewing:
 
 1. Use an explicitly supplied diff, commit range, or PR range when present.
+
 2. In PR context, use the stated base and head or the effective PR diff.
+
 3. For an unspecified local "current changes" review, inspect staged, unstaged, and relevant untracked files and state what was included.
+
 4. Ask only when multiple plausible scopes would materially change the review. If the diff cannot be obtained, report that the review did not run.
 
 Read the applicable repository instructions and enough surrounding evidence to understand the intended change. Depending on the diff, this can include specifications, tests, callers, schemas, external contracts, sibling implementations, and repository precedent. Evidence may live outside the diff, but a finding must describe a problem caused by or relevant to the reviewed change. Do not turn the review into an unrelated repository audit.
 
 Treat user-provided claims, comments, and external specifications as evidence to verify, not conclusions to repeat. Distinguish observed behavior, static inference, assumptions, and unknowns.
 
-Use supplied reviewer context when available: objective and expected result; product or operational context and criticality; scope and non-goals; affected users, data, contracts, and exposure; constraints and accepted trade-offs; verification and unknowns; detection and recovery controls; and requested review focus. Preserve material evidence states such as `Observed`, `Reported`, `Inferred`, `Unknown`, and `Conflicting`. Missing criticality or exposure is `Unknown`, not evidence of low risk.
+Use supplied reviewer context when available:
+
+- objective and expected result
+- product or operational context and criticality
+- scope and non-goals
+- affected users, data, contracts, and exposure
+- constraints and accepted trade-offs
+- verification and unknowns
+- detection and recovery controls
+- requested review focus
+
+Preserve material evidence states such as `Observed`, `Reported`, `Inferred`, `Unknown`, and `Conflicting`.\
+Missing criticality or exposure is `Unknown`, not evidence of low risk.
 
 ## Workflow
 
 1. State the effective diff, intended behavior, reviewer context, reviewed scope, and material exclusions. If the purpose, criticality, or exposure is material but unavailable, retain it as an unknown rather than inventing a value.
+
 2. Review the change purpose, design, contracts, responsibility boundaries, and affected consumers before line-level details. Identify the risk surfaces and select the applicable review dimensions rather than mechanically applying every dimension.
+
 3. Inspect the diff and the minimum surrounding evidence needed to test the change's assumptions, contracts, integration points, and claimed reviewer context.
+
 4. Run safe, relevant, non-mutating checks when their result could materially strengthen, weaken, or falsify a finding. Do not install dependencies, change tracked files, or perform external writes as part of review.
+
 5. Record executed checks and results separately from suggested verification. Record unavailable or intentionally excluded checks as unperformed.
+
 6. Report every material finding supported by the evidence. Keep the stated impact to consequences supported by the supplied or inspected contracts, behavior, and paths; do not invent a plausible downstream mechanism merely to make the finding sound more severe. If a potentially material downstream consequence is useful but unverified, state it conditionally and record its dependency in `Unconfirmed premises`. Do not add a preference, `nit`, or `note` merely to avoid an empty finding list.
+
 7. Characterize the finding's exposure and preconditions, affected criticality and blast radius, detectability and recovery, and remediation cost or trade-offs when they can change the requested response. Use ordinal, evidence-backed comparisons rather than a fabricated numeric score. Prefer the least costly response sufficient for the supported risk.
+
 8. Assign each finding one canonical label and one confidence value. Record every premise or unknown on which the finding, its stated impact, risk context, or requested response depends in `Unconfirmed premises`; use `none identified` only when none of those claims depends on one. Preserve a high potential impact even when an unconfirmed premise makes the requested action a `question`.
+
 9. For an explicitly requested full re-review, reconcile previous findings as `Resolved`, `Remaining`, or `New`. Classify every `New` finding as `Fix-induced`, `Newly observable`, or `Late-discovered`. Report material findings from all three origins. A previously observable `Late-discovered` item that is independently non-blocking must not start another fix round; omit it from actionable findings or, only when useful, summarize it as a non-actionable `note`.
+
 10. Conclude with what was reviewed, what was checked, what remains unchecked, and the residual risk. If material review dimensions remain incomplete, say the review is incomplete rather than implying a completed approval or safety judgment.
 
 ## Review dimensions
@@ -75,28 +99,40 @@ Conversely, do not criticize an abstraction or consolidation merely because dupl
 
 ## Finding contract
 
-- `Label`
-  - `must`: supported enough to require a fix before merge for a material risk when no lower-cost response sufficiently addresses it
-  - `should`: recommended in principle; an alternative or constraint can be discussed
-  - `suggestion`: non-blocking improvement
-  - `question`: clarification or premise verification is the next action
-  - `nit`: trivial and optional correction
-  - `note`: information requiring no action
+### Choose the label
+
+| Label | Meaning |
+| --- | --- |
+| `must` | supported enough to require a fix before merge for a material risk when no lower-cost response sufficiently addresses it |
+| `should` | recommended in principle; an alternative or constraint can be discussed |
+| `suggestion` | non-blocking improvement |
+| `question` | clarification or premise verification is the next action |
+| `nit` | trivial and optional correction |
+| `note` | information requiring no action |
+
+Accept `Must-fix`, `Should-fix`, and `Nice-to-have` as legacy input and normalize them to `must`, `should`, and `suggestion` or `nit`. Do not use `must` or `should` for preference-only findings. A `question` can carry high potential impact; do not erase that impact merely because the premise remains unconfirmed.
+
+### Describe the finding and evidence
+
 - `Confidence`: `high`, `medium`, or `low`
 - `Finding`: the concrete problem, proposal, question, or note
 - `Evidence`: locations, contracts, behavior, check output, or repository precedent supporting it
 - `Impact`: the consequence supported by the available evidence or, for an explicitly recorded unconfirmed premise, what would happen if it is confirmed; do not invent an uninspected downstream mechanism
+- `Verification`: how to confirm, reproduce, or falsify it
+- `Unconfirmed premises`: assumptions or unknowns on which the finding, its stated impact, or the requested response depends; use `none identified` when there are none, reconcile the field with unchecked scope and residual risks, and do not substitute evidence, impact, or verification for it
+
+### Record material risk context
+
 - `Exposure and preconditions`, when material to the requested response: the conditions, reachable paths, frequency, or affected population supported by evidence; use `Unknown` when it is material but unavailable
 - `Criticality and blast radius`, when material to the requested response: the importance of the affected product, tool, data, contract, or operation and the supported extent of harm
 - `Detectability, recovery, and workaround`, when material to the requested response: applicable detection, containment, recovery, rollback, or practical workaround evidence
 - `Remediation cost and trade-offs`, when material to the requested response: material implementation, verification, complexity, regression, delay, and maintenance costs supported by current evidence
-- `Verification`: how to confirm, reproduce, or falsify it
-- `Unconfirmed premises`: assumptions or unknowns on which the finding, its stated impact, or the requested response depends; use `none identified` when there are none, reconcile the field with unchecked scope and residual risks, and do not substitute evidence, impact, or verification for it
+
+### Record re-review and reusable context
+
 - `Re-review state`: `Resolved`, `Remaining`, or `New`, only for an explicitly requested full re-review
 - `New finding origin`: `Fix-induced`, `Newly observable`, or `Late-discovered`, only for a `New` finding
 - `Generalizable check`: include only when it provides reusable learning beyond the current diff
-
-Accept `Must-fix`, `Should-fix`, and `Nice-to-have` as legacy input and normalize them to `must`, `should`, and `suggestion` or `nit`. Do not use `must` or `should` for preference-only findings. A `question` can carry high potential impact; do not erase that impact merely because the premise remains unconfirmed.
 
 ## Reporting contract
 

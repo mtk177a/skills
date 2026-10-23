@@ -1,17 +1,20 @@
 # Contributing Guide
 
-This guide is for the maintainer of this personal repository and AI agents working on the maintainer's behalf.\
-External contributions are not normally expected.\
-It covers how to track, check, and submit changes, including commit messages and pull request titles.
+For the maintainer and AI agents working on the maintainer’s behalf.\
+External contributions are not normally expected.
+
+Follow [Issue tracking and preparation](#make-a-change) → [verification](#verify-the-change) → [commit and PR](#commit-and-open-a-pull-request).\
+For message syntax, see [commit messages and PR titles](#commit-messages-and-pull-request-titles).
 
 ## Make a change
 
 ### Track the work in an Issue
 
-Track work in [GitHub Issues](https://github.com/mtk177a/skills/issues), using an existing Issue or opening one for the work.\
-Only omit Issue tracking when the maintainer explicitly instructs you to do so.\
-State the purpose, scope, and completion criteria, and use the applicable sections of the [Issue template](.github/ISSUE_TEMPLATE/default.md).\
-Write the Issue title and `Summary` in English; write the remaining sections in Japanese by default, as specified by the template.
+Use an existing [GitHub Issue](https://github.com/mtk177a/skills/issues) or open one for the work.
+
+- **Content**: purpose, scope, and completion criteria, using the applicable [Issue template](.github/ISSUE_TEMPLATE/default.md) sections.
+- **Language**: title and `Summary` in English; other sections in Japanese by default.
+- **Exception**: omit tracking only when the maintainer explicitly instructs you to do so.
 
 ### Check before changing files
 
@@ -22,16 +25,30 @@ For a Skill change, follow the structure and authoring rules in [AGENTS.md](AGEN
 ### Verify the change
 
 Choose checks that cover the changed behavior and its relevant failure conditions.\
-Run the repository checker and unit tests when required by [AGENTS.md](AGENTS.md); select Skill evaluations according to [the evaluation guide](docs/evaluation.md).\
+Run the repository checker and tests for retained code as required by [AGENTS.md](AGENTS.md).\
+Verify the results and safety boundaries of the work performed.\
 Record the checks performed, their results, and material gaps in the pull request.\
 Do not present an unrun check as a passing result.
+
+Run from the repository root:
+
+```bash
+python3 -B scripts/check_repository.py
+python3 -B -m unittest discover -s tests
+git diff --check
+```
+
+The read-only checker covers structure, metadata, links, translation notices, companion relationships, and deployment artifacts.\
+It exits with `0` for consistency, `1` for actionable inconsistencies, or `2` for invocation or execution failures.\
+For distribution changes, also follow the [archive and APM checks](docs/distribution.md#build-and-verify-an-archive).
 
 ## Commit and open a pull request
 
 Commit in units whose purpose and verification can be followed without mixing unrelated changes.\
-When opening a pull request, use the [pull request template](.github/pull_request_template.md) to describe the result and verification.\
-Link an Issue with `Closes #123` when the pull request completes it, or `Refs #123` when it only refers to it.\
-Write the pull request `Summary` in English and the remaining sections in Japanese by default, as specified by the template.
+Use the [PR template](.github/pull_request_template.md) to describe the result and verification.
+
+- **Issue link**: `Closes #123` when completed by the PR, or `Refs #123` for a reference only.
+- **Language**: `Summary` in English; other sections in Japanese by default.
 
 ### Commit messages and pull request titles
 
@@ -66,7 +83,7 @@ If a generated title or message is edited, follow this convention.
 | `docs` | Improve explanation, instructions, or reference material without changing the behavior of a maintained Skill |
 | `chore` | Update dependencies, configuration values, or maintenance policy without adding a capability or fixing a defect |
 | `refactor` | Reorganize structure without changing behavior |
-| `test` | Change tests or evaluation tooling as the primary purpose without changing maintained behavior |
+| `test` | Change tests as the primary purpose without changing maintained behavior |
 | `ci` | Change CI configuration or execution conditions as the primary purpose |
 
 Skill instructions define behavior even though they are written as text.\
@@ -86,13 +103,11 @@ Reuse an existing name for the same target rather than inventing an alias.
 | `scope` | Target |
 | --- | --- |
 | `clarify-request` | The `clarify-request` Skill and its related assets |
-| `evaluation` | Shared Skill evaluation behavior and tooling |
 
 #### Examples
 
 ```text
-feat(evaluation): add a cost-bounded Skill evaluation runner
 fix(clarify-request): align clarification boundaries
-docs: explain change-aware evaluation selection
+docs: clarify repository verification steps
 refactor: distribute Skills as a native APM bundle
 ```

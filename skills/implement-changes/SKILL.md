@@ -40,46 +40,60 @@ When upstream review feedback uses the current response contract, implement only
 
 1. Confirm the objective, authorization, entry conditions, scope, exclusions, and
    stop conditions before editing.
+
 2. For a high-risk change, confirm that its exact action, scope, required controls, residual risk, and execution authority are ready for implementation. If not, stop before editing and identify the missing target, evidence, control, recovery, risk-acceptance, or authorization decision. Use `assess-risky-change-readiness` as an optional readiness handoff when available, but provide a self-contained stop report.
+
 3. Inspect the relevant implementation and guidance. Confirm that the planned work
    units collectively cover the accepted coherent change boundary; do not narrow
    an approved structural correction to a local patch merely to reduce the diff.
    Split the change into small work units, each with an expected outcome and a
    verification method.
+
 4. Select one work unit. Choose its verification mode using the criteria below and
    record the reason.
+
 5. For a TDD work unit:
    - create or update one focused test
    - run it and confirm that it fails for the intended reason (Red)
    - make the simplest implementation change within the approved coherent boundary
      that passes it (Green)
    - refactor only while the test remains passing
+
 6. For a non-TDD work unit:
    - establish the relevant baseline or pre-change observation when useful
    - make the simplest change within the approved coherent boundary
    - run the selected deterministic or inspection-based checks
    - do not manufacture an unrelated failure merely to create a Red phase
-7. Record new evidence, actual reviewer context, and any deviation from the planned objective, scope, affected boundary, trade-off, verification, recovery control, or review focus. If it shows that a
-   local correction would leave the confirmed cause, a shared rule, an established
-   responsibility boundary, or a known affected path unresolved, do not add a
-   workaround. If the required coherent boundary exceeds the authorized scope, stop
-   and report the evidence and required scope decision. Also stop for any other
-   material dependency, test-strategy, or risk change before expanding the work.
-   When implementing recovery or mitigation, distinguish its effect from a cause fix.
-   Tie any added fallback or recovery path to a current failure condition, its trigger,
-   the required state after recovery, and a check that can detect an invalid result.
-   Do not call a cause resolved merely because the symptom disappears. Preserve
-   recovery, error handling, and compatibility required by current consumers,
-   data, deployment, or rollback; do not retain a path solely because it existed
-   before or might be useful later.
+
+7. **Record evidence and check whether the approach still holds.**
+
+   **Evidence and deviations**
+
+   Record new evidence, actual reviewer context, and any deviation from the planned objective, scope, affected boundary, trade-off, verification, recovery control, or review focus.
+
+   **Unresolved causes and scope changes**
+
+   If the evidence shows that a local correction would leave the confirmed cause, a shared rule, an established responsibility boundary, or a known affected path unresolved, do not add a workaround.\
+   If the required coherent boundary exceeds the authorized scope, stop and report the evidence and required scope decision.\
+   Also stop for any other material dependency, test-strategy, or risk change before expanding the work.
+
+   **Recovery, mitigation, and compatibility**
+
+   When implementing recovery or mitigation, distinguish its effect from a cause fix.\
+   Tie any added fallback or recovery path to a current failure condition, its trigger, the required state after recovery, and a check that can detect an invalid result.\
+   Do not call a cause resolved merely because the symptom disappears.\
+   Preserve recovery, error handling, and compatibility required by current consumers, data, deployment, or rollback; do not retain a path solely because it existed before or might be useful later.
+
 8. Track implementation attempts separately from test executions. If two
    materially equivalent attempts under the same unchanged hypothesis fail
    without new evidence, stop before a third equivalent edit. Record the failed
    hypothesis and one structurally different branch or missing input.
+
 9. After each work unit, run its focused checks. Before reporting completion, run
    the broader relevant regression checks available for the affected scope.
    Record checks that do not exist, cannot be run, or were intentionally excluded;
    do not present them as passing.
+
 10. Report the final state using the semantic contract below.
 
 ## Choosing the verification mode
@@ -127,8 +141,23 @@ For `Done`, include:
 - focused and broader checks actually run, with commands and results
 - unperformed checks and unconfirmed items
 - residual correctness, safety, and maintainability risks
-- relevant actual reviewer context: objective and result; product or operational context and criticality; actual scope and non-goals; affected users, data, contracts, and exposure; constraints and accepted trade-offs; verification and unknowns; detection and recovery controls; and review focus, including material deviations from the plan; omit irrelevant fields and preserve material unknowns
 - any user-facing explanation points needed to evaluate the result
+
+### Reviewer context
+
+For `Done`, include the relevant actual context below.\
+Include material deviations from the plan, omit irrelevant fields, and preserve material unknowns.
+
+| Field | Content |
+| --- | --- |
+| Objective | Objective and result |
+| Usage context | Product or operational context and criticality |
+| Scope | Actual scope and non-goals |
+| Impact | Affected users, data, contracts, and exposure |
+| Decision constraints | Constraints and accepted trade-offs |
+| Verification | Verification and unknowns |
+| Controls | Detection and recovery controls |
+| Review | Review focus |
 
 ## Boundaries
 
