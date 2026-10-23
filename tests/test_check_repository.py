@@ -445,6 +445,12 @@ class CheckerCliTests(unittest.TestCase):
 
         self.assert_fixture_failure(mutate, "unexpected APM-deployed Skill")
 
+    def test_missing_companion_registry_is_detected(self) -> None:
+        def mutate(root: Path) -> None:
+            (root / "docs" / "maintainers" / "authoring.md").unlink()
+
+        self.assert_fixture_failure(mutate, "companion relationship registry is missing")
+
     def test_companion_relationship_requires_skill_reference(self) -> None:
         def mutate(root: Path) -> None:
             write(
