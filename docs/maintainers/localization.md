@@ -66,5 +66,7 @@ When you add or change an English source file, review its Japanese translation i
 
 Meaning includes requirements, scope, exceptions, permissions, prohibitions, safety conditions, procedures, verification, links, and anything else needed for correct use.
 
+When a translation refers to a concept specific to this repository, or to a word that can point to different things, check the [glossary](glossary.md).
+
 Use the repository-local `maintain-japanese-references` Skill to make this review and update.\
 Skills whose source is Japanese are outside this process and do not get a `SKILL-ja.md`.
