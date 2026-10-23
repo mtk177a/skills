@@ -39,7 +39,7 @@ When instructions or resources change, review the affected requirements and pack
 | Claude Code | Its discovery, invocation, frontmatter, permissions, and hooks are client-specific; portable format compatibility does not establish those behaviors |
 | Cursor | Use the [local plugin procedure](distribution.md#cursor), then verify discovery and explicit use in the target version |
 | Other clients, including GitHub Copilot and Gemini CLI | Check current official documentation and the target version for discovery, invocation, metadata, permissions, and runtime behavior |
-| APM | An installation tool that treats root `skills/` as a native `SKILL_BUNDLE`, not an execution client |
+| APM | An installation tool for the root `skills/` catalog, not an execution client |
 
 Add client-specific metadata only when a Skill needs the corresponding invocation control, UI, dependency declaration, or permission behavior.\
 Keep `name`, `description`, instructions, and resources portable otherwise.
