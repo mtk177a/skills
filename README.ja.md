@@ -15,8 +15,8 @@
 
 | 利用先 | 導入手順 |
 | --- | --- |
-| ChatGPT・Codex | [個人用 Plugin の導入・更新](docs/ja/users/installation.md#plugin-の-zip-を-chatgpt-にアップロードする) |
-| Cursor | [ローカル Plugin の導入・更新](docs/ja/users/installation.md#plugin-の-zip-を-cursor-用に展開する) |
+| ChatGPT・Codex | [個人用 Plugin の導入・更新](docs/ja/users/installation.md#chatgpt-と-codex-で使う) |
+| Cursor | [ローカル Plugin の導入・更新](docs/ja/users/installation.md#cursor-で使う) |
 | Claude Code など APM の利用先 | [全体・選択・個別の導入](docs/ja/users/installation.md#apm-でインストールする) |
 
 Plugin と単体・APM 導入は、同じ `skills/` の原本を使う。\
