@@ -498,6 +498,53 @@ Install with `apm install mtk177a/skills --skill alpha-skill --skill beta-skill`
 
             self.assertEqual(0, result.returncode, result.stderr)
 
+    def test_link_to_renamed_heading_is_detected(self) -> None:
+        def mutate(root: Path) -> None:
+            write(root / "docs" / "users" / "guide.md", "# Guide\n\n## Install with APM\n")
+            write(root / "docs" / "users" / "other.md", "See [APM](guide.md#install-through-apm).\n")
+
+        self.assert_fixture_failure(mutate, "Markdown link fragment does not match a heading in the target: `guide.md#install-through-apm`")
+
+    def test_link_to_missing_heading_in_same_file_is_detected(self) -> None:
+        def mutate(root: Path) -> None:
+            write(root / "docs" / "users" / "guide.md", "# Guide\n\nSee [setup](#setup).\n\n## Install\n")
+
+        self.assert_fixture_failure(mutate, "Markdown link fragment does not match a heading in the target: `#setup`")
+
+    def test_link_fragments_follow_github_heading_ids(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            write(
+                root / "docs" / "users" / "guide.md",
+                """# Guide
+
+[Japanese](#plugin-の-zip-を作る), [code](#run-apm-install), [first](#setup), [second](#setup-1), [self](#guide)
+
+## Plugin の ZIP を作る
+
+## Run `apm install`
+
+## Setup
+
+## Setup
+
+```markdown
+## Not a heading
+```
+""",
+            )
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_heading_inside_code_fence_is_not_an_anchor(self) -> None:
+        def mutate(root: Path) -> None:
+            write(root / "docs" / "users" / "guide.md", "# Guide\n\n[Fenced](#not-a-heading)\n\n```markdown\n## Not a heading\n```\n")
+
+        self.assert_fixture_failure(mutate, "Markdown link fragment does not match a heading in the target: `#not-a-heading`")
+
     def test_missing_companion_registry_is_detected(self) -> None:
         def mutate(root: Path) -> None:
             (root / "docs" / "maintainers" / "authoring.md").unlink()

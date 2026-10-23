@@ -22,6 +22,11 @@ CATALOG_ROW = re.compile(
 )
 INLINE_LINK = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 REFERENCE_LINK = re.compile(r"^\s*\[[^\]]+\]:\s*(\S+)", re.MULTILINE)
+HEADING_START = re.compile(r"^ {0,3}#{1,6}[ \t]")
+HEADING = re.compile(r"^ {0,3}#{1,6}[ \t]+(.*?)(?:[ \t]+#+)?[ \t]*$")
+HTML_ID = re.compile(r"""<[^>]+\b(?:id|name)=["']([^"']+)["']""")
+INLINE_CODE = re.compile(r"`+([^`]*)`+")
+MARKDOWN_LINK_TEXT = re.compile(r"!?\[([^\]]*)\]\([^)]*\)")
 COMPANION_ROW = re.compile(r"^\|\s*`([^`]+)`\s*→\s*`([^`]+)`\s*\|(.+)$", re.MULTILINE)
 PERSONAL_PATHS = (
     re.compile(r"(?<![A-Za-z0-9_])/(?:home|Users)/[^/\s\"'`<>]+"),
@@ -394,7 +399,27 @@ def contained(root: Path, target: Path) -> bool:
         return False
 
 
+def heading_anchors(text: str) -> set[str]:
+    # Derive anchors from the target's own headings with GitHub's rules, so no expected IDs are stored here.
+    anchors: set[str] = set(HTML_ID.findall(text))
+    counts: dict[str, int] = {}
+    for original, visible in zip(text.splitlines(), markdown_without_code(text).splitlines()):
+        if not HEADING_START.match(visible):
+            continue
+        heading = HEADING.match(original)
+        if heading is None:
+            continue
+        label = INLINE_CODE.sub(r"\1", heading.group(1))
+        label = MARKDOWN_LINK_TEXT.sub(r"\1", label)
+        slug = re.sub(r"[^\w\- ]", "", label.strip().lower()).replace(" ", "-")
+        suffix = counts.get(slug, 0)
+        counts[slug] = suffix + 1
+        anchors.add(slug if suffix == 0 else f"{slug}-{suffix}")
+    return anchors
+
+
 def check_markdown_links(root: Path, problems: list[Problem]) -> None:
+    anchor_cache: dict[Path, set[str]] = {}
     for path in sorted(root.rglob("*.md")):
         if ".git" in path.parts:
             continue
@@ -403,15 +428,27 @@ def check_markdown_links(root: Path, problems: list[Problem]) -> None:
         matches = list(INLINE_LINK.finditer(visible)) + list(REFERENCE_LINK.finditer(visible))
         for match in sorted(matches, key=lambda item: item.start()):
             destination = link_destination(match.group(1))
-            if is_external_link(destination):
-                continue
-            clean = unquote(destination.split("#", 1)[0].split("?", 1)[0])
-            target = (path.parent / clean).resolve()
             line = line_number(visible, match.start())
-            if not contained(root.resolve(), target):
-                add(problems, root, path, line, f"relative Markdown link escapes repository: `{destination}`")
-            elif not target.exists():
-                add(problems, root, path, line, f"relative Markdown link target does not exist: `{destination}`")
+            if destination.startswith("#"):
+                target = path.resolve()
+            elif is_external_link(destination):
+                continue
+            else:
+                clean = unquote(destination.split("#", 1)[0].split("?", 1)[0])
+                target = (path.parent / clean).resolve()
+                if not contained(root.resolve(), target):
+                    add(problems, root, path, line, f"relative Markdown link escapes repository: `{destination}`")
+                    continue
+                if not target.exists():
+                    add(problems, root, path, line, f"relative Markdown link target does not exist: `{destination}`")
+                    continue
+            if "#" not in destination or target.suffix.lower() != ".md" or not target.is_file():
+                continue
+            fragment = unquote(destination.split("#", 1)[1])
+            if target not in anchor_cache:
+                anchor_cache[target] = heading_anchors(target.read_text(encoding="utf-8"))
+            if fragment not in anchor_cache[target]:
+                add(problems, root, path, line, f"Markdown link fragment does not match a heading in the target: `{destination}`")
 
 
 def check_localization_notices(root: Path, problems: list[Problem]) -> None:
