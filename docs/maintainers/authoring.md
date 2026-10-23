@@ -87,6 +87,11 @@ Skills are self-contained by default.\
 A companion relationship is a narrow, approved exception in which one Skill deliberately requires another to apply its rules correctly.\
 Do not use it for convenience, related subject matter, or an arbitrary dependency graph; accidental cross-Skill coupling remains a design problem.
 
+Do not name another public Skill in `SKILL.md` or `SKILL-ja.md`.\
+Describe out-of-scope work by its type and a handoff by the input it needs.\
+Record relationships between Skills only in the [Skill workflow guide](../users/workflows.md).\
+`scripts/check_repository.py` enforces this rule, except for approved companion relationships and the upstream mirrors.
+
 An approved relationship must record:
 
 - the direction of the relationship and the participating Skills
