@@ -96,7 +96,7 @@ Before publishing a reviewed Skill in this repository:
 - run format, metadata, script, targeted behavior, and non-deploying APM checks that apply
 - record unavailable client or runtime checks as `not executed`
 
-See [authoring.md](authoring.md) for Skill structure and [compatibility.md](compatibility.md) for client/runtime distinctions.
+See [authoring.md](authoring.md) for Skill structure and [compatibility.md](../users/compatibility.md) for client/runtime distinctions.
 
 ## Current sources
 

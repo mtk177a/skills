@@ -1,4 +1,4 @@
-> この文書は [英語版 authoring.md](../authoring.md) の日本語参考訳です。\
+> この文書は [英語版 authoring.md](../../maintainers/authoring.md) の日本語参考訳です。\
 > 内容が異なる場合は英語版を優先してください。
 
 # Skill 作成ガイド
@@ -191,7 +191,7 @@ Gist に新しい版があるかどうかは、別途確認する必要がある
 そのまま受け入れられない場合は差分を記録し、独自の改変版を作らない。
 
 元の `cognitive-rhythm-writing` は、適用前に `../japanese-tech-writing/SKILL.md` を読むよう指示している。\
-[選択導入](distribution.md#apm-で導入する) で両方を導入する。\
+[選択導入](../users/installation.md#apm-で導入する) で両方を導入する。\
 併用先がない場合の手順を、元 Gist の本文へ独自に追記しない。
 
 ## 秘密情報・個人情報を除く

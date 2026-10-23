@@ -177,7 +177,7 @@ When updating a mirror, compare the recorded revision with the current Gist, ins
 If the new upstream file cannot be accepted as-is, record the difference and do not create a local variant.
 
 The upstream `cognitive-rhythm-writing` requires `../japanese-tech-writing/SKILL.md` before use.\
-Install both through [selected installation](distribution.md#install-through-apm).\
+Install both through [selected installation](../users/installation.md#install-through-apm).\
 Do not add a local missing-companion procedure to the upstream file.
 
 ## Keeping secrets and private information out

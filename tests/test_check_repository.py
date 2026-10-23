@@ -75,7 +75,7 @@ license: MIT
 | `alpha-skill` | Fixture |
 """,
     )
-    write(root / "docs" / "authoring.md", "# Authoring\n")
+    write(root / "docs" / "maintainers" / "authoring.md", "# Authoring\n")
 
 
 def rename_fixture_skill(root: Path, name: str) -> None:
@@ -448,7 +448,7 @@ class CheckerCliTests(unittest.TestCase):
     def test_companion_relationship_requires_skill_reference(self) -> None:
         def mutate(root: Path) -> None:
             write(
-                root / "docs" / "authoring.md",
+                root / "docs" / "maintainers" / "authoring.md",
                 """# Authoring
 
 | Relationship | Rationale | Installation | Provenance |
@@ -466,7 +466,7 @@ class CheckerCliTests(unittest.TestCase):
             local_skill = root / ".agents" / "skills" / "maintain-japanese-references" / "SKILL.md"
             write(local_skill, "Read skills/alpha-skill/SKILL.md before deciding.\n")
             write(
-                root / "docs" / "authoring.md",
+                root / "docs" / "maintainers" / "authoring.md",
                 """# Authoring
 
 | Relationship | Rationale | Installation | Provenance |

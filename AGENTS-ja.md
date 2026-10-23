@@ -15,7 +15,7 @@
 ## 最初に読むもの
 
 - `README.md`
-- `docs/authoring.md`
+- `docs/maintainers/authoring.md`
 - Issue、コミット、PR の規約は `CONTRIBUTING.md`
 
 Skill を作成・編集する際は、責務の重複を解消し、判断が収束するまでに必要な既存の `skills/*/SKILL.md` を確認する。\
@@ -51,7 +51,7 @@ Skill を作成・編集する際は、責務の重複を解消し、判断が�
   独自の指示、メタデータ、訂正、参考訳を本文に加えない。
 - 各 `UPSTREAM.md` に、出典 URL、収録したリビジョン、取得日、ファイルの SHA-256、ライセンスの根拠を記録し、`THIRD_PARTY_NOTICES.md` に出典とライセンスを要約する。\
   導入方法の案内はコピーしたファイルの外に置く。
-- 更新前に、記録した版と現行 Gist を比較し、変更全体を `docs/security.md` に従って確認する。\
+- 更新前に、記録した版と現行 Gist を比較し、変更全体を `docs/maintainers/security.md` に従って確認する。\
   無改変では受け入れられない場合は、Skill を独自に修正せず差分を報告する。
 
 ## リポジトリ内の運用 Skill
