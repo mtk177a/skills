@@ -4,7 +4,7 @@ A personal collection of agent Skills authored or maintained by [mtk177a](https:
 
 The Skills follow the [Agent Skills specification](https://agentskills.io/specification).\
 Using them also requires client discovery and the tools and permissions needed for the task.\
-Check the [runtime requirements](docs/compatibility.md) before installation.
+Check the [runtime requirements](docs/users/compatibility.md) before installation.
 
 > **No warranty:** This personal repository is maintained on a best-effort basis. Skills may change or be removed without notice. Use at your own risk.
 
@@ -12,9 +12,9 @@ Check the [runtime requirements](docs/compatibility.md) before installation.
 
 | Target | Instructions |
 | --- | --- |
-| ChatGPT and Codex | [Install or update a personal plugin](docs/distribution.md#chatgpt-and-codex) |
-| Cursor | [Install or update a local plugin](docs/distribution.md#cursor) |
-| Claude Code and other APM targets | [Install the bundle, selected Skills, or an individual Skill](docs/distribution.md#install-through-apm) |
+| ChatGPT and Codex | [Install or update a personal plugin](docs/users/installation.md#use-the-plugin-in-chatgpt-and-codex) |
+| Cursor | [Install or update a local plugin](docs/users/installation.md#use-the-plugin-in-cursor) |
+| Claude Code and other APM targets | [Install the bundle, selected Skills, or an individual Skill](docs/users/installation.md#install-with-apm) |
 
 Plugin and standalone/APM installations use the same `skills/` sources.\
 Choose one delivery route for overlapping Skills in each environment.
@@ -22,7 +22,7 @@ Choose one delivery route for overlapping Skills in each environment.
 ## Skills
 
 Choose by task, then follow the linked Skill for its conditions and boundaries.\
-See [workflows](docs/workflows.md) for sequencing and handoffs.
+See [workflows](docs/users/workflows.md) for sequencing and handoffs.
 
 ### Clarify and choose an approach
 
@@ -67,7 +67,6 @@ See [workflows](docs/workflows.md) for sequencing and handoffs.
 | Write and revise natural Japanese without changing meaning | [`write-natural-japanese`](skills/write-natural-japanese/SKILL.md) |
 | Apply Japanese technical-writing rules | [`japanese-tech-writing`](skills/japanese-tech-writing/SKILL.md) |
 | Design pacing in explanatory Japanese prose | [`cognitive-rhythm-writing`](skills/cognitive-rhythm-writing/SKILL.md) |
-| Choose what repository documentation needs and where it belongs | [`curate-repo-docs`](skills/curate-repo-docs/SKILL.md) |
 | Have an authorized independent subagent revise a document | [`revise-docs-fresh-eyes`](skills/revise-docs-fresh-eyes/SKILL.md) |
 
 ### Maintain Skills and agent instructions
@@ -86,10 +85,10 @@ Their source revisions, licenses, and synchronization records are in each Skill'
 | Task | Guide |
 | --- | --- |
 | Verify changes and prepare Issues, commits, and pull requests | [Contributing](CONTRIBUTING.md) |
-| Author a Skill | [Authoring](docs/authoring.md) |
-| Build a distribution ZIP | [Build and verify an archive](docs/distribution.md#build-and-verify-an-archive) |
-| Review third-party material and executable capabilities | [Security review](docs/security.md) |
-| Maintain Japanese translations | [Localization](docs/localization.md) |
+| Author a Skill | [Authoring](docs/maintainers/authoring.md) |
+| Build the plugin ZIP | [Build a plugin archive](docs/maintainers/packaging.md) |
+| Review third-party material and executable capabilities | [Security review](docs/maintainers/security.md) |
+| Maintain Japanese translations | [Localization](docs/maintainers/localization.md) |
 
 External contributions are not normally expected.
 

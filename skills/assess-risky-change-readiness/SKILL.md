@@ -96,9 +96,9 @@ When commands are useful, ground them in inspected evidence and label them as un
 
 ## Boundaries
 
-- Use `clarify-request` when the objective, target, environment, authority, or success criteria are too undefined to assess.
-- Use `explore-decision-space` when materially different safety or rollout strategies remain unsettled; return here after an approach is selected.
-- Use `design-changes` for ordinary implementation design and accept its handoff when additional high-risk controls are needed.
-- Hand authorized implementation to `implement-changes` or the originating authorized operator; do not absorb their execution responsibility.
+- When the objective, target, environment, authority, or success criteria are too undefined to assess, stop and report what must be clarified.
+- When materially different safety or rollout strategies remain unsettled, report that a strategy must be selected first; resume after an approach is selected.
+- Do not perform ordinary implementation design. Accept a handoff from change design when it identifies a need for additional high-risk controls.
+- Hand authorized implementation to the implementation workflow or the originating authorized operator; do not absorb their execution responsibility.
 - Do not review a completed diff, investigate a failure, perform a general security assessment, modify files, run proposed operations, approve the change, or execute it.
 - Keep the Skill self-contained when adjacent Skills are unavailable and do not introduce another agent or subagent by default.

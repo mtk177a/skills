@@ -65,7 +65,7 @@ For `Recommendation ready`, state that no gating prerequisite or decision-critic
 
 Report `Model capability` and `Reasoning effort` separately. Never infer model capability from a statement about reasoning effort or infer reasoning effort from a model name. Before finalizing, verify that every model-capability claim is directly supported by the task; otherwise replace it with `unconfirmed` or `non-differentiating`.
 
-When the user explicitly requests task-specific understanding or learning support, add an optional `calibrate-learning-support` handoff after the setup recommendation without designing its method.
+When the user explicitly requests task-specific understanding or learning support, note after the setup recommendation that learning support is an optional separate follow-up, without designing its method.
 
 Do not force a named model, profile, multiple agents, or a detailed comparison beyond recording whether each independent dimension constrains the decision.
 
@@ -73,5 +73,5 @@ Do not force a named model, profile, multiple agents, or a detailed comparison b
 
 - Do not perform or orchestrate the task, create implementation work units, change client settings, switch models, grant permissions, or treat a recommendation as authorization.
 - Do not choose the user's objective, scope, priorities, risk tolerance, substantive implementation design, or final adoption decision.
-- Keep task-specific learning and understanding calibration with `calibrate-learning-support`; remain self-contained when that Skill is unavailable.
+- Do not design task-specific learning or understanding calibration; keep the setup recommendation complete without it.
 - Keep automatic agent and tool orchestration in the active agent's durable instructions, client configuration, and agent definitions rather than this distributed Skill.

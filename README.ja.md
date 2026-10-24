@@ -7,7 +7,7 @@
 
 各 Skill は [Agent Skills 仕様](https://agentskills.io/specification) に従う。\
 利用には、対象クライアントが Skill を読み込めることと、作業に必要な機能・権限が必要となる。\
-導入前に [実行条件](docs/ja/compatibility.md) を確認する。
+導入前に [実行条件](docs/ja/users/compatibility.md) を確認する。
 
 > **無保証:** 個人が可能な範囲で保守しているため、Skill は予告なく変更・削除する場合がある。自己責任で利用すること。
 
@@ -15,9 +15,9 @@
 
 | 利用先 | 導入手順 |
 | --- | --- |
-| ChatGPT・Codex | [個人用 Plugin の導入・更新](docs/ja/distribution.md#chatgpt-と-codex) |
-| Cursor | [ローカル Plugin の導入・更新](docs/ja/distribution.md#cursor) |
-| Claude Code など APM の利用先 | [全体・選択・個別の導入](docs/ja/distribution.md#apm-で導入する) |
+| ChatGPT・Codex | [個人用 Plugin の導入・更新](docs/ja/users/installation.md#chatgpt-と-codex-で使う) |
+| Cursor | [ローカル Plugin の導入・更新](docs/ja/users/installation.md#cursor-で使う) |
+| Claude Code など APM の利用先 | [全体・選択・個別の導入](docs/ja/users/installation.md#apm-でインストールする) |
 
 Plugin と単体・APM 導入は、同じ `skills/` の原本を使う。\
 同じ環境では重複する Skill の導入方法を一つに揃える。
@@ -25,7 +25,7 @@ Plugin と単体・APM 導入は、同じ `skills/` の原本を使う。\
 ## Skill 一覧
 
 目的に合う Skill を選び、リンク先で使用条件を確認する。\
-複数の Skill を使う順序や引き継ぎは [ワークフロー](docs/ja/workflows.md) を参照する。
+複数の Skill を使う順序や引き継ぎは [ワークフロー](docs/ja/users/workflows.md) を参照する。
 
 ### 依頼・方針を整理する
 
@@ -70,7 +70,6 @@ Plugin と単体・APM 導入は、同じ `skills/` の原本を使う。\
 | 意味を保ちながら自然な日本語に整える | [`write-natural-japanese`](skills/write-natural-japanese/SKILL.md) |
 | 日本語技術文書の論証・用語・推敲の規範を適用する | [`japanese-tech-writing`](skills/japanese-tech-writing/SKILL.md) |
 | 日本語の説明文に緩急を設計する | [`cognitive-rhythm-writing`](skills/cognitive-rhythm-writing/SKILL.md) |
-| リポジトリ文書に残す情報と配置を決める | [`curate-repo-docs`](skills/curate-repo-docs/SKILL-ja.md) |
 | 許可された独立サブエージェントに初見で改稿させる | [`revise-docs-fresh-eyes`](skills/revise-docs-fresh-eyes/SKILL-ja.md) |
 
 ### Skill・エージェント向け指示を整える
@@ -89,10 +88,10 @@ Plugin と単体・APM 導入は、同じ `skills/` の原本を使う。\
 | 作業 | 文書 |
 | --- | --- |
 | 変更を検証し、Issue・コミット・PR にまとめる | [変更の進め方](CONTRIBUTING-ja.md) |
-| Skill を作成する | [作成ガイド](docs/ja/authoring.md) |
-| 配布用 ZIP を作る | [アーカイブの生成・検証](docs/ja/distribution.md#アーカイブを生成検証する) |
-| 外部資料や実行機能の安全性を確認する | [セキュリティレビュー](docs/ja/security.md) |
-| 日本語参考訳を更新する | [言語方針](docs/ja/localization.md) |
+| Skill を作成する | [作成ガイド](docs/ja/maintainers/authoring.md) |
+| Plugin の ZIP を作る | [Plugin の ZIP を作る](docs/ja/maintainers/packaging.md) |
+| 外部資料や実行機能の安全性を確認する | [セキュリティレビュー](docs/ja/maintainers/security.md) |
+| 日本語参考訳を更新する | [言語方針](docs/ja/maintainers/localization.md) |
 
 外部からの貢献は通常想定していない。
 

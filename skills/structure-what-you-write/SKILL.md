@@ -1,6 +1,6 @@
 ---
 name: structure-what-you-write
-description: Creates, revises, and reviews writing by organizing information for its readers and purpose. Use for docs, issues, PRs, emails, comments, and messages.
+description: Creates, revises, and reviews writing by selecting and organizing information for its readers and purpose. Use for repository documentation, READMEs, guides, issues, PRs, emails, comments, and messages.
 license: MIT
 ---
 
@@ -29,6 +29,8 @@ Work at the level the information requires, from an individual sentence to a col
 - Identify the information needed for the reader to understand, decide, or act.
 - Distinguish established facts, authorized decisions, assumptions, interpretations, and unknowns.
 - Use appropriate primary sources for material factual claims. Do not invent missing facts, decisions, requirements, or rationale.
+- In a revision, check the existing claims that affect the reader's decisions, not only the existing structure and wording.
+- Treat code and other implementation evidence as establishing current behavior only. It does not by itself establish requirements, design rationale, policy, ownership, or acceptable risk.
 - Distinguish faithful editing of supplied content from authoring where content selection is permitted.
 - Preserve required claims, conditions, uncertainty, commitments, permissions, and safety constraints when restructuring existing content.
 - Before revising operational instructions, identify the supplied inputs, required outputs, selection rules, permissions, prohibitions, and failure handling as working notes tied to their sources. Mark unspecified behavior as unspecified. Separate maintainer duties from safeguards the executing reader still needs.
@@ -44,6 +46,7 @@ Identify meaningful information units before choosing a presentation format.
 - Determine the subject, purpose, and information type of each unit, such as a definition, fact, attribute, condition, rule, procedure, constraint, or example.
 - Identify relationships between units, including equivalence, contrast, membership, containment, sequence, dependency, and cause.
 - Group information by a consistent, meaningful criterion rather than arbitrary proximity or convenient list length.
+- Choose the grouping by the decision the reader makes. When one item fits several options, organize by the options and list the item under each option it fits.
 - Keep related definitions, conditions, exceptions, and examples together when readers need them together.
 - Separate information that serves different subjects or purposes, even when it appears in the same original paragraph or section.
 - Preserve meaningful connections between related information instead of fragmenting it into isolated statements.
@@ -58,11 +61,15 @@ Determine how the information should be organized before drafting its final form
 - Make parallel items comparable in subject, role, and level of abstraction.
 - Represent parent-child relationships, sequences, dependencies, and exceptions at the appropriate level.
 - Ensure that each heading accurately describes the content and scope beneath it.
+- Give sibling headings the same kind of content and the same relationship to their parent. Do not place procedure steps and reference material at one level; add a parent heading when such groups must coexist, unless an existing heading already shows the relationship.
+- Keep details that only one step uses inside that step rather than in a separate sibling section.
+- Phrase sibling headings consistently, such as actions for procedure steps and nouns for reference material.
+- Write each document for one primary audience, and state that audience at its start when readers cannot infer it. Keep constraints addressed only to AI agents in agent-facing instructions rather than in guides for people.
 - Organize information so readers can locate related content without reconstructing its relationships from scattered passages.
 - Consider whether sections or files should remain as they are, be split, be combined, or have content relocated.
 - When multiple artifacts are involved, consider their distinct purposes, canonical sources, navigation, and maintenance responsibilities.
 - Preserve the information required by artifacts that must operate independently, even when some duplication is necessary.
-- Avoid additional hierarchy, files, or cross-references unless they improve comprehension, use, or maintainability.
+- Use hierarchy to represent containment. Do not place different kinds of content at one level merely to avoid depth, and do not add files or cross-references unless they improve comprehension, use, or maintainability.
 
 Evaluate structural problems at the appropriate level. A problem visible in one paragraph may require reorganizing a section, document, or document set.
 
@@ -74,9 +81,9 @@ Choose the presentation form according to the information's meaning, relationshi
 
 - Prose: Explain a coherent subject, reasoning, context, or causal relationship.
 - Bulleted lists: Present distinct, parallel items without an inherent execution order.
-- Numbered lists: Present ordered steps or sequences. Keep a step's details and checks subordinate to the step when appropriate.
+- Numbered lists: Present ordered steps or sequences whose steps are short. When an item has a few short details, give it a bold label and nest the details as bullets beneath it. When a step contains several paragraphs or code blocks, give each step its own heading instead.
 - Nested lists: Express genuine containment or parent-child relationships, not decorative indentation.
-- Tables: Present repeated attributes, definitions, conditions, or comparisons across clearly identified dimensions.
+- Tables: Present repeated attributes, definitions, conditions, or comparisons across clearly identified dimensions. When a cell needs several sentences or independent conditions, use headings or lists instead.
 - Code blocks: Show exact syntax, configuration, commands, output formats, or other literal structures.
 - Diagrams: Clarify relationships, flows, or structures that are difficult to communicate efficiently in text.
 
@@ -87,6 +94,10 @@ Apply these choices with judgment.
 - Do not combine independent subjects into one table unless the combined view serves a meaningful purpose.
 - Do not hide long enumerations, independent conditions, or actionable items inside dense prose when a clearer structure is available.
 - Place examples and exceptions near the definitions or rules they clarify.
+- Open each section with its point: what the section lets the reader do or know. Place qualifications and limits after that point, inside the step or item they affect. Place a warning before an action only when the reader must know it before acting.
+- Show logical relationships between sentences, such as cause, contrast, and condition, with explicit connecting words.
+- Name the actor whenever it changes between the reader, another person, an agent, or a system. Avoid role words whose referent depends on the viewpoint, such as "the user" in a document read by both people and agents.
+- Use one term for one referent, and check that the term's ordinary meaning matches what actually happens.
 - Use headings and structural elements only when their distinctions help the reader.
 - Preserve natural language, meaningful transitions, and sufficient explanation.
 
@@ -103,6 +114,9 @@ Check that:
 - Each section, paragraph, list item, and table has a discernible role.
 - Grouping criteria, hierarchy, sequence, and placement reflect the information's actual relationships.
 - Headings accurately describe their contents without implying an incorrect scope.
+- Reading only the headings, a reader can tell which topic each section belongs to.
+- The opening sentences of each section state its point.
+- When several sections or documents are revised together, each section has been checked against these criteria. Fixing the structure alone does not complete the revision.
 - Related information can be found and understood together.
 - Presentation forms make information easier to locate, compare, understand, or use.
 - The structure is not unnecessarily fragmented, repetitive, or complicated.
@@ -131,8 +145,9 @@ The workflow must remain usable without unrelated Skills or external services.
 
 - For creation or authorized revision, produce the requested finished content rather than a description of how to write it.
 - For review-only requests, identify structural problems, explain their effects, and propose improvements without modifying the target.
+- When assessing whether repository documentation needs to change, conclude with one result: update required; no documentation impact, with the reason; or blocked by unknowns, naming the missing evidence or decision.
 - When no change is needed, preserve the existing content instead of manufacturing an improvement.
 - When required information or authority is missing, identify the specific uncertainty and complete independent work where possible.
 - Keep authoring notes, discarded alternatives, and internal revision history out of the finished content unless they serve its readers.
 - Do not treat Skill invocation as permission to edit files, publish material, contact others, or expand the authorized scope.
-- Report completed changes, checks actually performed, unresolved issues, and proposed out-of-scope changes concisely.
+- Report completed changes, checks actually performed, unresolved issues, and proposed out-of-scope changes concisely. Distinguish structural changes from sentence-level rewriting, and state where the depth of revision differs between sections.

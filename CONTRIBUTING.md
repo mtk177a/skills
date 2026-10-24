@@ -20,7 +20,7 @@ Use an existing [GitHub Issue](https://github.com/mtk177a/skills/issues) or open
 
 Read the applicable repository instructions and the files, implementation, and documentation affected by the request.\
 Check the working tree so existing changes remain distinguishable from this work.\
-For a Skill change, follow the structure and authoring rules in [AGENTS.md](AGENTS.md) and [the Skill authoring guide](docs/authoring.md).
+For a Skill change, follow the structure and authoring rules in [AGENTS.md](AGENTS.md) and [the Skill authoring guide](docs/maintainers/authoring.md).
 
 ### Verify the change
 
@@ -40,7 +40,7 @@ git diff --check
 
 The read-only checker covers structure, metadata, links, translation notices, companion relationships, and deployment artifacts.\
 It exits with `0` for consistency, `1` for actionable inconsistencies, or `2` for invocation or execution failures.\
-For distribution changes, also follow the [archive and APM checks](docs/distribution.md#build-and-verify-an-archive).
+For distribution changes, also follow the [archive and APM checks](docs/maintainers/packaging.md).
 
 ## Commit and open a pull request
 

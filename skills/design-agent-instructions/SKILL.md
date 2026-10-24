@@ -22,11 +22,11 @@ Gather what is available:
 - observed loading evidence, traces, corrections, or failures
 - applicable local policy and authorization boundaries
 
-Distinguish observed evidence, inference, assumptions, and unknowns. If the request begins from unexplained behavior and loading or authority is uncertain, diagnose it with `audit-agent-guidance` before treating a document redesign as the fix.
+Distinguish observed evidence, inference, assumptions, and unknowns. If the request begins from unexplained behavior and loading or authority is uncertain, diagnose it before treating a document redesign as the fix.
 
 ## Workflow
 
-1. Define the intended behavior, scope, active clients, and what must be shared or client-specific. If unexplained non-adherence is the primary question and loading or authority remains uncertain, stop document design and explicitly hand off to `audit-agent-guidance` with the missing evidence.
+1. Define the intended behavior, scope, active clients, and what must be shared or client-specific. If unexplained non-adherence is the primary question and loading or authority remains uncertain, stop document design and report that diagnosis is needed, with the missing evidence.
 2. Review the existing instruction set and project-local primary sources. Do not assume that an absent standard filename is itself a defect.
 3. For each target client, verify and record the relevant loading, discovery, precedence, import, and enforcement semantics. Do not project one client's hierarchy onto another.
 4. Identify the canonical source for each shared fact or rule. Use imports, references, or generated views only when the target client supports them and they reduce drift without hiding authority.
@@ -49,13 +49,13 @@ Use a structure suited to the decision. Include:
 - documents or surfaces intentionally omitted
 - duplication, context, portability, maintenance, and migration risks
 - validation coverage and implementation-ready change units
-- an explicit diagnostic handoff to `audit-agent-guidance` when unresolved behavior prevents a sound document design
+- an explicit diagnostic handoff, with the missing evidence, when unresolved behavior prevents a sound document design
 
 Do not force a companion document, a fixed filename, or a fixed heading template. If behavior is unconfirmed, identify the diagnostic evidence needed instead of presenting the design as a demonstrated fix.
 
 ## Boundaries
 
-- Use `audit-agent-guidance` when the primary need is diagnosing why existing guidance behaves inconsistently. Use `design-skill` for reusable Skill responsibility and trigger design.
+- Diagnosing why existing guidance behaves inconsistently and designing a reusable Skill's responsibility and trigger are outside this Skill.
 - Treat instruction documents as behavioral context, not hard enforcement, unless current client semantics establish otherwise.
 - Do not assume `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, or `GEMINI.md` is loaded by a client without verification.
 - Do not duplicate shared facts across files merely to make the set look complete.

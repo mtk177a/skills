@@ -66,7 +66,7 @@ Do not force a change when the evidence shows that current guidance is adequate.
 
 ## Boundaries
 
-- Diagnose existing durable guidance. Use `design-skill` for new or substantially rescoped Skill design, `design-agent-instructions` for a new instruction set or post-diagnosis reorganization, and `review-changes` for ordinary diff review.
+- Diagnose existing durable guidance. Designing a new or substantially rescoped Skill, designing a new instruction set or a post-diagnosis reorganization, and ordinary diff review are outside this Skill.
 - Include script and tool behavior when it forms part of the Skill's instruction, trust, or data-flow boundary. Route a standalone implementation vulnerability review to the appropriate code or security review workflow instead of expanding this audit into general code analysis.
 - Exclude standalone Codex `.rules` command-policy review. Include `.rules` only when its approval behavior is a relevant surface in the wider guidance system.
 - Keep the audit read-only by default. Edit only when the user's request authorizes changes and the target environment's applicable policy permits them; do not invent an additional universal approval gate.
