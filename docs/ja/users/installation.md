@@ -129,6 +129,8 @@ Plugin の ZIP は公開していない。\
    - Cursor を再起動するか、**Developer: Reload Window** を実行する。
 3. **Skill を確かめる**
    - Cursor が Skill を一覧に表示し、Skill を明示的に呼び出せることを確かめる。
+   - Skill が表示されない場合は、ローカルの Plugin の取り込みが許可されているかを確認する。\
+     Cursor は、許可されている場合にだけ、このディレクトリの Plugin を検出する。
 
 この Plugin は Skill だけで構成されているため、`.cursor-plugin/plugin.json` は不要である。\
 Cursor のマーケットプレイスへの申請は、このガイドの対象外とする。

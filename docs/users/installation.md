@@ -125,6 +125,8 @@ Build it by following [Build the plugin ZIP](../maintainers/packaging.md).
    - Restart Cursor, or run **Developer: Reload Window**.
 3. **Check the Skills**
    - Check that Cursor lists the Skills and that you can invoke one explicitly.
+   - If the Skills do not appear, check that local plugin imports are allowed.\
+     Cursor discovers plugins in this directory only when they are.
 
 This plugin contains only Skills, so it does not need `.cursor-plugin/plugin.json`.\
 Submitting it to the Cursor marketplace is outside this guide.
