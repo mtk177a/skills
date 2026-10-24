@@ -9,6 +9,7 @@ Publishing through GitHub Releases or elsewhere is outside this guide.
 
 - Python 3.10 or later
 - Git
+- APM, for step 3
 
 ## Procedure
 
@@ -16,11 +17,11 @@ Follow these four steps to build the ZIP and confirm that the same commit instal
 
 ### 1. Prepare the source commit
 
-Keep Skill bodies and resources in `skills/` only; do not maintain separate distribution copies.
+Keep Skill bodies and resources in `skills/` only; do not keep separate copies for the plugin.
 
 For an update, do both of the following before committing:
 
-- Run the checks relevant to the changed Skill responsibilities.
+- Check the results and safety boundaries of the changed Skills, as their changes require.
 - Increment the version in `plugin.json`.
 
 Then commit the version and source changes.\
@@ -94,15 +95,15 @@ They do not show whether a client invokes the Skills or follows their instructio
 
 Keep the ZIP, hash, source commit, change summary, and verification results together so that each can be traced to the others.
 
-## Archive specification
+## ZIP specification
 
 ### Generated files
 
 | File | Purpose |
 | --- | --- |
-| `<name>-<version>.zip` | Plugin archive to install |
-| `<name>-<version>.sha256` | SHA-256 hash that identifies the archive's exact contents |
-| `<name>-<version>.build.json` | Source commit, archive hash, Skill list, and each packaged file's hash and mode |
+| `<name>-<version>.zip` | Plugin ZIP to install |
+| `<name>-<version>.sha256` | SHA-256 hash that identifies the ZIP's exact contents |
+| `<name>-<version>.build.json` | Source commit, ZIP hash, Skill list, and each packaged file's hash and mode |
 
 Building the same commit again produces a byte-identical ZIP.\
 Entries are sorted, timestamps are fixed, and files are stored uncompressed, so the result does not depend on the compression-library version.
@@ -153,8 +154,8 @@ When building the ZIP, the builder checks the following:
 These checks catch specific packaging failures only.\
 They do not validate every JSON Schema field, fully parse Markdown, or verify runtime behavior.
 
-When a Skill changes, separately review the following:
+When a Skill changes, review the following yourself, because the builder does not check them:
 
-- References given in generic examples or plain text
-- Whether required tools are available
-- Conditional instructions
+- References to other files written in generic examples or plain text, rather than as links or code spans
+- Whether the tools that the Skill's instructions require are available in the target clients
+- Instructions that apply only under certain conditions, and whether those conditions can occur
