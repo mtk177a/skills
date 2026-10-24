@@ -3,27 +3,28 @@
 
 # Plugin の ZIP を作る
 
-この手引きは、保守者と、保守者の代わりに作業するエージェントに向けたものである。\
-新しいバージョンの Plugin の ZIP を作り、push したコミットを APM で導入できることを確かめる手順と、ZIP の仕様を説明する。\
-ZIP を ChatGPT や Cursor に導入する方法は、[導入ガイド](../users/installation.md) を参照する。\
-GitHub Releases などでの公開は、この手引きの対象外とする。
+このガイドは、保守者と、保守者の代わりに作業するエージェントに向けたものである。\
+新しいバージョンの Plugin の ZIP を作り、push したコミットを APM でインストールできることを確かめる手順と、ZIP の仕様を説明する。\
+ZIP を ChatGPT や Cursor にインストールする方法は、[Skill のインストールと更新](../users/installation.md) を参照する。\
+GitHub Releases などでの公開は、このガイドの対象外とする。
 
 ## 必要な環境
 
 - Python 3.10 以降
 - Git
+- APM（手順 3 で使う）
 
 ## 手順
 
-次の 4 つの手順で ZIP を生成し、同じコミットを APM で導入できることを確かめる。
+次の 4 つの手順で ZIP を生成し、同じコミットを APM でインストールできることを確かめる。
 
 ### 1. 元になるコミットを作る
 
-Skill の本文と関連ファイルは `skills/` だけで管理し、配布用のコピーを別に作らない。
+Skill の本文と関連ファイルは `skills/` だけで管理し、Plugin 用のコピーを別に作らない。
 
 更新する場合は、コミットする前に次の 2 つを行う。
 
-- 変更した Skill について、その責務に関係する確認を行う。
+- 変更した Skill の作業結果と安全上の範囲を、変更の内容に応じて確かめる。
 - `plugin.json` のバージョンを上げる。
 
 そのうえで、バージョンと Skill の変更をコミットする。\
@@ -55,24 +56,24 @@ python3 -B scripts/build_plugin.py --ref <commit> --output-dir <outside-reposito
 保存先に同じ名前のファイルがある場合は、上書きせずにエラーで終了する。\
 なお、生成スクリプトは通信、インストール、アップロードを行わない。
 
-### 3. push したコミットを APM で導入できることを確かめる
+### 3. push したコミットを APM でインストールできることを確かめる
 
-候補ブランチを push し、そのコミットを APM で導入する。\
-次の 3 通りの導入を、このリポジトリの外に作った使い捨てのディレクトリで、それぞれ別に行う。
+候補ブランチを push し、そのコミットを APM でインストールする。\
+次の 3 通りのインストールを、このリポジトリの外に作った使い捨てのディレクトリで、それぞれ別に行う。
 
-| 導入方法 | 対象 | この対象を選ぶ理由 |
+| インストール | 対象 | この対象を選ぶ理由 |
 | --- | --- | --- |
 | 全 Skill | すべての公開 Skill | カタログ全体を確かめる |
-| 選択導入 | `cognitive-rhythm-writing` と `japanese-tech-writing` | 前者が後者を必要とする |
+| 選んだ Skill | `cognitive-rhythm-writing` と `japanese-tech-writing` | 前者が後者を必要とする |
 | 個別パス | `define-referents` | 同梱の参照資料を持つ |
 
-各ディレクトリで、対応するコマンドを実行して導入する。
+各ディレクトリで、対応するコマンドを実行してインストールする。
 
 ```bash
 # 全 Skill
 apm install 'mtk177a/skills#<commit>' --target agent-skills --no-policy
 
-# 選択導入
+# 選んだ Skill
 apm install 'mtk177a/skills#<commit>' --skill cognitive-rhythm-writing --skill japanese-tech-writing --target agent-skills --no-policy
 
 # 個別パス
@@ -81,7 +82,7 @@ apm install 'mtk177a/skills/skills/define-referents#<commit>' --target agent-ski
 
 `<commit>` には、push 済みのコミットの完全な ID を指定する。
 
-導入したら、各ディレクトリで、生成されたロックファイルと導入結果を検証する。
+インストールしたら、各ディレクトリで、生成されたロックファイルとインストールの結果を検証する。
 
 ```bash
 apm install --frozen --dry-run --no-policy
@@ -89,9 +90,9 @@ apm audit --ci --no-policy
 ```
 
 このリポジトリの中では、dry-run 以外の `apm install` や `apm update` を実行しない。\
-実行すると、利用側のマニフェスト、ロックファイル、導入されたファイルがこのリポジトリ内に作られてしまう。
+実行すると、利用側のマニフェスト、ロックファイル、インストールされたファイルがこのリポジトリ内に作られてしまう。
 
-これらの確認で分かるのは、導入と依存関係に問題がないかどうかまでである。\
+これらの確認で分かるのは、インストールと依存関係に問題がないかどうかまでである。\
 クライアントが Skill を呼び出せるか、指示どおりに動くかは確かめられない。
 
 ### 4. 生成物を保管する
@@ -104,7 +105,7 @@ ZIP、ハッシュ、元のコミット、変更の概要、確認結果を、�
 
 | ファイル | 用途 |
 | --- | --- |
-| `<name>-<version>.zip` | 導入する Plugin の ZIP |
+| `<name>-<version>.zip` | インストールする Plugin の ZIP |
 | `<name>-<version>.sha256` | ZIP の内容を識別するための SHA-256 ハッシュ |
 | `<name>-<version>.build.json` | 元のコミット、ZIP のハッシュ、Skill の一覧、同梱した各ファイルのハッシュとファイルモードの記録 |
 
@@ -117,7 +118,7 @@ ZIP 内のファイルを並べ替え、時刻を固定し、圧縮せずに格�
 
 - ルートの `plugin.json`、`LICENSE`、`THIRD_PARTY_NOTICES.md`
 - `skills/` の下にある、Git で管理しているファイル。\
-  参照資料、実行に必要なファイル、メタデータ、2 つの上流ミラーとその来歴文書 `UPSTREAM.md` も含む。
+  参照資料、実行に必要なファイル、メタデータ、2 つの上流ミラーとその出典の記録 `UPSTREAM.md` も含む。
 
 次のファイルは ZIP に入れない。
 
@@ -140,7 +141,7 @@ OpenAI 固有の設定が必要な場合は、`plugin.json` の `extensions["com
 互換形式の `.codex-plugin/plugin.json` は、別に管理しない。\
 ルートの `plugin.json` に OpenAI の拡張を書いた場合、その設定だけが採用され、互換形式の設定とは結合されない。
 
-形式の詳細は、[OpenAI の配布仕様](https://developers.openai.com/plugins/build/plugins) を参照する。
+形式の詳細は、[OpenAI の Plugin の作成ガイド](https://developers.openai.com/plugins/build/plugins) を参照する。
 
 ### 生成時の検査
 
@@ -149,7 +150,7 @@ OpenAI 固有の設定が必要な場合は、`plugin.json` の `extensions["com
 - マニフェストの識別情報のうち、スクリプトが対応している項目
 - ルートに必須のファイルがあること
 - 各 Skill に `SKILL.md` があること
-- 上流ミラーのハッシュが、来歴文書に記録されたハッシュと一致すること
+- 上流ミラーのハッシュが、出典の記録に書かれたハッシュと一致すること
 - 相対 Markdown リンクと、コードスパンに書いた `references/` や `../` で始まる参照が、ZIP に含まれるファイルを指していること
 - ZIP に含める範囲に、シンボリックリンクやサブモジュールがないこと
 - ZIP 内の各ファイルの内容とファイルモードが、Git に記録された元のファイルと一致すること
@@ -157,8 +158,8 @@ OpenAI 固有の設定が必要な場合は、`plugin.json` の `extensions["com
 これらの検査で見つかるのは、ZIP を作るときに起きる特定の不備だけである。\
 JSON Schema の全項目の検証、Markdown の完全な構文解析、実際に使ったときの動作の確認は行わない。
 
-そのため、Skill を変更したときは、次の点を別に見直す。
+生成スクリプトはこれらを検査しないので、Skill を変更したときは、次の点を自分で見直す。
 
-- 一般的な例や通常の文章の中で示した参照
-- 必要なツールを使えるかどうか
-- 条件付きの指示
+- リンクやコードスパンではなく、一般的な例や通常の文章の中で示した、ほかのファイルへの参照
+- Skill の指示が必要とするツールを、対象のクライアントで使えるかどうか
+- 特定の条件でだけ適用する指示と、その条件が実際に起こり得るかどうか
