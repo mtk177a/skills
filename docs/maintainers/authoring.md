@@ -1,73 +1,72 @@
 # Skill authoring guide
 
 This guide is for maintainers and the agents working for them.\
-It explains how to design, write, and check the Skills maintained in this repository.
+It explains how to design, write, and check the Skills maintained in this repository, and what else to update when a Skill changes.\
+Read it before you create a Skill or change what an existing Skill does.
 
 The two upstream Gist mirrors are an exception.\
 They follow the copying rules in [Upstream Gist mirrors](#upstream-gist-mirrors), and the rules in this guide never justify changing their `SKILL.md` files.
-
-Follow [Languages and Japanese reference translations](localization.md) for the language of Skill bodies and for updating translations.
 
 ## Design the Skill
 
 ### Responsibility
 
-Give each Skill one responsibility and a clear context in which to use it.\
-Prioritize these design decisions:
+Give each Skill one responsibility and a clear situation in which to use it.\
+Within that responsibility, prioritize these decisions:
 
-- Design workflows that need judgment from the intended outcome and evidence, not from a predetermined artifact.
-- Match the freedom of the instructions to how fragile the task is and how much it depends on context.\
-  When several approaches are valid, state goals and constraints.\
+- **Start from the outcome**: design a workflow that needs judgment from the intended outcome and the evidence, not from a predetermined artifact.
+- **Match the freedom of the instructions to the task**: when several approaches are valid, state the goals and constraints.\
   When order or completeness affects correctness, give short ordered steps and a way to verify them.
-- Keep complete diagnosis separate from staged implementation or rollout.
-- Do not set arbitrary limits on how much to investigate or how many findings to report.
+- **Report the whole diagnosis**: even when a fix will be implemented or rolled out in stages, do not drop findings to fit the first stage.
+- **Do not set arbitrary limits**: do not cap how much to investigate or how many findings to report.
 
-When comparing a new Skill with existing ones, read only the examples needed to resolve overlapping responsibilities and reach a judgment.\
-Stop when that purpose is met, and do not read the whole catalog without a reason.
-
-Put design guidance that must travel with a Skill in that Skill's own `references/` directory.
+To check whether a new Skill overlaps an existing one, read only the existing Skills needed to settle the overlap.\
+Stop when it is settled, and do not read the whole catalog without a reason.
 
 ### Name
 
-Name the Skill as an action and an object in kebab-case, such as `clarify-request` or `design-changes`, so that the name shows its responsibility and when to use it.\
+Name the Skill with an action and an object in kebab-case, such as `clarify-request` or `design-changes`, so that the name shows its responsibility and when to use it.\
 Prefer clarity over brevity, and avoid names that suggest a broader scope than the Skill has.\
 Use a single word, such as `build`, only when the responsibility is narrow enough that the word cannot be misread.
 
 ### Description
 
-The `description` is what an agent reads to decide whether to use the Skill, so it is not a general explanation.\
+An agent reads the `description` to decide whether to use the Skill.\
+Write it for that decision, not as a general explanation.\
 Include:
 
 - the situation in which to use the Skill
 - the kind of work it helps with
-- any dependency on a specific agent, and what that dependency is
+- any dependency on a specific client, and what that dependency is
 
-Write about when to use the Skill rather than how it runs.\
-Put everything needed for automatic selection in the `description`, and put what the agent needs after loading the Skill, such as roles, orchestration, and execution details, in the body.
+Put in the `description` only what the agent needs to choose the Skill.\
+Put what it needs after choosing the Skill, such as roles, orchestration, and execution details, in the body.
+
+Keep the `description` simple.\
+Add a case in which not to use the Skill only when the `description` would otherwise trigger on requests that another Skill handles.
 
 Avoid:
 
-- vague descriptions that do not show when to use the Skill
+- descriptions that do not show when to use the Skill
 - subjective phrases such as “a useful Skill”
-- descriptions that assume Codex without saying so
-- internal implementation details in the frontmatter
+- descriptions that assume one client without saying so
+- internal implementation details
 
 ### Body
 
 Skills do not need identical headings.\
 They do need enough information for an agent with no prior context to choose, run, and verify the workflow without inventing missing policy.\
-Check that the body covers these responsibilities:
+Check that the body covers these points:
 
-- the objective and one coherent responsibility
-- complete trigger context, and any important exclusions, in `description`
+- the objective and the one responsibility
 - the evidence, inputs, or preconditions needed before acting
-- the workflow or decision logic
-- the required output information, or an exact output format when a later step depends on it
-- authority, failure handling, and safety or permission boundaries when they matter
-- verification of the work and of the relevant safety conditions
-- bundled resources, and when to read or run them
+- the workflow or the criteria for decisions
+- the information the output must contain, or an exact output format when a later step depends on it
+- authority, failure handling, and safety or permission boundaries, when they matter
+- how to verify the work and the relevant safety conditions
+- the bundled resources, and when to read or run each of them
 
-Use the smallest structure that covers these responsibilities.\
+Use the smallest structure that covers these points.\
 Two common shapes are:
 
 | Shape | Typical contents |
@@ -75,40 +74,40 @@ Two common shapes are:
 | Judgment-oriented | Objective, evidence, workflow, optional decision criteria, reporting contract, and boundaries |
 | Operational | Objective, inputs or preconditions, ordered steps, output format, verification, and boundaries |
 
-These shapes are for review, not required headings.\
-A Skill can combine them when it uses judgment to choose an approach and then needs an exact sequence for a fragile operation.
+Use these shapes to review a body, not as required headings.\
+A Skill can combine them, for example when it uses judgment to choose an approach and then needs an exact sequence for a fragile operation.
 
-Do not add a `When to use` section that only repeats the `description`.\
-Keep one only when the agent needs to choose between branches after the Skill has been selected.\
-Likewise, use exact output templates, `Always` / `Ask first` / `Never` lists, and self-review checklists only when they change how the Skill runs.
+Add a section or list only when it changes how the Skill runs:
 
-When you replace a safeguard, define how to verify that the replacement protects at least as well.
+- **`When to use` section**: only when the agent must choose between branches after selecting the Skill.\
+  Do not add one that repeats the `description`.
+- **Exact output templates, `Always` / `Ask first` / `Never` lists, and self-review checklists**: only when the agent would act differently without them.
 
-When you change a Skill's instructions or resources, also review its entry in [Runtime requirements and client differences](../users/compatibility.md) and the references packaged with it.
+When you replace a safeguard, define how to verify that the replacement protects at least as well as the original.
 
 ## Keep Skills independent of each other
 
 Each Skill must work on its own.\
 Do not name another public Skill in `SKILL.md` or `SKILL-ja.md`.\
 Describe out-of-scope work by its type, and describe a handoff by the input the next step needs.\
-Record relationships between Skills only in the [Skill workflow guide](../users/workflows.md).\
-`scripts/check_repository.py` enforces this rule, except for approved companion relationships and the upstream mirrors.
+Record relationships between Skills only in [Choose the next Skill](../users/workflows.md).\
+`scripts/check_repository.py` rejects other public Skill names, except in approved companion relationships and the upstream mirrors.
 
 ### Companion relationships
 
-A companion relationship is a narrow exception: one Skill deliberately requires another to apply its rules correctly.\
-Do not create one for convenience, related subject matter, or an arbitrary dependency.\
-Unintended coupling between Skills remains a design problem.
+In a companion relationship, one Skill deliberately requires another to apply its rules correctly.\
+It is a narrow exception.\
+Do not create one for convenience, related subject matter, or an arbitrary dependency, because unintended coupling between Skills remains a design problem.
 
-Record the following for each approved relationship:
+For each approved relationship, record:
 
-- the direction of the relationship and the Skills involved
+- the Skills involved and which one requires the other
 - why the companion is required
-- the supported installation method
+- how the two Skills are installed or located together
 - what happens when the companion is unavailable, including whether work stops
-- the provenance and local adaptations that introduced or maintain the relationship
+- the provenance, and any local adaptations that introduced or maintain the relationship
 
-When either Skill, the relationship, the installation method, or the behavior without the companion changes, review this record and verify the affected behavior.
+When either Skill, the relationship, the installation, or the behavior without the companion changes, review this record and verify the affected behavior.
 
 ### Approved: Japanese reference maintenance
 
@@ -116,59 +115,58 @@ When either Skill, the relationship, the installation method, or the behavior wi
 | --- | --- |
 | `maintain-japanese-references` → `write-natural-japanese` | Original repository material. [#42](https://github.com/mtk177a/skills/pull/42) introduced the maintenance Skill; [#77](https://github.com/mtk177a/skills/issues/77) records the required relationship and Japanese-canonical exception |
 
-- **Reason**: to keep the English meaning while using Japanese that fits the context.
+- **Reason**: to keep the meaning of the English source while writing Japanese that fits the context.
 - **Location**: both Skills are tracked in this repository.
 - **Before use**: read `skills/write-natural-japanese/SKILL.md` and its required references.\
   If a repository file is unavailable, stop and report it instead of substituting a personal copy.
 
 The upstream `cognitive-rhythm-writing` also requires another Skill; see [Upstream Gist mirrors](#upstream-gist-mirrors).
 
-## Support multiple agents
+## Support several clients
 
-### Shared and agent-specific Skills
+### Shared and client-specific Skills
 
-First, check whether the Skill can be written without depending on a particular agent:
+First, decide whether the Skill can be written without depending on a particular client:
 
-- A shared Skill serves the same purpose with the same steps across several agents.
-- An agent-specific Skill has steps, tool availability, or input and output formats tied to one agent.
+- A shared Skill serves the same purpose with the same steps in several clients.
+- A client-specific Skill has steps, tools, or input and output formats tied to one client.
 
-This repository does not use classification directories.\
-Show differences in the Skill name or `description` instead.
+This repository does not sort Skills into directories by client.\
+Show a client-specific dependency in the Skill name or `description` instead.
 
-Add client-specific metadata only when a Skill needs the corresponding invocation control, UI, dependency declaration, or permission behavior.\
+Add client-specific metadata only when a Skill needs that client's invocation control, UI, dependency declaration, or permission behavior.\
 Otherwise, keep `name`, `description`, instructions, and resources portable.
 
-### Adapt a Codex-only Skill for other agents
+### Adapt a Skill written for one client
 
-When adapting a Codex-specific Skill for Claude Code or GitHub Copilot, decide whether its Codex-specific language should stay.\
+When you adapt a Skill written for one client, such as Codex, for other clients, decide whether its client-specific language should stay.\
 Keep it only when that specificity is the core value of the Skill.\
-Otherwise, rewrite the Skill around its purpose and decision criteria so that the mechanics can be swapped.
+Otherwise, rewrite the Skill around its purpose and decision criteria so that the client-specific mechanics can be swapped.
 
-Do not infer how a client discovers, loads, or prioritizes instruction files, or how it invokes Skills, from format compatibility alone.\
-When these behaviors affect a design, check the current official documentation for each target client.\
-Where the documentation is conditional or incomplete, verify the behavior in the target version or environment.\
-Use the result for the current decision instead of maintaining a list of client behaviors here.
-
-When adapting, check:
+Check:
 
 - whether the Skill relies too much on specific tool names
-- whether the request and output formats make sense for other agents
-- whether the steps assume Codex-specific features
-- whether agent-specific differences are described in `description` or the body
-- whether shared guidance has one source, and client-specific bridge files duplicate only a documented minimum of safety and approval rules
-- whether any retained safety and approval fallback still matches its source rules
-- whether a requirement needs behavioral guidance or a client-enforced policy, permission, or hook
+- whether the request and output formats make sense in other clients
+- whether the steps assume features of one client
+- whether the remaining client-specific differences are stated in the `description` or the body
+- whether a requirement needs instructions in the Skill, or a policy, permission, or hook that the client enforces
+
+Do not infer from format compatibility how a client discovers, loads, or prioritizes instruction files, or how it invokes Skills.\
+When these behaviors affect a design, check the current official documentation for each target client.\
+Where the documentation is conditional or incomplete, verify the behavior in the target version or environment.\
+Use the result for the current decision; this guide does not keep a list of client behaviors.
 
 ### Shared and client-specific instruction files
 
-Keep shared repository instructions in `AGENTS.md`.
+Keep shared repository instructions in `AGENTS.md`.\
+A client-specific instruction file only bridges to it:
 
-- **Copilot bridge**: instruct Copilot to read `AGENTS.md`.\
-  If it cannot, Copilot stops without modifying files, running commands, or changing external state.
+- **Copilot bridge**: `.github/copilot-instructions.md` tells Copilot to read `AGENTS.md`.\
+  If Copilot cannot read it, Copilot stops without modifying files, running commands, or changing external state.
 - **Clients that do not load `AGENTS.md` automatically**: repeat in the bridge only the minimum safety and approval rules needed to keep those boundaries.\
-  This fallback is a delivery measure, not a second source of the rules.
+  This fallback delivers the rules to that client; it is not a second source of them.
 - **Updates**: when a related rule in `AGENTS.md` changes, check and update the fallback.\
-  Do not duplicate other shared rules.
+  Do not copy other shared rules into the bridge.
 
 Current client documentation: [Codex `AGENTS.md`](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [Claude Code project instructions](https://code.claude.com/docs/en/memory), and [GitHub Copilot custom instructions support](https://docs.github.com/en/copilot/reference/custom-instructions-support).
 
@@ -176,19 +174,18 @@ Current client documentation: [Codex `AGENTS.md`](https://learn.chatgpt.com/docs
 
 ### Scripts
 
-When adding `scripts/`, check what they need to run and what side effects they have:
+When you add `scripts/`, check what the scripts need to run and what side effects they have:
 
-- Minimize dependencies on a particular shell, OS, or architecture.
+- Minimize dependencies on a particular shell, OS, or architecture.\
+  Do not add a script that would not work on both macOS M1 and Windows WSL unless the need is explicitly justified.
 - Document any additional dependencies.
 - Do not depend on absolute paths outside the repository.
 - If a script performs destructive operations, make the Skill body ask for confirmation before running it.
 - Do not add generated artifacts or caches to the repository.
 
-Avoid scripts that would not work on both macOS M1 and Windows WSL unless the need is explicitly justified.
-
 ### References
 
-The `references/` directory holds material the Skill needs when making judgments, such as formats, specifications, and decision criteria:
+The `references/` directory holds material the Skill needs for its judgments, such as formats, specifications, and decision criteria:
 
 - Include only what an agent with no prior context needs to apply the Skill.
 - Do not copy external documents verbatim; link to the original instead.
@@ -197,7 +194,7 @@ The `references/` directory holds material the Skill needs when making judgments
 
 ### Assets
 
-The `assets/` directory holds supplementary material to distribute, such as images, reusable templates, or small structured data:
+The `assets/` directory holds supplementary material that the Skill uses, such as images, reusable templates, or small structured data:
 
 - Include only material with clear provenance and a compatible license.
 - Do not add generated artifacts, caches, or temporary files.
@@ -217,12 +214,11 @@ For environment-specific information, use variable names or placeholders.
 
 ## Import external Skills
 
-### When to fork or copy an external Skill
+### When to bring an external Skill into this repository
 
-Apart from the two Gist mirrors, external Skills are not copied into this repository as they are.\
-Installing external Skills is managed in dotfiles through `apm.yml` and `apm.lock.yaml`.
+Apart from the two Gist mirrors, this repository does not copy external Skills as they are.
 
-Bring a Skill into this repository only when at least one of these applies:
+Bring an external Skill into this repository only when at least one of these applies:
 
 - you need to keep modifying and maintaining it yourself
 - redesigning it from scratch is better than using it as it is
@@ -230,9 +226,9 @@ Bring a Skill into this repository only when at least one of these applies:
 
 Even then, align its frontmatter and `description` with this repository's conventions instead of importing it verbatim.
 
-Before adopting or adapting a third-party Skill, review its provenance, license, complete set of files, external references, scripts, tool and network use, and combined capabilities.\
-Treat its Markdown instructions as something that can make an agent act, not as inherently safe text.\
-Follow the [security review](security.md) for the repository checklist.
+Before you adopt or adapt a third-party Skill, review its provenance, license, complete set of files, external references, scripts, tool and network use, and what it can do when these are combined.\
+Treat its Markdown instructions as something that can make an agent act, not as harmless text.\
+Follow the [security review](security.md) for the checklist.
 
 ### Upstream Gist mirrors
 
@@ -241,7 +237,7 @@ Their `SKILL.md` files match, byte for byte, the revisions recorded in each `UPS
 Do not add local rules, frontmatter fields, editorial corrections, or a Japanese reference translation to either file.
 
 The repository checker compares each copy with the SHA-256 recorded in `UPSTREAM.md`.\
-It does not check whether a newer Gist revision exists; that requires an explicit comparison with the upstream Gist.
+It does not check whether a newer Gist revision exists; finding one requires comparing with the upstream Gist yourself.
 
 To update a mirror:
 
@@ -252,20 +248,32 @@ To update a mirror:
 
 If the new upstream file cannot be accepted as it is, record the difference and do not create a local variant.
 
-The upstream `cognitive-rhythm-writing` requires `../japanese-tech-writing/SKILL.md` before use.\
-Install both together with the [selected installation](../users/installation.md#install-with-apm).\
+The upstream `cognitive-rhythm-writing` reads `../japanese-tech-writing/SKILL.md` before use.\
+People who install it need to install both together, as described in [Install with APM](../users/installation.md#install-with-apm).\
 Do not add a local procedure for a missing companion to the upstream file.
+
+## Update related documents
+
+When you add a Skill or change what it does, check the documents that describe it from the outside:
+
+- **Task catalog**: add or update the Skill's row in `README.md` and `README.ja.md`.\
+  The checker reports a Skill missing from either catalog.
+- **[Choose the next Skill](../users/workflows.md)**: update it when the Skill's handoffs change, including the names of the states it reports.\
+  The guide uses those states to show which Skill comes next.
+- **[Runtime requirements](../users/compatibility.md)**: update it when the Skill starts or stops needing more than every Skill needs, such as web access, a subagent, another Skill, or a bundled reference read in full.
+- **Japanese reference translation**: update `SKILL-ja.md` when the meaning of `SKILL.md` changes, following [Languages and Japanese reference translations](localization.md).
 
 ## Check a new Skill before opening a pull request
 
 - [ ] The directory name is kebab-case and matches the frontmatter `name`.
-- [ ] `SKILL.md` exists with `name`, `description`, and `license` in its frontmatter (the two Gist mirrors keep their upstream frontmatter).
+- [ ] `SKILL.md` has `name`, `description`, and `license` in its frontmatter (the two Gist mirrors keep their upstream frontmatter).
 - [ ] The `description` shows when to use the Skill without reading the body.
-- [ ] The body covers the responsibilities in [Body](#body) without copying a heading template mechanically.
+- [ ] The body covers the points in [Body](#body) without copying a heading template mechanically.
 - [ ] The body is in English, or a Japanese writing or editing exception is documented.
-- [ ] A Japanese reference translation, `SKILL-ja.md`, exists unless `SKILL.md` is the documented Japanese source.
+- [ ] `SKILL-ja.md` exists, unless `SKILL.md` is the documented Japanese source.
 - [ ] The Skill does not name another public Skill, except in an approved companion relationship.
 - [ ] There are no secrets, personal information, or internal URLs.
 - [ ] Third-party provenance and capability risks have been reviewed when external material is included.
 - [ ] `scripts/`, `references/`, and `assets/` contain only what the Skill needs, and empty directories are removed.
+- [ ] The documents in [Update related documents](#update-related-documents) are updated.
 - [ ] The repository checker and the tests for retained code pass, and the Skill's results and safety boundaries have been checked as appropriate.
