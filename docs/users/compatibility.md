@@ -1,75 +1,75 @@
 # Runtime requirements and client differences
 
-This guide is for people choosing where to run the Skills.\
-It lists what the agent needs in order to do the work and how clients differ in finding and running Skills.\
-Check it before you choose an [installation method](installation.md#choose-an-installation-method).
+This guide is for people who use the Skills in a client.\
+It explains what the agent needs to run the Skills, which Skills need more than that, and how clients differ in invoking Skills and controlling tools.\
+Read it when you choose a client, and before you start work that writes files, uses the web, or starts a subagent.
 
-A Skill that follows the Agent Skills format is not guaranteed to work in every client.\
-The client must be able to find, invoke, and run the Skill, and the agent needs the tools and permissions that the work requires.
+## What every Skill needs
 
-## Requirements for every Skill
+1. **The client can read the files in each Skill's directory**
+   - Some Skills read files bundled with them, not only `SKILL.md`.\
+     `define-referents` and `write-natural-japanese` read a bundled reference in full before they start.
+   - The Skills contain no scripts, so the client does not need to run code or install Python libraries for them.
+2. **The agent can reach the material the work is about**
+   - For work on a repository, the agent needs the files and diffs.\
+     For work on logs, documents, or external services, it needs access to those.
+   - What the agent could not inspect stays unchecked, even if the answer reads as complete.
+3. **The actions the work involves are allowed**
+   - Writing files, acting on external services, and starting subagents need two things: the client's permission settings must allow them, and you must allow them in your request.
+   - Installing or invoking a Skill allows neither.\
+     Each Skill states which actions it does not take without your request.
 
-- The agent can read the Skill body and the resources bundled with it.\
-  Each Skill states which resources to read.
-- For work that uses tools, the agent can access the required repository, files, network, or external services.
-- Writing files, acting on external services, and running subagents are authorized.\
-  Installing a Skill or plugin does not authorize them.
+## Skills with additional requirements
 
-The public Skills bundle no executable scripts and require no additional Python libraries.\
-The work itself may still require tools, permissions, or external evidence.
+Only the three Skills below need more than the requirements above.
 
-## Requirements for specific Skills
+### Web access
 
-The plugin contains all public Skills with their instructions unchanged.\
-Check these requirements in particular when choosing an environment.
+`research-web-safely` searches the web and reads the sources it cites.\
+If the client has no web access, the Skill reports the affected claims as not verified instead of answering from memory.
 
-| Skill or work | Requirement |
+### An independent subagent
+
+`revise-docs-fresh-eyes` has a subagent revise the document without the conversation in which the document was written.\
+It works only in Codex and Claude Code, where it can start such a subagent.\
+If subagents are unavailable or not allowed, the Skill reports that the revision was not done and stops.
+
+### Another Skill installed alongside
+
+`cognitive-rhythm-writing` reads `japanese-tech-writing` before it starts, so install the two Skills together.\
+No other Skill needs another Skill.\
+The connections in [Choose the next Skill](workflows.md) suggest what to use next; they are not dependencies.
+
+## How clients differ
+
+### Invoking a Skill
+
+Clients can choose a Skill on their own when a request matches its description.\
+To make sure a specific Skill is used, invoke it explicitly:
+
+| Client | How to invoke a Skill explicitly |
 | --- | --- |
-| `define-referents` | The agent reads its required bundled reference before applying the Skill. |
-| `cognitive-rhythm-writing` | The agent reads `japanese-tech-writing/SKILL.md`, so both Skills are installed together. |
-| `write-natural-japanese` | The agent reads its wording reference in full. |
-| Other writing and design Skills | The agent reads the references that each Skill selects or requires. |
-| Editing, investigating, or reviewing a repository | The agent can access the actual files, differences, and evidence, and the tools for any checks it runs. |
-| `research-web-safely` | The agent can search and retrieve web content and cite observable sources. |
-| `revise-docs-fresh-eyes` | The agent runs in Codex or Claude Code and is allowed to start an independent subagent that does not inherit the authoring conversation. |
+| ChatGPT (Chat, Work, and dots) | Select the plugin and name the Skill in your request, as in [Use the plugin in ChatGPT and Codex](installation.md#use-the-plugin-in-chatgpt-and-codex). |
+| Codex CLI and IDE extension | Run `/skills`, or type `$` followed by the Skill name. |
+| Claude Code | Start your message with `/` followed by the Skill name. |
+| Cursor | Type `/` followed by the Skill name in chat. |
 
-If an independent subagent is unavailable or prohibited, `revise-docs-fresh-eyes` stops.
+For other clients, such as GitHub Copilot and Gemini CLI, check the client's official documentation.
 
-Apart from `cognitive-rhythm-writing`, no Skill requires another Skill.\
-The connections in the [Skill workflow guide](workflows.md) are suggestions for choosing the next Skill, not dependencies.\
-See each Skill for its output, its handling of missing input, and when it stops.
+### Controlling tools and actions
 
-## Differences between clients
+Each client controls with its own settings which tools the agent can use and which actions need your approval.\
+In Codex, these are the sandbox and approval settings.\
+In Claude Code, they are the permission settings.
 
-Clients differ in how they find, invoke, and constrain Skills:
+Check these settings before work that writes files or reaches external services.\
+A Skill's instructions do not change what the client allows.
 
-- **Codex**:
-  - Explicit invocation through `/skills` or `$` in the CLI and IDE, and implicit selection, are features of the client.
-  - The optional `agents/openai.yaml` supplies OpenAI-specific display and dependency metadata.
-  - Sandbox, approvals, rules, and tool access are separate controls.
-- **Claude Code**: discovery, invocation, frontmatter, permissions, and hooks are specific to the client.\
-  Compatibility with the portable format does not establish how they behave.
-- **Cursor**: follow the [Cursor installation steps](installation.md#use-the-plugin-in-cursor), then check discovery and explicit invocation in your Cursor version.
-- **Other clients, such as GitHub Copilot and Gemini CLI**: check discovery, invocation, metadata, permissions, and runtime behavior in the current official documentation and in your client version.
-- **APM**: installs the `skills/` directory; it does not run Skills.
+### Official documentation
 
-## Check that the Skills work in your client
+Client behavior can change between versions.\
+When a detail matters to your work, check the current documentation for your client:
 
-Check each of the following separately, because passing one does not establish the others:
-
-- The package format is valid.
-- The client installs and lists the Skills.
-- You can invoke a Skill.
-- Client-specific extensions behave as expected.
-- The client enforces the permissions you rely on.
-- The agent can access what the work needs.
-
-Client behavior changes independently of the package format.\
-When a detail matters to your work, check the current official documentation:
-
-- [Agent Skills specification](https://agentskills.io/specification)
-- [OpenAI Build skills](https://learn.chatgpt.com/docs/build-skills)
-- [Claude Code Skills](https://code.claude.com/docs/en/slash-commands)
-- [Claude Skill authoring](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
-- [Claude Skills for enterprise](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise)
-- [Cursor Plugins](https://cursor.com/docs/plugins)
+- [Codex and ChatGPT: Build skills](https://learn.chatgpt.com/docs/build-skills)
+- [Claude Code: Skills](https://code.claude.com/docs/en/slash-commands)
+- [Cursor: Plugins](https://cursor.com/docs/plugins)
