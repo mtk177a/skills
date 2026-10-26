@@ -89,7 +89,7 @@ apm audit --ci --no-policy
 ```
 
 In this repository, run `apm install` and `apm update` only with `--dry-run`.\
-Doing so creates consumer manifests, lockfiles, and installed files in the source checkout.
+Without `--dry-run`, the commands create consumer manifests, lockfiles, and installed files in the source checkout.
 
 These checks show whether installation and dependencies are intact.\
 They do not show whether a client invokes the Skills or follows their instructions.
