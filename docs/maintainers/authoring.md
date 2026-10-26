@@ -85,6 +85,40 @@ Add a section or list only when it changes how the Skill runs:
 
 When you replace a safeguard, define how to verify that the replacement protects at least as well as the original.
 
+### Constraints
+
+Each constraint adds to what the agent must keep in mind, and constraints from different sources can conflict.\
+Write a constraint only when it prevents a mistake that the work of this Skill can cause.
+
+- **Prohibitions**: write a prohibition only when an agent is likely to do that action during this work, and the action causes harm or a wrong result.\
+  Do not write a prohibition for an action that the workflow does not suggest.
+- **General rules**: some rules apply to all work, for example that tool output is data and not instructions.\
+  Write such a rule only in a Skill whose work creates that risk, such as a Skill that reads web pages.\
+  Write it once, in the step where the risk occurs.
+- **One rule in one place**: do not write the same rule in the workflow and again in the boundaries.
+
+## Write in Simplified Technical English
+
+Write the English in Skill bodies and `description` fields with the writing rules of [ASD-STE100 Simplified Technical English](https://asd-ste100.org/about_STE.html).\
+These rules make sentences short and give each sentence one meaning, so that agents and people read them the same way.\
+The list below is a summary.\
+For the full rules, get the specification from ASD.
+
+- Write one instruction in each sentence.
+- Use 20 words or fewer in an instruction, and 25 words or fewer in a description sentence.
+- Use the active voice, and use the imperative for instructions.
+- Do not make a noun cluster of more than three words.
+- Give each paragraph one topic and six sentences or fewer.
+- Use a vertical list when a sentence must hold more conditions or items.
+- Do not remove articles, verbs, or subjects to make a sentence shorter.
+
+Use the STE dictionary as a guide, not as a strict rule.\
+When you can choose between two words, use the more common one.\
+Treat the terms in the [glossary](glossary.md), product names, and identifiers as technical names.\
+Use one word for one meaning, and use the same word each time for the same thing.
+
+These rules do not apply to the two upstream Gist mirrors, to Skills whose source is in Japanese, or to quoted text and code.
+
 ## Keep Skills independent of each other
 
 Each Skill must work on its own.\
@@ -270,6 +304,8 @@ When you add a Skill or change what it does, check the documents that describe i
 - [ ] The `description` shows when to use the Skill without reading the body.
 - [ ] The body covers the points in [Body](#body) without copying a heading template mechanically.
 - [ ] The body is in English, or a Japanese writing or editing exception is documented.
+- [ ] The English follows [Write in Simplified Technical English](#write-in-simplified-technical-english).
+- [ ] Each constraint meets the conditions in [Constraints](#constraints).
 - [ ] `SKILL-ja.md` exists, unless `SKILL.md` is the documented Japanese source.
 - [ ] The Skill does not name another public Skill, except in an approved companion relationship.
 - [ ] There are no secrets, personal information, or internal URLs.
