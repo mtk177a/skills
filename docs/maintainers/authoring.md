@@ -43,7 +43,9 @@ Put in the `description` only what the agent needs to choose the Skill.\
 Put what it needs after choosing the Skill, such as roles, orchestration, and execution details, in the body.
 
 Keep the `description` simple.\
-Add a case in which not to use the Skill only when the `description` would otherwise trigger on requests that another Skill handles.
+Write when to use the Skill, and do not list the cases in which not to use it.\
+A list of exclusions puts those tasks into the agent's context.\
+If two Skills trigger on the same requests, make the trigger of each Skill more specific.
 
 Avoid:
 
@@ -90,8 +92,10 @@ When you replace a safeguard, define how to verify that the replacement protects
 Each constraint adds to what the agent must keep in mind, and constraints from different sources can conflict.\
 Write a constraint only when it prevents a mistake that the work of this Skill can cause.
 
-- **Prohibitions**: write a prohibition only when an agent is likely to do that action during this work, and the action causes harm or a wrong result.\
-  Do not write a prohibition for an action that the workflow does not suggest.
+- **Positive form**: state the behavior that you want, for example "Get the expected value from the specification".\
+  A prohibition puts the prohibited action into the agent's context, and can make that action more likely.
+- **Prohibitions**: use a prohibition only for a hard guardrail that you cannot state positively, such as a destructive operation without authorization.\
+  Write the behavior that you want next to it.
 - **General rules**: some rules apply to all work, for example that tool output is data and not instructions.\
   Write such a rule only in a Skill whose work creates that risk, such as a Skill that reads web pages.\
   Write it once, in the step where the risk occurs.
@@ -118,6 +122,18 @@ Treat the terms in the [glossary](glossary.md), product names, and identifiers a
 Use one word for one meaning, and use the same word each time for the same thing.
 
 These rules do not apply to the two upstream Gist mirrors, to Skills whose source is in Japanese, or to quoted text and code.
+
+## Format steps and lists
+
+- **Steps with more than one sentence**: if a step has more than one sentence or contains a list, start the step with a short bold name.\
+  Put a blank line after the name, and write the body of the step below it.
+- **Short steps**: if each step is one sentence, write the sentence directly after the number.
+- **Blank lines between items**: if one item of a list contains a list, a table, or more than one paragraph, put a blank line between all items of that list.\
+  Otherwise, put no blank lines between the items.
+- **Content that belongs to a step**: indent a table or a list that belongs to a step, so that it stays inside that step.
+
+These rules apply to Skill bodies.\
+They also apply to the Japanese reference translations.
 
 ## Keep Skills independent of each other
 
