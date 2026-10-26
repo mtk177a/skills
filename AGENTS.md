@@ -11,11 +11,13 @@ If a deeper `AGENTS.md` exists in a subdirectory, that file takes precedence.
 
 ## Read first
 
-- `README.md`
-- `docs/maintainers/authoring.md`
-- `CONTRIBUTING.md` for Issue, commit, and pull request conventions
+- [README.md](README.md)
+- [CONTRIBUTING.md](CONTRIBUTING.md) for Issues, verification, commit messages, and pull requests
+- [docs/maintainers/authoring.md](docs/maintainers/authoring.md) when creating or editing a Skill
+- [docs/maintainers/glossary.md](docs/maintainers/glossary.md) when writing about repository concepts in documentation or Skill bodies
 
-When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files needed to resolve responsibility overlap and converge on a judgment. Stop when that purpose is met; do not impose an arbitrary count.
+When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files needed to resolve responsibility overlap and converge on a judgment.
+Stop when that purpose is met; do not impose an arbitrary count.
 
 ## What belongs in this repository
 
@@ -42,56 +44,48 @@ When creating or editing a Skill, inspect the existing `skills/*/SKILL.md` files
 
 ## Upstream Gist mirrors
 
-- Keep `skills/japanese-tech-writing/SKILL.md` and `skills/cognitive-rhythm-writing/SKILL.md` byte-for-byte identical to the recorded upstream Gist revisions. Do not add local instructions, metadata, corrections, or translations to these files.
-- Record each source URL, mirrored revision, retrieval date, file SHA-256, and license evidence in its `UPSTREAM.md`; summarize source and license in `THIRD_PARTY_NOTICES.md`. Keep repository installation guidance outside the mirrored files.
-- Before updating either mirror, compare the recorded revision with the current Gist and review the complete upstream change under `docs/maintainers/security.md`. If it cannot be accepted as an unmodified copy, report the difference instead of patching the Skill locally.
+- Keep `skills/japanese-tech-writing/SKILL.md` and `skills/cognitive-rhythm-writing/SKILL.md` byte-for-byte identical to the upstream Gist revisions recorded in their `UPSTREAM.md`. Do not add local instructions, metadata, corrections, or translations to these files.
+- Before updating either mirror, review the complete upstream change. If it cannot be accepted as an unmodified copy, report the difference instead of patching the Skill locally.
+- Follow [Upstream Gist mirrors](docs/maintainers/authoring.md#upstream-gist-mirrors) for what to record and how to update a mirror.
 
 ## Repository-local operational Skills
 
-- Repository-local operational Skills may live under `.agents/skills/<skill-name>/` only when they are exclusively for maintaining this repository itself and should not be distributed as part of the public Skill catalog.
+- Repository-local operational Skills may live under `.agents/skills/<skill-name>/` only when they are exclusively for maintaining this repository itself and should not be published as part of the public Skill catalog.
 - These repo-local Skills are source files, not APM deployment output, when they are explicitly tracked by git.
-- Do not add repo-local Skills to the public Skill catalog or distribution bundle.
-- Keep repo-local Skill names kebab-case and include `SKILL.md`. Include `SKILL-ja.md` when that `SKILL.md` is in English; omit the duplicate for a documented Japanese writing/editing exception. Add supporting files only when needed.
+- Do not add repo-local Skills to the public Skill catalog or the plugin ZIP.
+- Keep repo-local Skill names kebab-case and include `SKILL.md`. Add `SKILL-ja.md` as described in [Skill files](docs/maintainers/localization.md#skill-files). Add supporting files only when needed.
 - The current tracked repo-local Skill exceptions are:
   - `.agents/skills/maintain-japanese-references/`
 
 ## Working rules
 
 - Keep changes small and easy to review
-- Write authored or adapted Skill bodies in English by default. A Skill whose core purpose is Japanese writing or editing may use a Japanese `SKILL.md` as its canonical source and omit a duplicate `SKILL-ja.md`; document the exception and provenance. The upstream Gist mirrors retain their original Japanese files.
+- Write authored or adapted Skill bodies in English by default. For the Japanese exception, see [Skill files](docs/maintainers/localization.md#skill-files).
 - Do not hardcode local absolute paths or environment-specific assumptions
-- Prioritize clear triggers, inputs, expected outputs, and boundaries in Skill bodies
-- Add concise ordered steps and verification when sequence or completeness materially affects correctness
-- Keep helper scripts and reference materials to the minimum needed for the Skill to work
-- Skill bodies must be readable by agents that have no prior context about this repository
-- When a maintained English canonical file is added or changed, use `.agents/skills/maintain-japanese-references/` to review its Japanese counterpart and update it only when the canonical meaning changes
+- Write Skill bodies following [Design the Skill](docs/maintainers/authoring.md#design-the-skill), so that agents with no prior context about this repository can use them
+- When an English source is added or changed, use `.agents/skills/maintain-japanese-references/` to review its Japanese reference translation and update it only when the meaning of the English source changes
 
 ## APM Skill bundle workflow
 
-- This repository distributes the root `skills/` catalog through APM. Do not add a root `apm.yml` or `apm.lock.yaml`; consumer repositories own their manifests and lockfiles.
+- This repository publishes the root `skills/` catalog through APM. Do not add a root `apm.yml` or `apm.lock.yaml`; consumer repositories own their manifests and lockfiles.
 - Before committing a public Skill change, run the repository checker and the unit tests for retained code. Verify the changed work and its safety boundaries as appropriate to the task.
-- When distribution behavior changes or a new plugin version is built, commit and push the candidate source, then verify the exact pushed commit from disposable consumer directories outside this repository.
-- Verify the full bundle, the `cognitive-rhythm-writing` and `japanese-tech-writing` selection, and the `skills/define-referents` individual path, as listed in `docs/maintainers/packaging.md`. Run consumer-side frozen install and audit checks against the generated consumer lockfile.
+- When installation behavior changes or a new plugin version is built, commit and push the candidate source, then verify the exact pushed commit from disposable consumer directories outside this repository, as described in [docs/maintainers/packaging.md](docs/maintainers/packaging.md).
 - Do not run a non-dry-run `apm install` or `apm update` in this repository. They create consumer manifests, lockfiles, and deployment artifacts in the source checkout.
 - An empty `.agents/` directory may exist because agent tools can create it.
 - Do not store review notes, temporary files, or other working artifacts under `.agents/`; use a temporary directory outside this repository instead.
 - If root APM manifests, APM-deployed `.agents/skills/*`, or `apm_modules/` are present, stop and report them. Remove them only after confirming they are generated artifacts and obtaining approval; preserve the explicitly tracked repo-local operational Skill listed above.
 
-## Commit message convention
-
-Follow `CONTRIBUTING.md` for commit messages and pull request titles.
-
 ## Changes that require approval
 
 - Editing `AGENTS.md`, `CLAUDE.md`, or `.github/copilot-instructions.md`
 - Editing `skills/*/SKILL.md`, `docs/*`, or other operational rule documents
-- Importing external Skills, adding dependencies, or changing distribution sources
-- Publishing plugin archives, such as through GitHub Releases
+- Importing external Skills, adding dependencies, or changing where the Skills are published from
+- Publishing the plugin ZIP, such as through GitHub Releases
 - Changes that alter the repository's purpose or directory structure policy
 
 ## Avoid
 
-- Copying external distributed Skills into this repository without modification, except for the two designated upstream Gist mirrors
+- Copying external Skills into this repository without modification, except for the two designated upstream Gist mirrors
 - Including secrets or non-public information in Skills, docs, scripts, or assets
 - Introducing OS-specific or agent-specific assumptions without explicit documentation
 - Proceeding with repository rule changes without approval
