@@ -50,7 +50,6 @@
 | `README.md` | 英語 | `README.ja.md` |
 | `CONTRIBUTING.md` | 英語 | `CONTRIBUTING-ja.md` |
 | `AGENTS.md` | 英語 | `AGENTS-ja.md` |
-| `CLAUDE.md` | 英語 | `CLAUDE-ja.md` |
 | `docs/<audience>/*.md` | 英語 | `docs/ja/<audience>/*.md` |
 | `.agents/skills/<tracked-skill>/SKILL.md` | 英語。記録した例外では日本語 | `.agents/skills/<tracked-skill>/SKILL-ja.md`（英語が基準の場合のみ） |
 

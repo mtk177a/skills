@@ -85,7 +85,7 @@ macOS（Apple シリコン）と Windows WSL で動くように、内容を OS �
 
 次のいずれかを行う前に、承認を得る。
 
-- `AGENTS.md`、`CLAUDE.md`、`.github/copilot-instructions.md` の編集
+- `AGENTS.md` と `.github/copilot-instructions.md` の編集、`CLAUDE.md` の追加
 - `skills/*/SKILL.md`、`docs/*`、その他の運用規則の文書の編集
 - 外部の Skill の取り込み、依存関係の追加、Skill の公開元の変更
 - GitHub Releases などでの Plugin の ZIP の公開

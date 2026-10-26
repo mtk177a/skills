@@ -47,7 +47,6 @@ When a source file changes, use the table to find its translation.
 | `README.md` | English | `README.ja.md` |
 | `CONTRIBUTING.md` | English | `CONTRIBUTING-ja.md` |
 | `AGENTS.md` | English | `AGENTS-ja.md` |
-| `CLAUDE.md` | English | `CLAUDE-ja.md` |
 | `docs/<audience>/*.md` | English | `docs/ja/<audience>/*.md` |
 | `.agents/skills/<tracked-skill>/SKILL.md` | English, or Japanese for a recorded exception | `.agents/skills/<tracked-skill>/SKILL-ja.md`, only when the source is English |
 

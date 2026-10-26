@@ -82,7 +82,7 @@ Keep customer names, internal URLs, secrets, API keys, and personal information 
 
 Get approval before you do one of these:
 
-- edit `AGENTS.md`, `CLAUDE.md`, or `.github/copilot-instructions.md`
+- edit `AGENTS.md` or `.github/copilot-instructions.md`, or add a `CLAUDE.md`
 - edit `skills/*/SKILL.md`, `docs/*`, or other documents of operational rules
 - import an external Skill, add a dependency, or change where the Skills are published from
 - publish the plugin ZIP, for example through GitHub Releases
