@@ -12,7 +12,7 @@ The output is two tables and a state.\
 The originating work continues the design, investigation, writing, or implementation.
 
 Read [references/referents-before-labels.md](references/referents-before-labels.md) completely each time you use this Skill.\
-Use it for the semantic decisions, and use this file for the steps and the output.
+Use it for the semantic decisions, and use `SKILL.md` for the steps and the output.
 
 ## Workflow
 
@@ -40,10 +40,10 @@ Use it for the semantic decisions, and use this file for the steps and the outpu
 
    Check each row without its label:
 
-   - It names a concrete referent.
-   - It states the current semantic role of the referent.
-   - It shows the place of the referent in the reasoning.
-   - It records the uncertainty.
+   - The row names a concrete referent.
+   - The row states the current semantic role of the referent.
+   - The row shows the place of the referent in the reasoning.
+   - The row records the uncertainty.
 
    Done when each row passes these checks.
 

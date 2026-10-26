@@ -79,7 +79,7 @@ Write it only to an established, authorized destination, and otherwise return it
 
    - The request authorizes recording.
    - The exact destination is supplied or established by authoritative guidance.
-   - The destination belongs to this task.
+   - The destination belongs to the task.
 
    Before you replace a `latest` artifact, confirm that it belongs to the same task.\
    Also confirm that it has no newer or conflicting state.\

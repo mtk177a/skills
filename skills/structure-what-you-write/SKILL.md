@@ -147,7 +147,7 @@ Read the result as a reader who did not see the authoring conversation, and chec
 
 - The opening sentences of each section state its point.
 
-- When several sections or documents changed together, each section meets these criteria.\
+- When several sections or documents changed together, each section meets the criteria in this list.\
   A corrected structure alone does not complete the revision.
 
 - The reader can find and understand related information together.

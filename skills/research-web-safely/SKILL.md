@@ -114,7 +114,7 @@ Give each material claim one evidence state:
 - `Mixed`: credible evidence conflicts, or applies to different versions, environments, or scopes.
 - `Not verified`: sufficient evidence is not available, not accessible, or outside the authorized search.
 
-These states describe the evidence.\
+The evidence states describe the evidence.\
 The originating work makes the final decision.\
 Report the quality of the sources and the confidence in the conclusion separately.
 

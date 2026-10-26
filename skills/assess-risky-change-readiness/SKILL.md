@@ -110,7 +110,7 @@ Include these items:
 - the state and its reason
 - the exact action, target, environment, revision or data scope, and execution boundary
 - the evidence state of the material inputs and the unknowns
-- why this assessment applies, and the material risk properties
+- why the readiness assessment applies, and the material risk properties
 - for each risk, the prevention or reduction, the detection, the abort condition, the recovery treatment, the owner, and the remaining risk
 - the preconditions, the go/no-go criteria, the monitoring, the point of no return, and the verification after the action
 - the authorization state, the decision owner, and any accepted loss

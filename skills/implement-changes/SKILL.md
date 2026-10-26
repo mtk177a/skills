@@ -20,7 +20,7 @@ Make the change in small units, and verify each unit before you start the next o
 
    If the change deletes or migrates data, adds a dependency, or changes authentication, credentials, permissions, or cryptography, confirm two things:
 
-   - The user authorized this action and this scope.
+   - The user authorized the action and the scope of the change.
    - A way to recover from a failure exists.
 
    Done when both are confirmed.\
@@ -38,7 +38,7 @@ Take one item from the test list, and use one of the two cycles below.
 
 ### TDD cycle
 
-Use this cycle when a fast test at a public interface can fail before the change for the expected reason.
+Use the TDD cycle when a fast test at a public interface can fail before the change for the expected reason.
 
 1. **Red**
 
@@ -53,9 +53,9 @@ Use this cycle when a fast test at a public interface can fail before the change
 
 3. **Refactor**
 
-   Improve the code and the tests that you wrote or changed in this cycle, for example names and duplication.\
+   Improve the code and the tests that you wrote or changed in the current cycle, for example names and duplication.\
    Run the tests after each small improvement.\
-   Done when the tests pass and the code of this cycle is clear.
+   Done when the tests pass and the code of the current cycle is clear.
 
 4. **Update the test list**
 
@@ -74,7 +74,7 @@ For the TDD rhythm and common mistakes, read `references/tdd_twada.md`.
 
 ### Check cycle
 
-Use this cycle for documentation, metadata, generated output, and refactoring that keeps behavior.\
+Use the check cycle for documentation, metadata, generated output, and refactoring that keeps behavior.\
 Use it also when a useful test needs large setup, many mocks, slow end-to-end infrastructure, or production-only state.\
 A test that mostly checks mocks or the current implementation is worse than the nearest useful check.
 

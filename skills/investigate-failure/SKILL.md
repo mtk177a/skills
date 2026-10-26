@@ -16,7 +16,7 @@ The output is a diagnosis or the next checkpoint, and the target stays unchanged
    State the expected behavior and the observed behavior.\
    Identify the system, the environment, the revision, the deployment or configuration state, the time window, and the impact.\
    Done when the failure and its target are clear enough to investigate safely.\
-   If they are not clear, stop with the state `Blocked`, and ask the smallest question that resolves this.
+   If they are not clear, stop with the state `Blocked`, and ask the smallest question that makes them clear.
 
 2. **Check the urgency and the authority**
 
@@ -103,7 +103,7 @@ For each material hypothesis, record these fields:
 - the assumptions, unknowns, confounding factors, and the environment where it applies
 - the confidence in the causal claim, separate from the impact and the test priority
 - the next distinguishing observation, and how each result changes the hypothesis or the next decision
-- the side effects, the authority, and the safety limits of that observation
+- the side effects, the authority, and the safety limits of the next observation
 
 For a hypothesis that is not rejected and can still change the state, give the next observation.\
 Otherwise, state why another observation does not change a decision.

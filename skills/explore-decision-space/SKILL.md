@@ -53,7 +53,7 @@ The output is the exploration, and the files stay unchanged.
 
    For `Solution space`, find the axes that change the structure of the solution.\
    Examples are the mechanism, responsibility boundary, state representation, processing order, tool boundary, and operational model.\
-   Develop structurally different options until the material axes and trade-offs of this decision are covered.
+   Develop structurally different options until the material axes and trade-offs of the decision are covered.
 
 5. **Compare**
 
@@ -70,7 +70,7 @@ The output is the exploration, and the files stay unchanged.
 
 ## States
 
-- `No expansion needed`: more options would not improve this decision.\
+- `No expansion needed`: more options would not improve the decision.\
   State why.
 - `Problem frames ready`: different problem frames and the conditions that distinguish them are clear, but the selection needs evidence or a judgment of the user.
 - `Options ready`: the problem frame and structurally different solutions are clear, but the selection needs evidence or a judgment of the user.

@@ -44,7 +44,7 @@ Report each problem with the evidence that another person needs to evaluate it.
 3. **Review the design**
 
    Start with the purpose, the design, the contracts, the responsibility boundaries, and the code that uses the changed code.\
-   Then select the review areas in [Review areas](#review-areas) that apply to this change.\
+   Then select the review areas in [Review areas](#review-areas) that apply to the change.\
    Done when you can state the risks of the change and the areas that you will review.
 
 4. **Inspect the diff**
@@ -166,7 +166,7 @@ Add these fields when they can change the label:
 - `Remediation cost and trade-offs`: the cost of the fix in work, verification, complexity, regression risk, and delay
 
 For a full re-review, add `Re-review state` and, for a `New` finding, `New finding origin`.\
-Add `Generalizable check` only when the check is useful outside this diff.
+Add `Generalizable check` only when the check is useful outside the reviewed diff.
 
 Compare risks in order, such as higher or lower, with evidence.\
 Select the smallest response that is sufficient for the risk that the evidence supports.
