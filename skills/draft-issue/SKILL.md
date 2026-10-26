@@ -137,10 +137,15 @@ When a check was not available, record the limit, and continue with the draft.
 Return the fields that apply:
 
 - **Status**: the state, the basis for the state, and the items that must be resolved before filing
+
 - **Issue draft**: the title, and the body adapted to the template and the type of work item
+
 - **Proposed metadata**, when supported: the confirmed labels, assignee, milestone, and related links, and the values that are unset or not verified
+
 - **Tracker checks**: the template state with its source or limit, and the duplicate state with the searched scope, the candidates, and the limit
+
 - **Data handling note**, when you removed, generalized, or withheld information: the data category and the reason from the visibility of the target, without the value
+
 - **Filing handoff**, when requested or ready:
   - the exact or open target
   - the final title, body, and metadata

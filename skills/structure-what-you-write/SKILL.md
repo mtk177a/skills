@@ -134,18 +134,30 @@ Give a short message the structure of a short message.
 Read the result as a reader who did not see the authoring conversation, and check these items:
 
 - The content serves the intended reader and purpose.
+
 - The required information is present, correct to its sources, and suitably qualified.
+
 - Each section, paragraph, list item, and table has a clear role.
+
 - The grouping criteria, hierarchy, order, and placement match the real relations of the information.
+
 - Each heading describes its content, and suggests no incorrect scope.
+
 - A reader of only the headings can tell the topic of each section.
+
 - The opening sentences of each section state its point.
+
 - When several sections or documents changed together, each section meets these criteria.\
   A corrected structure alone does not complete the revision.
+
 - The reader can find and understand related information together.
+
 - Each presentation form makes the information easier to find, compare, understand, or use.
+
 - The structure is as simple as the information allows, without extra fragments or repetition.
+
 - The restructured content keeps its meaning, requirements, limits, and authorized decisions.
+
 - For operational revisions, compare the source and the result in both directions:
 
   - Each existing requirement is still available to its executing reader.
@@ -153,6 +165,7 @@ Read the result as a reader who did not see the authoring conversation, and chec
 
   Remove unsupported requirements.\
   Keep necessary design proposals outside the finished artifact.
+
 - Changes to several files keep the necessary links, references, and independent behavior.
 
 When they apply, check factual claims, links, examples, commands, generated content, and repository checks.\
@@ -173,8 +186,10 @@ Read only the references that apply to the current task:
 ## Output
 
 - For creation or an authorized revision, produce the finished content, not a description of how to write it.
+
 - For a review only, identify the structural problems, explain their effects, and propose improvements.\
   Keep the target unchanged.
+
 - When you assess whether repository documentation needs to change, give one result:
 
   - an update is required
@@ -182,8 +197,12 @@ Read only the references that apply to the current task:
   - blocked by unknowns, with the missing evidence or decision
 
 - When no change is needed, keep the existing content.
+
 - When required information or authority is missing, identify the specific uncertainty, and complete the independent work.
+
 - Keep authoring notes, rejected alternatives, and internal revision history out of the finished content, unless they serve its readers.
+
 - Edit files, publish material, or contact other people only within the authorized scope.
+
 - Report the completed changes, the checks that you ran, the open issues, and the proposed changes outside the scope.\
   Separate structural changes from changes of sentences, and state where the depth of revision differs between sections.
