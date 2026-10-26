@@ -141,7 +141,30 @@ When you can choose between two words, use the more common one.\
 Treat the terms in the [glossary](glossary.md), product names, and identifiers as technical names.\
 Use one word for one meaning, and use the same word each time for the same thing.
 
-These rules do not apply to the two upstream Gist mirrors, to Skills whose source is in Japanese, or to quoted text and code.
+These rules do not apply to the two upstream Gist mirrors, to quoted text and code, or to Japanese text.\
+For Japanese text, see [Apply the same principles to Japanese](#apply-the-same-principles-to-japanese).
+
+## Apply the same principles to Japanese
+
+Apply the intent of the STE rules to Skills whose source is in Japanese, and to the Japanese reference translations.\
+The word limits and the STE dictionary are specific to English, so use these rules instead:
+
+- Write one instruction in each sentence.
+- When a sentence joins three or more clauses with commas (読点), split it.
+- When the actor changes, name the new actor.\
+  When the actor is clear from the context, leave it out, because a repeated subject is unnatural in Japanese.
+- Write each instruction as a plain statement, such as 「〜する」.\
+  Use the active form, not the passive or an indirect request.
+- Do not join four or more Sino-Japanese nouns (漢語).\
+  Separate them with 「の」 or a verb.
+- Give each paragraph one topic and six sentences or fewer.
+- Use a vertical list when a sentence must hold more conditions or items.
+- Keep particles and verbs, and avoid a chain of noun-ending phrases (体言止め).
+- When the referent of 「この」, 「その」, or a similar word is in another paragraph or list item, write the noun instead.
+- Use the terms in the [glossary](glossary.md), and use the same word each time for the same thing.
+
+These rules address the clarity of instructions.\
+The naturalness of Japanese, such as translated syntax and mixed English, follows the `write-natural-japanese` Skill.
 
 ## Format steps and lists
 
@@ -341,7 +364,7 @@ When you add a Skill or change what it does, check the documents that describe i
 - [ ] The `description` shows when to use the Skill without reading the body.
 - [ ] The body covers the points in [Body](#body) without copying a heading template mechanically.
 - [ ] The body is in English, or a Japanese writing or editing exception is documented.
-- [ ] The English follows [Write in Simplified Technical English](#write-in-simplified-technical-english).
+- [ ] The English follows [Write in Simplified Technical English](#write-in-simplified-technical-english), and Japanese text follows [Apply the same principles to Japanese](#apply-the-same-principles-to-japanese).
 - [ ] Each step ends with a completion criterion, as described in [Steps](#steps).
 - [ ] Each constraint meets the conditions in [Constraints](#constraints).
 - [ ] `SKILL-ja.md` exists, unless `SKILL.md` is the documented Japanese source.
