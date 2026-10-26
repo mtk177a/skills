@@ -127,7 +127,8 @@ These rules do not apply to the two upstream Gist mirrors, to Skills whose sourc
 
 - **Steps with more than one sentence**: if a step has more than one sentence or contains a list, start the step with a short bold name.\
   Put a blank line after the name, and write the body of the step below it.
-- **Short steps**: if each step is one sentence, write the sentence directly after the number.
+- **Short steps**: if each step in a list is one sentence, write the sentence directly after the number.\
+  If one step in the list needs a bold name, give a bold name to all steps in that list.
 - **Blank lines between items**: if one item of a list contains a list, a table, or more than one paragraph, put a blank line between all items of that list.\
   Otherwise, put no blank lines between the items.
 - **Content that belongs to a step**: indent a table or a list that belongs to a step, so that it stays inside that step.
