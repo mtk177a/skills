@@ -1,56 +1,82 @@
 ---
 name: make-it-click
-description: Write or revise a reader-facing explanation of a specific topic, decision, process, rule, or mechanism in English or Japanese. Use when the intended reader needs to understand why or how something works, what a conclusion depends on, or what information matters to a decision, including everyday and technical subjects. Not for routine replies without an explanation task, pure copyediting, or adding a learning program to an active task.
+description: Writes or revises an explanation of a specific topic, decision, process, rule, or mechanism for its reader, in English or Japanese. Use when the reader needs to understand why or how something works, what a conclusion depends on, or what information matters to a decision, for everyday or technical subjects.
 license: MIT
 ---
 
 # Make It Click
 
-Help the intended reader understand an answer and its reasons by supplying the premises and connections this explanation needs. Shorter sentences or simpler words alone cannot replace a missing connection.
+Help the reader understand an answer and the reasons for it.\
+Give the premises and the connections between facts that the reader needs for the answer.\
+Shorter sentences and simpler words cannot replace a missing connection.
 
 ## Procedure
 
-### 1. Identify the reader and purpose
+### 1. Identify the reader and the purpose
 
-- Identify the reader's actual question and what they should understand, compare, or decide after reading.
-- Use the reader and context supplied by the request.
-- If the reader, purpose, or relevant context is unspecified, make a reasonable assumption and begin. Ask first only when that uncertainty would materially change the explanation.
+- Identify the actual question of the reader, and what the reader must understand, compare, or decide after reading.
+- Use the reader and the context that the request gives.
+- If the reader, purpose, or context is not specified, make a reasonable assumption, and start.\
+  Ask first only when the missing reader, purpose, or context would change the explanation.
 
-### 2. Establish the information needed
+### 2. Establish the necessary information
 
-- Check the supplied material and available evidence to establish the facts needed to answer the reader's question.
-- Identify the premises the reader needs to understand the answer and the conditions under which the conclusion holds.
-- Check what remains unsupported or unknown and what information may be disclosed.
-- Supply a needed case-specific premise without adding an unrelated basics lesson. A reader's general knowledge does not establish that they know this case's premise.
-- If revising existing text, distinguish a passage whose supported meaning must remain faithful from notes the requester has authorized you to select and reorganize.
-- In that revision, preserve material claims, actors, conditions, negation, degree of certainty, exact strings, and the requested edit scope. If clarity appears to require changing one of these, make the conflict visible rather than silently changing the claim.
-- If a decisive fact is unavailable, explain the supported part and state the precise limit. Ask for the fact when completion depends on it; do not invent facts, causes, policy, or certainty to fill the gap.
+- Check the supplied material and the available evidence for the facts that answer the question.
+
+- Identify the premises that the reader needs to understand the answer, and the conditions under which the conclusion is true.
+
+- Identify what is still unsupported or unknown, and what information you can disclose.
+
+- Explain the premises of the topic that the reader needs to understand the answer.\
+  A reader who knows the field can still lack the premises of the specific topic.\
+  Leave out basic lessons that the answer does not need.
+
+- When you revise existing text, separate two kinds of source text:
+
+  - a passage whose supported meaning you must keep
+  - notes that the requester allows you to select and reorganize
+
+- When you revise existing text, keep the claims, actors, conditions, negations, certainty, exact strings, and the requested edit scope.\
+  If clarity seems to need a change to one of these, show the conflict.\
+  Keep the claim as it is.
+
+- If a decisive fact is not available, explain the supported part, and state the exact limit.\
+  Ask for the fact when completion depends on it.\
+  Write only the facts, causes, policy, and certainty that the evidence supports.
 
 ### 3. Map the relationships
 
-- Identify the relationships the reader must follow, such as cause and effect, condition and outcome, comparison, sequence, or whole and part.
-- Keep a particular example distinct from the general rule it illustrates.
-- For history or complex phenomena, preserve multiple contributing factors where warranted. Distinguish established facts, interpretations, and hypotheses.
+- Identify the relations that the reader must follow.\
+  Examples are cause and effect, condition and result, comparison, sequence, and whole and part.
+- Keep each example separate from the general rule that it shows.
+- For history or complex events, keep several contributing factors when the evidence supports them.\
+  Separate established facts, interpretations, and hypotheses.
 
-### 4. Choose the order and write
+### 4. Choose the order and the form, and write
 
-- Place the answer, context, mechanism, evidence, and caveat where each helps this reader follow the explanation.
-- Choose paragraphs, bullets, steps, or a table according to the relationships and the reader's task.
-- Show how the premises support the conclusion rather than merely listing facts.
-- Use a concrete example when it clarifies a rule or distinction, and identify its scope.
-- Do not impose a universal conclusion-first order, length, example count, or template. Keep material qualifications even when the explanation becomes longer.
+- Put the answer, context, mechanism, evidence, and caveats where each one helps the reader follow the explanation.
+- Choose a form for each part: paragraphs, bullets, steps, or a table.\
+  Base the choice on the relations from step 3, and on what the reader does after reading.
+- Show how the premises support the conclusion.
+- Use a concrete example when it makes a rule or a difference clearer, and state its scope.
+- Choose the order, the length, and the number of examples for the reader and the question.\
+  Keep material qualifications, even when the explanation becomes longer.
 
-### 5. Check from the reader's position
+### 5. Check from the position of the reader
 
-- Read the completed explanation for an answer to the question and an understandable reason.
-- Check material application conditions, calibrated uncertainty, and appropriate disclosure.
-- Remove internal drafting history, unsupported additions, and details that do not help this reader.
-- Check that the selected form has not hidden a necessary relationship or qualification.
+- Read the finished explanation, and check that it answers the question with a reason that the reader can follow.
+- Check the material conditions of application, the stated uncertainty, and what the explanation discloses.
+- Remove drafting history, unsupported additions, and details that the reader does not need.
+- Check that the selected form shows each necessary relation and qualification.
 
 ## Output
 
-Return the finished explanation or revision in the requested language, form, and scope. Make an evidence gap clear only when it affects what the reader can conclude.
+Return the finished explanation or revision in the requested language, form, and scope.\
+Show a gap in the evidence when it affects what the reader can conclude.
 
 ## Examples
 
-Consult [explanation examples](references/explanation-examples.md) when a concrete illustration would help decide what premises to include, how to separate an example from its rule, or how to order a difficult explanation. The examples inform judgment; their wording and structures are not required outputs.
+Read [explanation examples](references/explanation-examples.md) when a concrete case helps a decision.\
+Examples are which premises to include, how to separate an example from its rule, and how to order a difficult explanation.\
+The examples support your judgment.\
+Their wording and structure are not required outputs.
