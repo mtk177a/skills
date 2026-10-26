@@ -26,7 +26,7 @@ When you change an English source, update its Japanese reference translation as 
 Choose checks that cover the changed behavior and the conditions under which it could fail.\
 Also verify the results of the work and its safety boundaries.\
 Record the checks performed, their results, and material gaps in the pull request.\
-Do not report a check you did not run as passed.
+Report each check that you did not run as not run.
 
 Before committing, run these from the repository root:
 
@@ -37,8 +37,22 @@ git diff --check
 ```
 
 `check_repository.py` only reads files.\
-It checks Skill structure and metadata, the README catalogs, the upstream mirror hashes, links and anchors, translation notices, companion relationships, Skill name references, personal absolute paths, and files that APM deploys into this repository.\
-It exits with `0` when nothing is wrong, `1` when it finds problems to fix, and `2` when it cannot run.
+It checks these items:
+
+- Skill structure and metadata
+- the README catalogs
+- the hashes of the upstream mirrors
+- links and anchors
+- translation notices
+- companion relationships and Skill name references
+- personal absolute paths
+- files that APM deploys into this repository
+
+It exits with one of these codes:
+
+- `0`: nothing is wrong.
+- `1`: it found problems to fix.
+- `2`: it could not run.
 
 When you change how the Skills are installed or build a new plugin version, also follow [Build the plugin ZIP](docs/maintainers/packaging.md).
 
@@ -52,8 +66,9 @@ Describe the result and verification in the pull request using the [PR template]
 
 ### Commit messages and pull request titles
 
-Use the Conventional Commits form for the commit messages you create or edit in this repository and for pull request titles.\
-A pull request title describes the overall purpose of the pull request, and each commit summary describes the change in that commit.
+Use the Conventional Commits form for the commit messages that you create or edit, and for pull request titles.\
+A pull request title describes the overall purpose of the pull request.\
+Each commit summary describes the change in its commit.
 
 GitHub-generated merge commits and unedited Dependabot titles and commit messages are exempt.\
 If you edit a generated title or message, follow this convention.
@@ -68,11 +83,13 @@ If you edit a generated title or message, follow this convention.
 ```
 
 - Write a short, specific English summary of the result, without a final period.
-- Use `!` only for a breaking change, and explain the break in the commit body or the pull request description.
+- Use `!` only for a breaking change.\
+  Explain the break in the commit body or the pull request description.
 - Choose `type` from the primary purpose and result, not from the file extension or the number of changed lines.\
   Tests and documentation that support that purpose take the same `type`.
 - If a summary would have to list independent purposes, reconsider how the change is split.\
-  When changes must be handled together, name the primary purpose in the title and explain how the changes relate in the pull request body.
+  When changes must stay together, name the primary purpose in the title.\
+  Explain how the changes relate in the pull request body.
 
 #### Types
 
@@ -87,8 +104,10 @@ If you edit a generated title or message, follow this convention.
 | `ci` | Change CI configuration or execution conditions as the primary purpose |
 
 Skill instructions are text, but they define behavior.\
-For a change that adds, corrects, or restructures those instructions, use the `type` that matches that change, and keep `docs` for changes whose primary purpose is explanation.\
-Intentionally changing the policy or a value of a configuration that works is not a `fix` unless it corrects a confirmed defect.
+For a change that adds, corrects, or restructures those instructions, use the `type` that matches the change.\
+Use `docs` for changes whose primary purpose is explanation.\
+A `fix` corrects a confirmed defect.\
+An intentional change to the policy or a value of a working configuration is not a `fix`.
 
 #### Scopes
 
