@@ -1,12 +1,12 @@
 # Worked examples and counterexamples
 
-Use these examples to reason about ambiguous structural choices, not to copy a fixed format into every task.
-Each example separates the symptom, the underlying information problem, one reasonable improvement, and circumstances in which the choice would change.
-All examples are fictional and illustrate writing decisions rather than actual project configuration.
+Use these examples to reason about unclear structural choices, not as a fixed format to copy.\
+Each example separates the symptom, the underlying information problem, one reasonable improvement, and the conditions that would change the choice.\
+All examples are fictional, and they show writing decisions, not the configuration of a real project.
 
-## 1. Do not bundle independent records into arbitrary bullets
+## 1. Present independent records as peers
 
-**Problem:** Six independently named views are distributed across two bullets of three, with a checking instruction as a third peer.
+**Problem**: six independently named views are in two bullets of three, with a check instruction as a third peer.
 
 **Before:**
 
@@ -18,8 +18,9 @@ All examples are fictional and illustrate writing decisions rather than actual p
 - Confirm the filters and displayed columns before use.
 ````
 
-**Diagnosis:** The first two items are records, but the third is an instruction; the groups of three lack a meaningful classification axis.
-The heading also implies all project views are listed, which may not be true.
+**Diagnosis**: the first two items are records, and the third is an instruction.\
+The groups of three have no meaningful axis of classification.\
+The heading also suggests that the list contains all project views, which may be false.
 
 **One improvement:**
 
@@ -43,12 +44,13 @@ The heading also implies all project views are listed, which may not be true.
 - Verify the fields needed for this task are displayed.
 ````
 
-**Decision changes when:** If the reader only needs six names, six bullets may be simpler than a table.
-If the six views have two real functional categories, name those categories rather than grouping them by count.
+**The choice changes when**: the reader needs only the six names.\
+Then six bullets can be simpler than a table.\
+If the six views have two real functional categories, name those categories, and group by them, not by count.
 
-## 2. Make shared parent topics explicit
+## 2. Make a shared parent topic explicit
 
-**Problem:** Two related subtopics appear as independent sections.
+**Problem**: two related subtopics appear as independent sections.
 
 **Before:**
 
@@ -62,7 +64,7 @@ If the six views have two real functional categories, name those categories rath
 [Checks]
 ````
 
-**Diagnosis:** The headings are logical peers syntactically, but both belong to the same task-specific topic.
+**Diagnosis**: the headings are peers in the syntax, but both belong to the same topic of the task.
 
 **One improvement:**
 
@@ -78,14 +80,17 @@ If the six views have two real functional categories, name those categories rath
 [Checks]
 ````
 
-**Decision changes when:** If an existing parent heading already covers these two topics, do not create a redundant additional parent.
-The chosen `h3` and `h4` levels are illustrative; use levels appropriate to the surrounding document.
+**The choice changes when**: an existing parent heading already covers these two topics.\
+Then that heading is sufficient, and no new parent is necessary.\
+The levels `h3` and `h4` are examples.\
+Use the levels that fit the surrounding document.
 
 ## 3. Separate different information functions inside one section
 
-**Problem:** A section titled "State and completion" contains a status table, a paragraph about observing work, a completion table, and a paragraph about PR evidence without signaling the transitions.
+**Problem**: a section titled "State and completion" contains a status table, a paragraph about observed work, a completion table, and a paragraph about PR evidence.\
+It does not show where one function ends and the next starts.
 
-**Diagnosis:** State definitions, rules for interpreting progress, and completion criteria answer related but distinguishable questions.
+**Diagnosis**: state definitions, rules to interpret progress, and completion criteria answer related, but different, questions.
 
 **One improvement:**
 
@@ -116,12 +121,14 @@ The chosen `h3` and `h4` levels are illustrative; use levels appropriate to the 
 A merged PR does not by itself establish that deployment or all related Issue requirements are complete.
 ````
 
-**Decision changes when:** If the document is an extremely short status lookup sheet, one combined table or compact subsection may suffice.
-Do not invent status transitions or completion conditions absent an authoritative source.
+**The choice changes when**: the document is a very short sheet to look up status.\
+Then one combined table or a compact subsection can be sufficient.\
+Take status transitions and completion conditions from an authoritative source.
 
-## 4. Define independent fields independently when lookup is the task
+## 4. Define independent fields separately when the task is lookup
 
-**Problem:** Two distinct multi-select fields are shown in one table only because both are multi-selects; special values and examples are buried in prose far below the table.
+**Problem**: two different multi-select fields are in one table only because both are multi-selects.\
+Their special values and examples are in prose far below the table.
 
 **One improvement:**
 
@@ -148,16 +155,18 @@ Do not invent status transitions or completion conditions absent an authoritativ
 
 - An unset field means not yet assessed, if the system defines it that way.
 - An explicit `None` means assessed with no current action, if the system defines it that way.
-- Do not combine `None` with another action when they are mutually exclusive.
+- Use `None` alone, when `None` and the other actions are mutually exclusive.
 - Example: A prepared proposal may require `Review` without requiring `Research`.
 ````
 
-**Diagnosis:** Each field is a separate reference entity; their repeated values and selection rules deserve local, comparable definitions.
+**Diagnosis**: each field is a separate reference entity.\
+Its repeated values and selection rules need local, comparable definitions.
 
-**Decision changes when:** A single table may be better if the actual reader task is to compare fields by a shared criterion, or if their values and conditions are intentionally modeled as one domain.
-Do not infer the meaning of unset or `None` from the name; obtain that definition from the actual system.
+**The choice changes when**: the actual task of the reader is to compare the fields on a shared criterion, or their values and conditions form one domain on purpose.\
+Then one table can be better.\
+Take the meaning of unset and `None` from the actual system, not from the name.
 
-## 5. Turn long inline inventories into inspectable items when needed
+## 5. Turn long inline lists into items that the reader can check
 
 **Before:**
 
@@ -165,7 +174,8 @@ Do not infer the meaning of unset or `None` from the name; obtain that definitio
 Before generating the report, inspect the title, status, category, repository, assignee, target date, deadline, update time, and linked artifact.
 ````
 
-**Diagnosis:** The field names are independent check targets, but a long inline list makes omissions harder to spot during execution.
+**Diagnosis**: the field names are independent targets of a check.\
+In a long inline list, a missing item is harder to see during execution.
 
 **One improvement:**
 
@@ -183,10 +193,11 @@ Before generating the report, inspect these fields for each relevant item:
 - `Linked artifact`
 ````
 
-**Decision changes when:** A very short incidental list, such as "Check the title and status," remains natural as prose.
-This is a usability decision, not a rule that one field always requires one bullet.
+**The choice changes when**: the list is very short and incidental, such as "Check the title and status".\
+Then the prose stays natural.\
+This is a decision about usability, not a rule that each field needs its own bullet.
 
-## 6. Attach checks and details to the correct procedural step
+## 6. Attach checks and details to the correct step
 
 **Before:**
 
@@ -199,28 +210,36 @@ This is a usability decision, not a rule that one field always requires one bull
 Read the latest item before writing, then read it again after writing.
 ````
 
-**Diagnosis:** One of the "verification" activities is a prerequisite to changing data; the other checks the result afterward.
-The separate heading hides their order and relationship.
+**Diagnosis**: one of the verification activities is a prerequisite of the change, and the other checks the result afterward.\
+The separate heading hides their order and their relationship.
 
 **One improvement:**
 
 ````markdown
-1. **Inspect the current item.**
+1. **Inspect the current item**
+
    - Read the latest state immediately before editing.
    - Check for changes made by someone else.
-2. **Apply the authorized update.**
+
+2. **Apply the authorized update**
+
    - Change only the intended fields.
-3. **Verify the update.**
+
+3. **Verify the update**
+
    - Re-read the saved item.
    - Confirm the intended change and preservation of other fields.
-4. **Report the result.**
+
+4. **Report the result**
+
    - Distinguish verified success, partial success, and unverified outcomes.
 ````
 
-**Decision changes when:** A shared verification procedure can live elsewhere if it has an independently maintained purpose and the executing reader is guaranteed access to it.
-Do not detach essential checks from a standalone instruction that cannot retrieve the referenced procedure.
+**The choice changes when**: a shared verification procedure has its own maintained purpose, and the executing reader can always reach it.\
+Then it can live elsewhere.\
+For an independent instruction that cannot retrieve the referenced procedure, keep the essential checks in the instruction.
 
-## 7. Show a required output form instead of describing its formatting indirectly
+## 7. Show a required output form directly
 
 **Before:**
 
@@ -245,15 +264,16 @@ Remaining work
 ```
 ````
 
-**Diagnosis:** The intended structure is easier to reproduce and verify when represented directly.
+**Diagnosis**: the reader can reproduce and verify the intended structure more easily when it is shown directly.
 
-**Decision changes when:** If the user asked for only a short natural-language answer and no stable report shape is needed, an exact template may create needless rigidity.
-For machine-readable output, specify an actual schema rather than this illustrative sample.
+**The choice changes when**: the user asked for only a short answer in natural language, and no stable report shape is necessary.\
+Then an exact template adds needless rigidity.\
+For output that a machine reads, give an actual schema instead of this illustrative sample.
 
-## 8. Put maintainer rules in the maintainer's document
+## 8. Put rules for maintainers in the document for maintainers
 
-**Problem:** A self-contained scheduled task includes a lengthy statement about why unrelated agent clients must not inherit the task's permissions.
-The statement is true in context but adds no instruction the executing task needs in order to stay within its own approved operations.
+**Problem**: an independent scheduled task contains a long statement about why unrelated agent clients do not inherit the permissions of the task.\
+The statement is true, but it adds no instruction that the executing task needs to stay within its own approved operations.
 
 **Candidate organization:**
 
@@ -265,12 +285,13 @@ Standalone task body
 - States what this task is authorized to read, change, or report, including essential denials and exception behavior.
 ````
 
-**Diagnosis:** Repository governance and an executing agent's actual permission boundary serve different readers.
+**Diagnosis**: the governance of the repository and the actual permission boundary of the executing agent serve different readers.
 
-**Decision changes when:** If the task runs without the README and the disputed statement is necessary to prevent an unsafe action, retain the necessary operational rule in the task body.
-Do not remove safety constraints merely because a related explanation exists elsewhere.
+**The choice changes when**: the task runs without the README, and the statement is necessary to prevent an unsafe action.\
+Then keep the necessary operational rule in the task body.\
+Keep each safety constraint where the executing agent needs it, even when a related explanation exists elsewhere.
 
-## 9. Do not apply a document template to a short message
+## 9. Keep a short message short
 
 **Input:**
 
@@ -294,39 +315,44 @@ The test result is linked in the PR.
 Deployment has not been verified yet.
 ````
 
-**Better choice:** Keep the original two sentences in the same short message.
-They give a result, supporting location, and an important qualification without becoming a multi-section document.
+**Better choice**: keep the original two sentences in one short message.\
+They give a result, the location of the evidence, and an important qualification, without a document of several sections.
 
-**Decision changes when:** A recurring report with several independent results or downstream fields may warrant stable labels or a template.
+**The choice changes when**: a recurring report has several independent results or fields for later use.\
+Then stable labels or a template can help.
 
-## 10. Do not force a document split merely because topics differ
+## 10. Split a document only when the split helps the reader
 
-**Situation:** A standalone agent task contains an objective, a table of accepted values, ordered execution steps, and a failure path.
+**Situation**: an independent agent task contains an objective, a table of accepted values, ordered execution steps, and a failure path.
 
-**Overzealous restructuring:** Move the values and failure handling into two separate reference files to make each file "one information type."
+**Overzealous restructuring**: move the values and the failure handling into two separate reference files, so that each file has "one information type".
 
-**Better choice:** Preserve the required information in the standalone task when it cannot reliably load companion files at execution time.
-Use nested sections to distinguish definitions, steps, and exceptions while keeping the task self-contained.
+**Better choice**: keep the required information in the independent task when the task cannot reliably load other files when it runs.\
+Use nested sections to separate definitions, steps, and exceptions, and keep the task self-contained.
 
-**Decision changes when:** If the execution environment guarantees dependency loading, a maintained external reference may avoid conflicting copies.
-Verify that guarantee rather than assuming it.
+**The choice changes when**: the execution environment guarantees that dependencies load.\
+Then a maintained external reference can prevent conflicting copies.\
+Verify that guarantee before you rely on it.
 
-## 11. Distinguish an appropriate source-of-truth move from an unauthorized edit
+## 11. Separate a source-of-truth move from an unauthorized edit
 
-**Situation:** A README has a duplicated list of configuration options and the actual validated schema lives in a separate generated reference.
+**Situation**: a README has a copied list of configuration options, and the validated schema is in a separate generated reference.
 
-**Structural recommendation:** Keep a short description and a descriptive link in the README, and manage the precise values at the schema or generated reference.
+**Structural recommendation**: keep a short description and a descriptive link in the README.\
+Manage the exact values in the schema or the generated reference.
 
-**Permission boundary:** If the request authorizes only a README review, report the recommended cross-file change but do not edit the other file or change the configuration schema.
+**Permission boundary**: if the request authorizes only a review of the README, report the recommended change across files.\
+Keep the other file and the configuration schema unchanged.
 
-**Decision changes when:** A small, stable excerpt may be justified for quick onboarding or an offline workflow if the risk of divergence is addressed.
+**The choice changes when**: a quick onboarding or an offline workflow needs a small, stable excerpt, and the risk of divergence is handled.\
+Then the excerpt can be justified.
 
-## Review prompts for every example
+## Review questions for each example
 
-Before copying a pattern, ask:
+Before you copy a pattern, ask these questions:
 
-- Which reader task made this structure appropriate?
+- Which task of the reader made this structure appropriate?
 - What did each row, column, bullet, heading, or file represent?
-- What relationship was exposed by the improvement?
-- Which details are facts of the example rather than general rules?
-- What change in reader task, scope, medium, or execution environment would reverse the decision?
+- Which relationship did the improvement show?
+- Which details are facts of the example, and not general rules?
+- Which change of the task, scope, medium, or execution environment would reverse the decision?
