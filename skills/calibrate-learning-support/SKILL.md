@@ -1,92 +1,123 @@
 ---
 name: calibrate-learning-support
-description: Adjusts AI learning support around an active task so a user can retain or recover task-specific understanding, decision ownership, and verification while work continues. Use when the user explicitly prioritizes learning, says they cannot explain or evaluate AI-produced work, asks to preserve understanding while delegating, or continues after an understanding checkpoint; not for ordinary tool or model selection, general teaching unrelated to an active task, or blocking a clear request merely because the domain is unfamiliar.
+description: Adjusts AI learning support around an active task, so that the user keeps or recovers task-specific understanding, decision ownership, and verification while the work continues. Use when the user prioritizes learning, says that they cannot explain or evaluate AI-produced work, asks to keep their understanding while they delegate, or continues after an understanding checkpoint.
 license: MIT
 ---
 
 # Calibrate Learning Support
 
-## Objective
-
-- Adjust AI support around an active task so the user can make the decisions they own and explain or verify the parts for which they remain accountable.
-- Treat calibration as an iterative layer around the originating workflow, not as a one-time study plan or a replacement for implementation, investigation, design, or review.
-- Preserve requested progress while spending learning effort only where misunderstanding could change a decision, verification, or outcome.
-
-## Evidence and calibration state
-
-Gather what is available:
-
-- the active task, originating workflow, and next decision or action
-- the user's stated learning goal, time constraint, desired support, and accountability
-- what the user has explicitly explained, chosen, questioned, or marked as unknown
-- the change, proposal, evidence, or AI-generated output that must be understood or evaluated
-- applicable authority, risk, and verification constraints
-
-Keep separate:
-
-- confirmed task facts and authoritative decisions
-- the user's stated understanding and unknowns
-- reasonable inferences about understanding, with their basis
-- AI-generated claims that still need evidence
-- user-owned decisions and work that may be delegated
-
-Do not infer competence or confusion from silence. Treat an answer to an understanding checkpoint as evidence for the point it addresses, not as proof of general mastery.
+Adjust AI support around an active task, so that the user can make their own decisions.\
+The user must also be able to explain or verify the parts for which they are accountable.\
+Treat the calibration as a repeated layer around the originating workflow, not as a study plan.\
+The originating workflow keeps its implementation, investigation, design, or review.\
+Keep the requested progress.\
+Spend learning effort only where a misunderstanding could change a decision, a verification, or the result.
 
 ## Calibration cycle
 
-1. Identify what the user needs from the active task now and what they need to understand, explain, verify, or decide themselves.
-2. Determine whether misunderstanding could materially affect the next action, accepted risk, verification, or later accountability. Do not expand into general theory that cannot change the current work.
-3. Separate decision ownership:
-   - the user owns objectives, priorities, accepted scope, risk tolerance, authorization, and final adoption when they are accountable for it
-   - AI may gather evidence, generate options, draft changes, run authorized checks, and explain reasoning
-   - AI may analyze consequential technical decisions, but return evidence, trade-offs, unknowns, and the adoption point to the responsible user
-4. Select support that fits the user's goal and constraints. Depending on context, explain before acting, work through a decision together, perform authorized work and explain its evidence afterward, reconstruct an existing AI output, or let the user perform a key step and review it.
-5. Continue or hand off to the originating workflow under that calibration. Do not stop merely to emit a learning plan when the next authorized action can proceed.
-6. Use an understanding checkpoint only when the response could change the next action or reveal a material gap. Ask for a focused explanation, choice, prediction, or verification step rather than testing general recall.
-7. Incorporate the user's response and new evidence. Preserve resolved points, reassess only the material gaps that remain, and adjust the support method when needed.
-8. Repeat while another calibration exchange can improve a decision, verification, or accountable explanation. Otherwise return to the originating workflow or finish the requested task.
+1. **Identify the need**
 
-## Decision criteria
+   Collect these items:
 
-Balance learning and progress on continuous axes rather than forcing a learning-versus-deadline choice. Consider:
+   - the active task, the originating workflow, and the next decision or action
+   - the learning goal, the time limit, the desired support, and the accountability that the user stated
+   - what the user explained, chose, asked, or marked as unknown
+   - the change, proposal, evidence, or AI output that the user must understand or evaluate
+   - the authority, risk, and verification constraints that apply
 
-- the depth of understanding the user requested for this task
-- the consequence and reversibility of a mistaken decision
-- whether the user must review, operate, maintain, approve, or explain the result
-- the available time and whether explanation can occur before, during, or after execution
-- the strength of available evidence
+   Identify what the user needs from the task now, and what the user must understand, explain, verify, or decide personally.\
+   Base each conclusion about understanding on what the user said or did.\
+   An answer to a checkpoint is evidence only for the point that it covers.
 
-Prefer a brief explanation with continued execution when the request is clear, authorized, and reversible. Increase collaboration or checkpoints when the user explicitly prioritizes learning, cannot evaluate an important output, or owns a consequential decision.
+2. **Decide whether understanding matters here**
 
-Use evidence appropriate to the claim, such as official documentation or standards, repository source and history, existing implementations, direct observation, reproduction, logs, tests, measurements, or an authorized domain owner's decision. Treat AI conclusions as inferences from evidence, not as evidence by themselves.
+   Decide whether a misunderstanding could change the next action, the accepted risk, the verification, or later accountability.\
+   Limit the explanation to what can change the current work.\
+   Compare these factors on a scale, not as a choice between learning and the deadline:
 
-## State and handoff contract
+   - the depth of understanding that the user asked for
+   - the result and the reversibility of a wrong decision
+   - whether the user must review, operate, maintain, approve, or explain the result
+   - the available time, and whether the explanation can come before, during, or after the work
+   - the strength of the available evidence
 
-Use the state that describes the next action:
+3. **Separate the decisions**
 
-- `Ready`: the originating workflow can proceed and material decision ownership and verification are clear
-- `Proceed with checkpoints`: work can continue, with identified decision or understanding checkpoints
-- `Continue calibration`: one material understanding gap still needs a focused explanation, question, or joint step before the affected action
-- `Blocked`: a required user-owned decision, authorization, or risk acceptance is unavailable
+   - The user owns the objectives, priorities, scope, risk tolerance, authorization, and final adoption, when the user is accountable for them.
+   - AI can gather evidence, generate options, draft changes, run authorized checks, and explain reasoning.
+   - AI can analyze consequential technical decisions.\
+     It returns the evidence, trade-offs, unknowns, and the point of adoption to the responsible user.
 
-Preserve the originating workflow's required deliverable and verification result in its expected form; the calibration state and learning support do not replace them.
+4. **Select the support**
 
-Adapt additional learning support to the task. Include only information that changes the next action:
+   Select support that fits the goal and the constraints of the user.\
+   The options include these methods:
 
-- the understanding or decision being protected
-- the selected support method and reason
-- work AI may proceed with and decisions the user owns
-- the next checkpoint or originating-workflow action
-- supporting evidence, unverified claims, and residual unknowns
+   - Explain before you act.
+   - Work through a decision together.
+   - Do the authorized work, and explain its evidence afterward.
+   - Reconstruct an existing AI output with the user.
+   - Let the user do a key step, and review it.
 
-Do not require a fixed template, number of concepts, comprehension questions, or self-study tasks. Offer practice or later self-study only when the user requests it or it materially supports the stated learning goal.
+   Use a short explanation with continued work when the request is clear, authorized, and reversible.\
+   Use more collaboration or checkpoints when the user prioritizes learning, cannot evaluate an important output, or owns a consequential decision.\
+   Give direct answers and authorized implementations, even in an unfamiliar domain.\
+   Adjust the explanation to the goal of the user.\
+   Let AI do the technical work that it can do safely and explain.
 
-## Boundaries
+5. **Continue the work**
 
-- Do not withhold a direct answer or authorized implementation merely because the domain is unfamiliar. Adjust explanation and checkpoints to the user's stated goal.
-- Do not convert learning support into authority to choose the user's objective, scope, risk tolerance, approval, or final adoption.
-- Do not force the user to rediscover technical work that AI can safely perform and explain.
-- Do not treat a quiz, the user's confidence, or passing tests alone as proof of understanding or correctness.
-- Keep high-risk controls required by the originating workflow; explanation and evidence do not replace authorization, rollback, recovery, sandboxing, or deterministic verification.
-- Choosing which available chat, agent, model, tool-enabled surface, or already-defined agent topology should handle the task is outside this Skill. This Skill owns learning and understanding calibration within the selected workflow.
-- Keep the workflow self-contained when adjacent Skills are unavailable. Name a handoff only when it clarifies ownership of the next action.
+   Continue the work, or hand it to the originating workflow, with this calibration.\
+   When the next authorized action can proceed, continue it instead of stopping for a learning plan.
+
+6. **Use a checkpoint when it matters**
+
+   Use an understanding checkpoint only when the answer could change the next action, or show a material gap.\
+   Ask for a focused explanation, choice, prediction, or verification step, not for general recall.\
+   A quiz result, the confidence of the user, or passing tests alone does not show understanding or correctness.
+
+7. **Update after each answer**
+
+   Add the answer of the user and the new evidence.\
+   Keep the resolved points, reassess only the material gaps that remain, and adjust the support method when necessary.
+
+8. **Repeat or return**
+
+   Repeat while another exchange can improve a decision, a verification, or an accountable explanation.\
+   Otherwise, return to the originating workflow, or finish the requested task.
+
+Use evidence suitable for each claim, for example:
+
+- official documentation or standards
+- the source and history of the repository, and existing implementations
+- direct observation, reproduction, logs, tests, and measurements
+- the decision of an authorized domain owner
+
+A conclusion of AI is an inference from evidence, not evidence.
+
+Keep the high-risk controls that the originating workflow requires.\
+Authorization, rollback, recovery, sandboxing, and deterministic verification stay in force, whatever the explanation says.
+
+## State
+
+Choose the state that describes the next action:
+
+- `Ready`: the originating workflow can continue, and the decision ownership and the verification are clear.
+- `Proceed with checkpoints`: the work can continue, with identified decision or understanding checkpoints.
+- `Continue calibration`: one material gap in understanding still needs a focused explanation, question, or joint step before the affected action.
+- `Blocked`: a required decision, authorization, or risk acceptance of the user is not available.
+
+## Report
+
+Deliver the result and the verification that the originating workflow requires, in its expected form.\
+The calibration state and the learning support are additions to that result.\
+Add only the information that changes the next action:
+
+- the understanding or decision that the support protects
+- the selected support method, and its reason
+- the work that AI can continue, and the decisions that the user owns
+- the next checkpoint, or the next action of the originating workflow
+- the supporting evidence, the unverified claims, and the remaining unknowns
+
+Offer practice or later self-study only when the user asks for it, or when it supports the stated learning goal.\
+The choice of a chat, agent, model, tool-enabled surface, or agent topology belongs to a separate decision.
