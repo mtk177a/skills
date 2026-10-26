@@ -1,7 +1,8 @@
 # Install and update the Skills
 
 This guide is for people who want to use the Skills in this repository.\
-It explains how to choose an installation method, how to install and update the Skills with each method, and how to check that they work.
+It explains how to choose an installation method, and how to install and update the Skills with each method.\
+It also explains how to check that the Skills work.
 
 There are two installation methods: APM and the plugin ZIP.\
 Both install the same Skills from this repository's `skills/` directory.
@@ -19,13 +20,13 @@ APM installs the Skills directly from this repository.\
 The plugin ZIP is not published, so you need to build it yourself before installing it.
 
 A plugin uploaded to ChatGPT is also available in Codex.\
-This has been checked in Codex and dots in the Codex app, and in Chat and dots in ChatGPT in a browser.
+The owner checked this in Codex and dots in the Codex app, and in Chat and dots in ChatGPT in a browser.
 
 ### Choose by where you use the Skills
 
 1. **You also use ChatGPT (Chat, Work, or dots)**
    - Use the plugin ZIP, because it is the only method that ChatGPT supports.
-   - Do not also install the Skills with APM for Codex.\
+   - Use the plugin in Codex too, instead of an APM installation.\
      The plugin is already available in Codex.
 2. **You use Codex but not ChatGPT**
    - Use APM.\
@@ -37,16 +38,17 @@ This has been checked in Codex and dots in the Codex app, and in Chat and dots i
    - Use APM, unless you already use the plugin ZIP for ChatGPT.
    - You can also extract the plugin ZIP into Cursor's local plugin directory.
 
-### Do not install the same Skills twice
+### Install each Skill once
 
 In each environment, install each Skill through only one method.\
-Before you enable the plugin, disable or remove the same Skills installed through another plugin or through APM, including APM installations of individual Skills by path.
+Before you enable the plugin, disable or remove the same Skills that another plugin or APM installed.\
+This includes APM installations of individual Skills by path.
 
 - APM installs Skills for Codex and Cursor into the same `.agents/skills/` directory.\
   An APM installation for Cursor therefore also makes the Skills visible to Codex in that project.
 - Use the client's own controls to disable or remove duplicates.
-- Do not remove unrelated Skills or credentials.
-- Do not rely on undocumented precedence or namespaces to decide which duplicate the client uses.
+- Remove only the duplicates, and keep unrelated Skills and credentials.
+- Keep one copy of each Skill, so that undocumented precedence or namespaces cannot decide which copy the client uses.
 
 Installing a Skill makes its instructions available to the client.\
 It does not give the agent shell, repository, external-service, subagent, or write access.\
@@ -107,7 +109,8 @@ Build it by following [Build the plugin ZIP](../maintainers/packaging.md).
    - Select the plugin in the UI and name the Skill in your request.
    - For example: “Use `define-referents` from `mtk177a-skills` and read its reference before proposing names.”
 4. **Check each place you use the plugin**
-   - Check ChatGPT's Chat, Work, and dots, and Codex separately, because how you invoke a Skill and which capabilities are available can differ.
+   - Check ChatGPT's Chat, Work, and dots, and Codex separately.\
+     The way to invoke a Skill and the available capabilities can differ.
    - Discovery: the Skill appears in the list.
    - Loading: the client shows that it read the Skill body and references, if it can show this.
    - Output: the answer you received.\
