@@ -5,7 +5,8 @@ It records which terms this repository uses for its own concepts, and which refe
 Use it when you write about these concepts in documentation or Skill bodies, or when you translate them into Japanese.
 
 This is not a fixed translation table.\
-Use the same term when the text points to the same thing, and choose the term from what the text points to, not from the English word alone.\
+Use the same term when the text points to the same thing.\
+Choose the term from what the text points to, not from the English word alone.\
 A word listed here can still carry its ordinary meaning in other contexts.
 
 ## Repository concepts
@@ -16,7 +17,7 @@ A word listed here can still carry its ordinary meaning in other contexts.
 - **Japanese**: Plugin の ZIP
 - **Refers to**: the ZIP file that `scripts/build_plugin.py` builds, containing `plugin.json` and `skills/`.
 
-Write “plugin ZIP” rather than “archive” or “package”, so that readers can tell the file apart from the plugin it contains.
+Write “plugin ZIP”, not “archive” or “package”, so that readers can tell the file from the plugin in it.
 
 ### Plugin
 
@@ -46,7 +47,8 @@ Use “bundle” only for APM's `SKILL_BUNDLE` format.
 
 Keep command names such as `apm install` as they are.\
 “Extract” (展開) names the specific action of unpacking the ZIP.\
-In Japanese, keep 導入 for its ordinary meaning of introducing something, such as a new term or feature, rather than for installing Skills.
+In Japanese, use 導入 only in its ordinary meaning of introducing something, such as a new term or feature.\
+For installing Skills, use インストール.
 
 ### Publish and distribute
 
@@ -79,7 +81,7 @@ Use 生成 when describing what the script itself does.
 - **Japanese**: 利用者
 - **Refers to**: anyone who installs and uses the Skills, including the maintainer.
 
-In repository documentation, do not write “user” (ユーザー) for this person.\
+In repository documentation, write “people who use the Skills” (利用者) for this person, not “user” (ユーザー).\
 Agents and people both read these documents, and “user” points to different people depending on who reads it.
 
 ### User in Skill bodies
@@ -136,7 +138,7 @@ These two are easy to mix up in Japanese, because 根拠 can mean either.
 - The reason a decision or conclusion was reached: reason or basis, 理由 or 根拠.
 
 Both 証拠で裏付けられている and 根拠がある can be natural.\
-Choose the wording so that material does not read as a rationale, and a rationale does not read as observed material.
+Choose the wording so that the reader can tell material from a rationale.
 
 ### Authority and permission
 
@@ -152,7 +154,7 @@ Translating both as 権限 hides whether a person's decision or a system setting
 - A specific action or scope that a person with authority has allowed: authorized, 許可された.
 - A responsible party's explicit acceptance of a proposal or result, including GitHub's `Approve`: approved, 承認された.
 
-Do not translate “authorized” as 承認済み.\
+Translate “authorized” as 許可された, not as 承認済み.\
 承認 suggests a formal acceptance event that may not have happened.
 
 ### Check and verification
@@ -170,6 +172,6 @@ Add an entry only for one of these:
 - a concept specific to this repository
 - a word that currently points to two things that need to be distinguished
 
-Do not add general words just because their wording varies, as long as their meanings do not mix.\
+Add a general word only when its meanings mix, not only because its wording varies.\
 For each entry, write what it refers to and why the distinction matters.\
 Update the English source and its Japanese reference translation together.
