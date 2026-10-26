@@ -17,7 +17,7 @@ Original summary based on the **Conventional Commits** specification.
 
 ---
 
-## skills/implement-changes/references/tdd_twada.md
+## skills/implement-changes/references/tdd-cycle.md
 
 Original summary of TDD practices, based on:
 

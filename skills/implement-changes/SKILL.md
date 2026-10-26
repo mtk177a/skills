@@ -70,7 +70,7 @@ Write tests that:
 When the implementation and a valid test disagree, change the implementation.\
 Change a test only when the expected behavior changed.
 
-For the TDD rhythm and common mistakes, read `references/tdd_twada.md`.
+For the TDD rhythm and common mistakes, read `references/tdd-cycle.md`.
 
 ### Check cycle
 
