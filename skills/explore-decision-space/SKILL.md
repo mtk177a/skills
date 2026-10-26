@@ -1,73 +1,92 @@
 ---
 name: explore-decision-space
-description: Expands the decision space before a consequential, hard-to-reverse choice converges prematurely on one problem frame or solution anchor, or after a recovery handoff has already established that an anchor is exhausted. Use to surface materially different problem frames when the problem is unsettled, or structurally different solution options after the frame is fixed, then narrow only with explicit constraints and evidence; not for clarifying missing request information, defining ambiguous terms, diagnosing whether repeated failures are stalled, planning an already selected approach, implementing changes, or running automated optimization.
+description: Expands the options for a consequential, hard-to-reverse choice that has converged too early on one problem frame or one solution. Develops materially different problem frames or structurally different solutions, and narrows them only with explicit constraints and evidence. Use before such a choice, or when the current approach is exhausted.
 license: MIT
 ---
 
 # Explore Decision Space
 
-## Objective
-
-- Prevent a consequential decision from collapsing prematurely onto one problem frame or solution anchor.
-- Expand the unsettled layer of the decision, preserve evidence and constraints, and narrow only when the available basis supports it.
-- Return a decision-ready exploration or an explicit evidence or user-decision boundary without implementing the selected option.
-
-## Evidence and decision state
-
-Gather what is available:
-
-- the objective, affected users or systems, success criteria, constraints, non-goals, authority, and reversibility
-- the current problem frame, solution anchor, alternatives already considered, and reasons they were retained or rejected
-- observed facts, reported results, assumptions, inferences, unknowns, and decision criteria
-- prior attempts or a structural-search handoff when another workflow has established that an anchor is exhausted
-
-Do not treat a supplied frame, favored option, score, or previous conclusion as authoritative merely because it is detailed. Preserve confirmed constraints while keeping disputed assumptions open.
-
-Identify the unsettled layer:
-
-- `Problem space`: what problem, causal structure, boundary, stakeholder need, or success definition should govern the decision is not yet settled.
-- `Solution space`: the problem frame is sufficiently fixed, but the available approaches are anchored on one mechanism or design neighborhood.
-- `Both`: the current solution anchor depends on an unsettled problem frame. Explore problem frames first and do not expand solution options across incompatible frames as though they were directly comparable.
-- `No expansion needed`: the decision is low consequence, readily reversible, already supported by adequate alternatives and evidence, or better handled by an adjacent workflow.
+Keep a consequential decision from closing too early on one problem frame or one solution.\
+Expand the part of the decision that is still open, and narrow it only when evidence supports it.\
+The output is the exploration, and the files stay unchanged.
 
 ## Workflow
 
-1. Restate the preserved objective, confirmed constraints, current anchor, and unsettled layer. Separate observed facts, reported results, inference, assumptions, and unknowns that can change the decision.
-2. Decide whether expansion is decision-relevant. If missing intent, authority, terminology, evidence access, or an originating diagnostic prevents valid exploration, stop with the appropriate handoff or evidence request instead of inventing it.
-3. For `Problem space`, identify diversity axes that can change the meaning or boundary of the problem. Develop materially different frames and state for each: what it treats as the problem, what evidence supports or challenges it, what it preserves, what it excludes, and what observation would distinguish it.
-4. Establish which problem frame is supported, conditionally selected, requires evidence, or requires a user value judgment. Do not move to solution expansion under a single asserted frame when material competing frames remain unresolved.
-5. For `Solution space`, identify diversity axes that change mechanism, responsibility boundary, state representation, processing order, tool boundary, operational model, or another decision-relevant structure. Develop alternatives until the material axes and trade-offs needed for this decision are covered; do not target a fixed candidate count.
-6. Compare frames or options against explicit criteria. Keep observed performance separate from predicted properties and mark unavailable comparisons as unknown.
-7. Narrow only when evidence, constraints, or an authorized user preference supports it. Otherwise return the distinguishing evidence, decision, or experiment needed next. Never declare a winner merely to complete the workflow.
-8. Return one completion state and hand control back without editing files, executing experiments, or implementing an option.
+1. **Restate the decision**
 
-## Completion states
+   State the objective, the confirmed constraints, the current anchor, and the decision criteria.\
+   The anchor is the problem frame or the solution that the work currently assumes.\
+   Collect the affected users or systems, the success criteria, the exclusions, the authority, and the reversibility.\
+   Collect the alternatives already considered, and why they were kept or rejected.\
+   Treat a supplied frame, favorite option, score, or earlier conclusion as one candidate, even when it is detailed.\
+   Keep confirmed constraints, and keep disputed assumptions open.
 
-- `No expansion needed`: Explain why additional divergence would not improve the current decision and identify the owning workflow when applicable.
-- `Problem frames ready`: Materially different problem frames and their distinguishing conditions are explicit, but selecting a frame still needs evidence or a user judgment.
-- `Options ready`: The governing problem frame and structurally different solution options are explicit, but selection still needs evidence or a user judgment.
-- `Evidence needed`: A specific observation or comparison can distinguish material frames or options.
-- `Selected for design`: One frame and option are supported strongly enough to hand off for implementation design, with the selection basis and rejected alternatives preserved.
-- `Blocked`: Missing intent, authority, safety margin, or indispensable context prevents valid exploration.
+2. **Find the open layer**
 
-## Reporting contract
+   Choose the layer of the decision that is still open:
 
-Adapt the structure to the decision. Include:
+   - `Problem space`: the problem, its causes, its boundary, the needs of the stakeholders, or the definition of success is not settled.
+   - `Solution space`: the problem frame is settled, but the approaches depend on one mechanism or one design area.
+   - `Both`: the current solution depends on a problem frame that is not settled.\
+     Explore the problem frames first.
+   - `No expansion needed`: the decision is small, easy to reverse, or already has sufficient alternatives and evidence.
 
-- completion state and whether the unsettled layer is the problem space, solution space, both, or neither
-- preserved objective, confirmed constraints, current anchor, and decision criteria
-- observed facts, reported results, assumptions, inferences, and unknowns that affect the choice
-- diversity axes and materially different problem frames or solution options
-- for each frame or option, its structural difference, supporting and challenging evidence, conditions, trade-offs, and evidence status
-- the comparison basis, rejected alternatives worth preserving, and unresolved value judgments
-- the supported selection, distinguishing evidence, user decision, or adjacent-workflow handoff needed next
+   If missing intent, authority, terms, evidence, or a diagnosis prevents a valid exploration, stop with the state `Blocked`.\
+   Name what is missing.\
+   Done when the open layer has a reason.
 
-## Boundaries
+3. **Develop the problem frames**
 
-- Keep the workflow read-only. Read evidence already within scope, but do not edit files, run the proposed experiment, implement an option, or make external writes.
-- Do not invent requirements, evidence, authority, diversity, or certainty.
-- Do not count wording variants as materially different frames or options.
-- Do not force a fixed number of frames, options, iterations, or agents.
-- Do not require another Skill, subagent, or multi-agent workflow to produce a useful result.
-- Clarifying missing purpose, success criteria, constraints, or authority; defining terminology that collapses distinct concepts; diagnosing repeated equivalent attempts; designing the change after an approach is selected; and executing it are outside this Skill.
-- Automated evolutionary search, repeated candidate execution, archive optimization, and score-driven mutation require a separate runner or tool and are outside this instruction-only Skill.
+   For `Problem space` or `Both`, find the axes that can change the meaning or the boundary of the problem.\
+   Develop frames that differ in substance, not only in wording.\
+   For each frame, state these items:
+
+   - what it treats as the problem
+   - the evidence for and against it
+   - what it keeps and what it excludes
+   - the observation that can distinguish it from the other frames
+
+   Then mark each frame as supported, conditionally selected, needs evidence, or needs a user judgment.\
+   Expand solutions only after one frame is supported or selected.
+
+4. **Develop the solutions**
+
+   For `Solution space`, find the axes that change the structure of the solution.\
+   Examples are the mechanism, responsibility boundary, state representation, processing order, tool boundary, and operational model.\
+   Develop structurally different options until the material axes and trade-offs of this decision are covered.
+
+5. **Compare**
+
+   Compare the frames or options against explicit criteria.\
+   Keep observed performance separate from predicted properties.\
+   Mark a comparison that is not available as `unknown`.
+
+6. **Narrow or stop**
+
+   Narrow the options when evidence, constraints, or a preference that the user authorized supports one.\
+   Otherwise, return the evidence, decision, or experiment that can distinguish them.\
+   Select a winner only when the evidence supports it.\
+   Done when you choose one state from [States](#states).
+
+## States
+
+- `No expansion needed`: more options would not improve this decision.\
+  State why.
+- `Problem frames ready`: different problem frames and the conditions that distinguish them are clear, but the selection needs evidence or a judgment of the user.
+- `Options ready`: the problem frame and structurally different solutions are clear, but the selection needs evidence or a judgment of the user.
+- `Evidence needed`: a specific observation or comparison can distinguish the frames or options.
+- `Selected for design`: one frame and one option have enough support to go to implementation design.\
+  Keep the reason for the selection and the rejected alternatives.
+- `Blocked`: missing intent, authority, safety margin, or necessary context prevents a valid exploration.
+
+## Report
+
+Include these items:
+
+- the state, and the open layer: problem space, solution space, both, or neither
+- the objective, the confirmed constraints, the current anchor, and the decision criteria
+- the observed facts, reported results, assumptions, inferences, and unknowns that affect the choice
+- the axes, and the different problem frames or solutions
+- for each frame or option, its structural difference, the evidence for and against it, its conditions, its trade-offs, and the status of its evidence
+- the basis of the comparison, the rejected alternatives worth keeping, and the open value judgments
+- the next step: the supported selection, the distinguishing evidence, or the decision of the user
