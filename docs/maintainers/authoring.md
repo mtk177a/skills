@@ -115,6 +115,7 @@ For the full rules, get the specification from ASD.
 - Give each paragraph one topic and six sentences or fewer.
 - Use a vertical list when a sentence must hold more conditions or items.
 - Do not remove articles, verbs, or subjects to make a sentence shorter.
+- When the referent of "this", "that", "it", "its", or "their" is in another paragraph or list item, write "the" and the noun instead.
 
 Use the STE dictionary as a guide, not as a strict rule.\
 When you can choose between two words, use the more common one.\
