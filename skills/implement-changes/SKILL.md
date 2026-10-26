@@ -1,179 +1,136 @@
 ---
 name: implement-changes
-description: Implement authorized, sufficiently scoped code, documentation, or configuration changes in small units, choosing TDD when a meaningful failing test can express the expected behavior and another verification method when it cannot. Use after the change approach is clear; not for designing changes, reviewing a diff, or only validating completed work.
+description: Implements an authorized code, documentation, or configuration change in small verified units, with test-driven development (TDD) when a test can show the expected behavior. Use when the change to make is clear and the next step is to edit files.
 license: MIT
 ---
 
 # Implement Changes
 
-## Objective
+Make the change in small units, and verify each unit before you start the next one.
 
-- Apply an authorized and sufficiently clear change in small, reviewable work
-  units.
-- Choose verification from the expected outcome and available evidence instead of
-  forcing one development method on every change.
-- Finish with evidence that distinguishes executed checks from unverified scope
-  and residual risk.
+## Before you edit
 
-## Inputs and preconditions
+1. **Write down the scope**
 
-Gather what is available:
+   Write down the expected behavior, the parts that you can change, and the parts that must stay the same.\
+   Done when each item comes from the request or from an agreed plan, or the user confirmed it.\
+   If a missing item can change the implementation, stop with the state `Blocked` and ask for it.
 
-- the authorized objective, expected behavior, scope, exclusions, and stop
-  conditions
-- an accepted change design or another accepted implementation handoff
-- planned reviewer context when available: product or operational criticality, affected users, data and contracts, exposure, accepted trade-offs, detection and recovery controls, evidence states (`Observed` / `Reported` / `Inferred` / `Unknown` / `Conflicting`), and requested review focus
-- an accepted diagnosis or other evidence for the required change boundary, when applicable
-- target files, repository guidance, existing behavior, and affected consumers
-- focused checks, broader regression commands, and environment constraints
-- authorization and controls for dependency, destructive, migration,
-  authentication, authorization, credential, permission, or cryptographic changes
+2. **For a high-risk change, confirm authorization and recovery**
 
-A separate change design is optional. Infer low-impact local details from the
-request and existing implementation, but do not invent requirements, authority,
-or risk acceptance. If a missing item could materially change the implementation,
-stop as `Blocked`.
+   If the change deletes or migrates data, adds a dependency, or changes authentication, credentials, permissions, or cryptography, confirm two things:
 
-When upstream review feedback uses the current response contract, implement only authorized `Act now` work. Accept legacy downstream decisions by normalizing `accept` to `Act now`, `defer` to `Defer`, and `reject` to `No action` without inferring a technical assessment. Do not implement `Defer` or `No action` work merely because it appears in the handoff.
+   - The user authorized this action and this scope.
+   - A way to recover from a failure exists.
 
-## Workflow
+   Done when both are confirmed.\
+   If one is missing, stop with the state `Blocked` before you edit, and report what is missing.
 
-1. Confirm the objective, authorization, entry conditions, scope, exclusions, and
-   stop conditions before editing.
+3. **Make a test list**
 
-2. For a high-risk change, confirm that its exact action, scope, required controls, residual risk, and execution authority are ready for implementation. If not, stop before editing and identify the missing target, evidence, control, recovery, risk-acceptance, or authorization decision. Provide a self-contained stop report.
+   Write one short line for each behavior that the change adds or changes.\
+   For a change that keeps behavior, list the checks that will show the result.\
+   Done when each expected behavior or result has a line.
 
-3. Inspect the relevant implementation and guidance. Confirm that the planned work
-   units collectively cover the accepted coherent change boundary; do not narrow
-   an accepted structural correction to a local patch merely to reduce the diff.
-   Split the change into small work units, each with an expected outcome and a
-   verification method.
+## Do one unit at a time
 
-4. Select one work unit. Choose its verification mode using the criteria below and
-   record the reason.
+Take one item from the test list, and use one of the two cycles below.
 
-5. For a TDD work unit:
-   - create or update one focused test
-   - run it and confirm that it fails for the intended reason (Red)
-   - make the simplest implementation change within the accepted coherent boundary
-     that passes it (Green)
-   - refactor only while the test remains passing
+### TDD cycle
 
-6. For a non-TDD work unit:
-   - establish the relevant baseline or pre-change observation when useful
-   - make the simplest change within the accepted coherent boundary
-   - run the selected deterministic or inspection-based checks
-   - do not manufacture an unrelated failure merely to create a Red phase
+Use this cycle when a fast test at a public interface can fail before the change for the expected reason.
 
-7. **Record evidence and check whether the approach still holds.**
+1. **Red**
 
-   **Evidence and deviations**
+   Write one test for the item, and run it.\
+   Done when the test fails, and the failure shows that the expected behavior is missing.
 
-   Record new evidence, actual reviewer context, and any deviation from the planned objective, scope, affected boundary, trade-off, verification, recovery control, or review focus.
+2. **Green**
 
-   **Unresolved causes and scope changes**
+   Make the smallest change that makes the test pass.\
+   A temporary, simple implementation is acceptable.\
+   Done when the new test and the other focused tests pass.
 
-   If the evidence shows that a local correction would leave the confirmed cause, a shared rule, an established responsibility boundary, or a known affected path unresolved, do not add a workaround.\
-   If the required coherent boundary exceeds the authorized scope, stop and report the evidence and required scope decision.\
-   Also stop for any other material dependency, test-strategy, or risk change before expanding the work.
+3. **Refactor**
 
-   **Recovery, mitigation, and compatibility**
+   Improve the code and the tests that you wrote or changed in this cycle, for example names and duplication.\
+   Run the tests after each small improvement.\
+   Done when the tests pass and the code of this cycle is clear.
 
-   When implementing recovery or mitigation, distinguish its effect from a cause fix.\
-   Tie any added fallback or recovery path to a current failure condition, its trigger, the required state after recovery, and a check that can detect an invalid result.\
-   Do not call a cause resolved merely because the symptom disappears.\
-   Preserve recovery, error handling, and compatibility required by current consumers, data, deployment, or rollback; do not retain a path solely because it existed before or might be useful later.
+4. **Update the test list**
 
-8. Track implementation attempts separately from test executions. If two
-   materially equivalent attempts under the same unchanged hypothesis fail
-   without new evidence, stop before a third equivalent edit. Record the failed
-   hypothesis and one structurally different branch or missing input.
+   Mark the item done, and add the new items that you found.
 
-9. After each work unit, run its focused checks. Before reporting completion, run
-   the broader relevant regression checks available for the affected scope.
-   Record checks that do not exist, cannot be run, or were intentionally excluded;
-   do not present them as passing.
+Write tests that:
 
-10. Report the final state using the semantic contract below.
+- check behavior through a public interface, so that they pass when the internal structure changes
+- get the expected value from the specification or a known example, not from the same calculation that the code uses
+- replace only external dependencies, such as the network or the clock, with test doubles
 
-## Choosing the verification mode
+When the implementation and a valid test disagree, change the implementation.\
+Change a test only when the expected behavior changed.
 
-Use TDD by default when all of the following hold:
+For the TDD rhythm and common mistakes, read `references/tdd_twada.md`.
 
-- the work changes observable behavior
-- a focused automated check can express the expected outcome
-- the check can fail meaningfully before implementation
-- writing and running it is practical for the work unit
+### Check cycle
 
-Do not decide from the file extension alone. A configuration change that affects
-observable behavior may warrant TDD. Documentation, static metadata, schema-only
-configuration, generated output, or behavior-preserving refactoring may instead
-need:
+Use this cycle for documentation, metadata, generated output, and refactoring that keeps behavior.\
+Use it also when a useful test needs large setup, many mocks, slow end-to-end infrastructure, or production-only state.\
+A test that mostly checks mocks or the current implementation is worse than the nearest useful check.
 
-- existing tests before and after the change
-- parser or schema validation
-- lint or formatting checks
-- dry-run, render, build, or consumer checks
-- deterministic diff or invariant checks
-- focused inspection when no automated oracle exists
+1. When a comparison helps, record the current result.
 
-When TDD is not applicable, state why and identify the alternative evidence.
-When it is selected, read `references/tdd_twada.md` for the concrete cycle.
+2. Make the change.
 
-## Reporting contract
+3. Run the check that shows the result, for example one of these:
 
-Adapt the presentation to the task; do not emit empty headings. Always include:
+   - the existing tests, before and after the change
+   - a parser or schema validation, lint, or a format check
+   - a dry run, a build, or a render
+   - a careful inspection, when no automated check exists
 
-- state: `Blocked`, `In progress`, or `Done`
-- authorized scope, work units, expected outcomes, and actual changed files
-- selected verification method for each completed work unit and why it fits
-- the reason for the change and the handoff needed for review or validation
+Done when the check shows the expected result.
 
-For `Blocked`, include:
+## When the plan stops fitting
 
-- the stop reason and evidence
-- missing information, authority, or controls
-- the scope left unchanged
-- the next decision or structurally different check
+- If the necessary change is larger than the parts that you can change, stop.\
+  Report the evidence and the scope that you need.
+- If a larger structural change is necessary, such as splitting a module, report it as a separate change.
+- Fix the confirmed cause.\
+  If you add a fallback or a mitigation, report it as a mitigation, with the condition that starts it.
+- If two attempts with the same hypothesis fail and give no new evidence, stop the attempts.\
+  Before the next edit, change the hypothesis or report the missing input.
 
-For `Done`, include:
+## Finish
 
-- focused and broader checks actually run, with commands and results
-- unperformed checks and unconfirmed items
-- residual correctness, safety, and maintainability risks
-- any user-facing explanation points needed to evaluate the result
+1. **Run the regression checks**
 
-### Reviewer context
+   Run the regression checks for the whole affected area.\
+   Done when they pass, or when you recorded each failure.
 
-For `Done`, include the relevant actual context below.\
-Include material deviations from the plan, omit irrelevant fields, and preserve material unknowns.
+2. **Report the result**
 
-| Field | Content |
-| --- | --- |
-| Objective | Objective and result |
-| Usage context | Product or operational context and criticality |
-| Scope | Actual scope and non-goals |
-| Impact | Affected users, data, contracts, and exposure |
-| Decision constraints | Constraints and accepted trade-offs |
-| Verification | Verification and unknowns |
-| Controls | Detection and recovery controls |
-| Review | Review focus |
+   Report these items:
 
-## Boundaries
+   - the state: `Done`, `In progress`, or `Blocked`
+   - the files that changed
+   - for each item on the test list, the test or check, its result before the change, and its result after the change
+   - the checks that you did not run, and the reason
+   - the risks that remain
+   - for `Blocked`, the missing input and the parts that you did not change
 
-- Do not edit before confirming sufficient scope and authority.
-- Do not remove or weaken a valid test merely to make the change pass.
-- Do not force Red → Green when no meaningful failing behavior check exists.
-- Do not treat repeated test observation as repeated implementation failure.
-- Do not continue an unchanged third attempt without new evidence or a different
-  hypothesis.
-- Do not claim an unexecuted check passed or imply broader safety than the evidence
-  supports.
-- Do not replace an accepted structural correction with a smaller local patch when
-  that would leave the accepted cause or known affected paths unresolved.
-- Do not introduce an abstraction, generalization, compatibility path, or unrelated
-  refactoring unless it is required by the authorized outcome or accepted design.
-- Ask before materially expanding scope, adding dependencies, changing the agreed
-  test strategy, or performing an unauthorized destructive or high-risk operation.
-- Do not use another agent or subagent by default. Keep the workflow useful when no
-  companion Skill is installed.
+3. **For `Done`, add the reviewer context**
+
+   Add the information that a reviewer needs, in the table below.\
+   Include only the rows that apply.
+
+   | Field | Content |
+   | --- | --- |
+   | Objective | The objective and the result |
+   | Usage context | The product or operational context, and its criticality |
+   | Scope | The actual scope and the exclusions |
+   | Impact | The affected users, data, and contracts |
+   | Decision constraints | The constraints and the accepted trade-offs |
+   | Verification | The verification and the unknowns |
+   | Controls | The detection and recovery controls |
+   | Review | The parts that the reviewer must examine carefully |
