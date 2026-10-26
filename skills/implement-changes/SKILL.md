@@ -1,6 +1,6 @@
 ---
 name: implement-changes
-description: Implement approved, sufficiently scoped code, documentation, or configuration changes in small units, choosing TDD when a meaningful failing test can express the expected behavior and another verification method when it cannot. Use after the change approach is clear; not for designing changes, reviewing a diff, or only validating completed work.
+description: Implement authorized, sufficiently scoped code, documentation, or configuration changes in small units, choosing TDD when a meaningful failing test can express the expected behavior and another verification method when it cannot. Use after the change approach is clear; not for designing changes, reviewing a diff, or only validating completed work.
 license: MIT
 ---
 
@@ -19,7 +19,7 @@ license: MIT
 
 Gather what is available:
 
-- the approved objective, expected behavior, scope, exclusions, and stop
+- the authorized objective, expected behavior, scope, exclusions, and stop
   conditions
 - an accepted change design or another accepted implementation handoff
 - planned reviewer context when available: product or operational criticality, affected users, data and contracts, exposure, accepted trade-offs, detection and recovery controls, evidence states (`Observed` / `Reported` / `Inferred` / `Unknown` / `Conflicting`), and requested review focus
@@ -45,7 +45,7 @@ When upstream review feedback uses the current response contract, implement only
 
 3. Inspect the relevant implementation and guidance. Confirm that the planned work
    units collectively cover the accepted coherent change boundary; do not narrow
-   an approved structural correction to a local patch merely to reduce the diff.
+   an accepted structural correction to a local patch merely to reduce the diff.
    Split the change into small work units, each with an expected outcome and a
    verification method.
 
@@ -55,13 +55,13 @@ When upstream review feedback uses the current response contract, implement only
 5. For a TDD work unit:
    - create or update one focused test
    - run it and confirm that it fails for the intended reason (Red)
-   - make the simplest implementation change within the approved coherent boundary
+   - make the simplest implementation change within the accepted coherent boundary
      that passes it (Green)
    - refactor only while the test remains passing
 
 6. For a non-TDD work unit:
    - establish the relevant baseline or pre-change observation when useful
-   - make the simplest change within the approved coherent boundary
+   - make the simplest change within the accepted coherent boundary
    - run the selected deterministic or inspection-based checks
    - do not manufacture an unrelated failure merely to create a Red phase
 
@@ -169,11 +169,11 @@ Include material deviations from the plan, omit irrelevant fields, and preserve 
   hypothesis.
 - Do not claim an unexecuted check passed or imply broader safety than the evidence
   supports.
-- Do not replace an approved structural correction with a smaller local patch when
+- Do not replace an accepted structural correction with a smaller local patch when
   that would leave the accepted cause or known affected paths unresolved.
 - Do not introduce an abstraction, generalization, compatibility path, or unrelated
   refactoring unless it is required by the authorized outcome or accepted design.
 - Ask before materially expanding scope, adding dependencies, changing the agreed
-  test strategy, or performing an unapproved destructive or high-risk operation.
+  test strategy, or performing an unauthorized destructive or high-risk operation.
 - Do not use another agent or subagent by default. Keep the workflow useful when no
   companion Skill is installed.
