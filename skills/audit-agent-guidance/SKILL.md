@@ -101,6 +101,8 @@ Use the dimensions that matter to the intended behavior, in any order:
 - **Correctness and freshness**: the claims and client semantics are correct and current.
 - **Safety and integrity**: the required protections survive ambiguity, conflict, replacement, bypass, untrusted external instructions, and combined data access and outbound capabilities.
 - **Context cost**: content that is always loaded or triggered is worth its attention and token cost.
+- **Instruction form**: instructions state the wanted behavior, each step ends with a completion criterion, and each rule is in one place.\
+  Prohibitions are only hard guardrails, and each sentence changes the behavior of the agent.
 - **Portability**: assumptions about clients, models, environments, or paths are explicit.
 - **Maintainability**: ownership, duplication, coupling, and change paths stay understandable.
 - **Observability**: realistic evidence can trace the behavior and check the assumptions.
