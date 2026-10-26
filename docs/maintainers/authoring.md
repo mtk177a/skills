@@ -122,7 +122,8 @@ Write a constraint only when it prevents a mistake that the work of this Skill c
 
 ## Write in Simplified Technical English
 
-Write the English in Skill bodies and `description` fields with the writing rules of [ASD-STE100 Simplified Technical English](https://asd-ste100.org/about_STE.html).\
+Write the English in Skill bodies, `description` fields, bundled resources, and repository documents with the writing rules of [ASD-STE100 Simplified Technical English](https://asd-ste100.org/about_STE.html).\
+Repository documents include `README.md`, `CONTRIBUTING.md`, `AGENTS.md`, and the files in `docs/`.\
 These rules make sentences short and give each sentence one meaning, so that agents and people read them the same way.\
 The list below is a summary.\
 For the full rules, get the specification from ASD.

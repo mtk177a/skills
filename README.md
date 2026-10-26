@@ -3,11 +3,11 @@
 A personal collection of agent Skills authored or maintained by [mtk177a](https://github.com/mtk177a), plus two designated unmodified Gist mirrors.
 
 The Skills follow the [Agent Skills specification](https://agentskills.io/specification).\
-Whether a Skill works also depends on the client and on what the agent can access and is allowed to do.\
+Whether a Skill works also depends on the client, and on what the agent can access and do.\
 Check the [runtime requirements](docs/users/compatibility.md) before installation.
 
-> **No warranty:** This personal repository is maintained on a best-effort basis.\
-> Skills may change or be removed without notice.\
+> **No warranty:** The owner maintains this personal repository on a best-effort basis.\
+> The owner can change or remove Skills without notice.\
 > Use at your own risk.
 
 ## Install
@@ -22,7 +22,8 @@ To choose a method and install, see [Install and update the Skills](docs/users/i
 
 ## Skills
 
-Choose a Skill by task, then read the linked Skill for when to use it and what it does not do.\
+Choose a Skill by task.\
+Then read the linked Skill to see when to use it and what it produces.\
 To use several Skills on one piece of work, see [Choose the next Skill](docs/users/workflows.md).
 
 ### Clarify and choose an approach

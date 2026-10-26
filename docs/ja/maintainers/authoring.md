@@ -128,7 +128,8 @@ Skill の見出しを統一する必要はない。\
 
 ## Simplified Technical English で書く
 
-Skill の本文と `description` の英語は、[ASD-STE100 Simplified Technical English](https://asd-ste100.org/about_STE.html) の書き方の規則に従って書く。\
+Skill の本文、`description`、同梱資料、リポジトリの文書の英語は、[ASD-STE100 Simplified Technical English](https://asd-ste100.org/about_STE.html) の書き方の規則に従って書く。\
+リポジトリの文書には、`README.md`、`CONTRIBUTING.md`、`AGENTS.md`、`docs/` のファイルが含まれる。\
 これらの規則は文を短くし、一つの文が一つの意味だけを持つようにする。\
 そのため、エージェントも人も、同じ文を同じ意味に読める。\
 次の一覧は要約である。\
