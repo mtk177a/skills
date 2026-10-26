@@ -1,7 +1,8 @@
 # Languages and Japanese reference translations
 
 This guide is for maintainers and the agents working for them.\
-It defines which language each kind of content uses, which files have Japanese reference translations, and when to update those translations.
+It defines the language of each kind of content, and the files that have Japanese reference translations.\
+It also defines when to update those translations.
 
 ## Choose the language
 
@@ -59,8 +60,8 @@ These files have no Japanese reference translation:
 - the files under `.github/`
 
 If a new source file matches no row and is not in the list above, add a row for it.\
-If the table does not identify exactly one translation for a file, do not guess a filename or create a translation.\
-Report the undecided pair instead, so that it can be decided and recorded here.
+If the table does not identify exactly one translation for a file, report the undecided pair.\
+Create the translation after the pair is decided and recorded here.
 
 ### Add the notice
 
@@ -84,4 +85,4 @@ When you add or change an English source, review its Japanese reference translat
 Meaning includes requirements, scope, exceptions, permissions, prohibitions, safety conditions, procedures, verification, links, and anything else needed for correct use.
 
 Use the repository-local `maintain-japanese-references` Skill for this review and update.\
-When a translation refers to a concept specific to this repository, or to a word that can point to different things, check the [glossary](glossary.md).
+Check the [glossary](glossary.md) for concepts of this repository, and for words that can point to different things.
