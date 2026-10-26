@@ -78,18 +78,24 @@ Use this cycle for documentation, metadata, generated output, and refactoring th
 Use it also when a useful test needs large setup, many mocks, slow end-to-end infrastructure, or production-only state.\
 A test that mostly checks mocks or the current implementation is worse than the nearest useful check.
 
-1. When a comparison helps, record the current result.
+1. **Record the current result**
 
-2. Make the change.
+   When a comparison helps, record the current result.
 
-3. Run the check that shows the result, for example one of these:
+2. **Make the change**
+
+   Make the change for the item.
+
+3. **Run the check**
+
+   Run the check that shows the result, for example one of these:
 
    - the existing tests, before and after the change
    - a parser or schema validation, lint, or a format check
    - a dry run, a build, or a render
    - a careful inspection, when no automated check exists
 
-Done when the check shows the expected result.
+   Done when the check shows the expected result.
 
 ## When the plan stops fitting
 
