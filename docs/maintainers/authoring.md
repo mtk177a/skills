@@ -17,11 +17,10 @@ Within that responsibility, prioritize these decisions:
 - **Start from the outcome**: design a workflow that needs judgment from the intended outcome and the evidence, not from a predetermined artifact.
 - **Match the freedom of the instructions to the task**: when several approaches are valid, state the goals and constraints.\
   When order or completeness affects correctness, give short ordered steps and a way to verify them.
-- **Report the whole diagnosis**: even when a fix will be implemented or rolled out in stages, do not drop findings to fit the first stage.
-- **Do not set arbitrary limits**: do not cap how much to investigate or how many findings to report.
+- **Report the whole diagnosis**: report every finding, even when a fix will be implemented or rolled out in stages.
+- **Let the evidence set the amount of work**: investigate and report until more evidence would not change the decision.
 
-To check whether a new Skill overlaps an existing one, read only the existing Skills needed to settle the overlap.\
-Stop when it is settled, and do not read the whole catalog without a reason.
+To check whether a new Skill overlaps an existing one, read only the existing Skills needed to settle the overlap, and stop when it is settled.
 
 ### Name
 
@@ -41,6 +40,9 @@ Include:
 
 Put in the `description` only what the agent needs to choose the Skill.\
 Put what it needs after choosing the Skill, such as roles, orchestration, and execution details, in the body.
+
+Write the `description` in the third person, for example "Drafts commit messages for ...".\
+The client adds it to the system prompt, and a change of viewpoint there can make the Skill harder to select.
 
 Keep the `description` simple.\
 Write when to use the Skill, and do not list the cases in which not to use it.\
@@ -73,8 +75,8 @@ Two common shapes are:
 
 | Shape | Typical contents |
 | --- | --- |
-| Judgment-oriented | Objective, evidence, workflow, optional decision criteria, reporting contract, and boundaries |
-| Operational | Objective, inputs or preconditions, ordered steps, output format, verification, and boundaries |
+| Judgment-oriented | A short objective, steps with completion criteria, the decision criteria or reference lists that the steps use, and the report |
+| Operational | A short objective, inputs or preconditions, ordered steps with completion criteria, the output format, and verification |
 
 Use these shapes to review a body, not as required headings.\
 A Skill can combine them, for example when it uses judgment to choose an approach and then needs an exact sequence for a fragile operation.
@@ -83,9 +85,26 @@ Add a section or list only when it changes how the Skill runs:
 
 - **`When to use` section**: only when the agent must choose between branches after selecting the Skill.\
   Do not add one that repeats the `description`.
-- **Exact output templates, `Always` / `Ask first` / `Never` lists, and self-review checklists**: only when the agent would act differently without them.
+- **Exact output templates and self-review checklists**: only when the agent would act differently without them.
+
+Put each rule in the step where the agent applies it, instead of in a separate section of boundaries or rules.
 
 When you replace a safeguard, define how to verify that the replacement protects at least as well as the original.
+
+### Steps
+
+End each step with a completion criterion that the agent can check, for example "Done when each finding has a label and a confidence."\
+A vague criterion lets the agent end the step too early.\
+The strongest criterion is both checkable and complete, such as "each changed file is accounted for".
+
+### Keep only text that changes behavior
+
+Keep a sentence only when the agent would act differently without it.\
+Delete a sentence that tells the model what it already does, and delete the whole sentence, not only some words.
+
+- Use terms that the model already knows, such as Red, Green, and Refactor, instead of explaining them.
+- Point to facts that the agent can find in the repository, such as commands and file layout, instead of copying them.\
+  Copy such a fact only when finding it is expensive.
 
 ### Constraints
 
@@ -323,6 +342,7 @@ When you add a Skill or change what it does, check the documents that describe i
 - [ ] The body covers the points in [Body](#body) without copying a heading template mechanically.
 - [ ] The body is in English, or a Japanese writing or editing exception is documented.
 - [ ] The English follows [Write in Simplified Technical English](#write-in-simplified-technical-english).
+- [ ] Each step ends with a completion criterion, as described in [Steps](#steps).
 - [ ] Each constraint meets the conditions in [Constraints](#constraints).
 - [ ] `SKILL-ja.md` exists, unless `SKILL.md` is the documented Japanese source.
 - [ ] The Skill does not name another public Skill, except in an approved companion relationship.
@@ -331,3 +351,14 @@ When you add a Skill or change what it does, check the documents that describe i
 - [ ] `scripts/`, `references/`, and `assets/` contain only what the Skill needs, and empty directories are removed.
 - [ ] The documents in [Update related documents](#update-related-documents) are updated.
 - [ ] The repository checker and the tests for retained code pass, and the Skill's results and safety boundaries have been checked as appropriate.
+
+## Sources
+
+The rules in this guide are based on these sources:
+
+- [Agent Skills specification](https://agentskills.io/specification): the format of `SKILL.md` and its metadata.
+- [Skill authoring best practices (Anthropic)](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices): concise bodies, the freedom of instructions, third-person descriptions, and consistent terms.
+- [Build skills (OpenAI)](https://learn.chatgpt.com/docs/build-skills): one job for each Skill, and imperative steps with explicit inputs and outputs.
+- [`writing-for-agents` (Matt Pocock)](https://github.com/mattpocock/skills/blob/main/skills/productivity/writing-for-agents/SKILL.md): positive instructions, completion criteria, terms that the model knows, and deletion of text that does not change behavior.
+- [`authoring-a-skill` (pstack)](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/authoring-a-skill.md): text that changes a decision, and deletion when in doubt.
+- [ASD-STE100 Simplified Technical English](https://asd-ste100.org/about_STE.html): the writing rules for English.
