@@ -94,4 +94,4 @@ For `Needs confirmation`, identify what must be resolved and which action is wai
 - Do not expose secrets or unnecessary private information in the artifact, response, or external write.
 - Do not promote decisions into AGENTS.md, documentation, ADRs, policy, or another durable decision store. Return that need to a separately authorized change workflow.
 - Do not replace routine progress reporting, change summaries, commit drafting, PR or release handoffs, implementation, or execution of an existing handoff.
-- Do not require a companion Skill. If the active request itself remains ambiguous, return a useful `Needs confirmation` handoff when possible and name `clarify-request` only as an optional next workflow.
+- Do not require a companion Skill. If the active request itself remains ambiguous, return a useful `Needs confirmation` handoff when possible and note request clarification only as an optional next step.

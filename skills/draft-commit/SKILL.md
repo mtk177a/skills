@@ -64,6 +64,6 @@ For a blocked draft, identify the missing change set, material intent, repositor
 
 - Loading or explicitly invoking this Skill does not authorize `git add`, `git commit`, `git push`, index mutation, implementation, or any other repository write.
 - When the originating request already explicitly authorizes a commit, return the draft and staging handoff to that workflow; do not invent another universal approval gate or prevent the authorized caller from continuing.
-- Do not replace `summarize-changes`, `review-changes`, or an implementation workflow. This Skill drafts commit units and messages; it does not write PR descriptions, discover review findings, or change files.
+- This Skill drafts commit units and messages only; it does not write PR descriptions, discover review findings, or change files.
 - Do not expose secrets or credentials in messages, commands, or explanations.
 - Do not alter, discard, or silently absorb unrelated user changes.

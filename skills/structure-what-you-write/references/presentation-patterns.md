@@ -78,6 +78,7 @@ A useful presentation would either list the six views as peers or place their re
 Give each step a clear action-oriented opening so readers can scan the sequence.
 Keep prerequisite checks before the operation and result verification after it.
 Use subordinate bullets for multiple inputs, checks, or outputs related to one step.
+When a step contains several paragraphs or code blocks, give each step its own heading, such as `### 2. Build the archive`, and keep its details and checks under that heading.
 
 ````markdown
 1. **Inspect the current state.**

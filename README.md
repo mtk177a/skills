@@ -3,26 +3,27 @@
 A personal collection of agent Skills authored or maintained by [mtk177a](https://github.com/mtk177a), plus two designated unmodified Gist mirrors.
 
 The Skills follow the [Agent Skills specification](https://agentskills.io/specification).\
-Using them also requires client discovery and the tools and permissions needed for the task.\
-Check the [runtime requirements](docs/compatibility.md) before installation.
+Whether a Skill works also depends on the client and on what the agent can access and is allowed to do.\
+Check the [runtime requirements](docs/users/compatibility.md) before installation.
 
-> **No warranty:** This personal repository is maintained on a best-effort basis. Skills may change or be removed without notice. Use at your own risk.
+> **No warranty:** This personal repository is maintained on a best-effort basis.\
+> Skills may change or be removed without notice.\
+> Use at your own risk.
 
 ## Install
 
-| Target | Instructions |
-| --- | --- |
-| ChatGPT and Codex | [Install or update a personal plugin](docs/distribution.md#chatgpt-and-codex) |
-| Cursor | [Install or update a local plugin](docs/distribution.md#cursor) |
-| Claude Code and other APM targets | [Install the bundle, selected Skills, or an individual Skill](docs/distribution.md#install-through-apm) |
+There are two installation methods, and both install the same Skills from `skills/`:
 
-Plugin and standalone/APM installations use the same `skills/` sources.\
-Choose one delivery route for overlapping Skills in each environment.
+- **Plugin ZIP**: the only method for ChatGPT.\
+  A plugin uploaded to ChatGPT is also available in Codex.
+- **APM**: for Claude Code, Codex, Cursor, and the other clients that APM supports.
+
+To choose a method and install, see [Install and update the Skills](docs/users/installation.md#choose-an-installation-method).
 
 ## Skills
 
-Choose by task, then follow the linked Skill for its conditions and boundaries.\
-See [workflows](docs/workflows.md) for sequencing and handoffs.
+Choose a Skill by task, then read the linked Skill for when to use it and what it does not do.\
+To use several Skills on one piece of work, see [Choose the next Skill](docs/users/workflows.md).
 
 ### Clarify and choose an approach
 
@@ -48,7 +49,7 @@ See [workflows](docs/workflows.md) for sequencing and handoffs.
 
 | Task | Skill |
 | --- | --- |
-| Review a new diff or explicitly requested full re-review | [`review-changes`](skills/review-changes/SKILL.md) |
+| Review a new diff, or re-review the whole diff when explicitly requested | [`review-changes`](skills/review-changes/SKILL.md) |
 | Assess findings and decide how to respond | [`triage-review-feedback`](skills/triage-review-feedback/SKILL.md) |
 | Recheck identified fixes against their original findings | [`validate-fix`](skills/validate-fix/SKILL.md) |
 | Draft PR comments from supplied review decisions | [`draft-review-comments`](skills/draft-review-comments/SKILL.md) |
@@ -67,7 +68,6 @@ See [workflows](docs/workflows.md) for sequencing and handoffs.
 | Write and revise natural Japanese without changing meaning | [`write-natural-japanese`](skills/write-natural-japanese/SKILL.md) |
 | Apply Japanese technical-writing rules | [`japanese-tech-writing`](skills/japanese-tech-writing/SKILL.md) |
 | Design pacing in explanatory Japanese prose | [`cognitive-rhythm-writing`](skills/cognitive-rhythm-writing/SKILL.md) |
-| Choose what repository documentation needs and where it belongs | [`curate-repo-docs`](skills/curate-repo-docs/SKILL.md) |
 | Have an authorized independent subagent revise a document | [`revise-docs-fresh-eyes`](skills/revise-docs-fresh-eyes/SKILL.md) |
 
 ### Maintain Skills and agent instructions
@@ -86,10 +86,11 @@ Their source revisions, licenses, and synchronization records are in each Skill'
 | Task | Guide |
 | --- | --- |
 | Verify changes and prepare Issues, commits, and pull requests | [Contributing](CONTRIBUTING.md) |
-| Author a Skill | [Authoring](docs/authoring.md) |
-| Build a distribution ZIP | [Build and verify an archive](docs/distribution.md#build-and-verify-an-archive) |
-| Review third-party material and executable capabilities | [Security review](docs/security.md) |
-| Maintain Japanese translations | [Localization](docs/localization.md) |
+| Author a Skill | [Skill authoring guide](docs/maintainers/authoring.md) |
+| Build the plugin ZIP | [Build the plugin ZIP](docs/maintainers/packaging.md) |
+| Review third-party material and executable capabilities | [Skill security review](docs/maintainers/security.md) |
+| Choose the language and maintain Japanese reference translations | [Languages and Japanese reference translations](docs/maintainers/localization.md) |
+| Check the terms used for repository concepts | [Glossary](docs/maintainers/glossary.md) |
 
 External contributions are not normally expected.
 
