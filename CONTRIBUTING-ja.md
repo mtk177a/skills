@@ -1,21 +1,24 @@
-> **注記:** この文書の内容は英語版 (`CONTRIBUTING.md`) を基準とします。
-> このファイルは参考訳です。
-> 内容に差異がある場合は英語版を優先してください。
+> この文書は [英語版 CONTRIBUTING.md](CONTRIBUTING.md) の日本語参考訳です。\
+> 内容が異なる場合は英語版を優先してください。
 
-# コントリビューションガイド
+# 変更の進め方
 
-このガイドは、個人用のこのリポジトリを変更する本人と、本人に代わって作業する AI エージェントを対象とする。\
-外部からの貢献は通常想定していない。\
-作業の記録から変更の確認、提出までの手順と、コミットメッセージ・PR タイトルの規約を示す。
+保守者と、保守者に代わって作業する AI エージェント向けの手順。\
+外部からの貢献は通常想定していない。
+
+[Issue と変更前の確認](#変更を進める) → [検証](#変更を検証する) → [コミット・PR](#コミットと-pr-を作る) の順に進める。\
+メッセージの書式は [コミットメッセージと PR タイトル](#コミットメッセージと-pr-タイトル) を参照する。
 
 ## 変更を進める
 
 ### Issue で作業を追跡する
 
-作業は、既存の Issue または新しく作成した Issue を使い、[GitHub Issues](https://github.com/mtk177a/skills/issues) で追跡する。\
-本人から Issue での追跡を省略するよう明示された場合に限り、省略できる。\
-目的、対象範囲、完了条件を記し、[Issue テンプレート](.github/ISSUE_TEMPLATE/default.md) のうち該当する項目を使う。\
-テンプレートの指定に従い、Issue のタイトルと `Summary` は英語、それ以外の項目は原則として日本語で書く。
+[GitHub Issues](https://github.com/mtk177a/skills/issues) の既存 Issue を使うか、作業用の Issue を作成する。
+
+- **記載する内容**: 目的・範囲・完了条件。\
+  [Issue テンプレート](.github/ISSUE_TEMPLATE/default.md) の該当項目を使う。
+- **言語**: タイトルと `Summary` は英語、その他は原則として日本語。
+- **省略できる場合**: 保守者が Issue での追跡を省略するよう明示した場合のみ。
 
 ### 変更前に確認する
 
@@ -26,23 +29,37 @@ Skill を変更する場合は、[AGENTS.md](AGENTS.md) と [Skill 作成ガイ�
 ### 変更を検証する
 
 変更した挙動と、関連する失敗条件を確認できる検証方法を選ぶ。\
-[AGENTS.md](AGENTS.md) が求める場合はリポジトリ検査と単体テストを実行し、Skill の評価は [評価ガイド](docs/evaluation.md) に沿って選ぶ。\
+[AGENTS.md](AGENTS.md) に従ってリポジトリ検査と残すコードのテストを実行する。\
+作業結果と安全上の境界も確認する。\
 実施した確認、その結果、重要な未確認事項を PR に記録する。\
 実行していない確認を、通過したものとして報告しない。
+
+リポジトリのルートで次を実行する。
+
+```bash
+python3 -B scripts/check_repository.py
+python3 -B -m unittest discover -s tests
+git diff --check
+```
+
+整合性検査は、構成、メタデータ、リンク、参考訳の注記、併用関係、配備時に生成されるファイルを読み取りだけで確認する。\
+終了コードは、問題なしが `0`、対応が必要な不整合が `1`、呼び出しや検査自体の失敗が `2` となる。\
+配布動作を変更する場合は、[アーカイブと APM の検証](docs/ja/distribution.md#アーカイブを生成検証する) も行う。
 
 ## コミットと PR を作る
 
 目的と検証結果を追える単位でコミットし、無関係な変更を混ぜない。\
-PR を作る場合は [PR テンプレート](.github/pull_request_template.md) に沿って結果と検証内容を記す。\
-PR で Issue を完了する場合は `Closes #123`、参照だけの場合は `Refs #123` で結び付ける。\
-テンプレートの指定に従い、PR の `Summary` は英語、それ以外の項目は原則として日本語で書く。
+PR は [PR テンプレート](.github/pull_request_template.md) を使い、結果と検証内容を記す。
+
+- **Issue との関係**: 完了する場合は `Closes #123`、参照だけなら `Refs #123`。
+- **言語**: `Summary` は英語、その他は原則として日本語。
 
 ### コミットメッセージと PR タイトル
 
 このリポジトリで作成・編集するコミットメッセージと PR タイトルには、Conventional Commits 形式を使う。\
 PR タイトルは PR 全体の主目的、各コミットの要約はそのコミットで変えた内容を表す。
 
-GitHub が生成する merge commit と、手を加えずに採用する Dependabot の自動生成タイトル・コミットメッセージは対象外とする。\
+GitHub が生成するマージコミットと、手を加えずに採用する Dependabot の自動生成タイトル・コミットメッセージは対象外とする。\
 生成されたタイトルやメッセージを編集する場合は、この規約に合わせる。
 
 #### 形式
@@ -70,7 +87,7 @@ GitHub が生成する merge commit と、手を加えずに採用する Dependa
 | `docs` | 管理対象 Skill の挙動を変えず、説明、手順、参照資料を改善する |
 | `chore` | 能力の追加や不具合修正を伴わず、依存、設定値、保守方針を更新する |
 | `refactor` | 挙動を変えずに構成を整理する |
-| `test` | 管理対象の挙動を変えず、テストや評価ツールを主目的として変更する |
+| `test` | 管理対象の挙動を変えず、テストを主目的として変更する |
 | `ci` | CI の設定や実行条件を主目的として変更する |
 
 Skill の指示は、文章で書かれていても利用時の挙動を定める。\
@@ -90,13 +107,11 @@ Skill の指示は、文章で書かれていても利用時の挙動を定め�
 | `scope` | 対象 |
 | --- | --- |
 | `clarify-request` | `clarify-request` Skill と関連ファイル |
-| `evaluation` | 共通の Skill 評価機能とツール |
 
 #### 例
 
 ```text
-feat(evaluation): add a cost-bounded Skill evaluation runner
 fix(clarify-request): align clarification boundaries
-docs: explain change-aware evaluation selection
+docs: clarify repository verification steps
 refactor: distribute Skills as a native APM bundle
 ```

@@ -1,115 +1,65 @@
-> **注記:** 英語版 (`docs/compatibility.md`) が正本です。このファイルは参考訳であり、内容に差異がある場合は英語版を優先してください。
+> この文書は [英語版 compatibility.md](../compatibility.md) の日本語参考訳です。\
+> 内容が異なる場合は英語版を優先してください。
 
-# 互換性
+# 互換性と実行条件
 
-この文書では、portable な Agent Skills format の互換性と、client 固有の discovery、invocation、permission、実行挙動を分けます。Skill の構造が有効でも、特定の client で意図どおり読み込まれ、発火し、実行されるとは限りません。
+Agent Skills の形式に適合していても、クライアントが Skill を検出・呼び出し・実行できるとは限らない。\
+[導入方法](distribution.md#導入方法を選ぶ) を選ぶ前に、利用先の機能と作業の実行条件を確認する。
 
-このリポジトリでは、証拠を次の 4 状態に分けます。
-各状態は記録した範囲にだけ適用し、記録していない client behavior まで裏付けるものではありません。
+## 共通の実行条件
 
-| 状態 | 意味 |
+- エージェントが Skill 本文と同梱資料を読めること。\
+  読む資料は各 Skill の指示に従う。
+- ツールを使う作業では、必要なリポジトリ、ファイル、ネットワーク、外部サービスにアクセスできること。
+- 書き込み、外部への操作、サブエージェントの実行に必要な許可があること。\
+  Plugin の導入だけでは許可は得られない。
+
+現在の公開 Skill は、実行スクリプトを同梱せず、Python ライブラリの追加も要求しない。\
+ただし、作業に必要なツール・権限・外部の証拠は別途必要となる。
+
+## Plugin の実行条件
+
+`mtk177a-skills` は、すべての公開 Skill を指示を変えずに同梱する。\
+利用する環境を選ぶ際は、特に次の条件を確認する。
+
+| 作業・Skill | 必要な条件 |
 | --- | --- |
-| Format-compatible | Skill package が Agent Skills specification に準拠している。client が Skill を発見または実行できることまでは示さない |
-| Documented | 現行の client 公式文書に、対象の discovery、invocation、extension、runtime behavior が記載されている。このリポジトリで実行済みとは限らない |
-| Locally verified | client version、日付、観測した discovery または invocation の結果を、このリポジトリに記録している。観測していない invocation path は未検証のままとする |
-| Behavior-tested | 定義済みの scenario set について、Skill が選択され、指示に従ったかを targeted evaluation evidence に記録している。特定範囲の証拠であり、一般的な support guarantee ではない |
+| `define-referents` | 適用前に、必須の同梱資料を読む |
+| `cognitive-rhythm-writing` | 隣接する `japanese-tech-writing/SKILL.md` を読むため、両方を導入する |
+| 執筆・設計用 Skill | 各 Skill が指定・選択する参照資料を読む。`write-natural-japanese` は表現の参照資料を全文読む |
+| リポジトリの編集・調査・レビュー | 実際のファイル、差分、証拠にアクセスする。検証を実行する場合は対応するツールも必要 |
+| `research-web-safely` | 実際の検索・取得手段と、確認できる引用元がある |
+| `revise-docs-fresh-eyes` | Codex または Claude Code で、執筆時の会話を引き継がない独立したサブエージェントを使う許可がある。利用できない、または禁止されている場合は中止する |
 
-## 互換性の層
+別の作業手順への言及だけでは、その Skill を必須の併用先とはみなさない。\
+出力、不足情報への対応、停止条件は各 Skill を確認する。\
+指示や資料を変更するときは、該当する実行条件と同梱資料の参照関係を併せて見直す。
 
-| 層 | 確認する問い |
+## クライアント固有の動作
+
+| クライアント・ツール | 確認する違い |
 | --- | --- |
-| Format | 有効な `SKILL.md` と、直接発見できる resources があるか |
-| Discovery と installation | client はどこを探索し、Skill はどのように配布されるか |
-| Invocation | ユーザーが明示実行できるか、model が暗黙選択できるか、それぞれを無効化できるか |
-| Client extensions | client 固有 metadata、UI、tools、lifecycle 機能に依存するか |
-| Enforcement | どの permission、sandbox、policy、hook が実行を実際に制約するか |
-| Runtime | scripts、dependencies、filesystem access、network access が対象環境で利用できるか |
-| Verification | 以上のうち、version と日付を記録してローカルで観測したものは何か |
+| Codex | CLI・IDE での `/skills`・`$` による明示指定と暗黙の選択は、クライアント側の機能。任意の `agents/openai.yaml` は OpenAI 固有の表示・依存情報を指定する。サンドボックス、承認、ルール、ツールへのアクセスは別の制御となる |
+| Claude Code | 検出、呼び出し、フロントマター、権限、フックはクライアント固有であり、共通形式への適合だけでは動作を確認できない |
+| Cursor | [ローカル導入手順](distribution.md#cursor) に従い、対象バージョンでの検出と明示的な実行を確認する |
+| GitHub Copilot・Gemini CLI など | 検出、呼び出し、メタデータ、権限、実行時の動作を、最新の公式資料と対象バージョンで確認する |
+| APM | ルートの `skills/` を導入するツールであり、実行クライアントではない |
 
-Format 互換性は、client の discovery、invocation、behavioral compatibility の証拠ではありません。
-公式文書は Documented の根拠になりますが、Locally verified または Behavior-tested とするには、記録されたローカル実行結果が必要です。
+クライアント固有のメタデータは、呼び出しの制御、画面表示、依存の宣言、権限の動作が必要な場合だけ追加する。\
+それ以外では、`name`、`description`、指示、資料を共通形式に保つ。
 
-## Client matrix
+## 必要な動作を確認する
 
-| Client または層 | 文書上の位置付け | リポジトリ内の証拠 | 現在の状態 |
-| --- | --- | --- | --- |
-| Codex | 公式文書には、暗黙選択と、Codex CLI または IDE extension で `/skills` か `$` による Skill mention を使う明示的 invocation が記載されている。任意の `agents/openai.yaml` は OpenAI 固有の表示と dependency metadata を提供する。sandbox、approval、rules、tools、runtime access は Skill 本文とは別の制御面である | repository-local discovery と、対象を限定した暗黙選択および behavior を観測済み。明示的な `/skills` と `$` invocation、UI behavior、live permission behavior は、このリポジトリについて未実行 | Documented。記録済み scenario について Locally verified かつ Behavior-tested。明示的 invocation はローカルで未検証 |
-| Claude Code | 公式文書には、Claude Code 固有の Skill discovery、invocation、frontmatter、permission、hook behavior が記載されている。これらの client 固有 control は、portable Skill の format 互換性からは導けない | repository installation、discovery、明示・暗黙 invocation、permission、behavior の実行記録なし | Format-compatible。runtime behavior は未検証 |
-| GitHub Copilot / `gh skill` | client 固有の discovery、invocation、metadata、permission、runtime behavior は、現行公式文書と対象 version に照らして確認する必要がある | repository installation、discovery、invocation、permission、behavior の実行記録なし | Format-compatible。runtime behavior は未検証 |
-| Gemini CLI | client 固有の discovery、invocation、metadata、permission、runtime behavior は、現行公式文書と対象 version に照らして確認する必要がある | repository installation、discovery、invocation、permission、behavior の実行記録なし | Format-compatible。runtime behavior は未検証 |
-| その他の client | 標準 package を扱える可能性はあるが、format 互換性だけでは discovery または実行を確認できない | repository-level または Skill-level の version 付き記録がない client は、ローカルで未検証 | version 付き記録がない場合は未検証 |
-| APM | root の `skills/` directory を native `SKILL_BUNDLE` として配布するが、実行 client ではない。target 選択と installation layout は、downstream の invocation または behavior を示さない | 下記の bundle check を実行済み | 記録した範囲の distribution のみ検証済み |
+形式、導入・検出、呼び出し、クライアント固有の拡張、強制される権限制御、実行環境へのアクセスを別々に確認する。
 
-client が対応しているという理由だけで、client 固有 metadata を全 Skills に追加しません。その client の invocation control、UI 表示、tool dependency declaration、permission behavior が必要な場合だけ追加します。portable な `name`、`description`、instructions、resources を共通層として維持します。
+クライアントの動作は、パッケージ形式とは別に変わる。\
+作業の判断に影響する場合は、最新の公式資料を確認する。
 
-## 代表的な検証スナップショット
+- [Agent Skills 仕様](https://agentskills.io/specification)
+- [OpenAI の Skill 作成ガイド](https://learn.chatgpt.com/docs/build-skills)
+- [Claude Code の Skills](https://code.claude.com/docs/en/slash-commands)
+- [Claude の Skill 作成ガイド](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
+- [Claude の企業向け Skills](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise)
+- [Cursor の Plugins](https://cursor.com/docs/plugins)
 
-次の表は、文書から推測した support claim ではなく、記録済みの repository check から選んだ観測結果を残すスナップショットです。
-後続の Skill 単位の評価について、最新状態または全件を示す一覧ではありません。
-後続の Skill-level behavior result は、[evaluation.md](evaluation.md) の選択経路に応じた証拠責務に従い、関係する Skill の評価 asset に記録します。
-その証拠を client 固有の compatibility state の根拠に使う場合は、関係する client version、日付、scenario scope を含めます。
-
-| 対象 | Version | 検証日 | 観測した範囲 |
-| --- | --- | --- | --- |
-| Claude Code | — | — | 未実行。installation、discovery、明示・暗黙 invocation、permission、behavior は未検証 |
-| Codex | 0.145.0 | 2026-07-24 | repository-local discovery、baseline/candidate 16 selection run での target Skill open 観測、影響 case の 5 回の再実行を含む candidate/baseline 29 behavior run。明示的な `/skills` と `$` invocation、UI、live permission behavior は未実行 |
-| GitHub Copilot / `gh skill` | — | — | 未実行。installation、discovery、invocation、permission、behavior は未検証 |
-| Gemini CLI | — | — | 未実行。installation、discovery、invocation、permission、behavior は未検証 |
-| APM | 0.26.0 | 2026-09-15 | native bundle の導入、`--skill` の選択導入、個別 Skill path の導入、consumer 側の frozen install、audit |
-| `npx skills add` の利用先を含むその他の client | — | — | 個別の記録がない限り未実行 |
-
-このスナップショットに client-level の結果を追加するときは、client と version、日付、installation path、観測できる場合は明示・暗黙 invocation の結果、隣接 Skills、model、permission mode、観測できなかった挙動を含めます。
-Skill-level の behavior result は、その Skill の評価資産に記録します。
-`not exposed` と `not executed` は pass ではありません。
-
-## Installation paths
-
-### APM 経由の Claude Code
-
-```bash
-apm install mtk177a/skills
-```
-
-または `apm.yml` で package を宣言します:
-
-```yaml
-dependencies:
-  apm:
-    - mtk177a/skills
-```
-
-### 個別 Skill
-
-```bash
-apm install mtk177a/skills/skills/review-changes
-```
-
-APM は複数 client を対象にできます。installation command を実行証拠として扱わず、対象ごとの解決 path と discovery behavior を検証します。
-
-## 検証
-
-利用可能な場合は `skills-ref` で Agent Skills format への適合を確認します:
-
-```bash
-skills-ref validate
-```
-
-配布を変更する場合は、push 済みの candidate commit が必要です。このリポジトリ外の disposable consumer directory から、その完全な commit について、bundle 全体、影響を受ける `--skill` の選択、影響を受ける個別 Skill path、consumer が生成した lockfile を検証します。
-
-```bash
-apm install 'mtk177a/skills#<commit>' --target agent-skills --no-policy
-apm install --frozen --dry-run --no-policy
-apm audit --ci --no-policy
-```
-
-これらの command は、triggering、instruction following、permission behavior、output quality を証明しません。それらの claim には [evaluation.md](evaluation.md) の targeted evaluation procedure を使い、第三者と executable capability の review には [security.md](security.md) を使います。
-
-## 現行情報源
-
-- [Agent Skills specification](https://agentskills.io/specification)
-- [OpenAI Build skills](https://learn.chatgpt.com/docs/build-skills)
-- [Claude Code Skills](https://code.claude.com/docs/en/slash-commands)
-- [Claude Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
-- [Claude Skills for enterprise](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise)
-
-client extension と runtime behavior は core package format より頻繁に変わります。設計または監査に影響する場合は、現行公式情報を再確認します。
+第三者の資料や実行機能を含む場合は、[セキュリティレビュー](security.md) も行う。

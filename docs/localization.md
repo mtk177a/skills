@@ -1,43 +1,34 @@
 # Localization
 
-This document describes the language policy for Skills and documentation in this repository.
+This document defines source languages, translation pairs, and update rules.
+
+| Content | Language |
+| --- | --- |
+| Skill bodies | English by default; Japanese writing/editing exceptions follow the rules below |
+| Commit summaries, Issue/PR titles, and `Summary` sections | English for discovery and scanning |
+| Other Issue/PR sections and comments | Japanese by default; full bilingual duplication is not required |
+
+Keep commit summaries short and specific.\
+Follow [Contributing](../CONTRIBUTING.md) for their format.
 
 ## Canonical source language
 
-`SKILL.md` is the single canonical source for each Skill. It is written in English by default.
-A Skill whose core purpose is Japanese writing or editing may use a Japanese `SKILL.md` as its canonical source. In that case, document the exception and provenance and do not add a duplicate `SKILL-ja.md`.
-
-Required frontmatter:
-
-```yaml
----
-name: skill-name
-description: What the Skill does and when it should be used.
-license: MIT
----
-```
+`SKILL.md` is the single canonical source for each Skill.\
+It is written in English by default.\
+Preserve proper nouns, configuration keys, and established technical terms; use agent-specific jargon only when it is core to the Skill’s value.\
+A Skill whose core purpose is Japanese writing or editing may use a Japanese `SKILL.md` as its canonical source.\
+In that case, document the exception and provenance and do not add a duplicate `SKILL-ja.md`.
 
 ## Japanese reference translations
 
-Japanese reference translations are maintained as a reusable comprehension and review cache for the primary maintainer.\
-They reduce the need to translate the same technical material again whenever it is read or edited.
+Japanese translations help the maintainer understand and review the repository without translating the same material repeatedly.\
+The English file defines requirements; translations must preserve its meaning without adding requirements.
 
-English remains the public and normative canonical source.\
-A Japanese translation does not define requirements and must not introduce meaning that is absent from its canonical file.
-
-When `SKILL.md` is canonical English, `SKILL-ja.md` is a non-canonical Japanese translation placed alongside it:
-
-```
-skills/<skill-name>/
-├── SKILL.md       # English canonical
-└── SKILL-ja.md   # Japanese reference translation
-```
-
-`SKILL-ja.md` must begin with a notice stating that the English version is the canonical source:
+Use this notice at the start of every Japanese reference (after frontmatter, if present), with the source filename and relative link adjusted for that file:
 
 ```markdown
-> **Note:** The English version (`SKILL.md`) is the canonical source.
-> This Japanese translation is provided as a reference only.
+> この文書は [英語版 SKILL.md](SKILL.md) の日本語参考訳です。\
+> 内容が異なる場合は英語版を優先してください。
 ```
 
 The following table defines the maintained canonical-to-reference file pairs.\
@@ -56,33 +47,16 @@ Use it to identify the Japanese reference for a changed English file; add a new 
 If the table does not identify a unique counterpart, do not infer a filename or create a translation.\
 Report the unresolved pair so the mapping can be decided and recorded here.
 
-## Keeping translations in sync
+## Update translations with source changes
 
 When a maintained English canonical file is added or changed, review its Japanese counterpart in the same change.
 
-Update or create the Japanese reference when the canonical change affects meaning.\
-Meaning includes requirements, scope, exceptions, permissions, prohibitions, safety conditions, procedures, validation, links, and other information needed to use the document correctly.
+| Canonical change | Translation action |
+| --- | --- |
+| Affects meaning or correct use | Update or create the reference in the same change |
+| Does not affect the Japanese meaning | Leave it unchanged; record the reason in the PR’s validation or follow-up section |
 
-If the canonical change does not affect the Japanese meaning, leave the translation unchanged rather than creating a no-op edit.\
-Record the reason in the pull request's `Validation` or `Risks / Follow-up` section so the review decision remains visible.
+Meaning includes requirements, scope, exceptions, permissions, prohibitions, safety conditions, procedures, validation, links, and other information needed for correct use.
 
 Use the repository-local `maintain-japanese-references` Skill to make this review and synchronization decision.\
 Japanese-canonical Skills remain outside this workflow and do not receive a duplicate `SKILL-ja.md`.
-
-## Language in Skill bodies
-
-- Skill bodies: English by default; Japanese for a documented Japanese writing/editing exception
-- Proper nouns, configuration keys, and established technical terms: keep in original form
-- Avoid agent-specific jargon unless it is the core of the Skill's value
-
-## Language in commit messages
-
-Commit message summaries are written in English and kept short and specific.
-
-See `CONTRIBUTING.md` for the full commit message and pull request title convention.
-
-## Language in Issues and pull requests
-
-Write Issue and pull request titles and their `Summary` sections in English so the public repository remains discoverable and scannable.
-
-Write the remaining body sections and comments in Japanese by default. A full English and Japanese duplication of the body is not required.

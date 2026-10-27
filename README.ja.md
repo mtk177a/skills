@@ -1,160 +1,104 @@
-> **注記:** このファイルは英語版 (`README.md`) の参考訳です。内容に差異がある場合は英語版を優先してください。
+> この文書は [英語版 README.md](README.md) の日本語参考訳です。\
+> 内容が異なる場合は英語版を優先してください。
 
 # skills
 
-[mtk177a](https://github.com/mtk177a) が作成・保守する Skill と、元資料をコピーして収録する Skill の個人用リポジトリです。
+[mtk177a](https://github.com/mtk177a) が作成・保守するエージェント向け Skill と、指定した Gist の無改変コピーを収録する個人用リポジトリ。
 
-各 Skill は [Agent Skills 仕様](https://agentskills.io/specification) に準拠しています。
-形式上の互換性だけでは、クライアントによる探索や実行時の動作まで確認できません。
-このリポジトリには Codex を対象とした限定的な動作確認結果がありますが、Claude Code、GitHub Copilot、Gemini CLI などのクライアントは未検証です。
-証拠の状態と検証範囲は [docs/ja/compatibility.md](docs/ja/compatibility.md) を参照してください。
+各 Skill は [Agent Skills 仕様](https://agentskills.io/specification) に従う。\
+利用には、対象クライアントが Skill を読み込めることと、作業に必要な機能・権限が必要となる。\
+導入前に [実行条件](docs/ja/compatibility.md) を確認する。
 
-> **無保証。** このリポジトリは、個人が可能な範囲で保守しています。Skill は予告なく変更・削除される場合があります。自己責任でご利用ください。
+> **無保証:** 個人が可能な範囲で保守しているため、Skill は予告なく変更・削除する場合がある。自己責任で利用すること。
+
+## 導入する
+
+| 利用先 | 導入手順 |
+| --- | --- |
+| ChatGPT・Codex | [個人用 Plugin の導入・更新](docs/ja/distribution.md#chatgpt-と-codex) |
+| Cursor | [ローカル Plugin の導入・更新](docs/ja/distribution.md#cursor) |
+| Claude Code など APM の利用先 | [全体・選択・個別の導入](docs/ja/distribution.md#apm-で導入する) |
+
+Plugin と単体・APM 導入は、同じ `skills/` の原本を使う。\
+同じ環境では重複する Skill の導入方法を一つに揃える。
 
 ## Skill 一覧
 
-以下の Skill を収録しています。
+目的に合う Skill を選び、リンク先で使用条件を確認する。\
+複数の Skill を使う順序や引き継ぎは [ワークフロー](docs/ja/workflows.md) を参照する。
 
-| Skill | 説明 |
+### 依頼・方針を整理する
+
+| したいこと | Skill |
 | --- | --- |
-| `audit-agent-guidance` | 継続的に適用するエージェント向け指示を、期待する挙動、観測済みの利用状況、クライアントの仕様、評価結果に照らして監査する |
-| `break-failure-loop` | 新しい証拠がないまま同じ仮説で同等の試行を繰り返す状況を止め、診断、進行不能の報告、別案の探索のいずれへ引き継ぐかを選ぶ |
-| `calibrate-learning-support` | 作業を続けながら、その作業に関する理解、判断の主体性、検証可能性を保てるように AI による学習支援を調整する |
-| `choose-ai-execution-setup` | 具体的な作業に使う AI の実行環境を、アクセス手段、モデル、推論、コンテキスト、権限、検証方法、エージェント構成の観点から提案する |
-| `clarify-request` | 曖昧な依頼を、次の作業を始められるか、影響の小さい前提で進められるか、進行不能かを判断できるまで、段階的に明確化・構造化する |
-| `cognitive-rhythm-writing` | 認知モードと未回収の緊張を管理し、日本語の説明文に緩急を設計する |
-| `curate-repo-docs` | リポジトリで管理する文書を必要最小限かつ根拠に基づく内容に整え、適切な場所で管理し、検証する |
-| `define-referents` | 曖昧な語を具体的な指示対象へ結び付け、命名上の制約を元の作業へ返す |
-| `design-agent-instructions` | AGENTS.md / CLAUDE.md / copilot-instructions.md / GEMINI.md を設計する |
-| `design-changes` | 実装前に変更方針・影響範囲・リスク・確認方針を設計する |
-| `design-skill` | Skill を新規作成・統合・分割・大幅な責務変更のどれで設計するか、実装前に判断する |
-| `explore-decision-space` | 重要な意思決定が早期に収束する前に、問題の捉え方や解決案の選択肢を広げる |
-| `draft-commit` | Git のステージング境界を保ちながら、変更単位ごとのコミット計画と Conventional Commits メッセージを作成する |
-| `draft-issue` | 根拠と課題管理システムの確認状況を保ったまま、未投稿の Issue 案と投稿に必要な引き継ぎ情報を作る |
-| `draft-review-comments` | 評価・状態・対応方針が決まった指摘、または結論・確認範囲・実施した確認・制約が示された指摘 0 件のレビューから、未投稿の PR コメント案を作る |
-| `revise-docs-fresh-eyes` | 執筆時の会話を受け取らない Codex または Claude Code のサブエージェントに、既存文書を初見で読ませ、改稿を完結させる |
-| `implement-changes` | 承認済みの変更を小さな単位で、TDD または適切な別の検証方法を使って実装する |
-| `investigate-failure` | 環境を問わず、原因不明のエラー、失敗するテスト、回帰、性能上の異常、予期しない技術的挙動を調査する |
-| `japanese-tech-writing` | 日本語技術文書の論証構成・用語・推敲の規範を適用する |
-| `assess-risky-change-readiness` | 重大または復旧困難な変更について、安全対策、復旧方法、証拠、承認状況が実行判断に十分かを評価する |
-| `record-session-handoff` | 後続の AI エージェントが状態を再検証し、安全に作業を再開できるよう、証拠に基づく引き継ぎを記録する |
-| `research-web-safely` | 取得したコンテンツを命令として扱わず、追跡可能な Web 上の根拠を収集・評価する |
-| `review-changes` | 新規差分または明示的に依頼された全面再レビューについて、リスクに見合った背景情報と所定のラベルを添えて問題点を報告する |
-| `structure-what-you-write` | 読者と目的に合わせて情報を整理し、文章を作成・修正・レビューする |
-| `summarize-changes` | 差分またはコミット範囲をレビューや文書化のために要約する |
-| `triage-review-feedback` | 指摘の妥当性と現在の状態を、`Act now`・`Defer`・`No action` の対応方針とは分けて評価する |
-| `validate-fix` | 特定済みの指摘に対する通常の修正後レビューを、適切な読み取り専用の証拠を使って限定的に行う |
-| `make-it-click` | 読者の疑問に答えるため、必要な前提、情報の関係、条件、不確実性を示して説明文を作成・修正する |
-| `write-natural-japanese` | 意味、確度、定着した用語を保ちながら、文脈に合う表現で日本語の文章を作成・推敲する |
+| 曖昧な依頼の目的・範囲を整理する | [`clarify-request`](skills/clarify-request/SKILL-ja.md) |
+| 曖昧な用語が何を指すか定める | [`define-referents`](skills/define-referents/SKILL-ja.md) |
+| 問題の捉え方や解決案を広げて比較する | [`explore-decision-space`](skills/explore-decision-space/SKILL-ja.md) |
+| 作業に合う AI の実行環境を選ぶ | [`choose-ai-execution-setup`](skills/choose-ai-execution-setup/SKILL-ja.md) |
+| AI を使いながら理解と判断の主体性を保つ | [`calibrate-learning-support`](skills/calibrate-learning-support/SKILL-ja.md) |
 
-`japanese-tech-writing` と `cognitive-rhythm-writing` は、元の Gist を改変せずに収録しています。出典の版、ライセンス、同期の記録は各 Skill の `UPSTREAM.md` と [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載しています。
+### 設計・実装・原因調査を進める
 
-## インストール
+| したいこと | Skill |
+| --- | --- |
+| 実装前に変更範囲・リスク・検証方法を決める | [`design-changes`](skills/design-changes/SKILL-ja.md) |
+| 許可された変更を実装・検証する | [`implement-changes`](skills/implement-changes/SKILL-ja.md) |
+| 予期しない挙動や失敗の原因を調べる | [`investigate-failure`](skills/investigate-failure/SKILL-ja.md) |
+| 重大な操作の前に安全対策・復旧方法・承認状況を確認する | [`assess-risky-change-readiness`](skills/assess-risky-change-readiness/SKILL-ja.md) |
+| 成果のない試行の繰り返しを止め、次の確認を選ぶ | [`break-failure-loop`](skills/break-failure-loop/SKILL-ja.md) |
 
-### Claude Code (APM)
+### レビュー・変更の記録・引き継ぎを行う
 
-```bash
-apm install mtk177a/skills
-```
+| したいこと | Skill |
+| --- | --- |
+| 新しい差分、または明示的に依頼された差分全体をレビューする | [`review-changes`](skills/review-changes/SKILL-ja.md) |
+| レビュー指摘の妥当性と対応方針を分けて判断する | [`triage-review-feedback`](skills/triage-review-feedback/SKILL-ja.md) |
+| 特定済みの修正を元の指摘に照らして確認する | [`validate-fix`](skills/validate-fix/SKILL-ja.md) |
+| 判断済みのレビュー結果からコメントを下書きする | [`draft-review-comments`](skills/draft-review-comments/SKILL-ja.md) |
+| 未投稿の Issue 案を作る | [`draft-issue`](skills/draft-issue/SKILL-ja.md) |
+| コミットの分け方とメッセージを作る | [`draft-commit`](skills/draft-commit/SKILL-ja.md) |
+| 差分やコミット範囲を読み手に合わせて要約する | [`summarize-changes`](skills/summarize-changes/SKILL-ja.md) |
+| 別セッションで作業を再開できるように記録する | [`record-session-handoff`](skills/record-session-handoff/SKILL-ja.md) |
 
-または `apm.yml` の依存として宣言する場合:
+### 調査・執筆・推敲を行う
 
-```yaml
-dependencies:
-  apm:
-    - mtk177a/skills
-```
+| したいこと | Skill |
+| --- | --- |
+| 出典を確認できる形で Web 調査を行う | [`research-web-safely`](skills/research-web-safely/SKILL-ja.md) |
+| 読者と目的に合わせて情報を選び、構成する | [`structure-what-you-write`](skills/structure-what-you-write/SKILL-ja.md) |
+| 読者の疑問に、必要な前提と理由をつないで答える | [`make-it-click`](skills/make-it-click/SKILL-ja.md) |
+| 意味を保ちながら自然な日本語に整える | [`write-natural-japanese`](skills/write-natural-japanese/SKILL.md) |
+| 日本語技術文書の論証・用語・推敲の規範を適用する | [`japanese-tech-writing`](skills/japanese-tech-writing/SKILL.md) |
+| 日本語の説明文に緩急を設計する | [`cognitive-rhythm-writing`](skills/cognitive-rhythm-writing/SKILL.md) |
+| リポジトリ文書に残す情報と配置を決める | [`curate-repo-docs`](skills/curate-repo-docs/SKILL-ja.md) |
+| 許可された独立サブエージェントに初見で改稿させる | [`revise-docs-fresh-eyes`](skills/revise-docs-fresh-eyes/SKILL-ja.md) |
 
-### 個別 Skill のインストール
+### Skill・エージェント向け指示を整える
 
-```bash
-apm install mtk177a/skills/skills/review-changes
-```
+| したいこと | Skill |
+| --- | --- |
+| エージェント向け指示と挙動のずれを調べる | [`audit-agent-guidance`](skills/audit-agent-guidance/SKILL-ja.md) |
+| Skill の責務・使用条件・境界を設計する | [`design-skill`](skills/design-skill/SKILL-ja.md) |
+| 指示文書の役割とクライアントの読み込み関係を設計する | [`design-agent-instructions`](skills/design-agent-instructions/SKILL-ja.md) |
 
-`cognitive-rhythm-writing` は `japanese-tech-writing` を必要とします。バンドルから 2 つを一緒に導入します。
+`japanese-tech-writing` と `cognitive-rhythm-writing` は、元の Gist を改変せずに収録している。\
+出典の版、ライセンス、同期の記録は各 Skill の `UPSTREAM.md` と [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載している。
 
-```bash
-apm install mtk177a/skills --skill cognitive-rhythm-writing --skill japanese-tech-writing
-```
+## 保守する
 
-### その他のクライアント
+| 作業 | 文書 |
+| --- | --- |
+| 変更を検証し、Issue・コミット・PR にまとめる | [変更の進め方](CONTRIBUTING-ja.md) |
+| Skill を作成する | [作成ガイド](docs/ja/authoring.md) |
+| 配布用 ZIP を作る | [アーカイブの生成・検証](docs/ja/distribution.md#アーカイブを生成検証する) |
+| 外部資料や実行機能の安全性を確認する | [セキュリティレビュー](docs/ja/security.md) |
+| 日本語参考訳を更新する | [言語方針](docs/ja/localization.md) |
 
-標準の `skills/<name>/SKILL.md` パッケージを検出できるクライアントは、形式上の互換性を持つ可能性があります。
-ただし、このリポジトリはクライアントごとの証拠を記録していない実行時動作を対応済みとは扱いません。
-文書化された動作、ローカルでの検証結果、インストール方法は [docs/ja/compatibility.md](docs/ja/compatibility.md) を参照してください。
-
-## リポジトリの検証
-
-リポジトリのルートで、機械的かつ読み取り専用の整合性検査を実行します。
-
-```bash
-python3 scripts/check_repository.py
-```
-
-リポジトリに不整合がなければ終了コード `0`、対応が必要な不整合を検出した場合は `1`、呼び出し方法または検査自体に失敗した場合は `2` を返します。LLM を呼び出したりリポジトリの内容を変更したりせず、構造、メタデータ、リンク、参考訳の注記、評価結果、配備時に生成されるファイルを確認します。
-
-この検査は、Skill 評価の静的検証を担います。挙動、呼び出し、比較、モデルを使う評価が必要な場合に、それらを置き換えるものではありません。
-
-## Skill 評価 Runner
-
-Codex を呼び出す前に、共通 Runner で対象を選択し、評価コストを確認します。
-
-```bash
-python3 scripts/run_skill_evaluation.py plan --help
-```
-
-Runner は編集後に評価を自動実行せず、全ケースを暗黙に選択しません。\
-モデルを使う経路では、実行可能な `{skill_name, evals}` 形式を使用します。\
-旧形式の評価定義は、Issue #49 でその Skill を監査するとき、または監査以外で初めて実質的に変更するときに、Skill 単位で移行します。\
-モデル評価に必要な定義がなければ新形式で作成します。\
-実行可能な定義がなくても `static-only` は使用できます。\
-経路の選択、実行、採点、簡潔な評価記録の扱いは [docs/ja/evaluation.md](docs/ja/evaluation.md) を参照してください。
-
-## リポジトリ構成
-
-```text
-.
-├── README.md
-├── README.ja.md
-├── CONTRIBUTING.md
-├── CONTRIBUTING-ja.md
-├── LICENSE
-├── AGENTS.md
-├── AGENTS-ja.md
-├── CLAUDE.md
-├── CLAUDE-ja.md
-├── .github/
-│   └── copilot-instructions.md
-├── docs/
-│   ├── authoring.md
-│   ├── compatibility.md
-│   ├── evaluation.md
-│   ├── localization.md
-│   ├── security.md
-│   └── workflows.md
-├── skills/
-│   └── <skill-name>/
-│       ├── SKILL.md
-│       ├── SKILL-ja.md  # 任意の日本語参考訳
-│       ├── evals/
-│       ├── references/
-│       ├── scripts/
-│       └── assets/
-```
-
-`evals/`、`references/`、`scripts/`、`assets/` は任意であり、必要な Skill だけが持ちます。
-
-## 作成と貢献
-
-個人用リポジトリのため、外部からの貢献は想定していません。
-
-本人と AI エージェントによる Issue、検証、コミット、PR の手順は [コントリビューションガイド](CONTRIBUTING.md) を参照してください。\
-[日本語参考訳](CONTRIBUTING-ja.md) もあります。
-
-このリポジトリ向けに独自作成したコードとコンテンツは、MIT ライセンスの範囲で利用・改変できます。第三者の著作物を基にしたファイルには個別のライセンスが適用されます。詳細は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) を参照してください。Skill の構成は [docs/ja/authoring.md](docs/ja/authoring.md)、第三者が提供する Skill や実行可能な Skill の確認方法は [docs/ja/security.md](docs/ja/security.md) を参照してください。
+外部からの貢献は通常想定していない。
 
 ## ライセンス
 
-このリポジトリで独自作成したコードとコンテンツには [MIT License](LICENSE) を適用します。第三者の著作物を基にした素材には、[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載した個別の条件が適用されます。
+独自作成したコードとコンテンツには [MIT License](LICENSE) を適用する。\
+第三者の著作物には、[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載した個別の条件を適用する。
 
 Copyright (c) 2026 mtk177a
