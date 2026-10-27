@@ -50,7 +50,6 @@
 | `README.md` | 英語 | `README.ja.md` |
 | `CONTRIBUTING.md` | 英語 | `CONTRIBUTING-ja.md` |
 | `AGENTS.md` | 英語 | `AGENTS-ja.md` |
-| `CLAUDE.md` | 英語 | `CLAUDE-ja.md` |
 | `docs/<audience>/*.md` | 英語 | `docs/ja/<audience>/*.md` |
 | `.agents/skills/<tracked-skill>/SKILL.md` | 英語。記録した例外では日本語 | `.agents/skills/<tracked-skill>/SKILL-ja.md`（英語が基準の場合のみ） |
 
@@ -63,8 +62,8 @@
 - `.github/` にあるファイル
 
 新しく追加した基準となるファイルが、表のどの行にも、上の一覧にも当てはまらない場合は、表に行を追加する。\
-表から参考訳を一つに特定できないファイルについては、ファイル名を推測したり参考訳を作ったりしない。\
-代わりに未決定の組み合わせとして報告し、決まったらここに記録する。
+表から参考訳を一つに特定できないファイルについては、未決定の組み合わせとして報告する。\
+参考訳を作るのは、組み合わせが決まり、ここに記録された後にする。
 
 ### 注記を置く
 

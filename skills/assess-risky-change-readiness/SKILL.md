@@ -1,104 +1,119 @@
 ---
 name: assess-risky-change-readiness
-description: Assesses and prepares the safety controls, recovery strategy, evidence, and authorization state needed before a consequential or hard-to-recover change crosses into execution. Use when material operational, data, security, external-state, irreversibility, or recovery risks require more than an ordinary implementation handoff, or when another workflow identifies missing high-risk controls; not for routine change design, already authorized implementation whose controls are complete, review of a completed diff, failure investigation, general security review, or executing the change.
+description: Assesses whether a consequential or hard-to-recover change has the safety controls, recovery plan, evidence, and authorization that it needs before execution, and prepares what is missing. Use when operational, data, security, external-state, irreversibility, or recovery risks need more than an ordinary implementation plan.
 license: MIT
 ---
 
 # Assess Risky Change Readiness
 
-## Objective
-
-- Determine whether a consequential or hard-to-recover change has enough evidence, safety controls, recovery preparation, and authority to cross into execution.
-- Make the exact action, target, environment, execution boundary, material risks, and responsible handoff decision-ready.
-- Stop at a read-only readiness or authorization handoff; do not approve or execute the change.
-
-## Evidence and inputs
-
-Gather what is available:
-
-- objective, selected approach, exact action, target, environment, revision, data scope, and execution boundary
-- affected users, systems, data, external state, credentials, and dependent operations
-- preconditions, backup or restore evidence, monitoring, validation, and operational ownership
-- proposed prevention, mitigation, detection, abort, recovery, compensation, and containment controls
-- applicable policy, existing authorization, required decision owner, risk tolerance, and accepted loss
-- assumptions, unresolved decisions, unknowns, and evidence that cannot be obtained within the current authority
-
-Classify each material input as `Confirmed`, `Reported`, `Inferred`, `Assumed`, or `Unknown`.
-Do not convert reported controls, proposed commands, or intended backups into confirmed evidence.
-
-## Risk assessment
-
-Assess the properties that make additional controls necessary rather than treating a category label as sufficient:
-
-- reversibility and the point after which reversal is no longer possible
-- recoverability, including recovery time, cost, completeness, and evidence
-- blast radius across users, systems, regions, tenants, records, or external parties
-- mutation of production, shared, persistent, or externally controlled state
-- data loss, corruption, confidentiality, integrity, security, privacy, or compliance impact
-- detectability, monitoring delay, and the reliability of abort signals
-- authority to act, separation of duties, responsible owner, and escalation path
-- uncertainty in the target, plan, dependencies, controls, or expected outcome
-
-Use ordinary change design when these properties do not require additional execution controls.
+Decide whether a risky change is ready to execute.\
+Make the action, the target, the risks, the controls, and the decision owner clear enough for a decision.\
+The output is a readiness assessment.\
+The decision owner approves the change, and the execution owner runs it.
 
 ## Workflow
 
-1. Establish the exact action, target, environment, revision or data scope, execution boundary, intended outcome, and non-goals.
-2. Determine whether the risk properties require controls beyond an ordinary implementation handoff.
-3. Separate confirmed evidence from reported claims, inferences, assumptions, and unknowns.
-4. Map each material risk to the controls that prevent or reduce it, the evidence that detects it, the signal and threshold that abort it, and the person or workflow responsible.
-5. Select a realistic recovery treatment for each material failure mode: rollback, roll-forward, restore, compensation, containment, partial or manual recovery, or explicit acceptance of irreversible loss.
-6. Verify that preconditions, go/no-go criteria, monitoring, abort authority, point of no return, recovery ownership, and post-action verification are decision-ready.
-7. Determine the authorization state for the exact scope and controls without granting authority or requesting redundant approval.
-8. Assign exactly one completion state and produce the handoff.
+1. **Identify the change**
 
-Keep an unsettled approach or design decision separate from a missing operational control and from a pending approval decision. Return unsettled approaches to design or decision exploration; identify missing controls as readiness gaps; leave approval to the responsible authority once the handoff is otherwise ready.
+   State the exact action, target, environment, revision or data scope, execution boundary, intended result, and exclusions.\
+   Done when each item is known.\
+   If the target or the execution boundary is not known, stop with the state `Blocked`.\
+   If the objective, authority, or success criteria are not clear, report what the user must clarify.
 
-If the target or execution boundary is not identifiable, classify the result as `Blocked` rather than inventing a plan.
-Treat a command as a proposed, unexecuted action unless supplied evidence establishes that it was already run.
+2. **Collect the evidence**
 
-## Completion states
+   Collect these items:
 
-Choose exactly one state in this order:
+   - the affected users, systems, data, external state, credentials, and dependent operations
+   - the preconditions, backup or restore evidence, monitoring, validation, and operational owners
+   - the proposed controls to prevent, reduce, detect, abort, recover, compensate, and contain
+   - the applicable policy, the existing authorization, the decision owner, the risk tolerance, and any accepted loss
 
-1. `Not applicable`: The change does not need safety controls beyond the ordinary design or implementation handoff.
-2. `Blocked`: The Skill applies, but a material target, evidence, control, recovery, ownership, or decision-authority gap prevents a responsible authorization or execution handoff. A known decision owner whose approval is pending is not, by itself, a readiness gap.
-3. `Ready for authorization`: Material controls and evidence are decision-ready, and the responsible decision owner is identified, but that owner has not approved the exact action, scope, and residual risk, including any irreversible loss.
-4. `Ready for execution handoff`: Material controls are decision-ready and the exact action and scope are already authorized for the identified execution owner.
+   Mark each material input as `Confirmed`, `Reported`, `Inferred`, `Assumed`, or `Unknown`.\
+   Mark a control, command, or backup as `Confirmed` only when evidence shows that it exists or ran.\
+   Treat a command as proposed and not run, unless evidence shows that it already ran.
 
-`Blocked` takes precedence over authorization status when a material readiness gap remains.
-This Skill records authorization; it does not create it.
+3. **Decide whether extra controls are necessary**
 
-## Control and recovery rules
+   Assess the properties of the change, not only its category:
 
-- Do not require rollback when reversal is impossible or less safe than another treatment.
-- Do not describe recovery as available without evidence that its prerequisites, procedure, owner, and expected limits are credible.
-- Use roll-forward, restore, compensation, containment, or explicit loss acceptance when they match the failure mode better than rollback.
-- When irreversible loss is material, identify who can accept it and the exact loss and scope requiring a decision. If controls and evidence are decision-ready and that owner has not yet accepted the loss, use `Ready for authorization`; do not treat this state as acceptance or permission to execute. Use `Blocked` if the decision authority or another material readiness requirement is missing.
-- Do not ask for a generic confirmation when the exact scope and controls are already authorized.
-- Require a new decision only when the action, target, scope, control set, residual risk, or applicable authority materially differs from what was authorized.
+   - reversibility, and the point after which reversal is not possible
+   - recoverability: the time, cost, completeness, and evidence of recovery
+   - the blast radius across users, systems, regions, tenants, records, or external parties
+   - changes to production, shared, persistent, or externally controlled state
+   - the impact on data, confidentiality, integrity, security, privacy, or compliance
+   - detectability, the delay of monitoring, and the reliability of abort signals
+   - the authority to act, the separation of duties, the owner, and the escalation path
+   - the uncertainty in the target, plan, dependencies, controls, or expected result
 
-## Reporting contract
+   If ordinary change design is sufficient, finish with the state `Not applicable`.\
+   If the approach or the safety strategy is not selected yet, report that it must be selected first.
 
-Adapt the structure to the change and include:
+4. **Map the risks to controls**
 
-- completion state and the reason for it
-- exact action, target, environment, revision or data scope, and execution boundary
-- evidence state for material inputs and unknowns
-- applicability basis and material risk properties
-- risk-to-control mapping covering prevention or mitigation, detection, abort condition, recovery treatment, owner, and residual risk
-- preconditions, go/no-go criteria, monitoring, point of no return, and post-action verification
-- authorization state, responsible decision owner, and any accepted loss
-- next handoff and the conditions that would invalidate it
+   For each material risk, record these items:
 
-Omit empty sections and fixed step counts.
-When commands are useful, ground them in inspected evidence and label them as unexecuted.
+   - the controls that prevent or reduce it
+   - the evidence that detects it
+   - the signal and threshold to abort
+   - the person or workflow that owns the response
 
-## Boundaries
+   Done when each material risk has all four items, or the missing item is a readiness gap.
 
-- When the objective, target, environment, authority, or success criteria are too undefined to assess, stop and report what must be clarified.
-- When materially different safety or rollout strategies remain unsettled, report that a strategy must be selected first; resume after an approach is selected.
-- Do not perform ordinary implementation design. Accept a handoff from change design when it identifies a need for additional high-risk controls.
-- Hand authorized implementation to the implementation workflow or the originating authorized operator; do not absorb their execution responsibility.
-- Do not review a completed diff, investigate a failure, perform a general security assessment, modify files, run proposed operations, approve the change, or execute it.
-- Keep the Skill self-contained when adjacent Skills are unavailable and do not introduce another agent or subagent by default.
+5. **Select the recovery treatment**
+
+   For each material failure mode, select a realistic treatment:
+
+   - rollback, roll-forward, restore, compensation, or containment
+   - partial or manual recovery
+   - explicit acceptance of a loss that cannot be recovered
+
+   Select rollback only when reversal is possible and safer than the other treatments.\
+   Describe a recovery as available only when evidence shows credible preconditions, procedure, owner, and limits.\
+   For a loss that cannot be recovered, identify who can accept it.\
+   Also state the exact loss and the scope of that decision.
+
+6. **Check the execution conditions**
+
+   Check that these items are ready for a decision:
+
+   - the preconditions and the go/no-go criteria
+   - the monitoring and the authority to abort
+   - the point of no return
+   - the recovery owner
+   - the verification after the action
+
+7. **Determine the authorization state**
+
+   Record whether the decision owner authorized the exact action, scope, controls, and remaining risk.\
+   If the exact scope and controls are already authorized, use that authorization.\
+   Ask for a new decision only when the action, target, scope, controls, risk, or authority changed materially.
+
+8. **Choose the state**
+
+   Choose the first state that applies:
+
+   1. `Not applicable`: the change needs no controls beyond the ordinary design or implementation handoff.
+   2. `Blocked`: a material gap in the target, evidence, controls, recovery, ownership, or decision authority prevents a responsible handoff.\
+      A pending approval from a known decision owner is not a gap.
+   3. `Ready for authorization`: the controls and evidence are ready, and the decision owner is known.\
+      The owner has not yet approved the exact action, scope, and remaining risk, including any loss that cannot be recovered.
+   4. `Ready for execution handoff`: the controls are ready, and the exact action and scope are authorized for the execution owner.
+
+   `Ready for authorization` records that a decision is pending.\
+   The decision owner accepts the loss and gives the permission to execute.
+
+## Report
+
+Include these items:
+
+- the state and its reason
+- the exact action, target, environment, revision or data scope, and execution boundary
+- the evidence state of the material inputs and the unknowns
+- why the readiness assessment applies, and the material risk properties
+- for each risk, the prevention or reduction, the detection, the abort condition, the recovery treatment, the owner, and the remaining risk
+- the preconditions, the go/no-go criteria, the monitoring, the point of no return, and the verification after the action
+- the authorization state, the decision owner, and any accepted loss
+- the next handoff, and the conditions that make it invalid
+
+Ground each useful command in inspected evidence, and label it as not run.

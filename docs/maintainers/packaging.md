@@ -1,7 +1,8 @@
 # Build the plugin ZIP
 
 This guide is for maintainers and the agents working for them.\
-It describes how to build a new plugin version as a ZIP, confirm that the pushed commit installs through APM, and what the ZIP contains.\
+It describes how to build a new plugin version as a ZIP, and how to confirm that the pushed commit installs through APM.\
+It also describes what the ZIP contains.\
 To install the ZIP in ChatGPT or Cursor, see the [installation guide](../users/installation.md).\
 Publishing through GitHub Releases or elsewhere is outside this guide.
 
@@ -17,7 +18,8 @@ Follow these four steps to build the ZIP and confirm that the same commit instal
 
 ### 1. Prepare the source commit
 
-Keep Skill bodies and resources in `skills/` only; do not keep separate copies for the plugin.
+Keep Skill bodies and resources only in `skills/`.\
+The build copies them into the ZIP.
 
 For an update, do both of the following before committing:
 
@@ -25,9 +27,10 @@ For an update, do both of the following before committing:
 - Increment the version in `plugin.json`.
 
 Then commit the version and source changes.\
-Never reuse a version number; whenever the content changes, increment the version.
+Give each change of content a new, higher version number.
 
-To recover from a faulty version, restore the needed previous content in `skills/` and build it as a new version with these same steps.
+To recover from a faulty version, restore the needed previous content in `skills/`.\
+Then build it as a new version with these same steps.
 
 ### 2. Check the repository and build the ZIP
 
@@ -85,15 +88,15 @@ apm install --frozen --dry-run --no-policy
 apm audit --ci --no-policy
 ```
 
-Do not run non-dry-run `apm install` or `apm update` in this repository.\
-Doing so creates consumer manifests, lockfiles, and installed files in the source checkout.
+In this repository, run `apm install` and `apm update` only with `--dry-run`.\
+Without `--dry-run`, the commands create consumer manifests, lockfiles, and installed files in the source checkout.
 
 These checks show whether installation and dependencies are intact.\
 They do not show whether a client invokes the Skills or follows their instructions.
 
 ### 4. Keep the outputs
 
-Keep the ZIP, hash, source commit, change summary, and verification results together so that each can be traced to the others.
+Keep the ZIP, hash, source commit, change summary, and verification results together, so that each traces to the others.
 
 ## ZIP specification
 
@@ -134,8 +137,9 @@ The root `plugin.json` is the only manifest source.\
 It declares the Agent Plugins 1.0.0 schema.
 
 Put OpenAI-specific settings in `extensions["com.openai"]` of `plugin.json` when needed.\
-Do not maintain a separate compatibility `.codex-plugin/plugin.json`.\
-When the root `plugin.json` contains an OpenAI extension, only those settings apply; they are not merged with the compatibility format.
+Keep these settings in the root `plugin.json`, without a separate compatibility `.codex-plugin/plugin.json`.\
+When the root `plugin.json` contains an OpenAI extension, only those settings apply.\
+They are not merged with the compatibility format.
 
 See [OpenAI packaging](https://developers.openai.com/plugins/build/plugins) for the format rules.
 

@@ -1,63 +1,104 @@
 ---
 name: design-agent-instructions
-description: Designs new or reorganized durable instruction document sets for the agent clients a repository actually uses. Use before editing when deciding source-of-truth roles, loading and precedence relationships, shared versus client-specific guidance, and necessary companion files; not for diagnosing unexplained behavior, ordinary Skill design, or executing an approved document change, which belongs to an implementation workflow.
+description: Designs a new or reorganized set of durable instruction documents for the agent clients that a repository actually uses. Decides the source of truth, the loading and precedence relations, the shared and client-specific guidance, and the necessary companion files. Use before editing such a set.
 license: MIT
 ---
 
 # Design Agent Instructions
 
-## Objective
-
-- Design the smallest instruction document set that reaches the intended clients with clear authority and minimal duplication.
-- Base document roles on verified client semantics and repository needs rather than assuming that one filename or hierarchy is universal.
-- Produce an implementation-ready handoff without editing the instruction set.
-
-## Evidence
-
-Gather what is available:
-
-- intended behavior, scope, active users, clients, and models
-- existing instruction documents, client configuration, imports, rules, hooks, policy surfaces, and general project documentation
-- current official client documentation when loading, discovery, precedence, enforcement, or supported filenames are material
-- observed loading evidence, traces, corrections, or failures
-- applicable local policy and authorization boundaries
-
-Distinguish observed evidence, inference, assumptions, and unknowns. If the request begins from unexplained behavior and loading or authority is uncertain, diagnose it before treating a document redesign as the fix.
+Design the smallest set of instruction documents that reaches the intended clients with clear authority and little duplication.\
+Base the role of each document on verified client semantics and on the needs of the repository.\
+The output is a design, and the instruction files stay unchanged.
 
 ## Workflow
 
-1. Define the intended behavior, scope, active clients, and what must be shared or client-specific. If unexplained non-adherence is the primary question and loading or authority remains uncertain, stop document design and report that diagnosis is needed, with the missing evidence.
-2. Review the existing instruction set and project-local primary sources. Do not assume that an absent standard filename is itself a defect.
-3. For each target client, verify and record the relevant loading, discovery, precedence, import, and enforcement semantics. Do not project one client's hierarchy onto another.
-4. Identify the canonical source for each shared fact or rule. Use imports, references, or generated views only when the target client supports them and they reduce drift without hiding authority.
-5. Separate durable behavioral guidance from enforced permissions or lifecycle automation. Use client policy, settings, or hooks when a guarantee is required and the client provides that mechanism.
-6. Decide which documents and configuration surfaces are necessary. Include a client-specific companion only when that client is actively used and cannot consume the canonical guidance directly.
-7. Define what belongs in each surface and what is explicitly excluded. Keep general project facts in ordinary documentation unless they must be present in agent context.
-8. Check duplication, contradictions, context cost, portability, ownership, update paths, and behavior after compaction or lazy loading when relevant.
-9. Compare the proposed set with keeping the current set, removing redundant guidance, or using a smaller bridge document.
-10. Define validation from the material risks: loading observability, precedence conflicts, instruction adherence, enforcement boundaries, and coexistence across active clients.
-11. Produce a scoped implementation handoff. Do not create or edit files as part of this design workflow.
+1. **Define the target**
 
-## Reporting contract
+   Define the intended behavior, the scope, the active users, clients, and models, and what must be shared or client-specific.\
+   If the request starts from unexplained behavior, and the loading or the authority of the current guidance is uncertain, stop.\
+   Report that a diagnosis is necessary first, and name the missing evidence.
 
-Use a structure suited to the decision. Include:
+2. **Review the current set**
 
-- the recommended document set and why it is preferable to the alternatives
-- intended behavior, scope, active clients, and unresolved assumptions
-- verified loading, discovery, precedence, import, and enforcement semantics by client
-- canonical sources and per-surface responsibilities
-- documents or surfaces intentionally omitted
-- duplication, context, portability, maintenance, and migration risks
-- validation coverage and implementation-ready change units
-- an explicit diagnostic handoff, with the missing evidence, when unresolved behavior prevents a sound document design
+   Review the existing instruction documents, client configuration, imports, rules, hooks, policy surfaces, and project documentation.\
+   Collect the observed loading evidence, traces, corrections, or failures, and the local policy and authorization boundaries.\
+   Separate observed evidence, inferences, assumptions, and unknowns.\
+   Evaluate a missing standard filename against the needs of the active clients.
 
-Do not force a companion document, a fixed filename, or a fixed heading template. If behavior is unconfirmed, identify the diagnostic evidence needed instead of presenting the design as a demonstrated fix.
+3. **Verify the client semantics**
 
-## Boundaries
+   For each target client, verify and record its loading, discovery, precedence, import, and enforcement semantics.\
+   Use the current official documentation of the client.\
+   Record each client separately, because the hierarchy of one client can differ from another.\
+   Treat instruction documents as context that guides behavior.\
+   Treat them as enforcement only when the current client semantics state it.
 
-- Diagnosing why existing guidance behaves inconsistently and designing a reusable Skill's responsibility and trigger are outside this Skill.
-- Treat instruction documents as behavioral context, not hard enforcement, unless current client semantics establish otherwise.
-- Do not assume `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, or `GEMINI.md` is loaded by a client without verification.
-- Do not duplicate shared facts across files merely to make the set look complete.
-- Keep the workflow read-only. Editing requires user authorization and the target environment's applicable policy; do not invent an additional universal approval gate.
-- Keep secrets, credentials, personal information, and non-public operational data out of templates and examples.
+4. **Choose the source of truth**
+
+   Choose one source of truth for each shared fact or rule.\
+   Use imports, references, or generated views only when the target client supports them, and they reduce drift without hiding authority.
+
+5. **Separate guidance from enforcement**
+
+   Separate durable behavioral guidance from enforced permissions and lifecycle automation.\
+   When a guarantee is required and the client provides policy, settings, or hooks, put the guarantee there.
+
+6. **Decide the content of always-loaded files**
+
+   A file that the client loads in every session costs context in every session.\
+   Put in it only content that meets both of these conditions:
+
+   - The agent needs it in most tasks.
+   - The agent cannot find it cheaply by itself.\
+     Examples are an unwritten convention, the reason for a choice, and a hard guardrail.
+
+   Point to the facts that the agent can look up, such as commands, the directory layout, and configuration.\
+   Copy such a fact only when the lookup is expensive.\
+   Write the content as positive instructions, and keep prohibitions for hard guardrails, each with the wanted behavior next to it.\
+   Put guidance for one kind of task in a document that the agent reads for that task.
+
+7. **Decide the documents**
+
+   Decide which documents and configuration surfaces are necessary.\
+   Add a client-specific companion only when that client is in active use and cannot read the source of truth directly.\
+   Define what each surface contains and what it leaves to other surfaces.\
+   Keep general project facts in ordinary documentation, unless they must be in the context of the agent.\
+   Keep secrets, credentials, personal information, and private operational data out of templates and examples.
+
+8. **Check the set**
+
+   Check the set for duplication, contradictions, context cost, portability, ownership, and update paths.\
+   When they apply, check the behavior after compaction or lazy loading.\
+   Compare the proposed set with three alternatives: the current set, the current set without redundant guidance, and a smaller bridge document.
+
+9. **Plan the verification**
+
+   Define the verification from the material risks:
+
+   - whether each client loads the intended documents
+   - conflicts of precedence
+   - adherence to the instructions
+   - the boundaries of enforcement
+   - coexistence across the active clients
+
+10. **Prepare the handoff**
+
+    Prepare a scoped handoff for implementation.\
+    File changes belong to an authorized implementation workflow.
+
+## Report
+
+Use a structure that suits the decision, and include these items:
+
+- the recommended set of documents, and why it is better than the alternatives
+- the intended behavior, the scope, the active clients, and the open assumptions
+- the verified loading, discovery, precedence, import, and enforcement semantics of each client
+- the sources of truth, and the responsibility of each surface
+- the content of each always-loaded file, and where the other content goes
+- the documents or surfaces that the design leaves out, and why
+- the risks of duplication, context cost, portability, maintenance, and migration
+- the verification, and the units of change for implementation
+- a handoff for diagnosis, with the missing evidence, when unresolved behavior prevents a sound design
+
+Add a companion document, a fixed filename, or a fixed heading template only when the clients or repository need it.\
+If the behavior is not confirmed, name the diagnostic evidence that is necessary, and present the design as a hypothesis.

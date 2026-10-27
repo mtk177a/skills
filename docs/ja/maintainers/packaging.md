@@ -20,7 +20,8 @@ GitHub Releases などでの公開は、このガイドの対象外とする。
 
 ### 1. 元になるコミットを作る
 
-Skill の本文と関連ファイルは `skills/` だけで管理し、Plugin 用のコピーを別に作らない。
+Skill の本文と関連ファイルは、`skills/` だけで管理する。\
+ZIP へのコピーは、生成の処理が行う。
 
 更新する場合は、コミットする前に次の 2 つを行う。
 
@@ -28,8 +29,7 @@ Skill の本文と関連ファイルは `skills/` だけで管理し、Plugin �
 - `plugin.json` のバージョンを上げる。
 
 そのうえで、バージョンと Skill の変更をコミットする。\
-バージョン番号は使い回さない。\
-内容を変えたら、必ずバージョンを上げる。
+内容を変えるたびに、新しい、より大きいバージョン番号を付ける。
 
 不具合のある版から戻す場合も、必要な旧版の内容を `skills/` に戻し、新しいバージョンとして同じ手順で作り直す。
 
@@ -89,8 +89,8 @@ apm install --frozen --dry-run --no-policy
 apm audit --ci --no-policy
 ```
 
-このリポジトリの中では、dry-run 以外の `apm install` や `apm update` を実行しない。\
-実行すると、利用側のマニフェスト、ロックファイル、インストールされたファイルがこのリポジトリ内に作られてしまう。
+このリポジトリの中では、`apm install` と `apm update` は `--dry-run` を付けた場合だけ実行する。\
+`--dry-run` を付けずに実行すると、利用側のマニフェスト、ロックファイル、インストールされたファイルがこのリポジトリ内に作られてしまう。
 
 これらの確認で分かるのは、インストールと依存関係に問題がないかどうかまでである。\
 クライアントが Skill を呼び出せるか、指示どおりに動くかは確かめられない。
@@ -138,7 +138,7 @@ Plugin のマニフェストは、ルートの `plugin.json` だけで管理す�
 このファイルは、Agent Plugins 1.0.0 のスキーマを宣言している。
 
 OpenAI 固有の設定が必要な場合は、`plugin.json` の `extensions["com.openai"]` に書く。\
-互換形式の `.codex-plugin/plugin.json` は、別に管理しない。\
+これらの設定はルートの `plugin.json` に置き、互換形式の `.codex-plugin/plugin.json` は別に設けない。\
 ルートの `plugin.json` に OpenAI の拡張を書いた場合、その設定だけが採用され、互換形式の設定とは結合されない。
 
 形式の詳細は、[OpenAI の Plugin の作成ガイド](https://developers.openai.com/plugins/build/plugins) を参照する。

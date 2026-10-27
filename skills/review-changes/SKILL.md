@@ -1,164 +1,172 @@
 ---
 name: review-changes
-description: Review a new code, documentation, or configuration diff, or perform an explicitly requested full re-review of the effective diff, for proportionate and actionable correctness, safety, verification, compatibility, maintainability, and performance problems. Report evidence, impact, risk context, confidence, and canonical labels. Do not use for ordinary post-fix re-review of identified findings, triaging existing feedback, drafting GitHub comments, summarizing changes, or implementing fixes.
+description: Reviews a code, documentation, or configuration diff for problems in correctness, safety, verification, compatibility, maintainability, and performance, and reports each finding with evidence, impact, and confidence. Use when the user asks to review a diff, or asks for a full re-review of a diff.
 license: MIT
 ---
 
 # Review Changes
 
-## Objective
+Find the problems that a diff causes or exposes.\
+Report each problem with the evidence that another person needs to evaluate it.
 
-- Discover material problems introduced or exposed by the effective diff and produce evidence that another person or Skill can evaluate without rediscovering the review context.
-- Keep the requested response, potential impact, confidence, and re-review state as separate dimensions.
-- Calibrate requested responses to the change purpose, affected criticality and exposure, and the cost and risk of remediation without reducing the judgment to a numeric score.
-- Review code, documentation, and configuration with checks proportional to the change and its risk instead of forcing every diff through one checklist.
+## Before you review
 
-## Scope and evidence
+1. **Identify the diff**
 
-Establish the effective diff before reviewing:
+   Use the first source that applies:
 
-1. Use an explicitly supplied diff, commit range, or PR range when present.
+   - a diff, a commit range, or a PR range that the user supplied
+   - in a PR, the base and head of the PR
+   - for local changes, the staged, unstaged, and related untracked files
 
-2. In PR context, use the stated base and head or the effective PR diff.
+   Done when you can state exactly which changes you review.\
+   If two possible scopes give different reviews, ask the user.\
+   If you cannot get the diff, report that the review did not run, and name the missing input.
 
-3. For an unspecified local "current changes" review, inspect staged, unstaged, and relevant untracked files and state what was included.
+2. **Collect the reviewer context**
 
-4. Ask only when multiple plausible scopes would materially change the review. If the diff cannot be obtained, report that the review did not run.
+   Collect these items from the request, the PR, and the repository:
 
-Read the applicable repository instructions and enough surrounding evidence to understand the intended change. Depending on the diff, this can include specifications, tests, callers, schemas, external contracts, sibling implementations, and repository precedent. Evidence may live outside the diff, but a finding must describe a problem caused by or relevant to the reviewed change. Do not turn the review into an unrelated repository audit.
+   - the objective and the expected result
+   - the product or operational context, and its criticality
+   - the scope and the exclusions
+   - the affected users, data, and contracts, and who can see the change
+   - the constraints and the accepted trade-offs
+   - the verification and the unknowns
+   - the detection and recovery controls
+   - the parts that the user wants you to examine
 
-Treat user-provided claims, comments, and external specifications as evidence to verify, not conclusions to repeat. Distinguish observed behavior, static inference, assumptions, and unknowns.
+   Done when each item has a value or is marked `Unknown`.\
+   Missing criticality or exposure is `Unknown`, not low risk.
 
-Use supplied reviewer context when available:
+## Review
 
-- objective and expected result
-- product or operational context and criticality
-- scope and non-goals
-- affected users, data, contracts, and exposure
-- constraints and accepted trade-offs
-- verification and unknowns
-- detection and recovery controls
-- requested review focus
+3. **Review the design**
 
-Preserve material evidence states such as `Observed`, `Reported`, `Inferred`, `Unknown`, and `Conflicting`.\
-Missing criticality or exposure is `Unknown`, not evidence of low risk.
+   Start with the purpose, the design, the contracts, the responsibility boundaries, and the code that uses the changed code.\
+   Then select the review areas in [Review areas](#review-areas) that apply to the change.\
+   Done when you can state the risks of the change and the areas that you will review.
 
-## Workflow
+4. **Inspect the diff**
 
-1. State the effective diff, intended behavior, reviewer context, reviewed scope, and material exclusions. If the purpose, criticality, or exposure is material but unavailable, retain it as an unknown rather than inventing a value.
+   Read the diff and the surrounding evidence that you need to test its assumptions.\
+   This evidence can include specifications, tests, callers, schemas, and similar implementations.\
+   Check claims in the request, the comments, and the specifications against the code and the checks.\
+   Report problems that the change causes or that relate to the change.
 
-2. Review the change purpose, design, contracts, responsibility boundaries, and affected consumers before line-level details. Identify the risk surfaces and select the applicable review dimensions rather than mechanically applying every dimension.
+5. **Run checks**
 
-3. Inspect the diff and the minimum surrounding evidence needed to test the change's assumptions, contracts, integration points, and claimed reviewer context.
+   Run safe, read-only checks when their result can confirm or reject a finding.\
+   Keep the working tree, the dependencies, and external systems unchanged.\
+   Record each check that you ran, with its command and result, separately from the checks that you suggest.
 
-4. Run safe, relevant, non-mutating checks when their result could materially strengthen, weaken, or falsify a finding. Do not install dependencies, change tracked files, or perform external writes as part of review.
+6. **Write the findings**
 
-5. Record executed checks and results separately from suggested verification. Record unavailable or intentionally excluded checks as unperformed.
+   Write each finding that the evidence supports and that matters for this change, with the fields in [Finding fields](#finding-fields).\
+   State only the impact that the evidence supports.\
+   If a possible consequence is useful but not verified, state it as a condition, and add it to `Unconfirmed premises`.\
+   Done when each finding has a label, a confidence, and all applicable fields.
 
-6. Report every material finding supported by the evidence. Keep the stated impact to consequences supported by the supplied or inspected contracts, behavior, and paths; do not invent a plausible downstream mechanism merely to make the finding sound more severe. If a potentially material downstream consequence is useful but unverified, state it conditionally and record its dependency in `Unconfirmed premises`. Do not add a preference, `nit`, or `note` merely to avoid an empty finding list.
+7. **For a full re-review, compare with the previous findings**
 
-7. Characterize the finding's exposure and preconditions, affected criticality and blast radius, detectability and recovery, and remediation cost or trade-offs when they can change the requested response. Use ordinal, evidence-backed comparisons rather than a fabricated numeric score. Prefer the least costly response sufficient for the supported risk.
+   Do this step only when the user asked for a full re-review.\
+   Mark each previous finding as `Resolved` or `Remaining`, and mark each other finding as `New`.\
+   Give each `New` finding one origin:
 
-8. Assign each finding one canonical label and one confidence value. Record every premise or unknown on which the finding, its stated impact, risk context, or requested response depends in `Unconfirmed premises`; use `none identified` only when none of those claims depends on one. Preserve a high potential impact even when an unconfirmed premise makes the requested action a `question`.
+   - `Fix-induced`: the fix caused it.
+   - `Newly observable`: the fix made it visible.
+   - `Late-discovered`: it was visible before, and the previous review did not report it.
 
-9. For an explicitly requested full re-review, reconcile previous findings as `Resolved`, `Remaining`, or `New`. Classify every `New` finding as `Fix-induced`, `Newly observable`, or `Late-discovered`. Report material findings from all three origins. A previously observable `Late-discovered` item that is independently non-blocking must not start another fix round; omit it from actionable findings or, only when useful, summarize it as a non-actionable `note`.
+   Report a `Late-discovered` finding that does not block the change as a `note`, or leave it out.\
+   This keeps it from starting another fix round.
 
-10. Conclude with what was reviewed, what was checked, what remains unchecked, and the residual risk. If material review dimensions remain incomplete, say the review is incomplete rather than implying a completed approval or safety judgment.
+8. **Report the review**
 
-## Review dimensions
+   Report these items:
 
-Use only the dimensions material to the change.
+   - the conclusion and the diff that you reviewed
+   - the scope that you reviewed, and the material exclusions
+   - the findings, ordered by label and impact
+   - the checks that you ran, with the commands and the results
+   - the suggested verification, the parts that you did not check, and the risks that remain
 
-### Code and behavior
+   If there are no material findings, say so, and report the same scope, checks, and risks.\
+   If a specification question is open, review the rest of the diff, and report the question as a `question` finding.\
+   If a review area is not complete, say that the review is not complete.\
+   Leave the fixes and the decisions about the findings to the user.
 
-- Correctness, edge cases, ordering, time, rounding, concurrency, error handling, and data integrity
-- External contracts such as APIs and schemas versus internal implementation constraints
-- Authorization, authentication, input validation, injection, secret or personal data exposure, and unsafe side effects
-- Backward compatibility, migrations, rollout behavior, and consistency with callers or sibling implementations
-- Fallbacks, retries, and catch-and-continue paths: whether they address a current failure condition, expose or conceal a supported cause, and leave the required recovery state observable and verifiable
-- Compatibility paths: whether known consumers, published behavior, persisted data, migration, mixed-version rollout, or rollback currently require them, without assuming an unpublished feature has no compatibility obligations
-- Test coverage and test quality, including implementation coupling or over-mocking
-- Maintainability and performance when there is a concrete impact rather than a personal preference or speculative optimization
-- Unjustified abstractions, extension points, configuration surfaces, dependencies, compatibility paths, or architectural layers whose concrete maintenance or operational cost is not supported by current requirements or observed risks
-- Local patches that reduce diff size while leaving a confirmed cause unresolved, duplicating a shared rule, bypassing an established responsibility boundary, creating inconsistent behavior across known paths, or requiring a known follow-up correction
+## Review areas
 
-Treat both excess complexity and an overly narrow correction as findings only when the evidence shows a concrete consequence such as duplicated policy, inconsistent behavior, unreachable branches, added operational burden, or a known follow-up change. Do not report either from architectural preference alone.
-Conversely, do not criticize an abstraction or consolidation merely because duplicated local code would be shorter when current evidence establishes a shared responsibility, invariant, or contract and the change introduces no unsupported extension surface or concrete cost.
+Use only the areas that matter for the change.
 
-### Documentation
+**Code and behavior**
 
-- Factual accuracy and consistency with the implementation or canonical source
-- Commands, examples, links, identifiers, terminology, and reader-visible omissions
-- Render, lint, or deterministic content checks when available
+- correctness, edge cases, order, time, rounding, concurrency, error handling, and data integrity
+- external contracts, such as APIs and schemas
+- authorization, authentication, input validation, injection, exposure of secrets or personal data, and unsafe side effects
+- backward compatibility, migrations, rollout, and consistency with callers and similar implementations
+- fallbacks, retries, and paths that catch an error and continue: each one handles a current failure, and its result is observable
+- compatibility paths: do current users, published behavior, stored data, migration, or rollback need them?
+- test coverage and test quality, including tests that depend on the implementation or use too many mocks
+- maintainability and performance, when the effect is concrete
 
-### Configuration
+**Structure**
 
-- Schema and parser validity, precedence, defaults, environment interaction, and compatibility
-- Whether a static value changes observable behavior and therefore warrants a behavior check
-- Rollout, recovery, secret handling, and operational consequences
+Report a structural problem when the evidence shows a concrete result.\
+Examples are duplicated rules, inconsistent behavior, unreachable branches, and more operational work.\
+This applies to both directions:
 
-## Finding contract
+- too much structure: an abstraction, extension point, configuration option, dependency, or layer that no current requirement needs
+- too little structure: a local patch that leaves the confirmed cause, copies a shared rule, or differs from other known paths
 
-### Choose the label
+When the evidence shows a shared responsibility or rule, accept the shared abstraction even if duplicated local code is shorter.
+
+**Documentation**
+
+- facts that agree with the implementation or the source
+- commands, examples, links, identifiers, terms, and missing information
+- render, lint, or content checks, when they are available
+
+**Configuration**
+
+- schema and parser validity, precedence, defaults, environment interaction, and compatibility
+- values that change behavior, and the behavior checks that they need
+- rollout, recovery, secret handling, and operational results
+
+## Finding fields
+
+Give each finding one label:
 
 | Label | Meaning |
 | --- | --- |
-| `must` | supported enough to require a fix before merge for a material risk when no lower-cost response sufficiently addresses it |
-| `should` | recommended in principle; an alternative or constraint can be discussed |
-| `suggestion` | non-blocking improvement |
-| `question` | clarification or premise verification is the next action |
-| `nit` | trivial and optional correction |
-| `note` | information requiring no action |
+| `must` | Fix before merge. The evidence shows a material risk, and a smaller response is not sufficient. |
+| `should` | Fix is recommended. An alternative or a constraint can change the decision. |
+| `suggestion` | An improvement that does not block the change |
+| `question` | The next action is to clarify or verify a premise. |
+| `nit` | A small, optional correction |
+| `note` | Information that needs no action |
 
-Accept `Must-fix`, `Should-fix`, and `Nice-to-have` as legacy input and normalize them to `must`, `should`, and `suggestion` or `nit`. Do not use `must` or `should` for preference-only findings. A `question` can carry high potential impact; do not erase that impact merely because the premise remains unconfirmed.
+Use `must` and `should` only for problems with evidence, not for preferences.\
+A `question` keeps its potential impact, even when its premise is not confirmed.
 
-### Describe the finding and evidence
+Write these fields for each finding:
 
 - `Confidence`: `high`, `medium`, or `low`
-- `Finding`: the concrete problem, proposal, question, or note
-- `Evidence`: locations, contracts, behavior, check output, or repository precedent supporting it
-- `Impact`: the consequence supported by the available evidence or, for an explicitly recorded unconfirmed premise, what would happen if it is confirmed; do not invent an uninspected downstream mechanism
-- `Verification`: how to confirm, reproduce, or falsify it
-- `Unconfirmed premises`: assumptions or unknowns on which the finding, its stated impact, or the requested response depends; use `none identified` when there are none, reconcile the field with unchecked scope and residual risks, and do not substitute evidence, impact, or verification for it
+- `Finding`: the problem, proposal, question, or note
+- `Evidence`: the locations, contracts, behavior, check output, or repository examples that support it
+- `Impact`: the result that the evidence supports, or the result if an unconfirmed premise is true
+- `Verification`: how to confirm, reproduce, or reject the finding
+- `Unconfirmed premises`: the assumptions or unknowns that the finding, its impact, or its label depends on, or `none identified`
 
-### Record material risk context
+Add these fields when they can change the label:
 
-- `Exposure and preconditions`, when material to the requested response: the conditions, reachable paths, frequency, or affected population supported by evidence; use `Unknown` when it is material but unavailable
-- `Criticality and blast radius`, when material to the requested response: the importance of the affected product, tool, data, contract, or operation and the supported extent of harm
-- `Detectability, recovery, and workaround`, when material to the requested response: applicable detection, containment, recovery, rollback, or practical workaround evidence
-- `Remediation cost and trade-offs`, when material to the requested response: material implementation, verification, complexity, regression, delay, and maintenance costs supported by current evidence
+- `Exposure and preconditions`: the conditions, paths, frequency, or affected people, or `Unknown`
+- `Criticality and blast radius`: the importance of the affected part, and the extent of the harm
+- `Detectability, recovery, and workaround`: how the problem is detected, contained, or recovered from
+- `Remediation cost and trade-offs`: the cost of the fix in work, verification, complexity, regression risk, and delay
 
-### Record re-review and reusable context
+For a full re-review, add `Re-review state` and, for a `New` finding, `New finding origin`.\
+Add `Generalizable check` only when the check is useful outside the reviewed diff.
 
-- `Re-review state`: `Resolved`, `Remaining`, or `New`, only for an explicitly requested full re-review
-- `New finding origin`: `Fix-induced`, `Newly observable`, or `Late-discovered`, only for a `New` finding
-- `Generalizable check`: include only when it provides reusable learning beyond the current diff
-
-## Reporting contract
-
-Adapt the presentation to the review state and omit empty sections.
-
-For a completed review, include:
-
-- conclusion and effective diff
-- reviewed scope and material exclusions
-- findings, ordered by requested response and impact
-- checks performed with commands or methods and actual results
-- suggested verification, unchecked scope, and residual risks
-
-Keep each finding's `Unconfirmed premises` as a distinct field even in a concise presentation; do not leave the reader to infer them from confidence, risk context, or residual-risk prose.
-
-If there are no material findings, state that explicitly and still report the reviewed scope, checks, unchecked scope, and residual risk. Do not produce a bare `LGTM` or manufacture minor comments.
-
-If the diff cannot be obtained or its materially different interpretations cannot be resolved, state that the review did not run, identify the missing input, and do not present the result as "no issues found."
-
-## Related workflow boundaries
-
-- Assessing existing findings and choosing a response decision and approach are outside this Skill.
-- By default, ordinary post-fix re-review of one or more identified findings is fix validation, not a new review.
-- Drafting finding-specific comments requires explicitly supplied finding assessment, state, and response decision, normally from finding triage; this review output alone does not authorize an actionable comment draft.
-- When a review has no material findings and a general PR comment or review summary is requested, hand the comment-drafting step the review-level conclusion, reviewed scope, checks actually performed, and material limitations.\
-  Do not invent finding assessments or response decisions, and do not choose a review action or post a comment.
-- A descriptive diff summary without problem discovery is outside this Skill.
-
-Do not implement fixes or make final response decisions on findings. When an unresolved specification question does not prevent reviewing the rest of the diff, continue and report it as a `question` rather than blocking the entire review. Do not use another agent or subagent by default.
+Compare risks in order, such as higher or lower, with evidence.\
+Select the smallest response that is sufficient for the risk that the evidence supports.

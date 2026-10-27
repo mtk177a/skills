@@ -1,109 +1,129 @@
 ---
 name: design-changes
-description: Designs an implementation-ready change approach, affected and excluded scope, risks, decision points, and verification coverage before code or configuration is changed. Use after the request and approach are understood and before implementation when impact or trade-offs need organizing; not for clarifying an undefined request, expanding unsettled problem frames or solution options, designing an Agent Skill, implementing changes, or assessing high-risk execution readiness and safety controls on its own.
+description: Designs how to make a code or configuration change before implementation, including the change boundary, the parts that stay unchanged, the risks, the decision points, and the verification. Use when the request is understood and the impact or trade-offs of the change need a plan.
 license: MIT
 ---
 
 # Design Changes
 
-## Objective
-
-- Produce the smallest decision-complete approach that an implementation workflow can follow without rediscovering scope, risk, or verification decisions.
-- Separate what will change from what will remain unchanged and make the impact boundary reviewable.
-- Stop at an implementation handoff; do not edit the target files.
-
-## Evidence and inputs
-
-Gather what is available:
-
-- intended behavior, accepted scope, constraints, and non-goals
-- relevant entry points, modules, interfaces, data flows, configuration, and tests
-- existing specifications, repository guidance, and established implementation patterns
-- observed failures, traces, prior attempts, or design decisions
-- dependency, migration, compatibility, security, and rollout constraints
-- reviewer context that can affect later review calibration: product or operational criticality, affected users, data and contracts, exposure, accepted trade-offs, detection and recovery controls, and requested review focus
-
-Distinguish `Observed`, `Reported`, `Inferred`, `Unknown`, and `Conflicting` material claims and planned verification. Do not infer low criticality or exposure from missing context. If the request is not understood well enough to define success and non-goals, stop and report what must be clarified before designing the change.
+Make a plan that an implementer can follow without new decisions about scope, risk, or verification.\
+The output is the plan, and the target files stay unchanged.
 
 ## Workflow
 
-1. Restate the intended behavior, accepted scope, non-goals, and applicable constraints. Confirm that design can begin without inventing unresolved requirements.
+1. **Restate the target**
 
-2. Inspect the existing structure and identify the entry points, major branches, ownership boundaries, and current verification paths that the change can affect.
+   State the expected behavior, the scope, the exclusions, and the constraints.\
+   Done when the success condition and the exclusions are clear without a guess.\
+   If they are not clear, stop and report what the user must clarify.
 
-3. **Define the change boundary.**
+2. **Map the affected structure**
 
-   Before minimizing the diff, identify the smallest coherent boundary that fully addresses the confirmed cause and current requirements. Derive it from affected responsibilities, invariants, contracts, and known execution paths; then state its explicit non-targets and affected interfaces, modules, data, configuration, dependencies, and consumers.
+   Find the entry points, main branches, responsibility boundaries, and current checks that the change can affect.\
+   Done when you can list each part that the change can affect.
 
-   **Preserve public interfaces.**
+3. **Set the change boundary**
 
-   Preserve existing public inputs, signatures, and accepted call forms unless confirmed current evidence requires changing them. When terms such as missing or omitted could describe either an existing sentinel value or a new call form, resolve that distinction from the current contract and observed callers rather than broadening the interface by assumption.
+   Find the smallest boundary that fully fixes the confirmed cause and meets the current requirements.\
+   Derive it from the affected responsibilities, invariants, contracts, and known execution paths.\
+   Then list the parts that stay unchanged, and the affected interfaces, modules, data, configuration, dependencies, and users of the code.\
+   Done when each affected part is inside or outside the boundary, with a reason.
 
-   **Establish the basis for consolidation.**
+   Apply these rules to the boundary:
 
-   Do not infer a shared boundary from source-code similarity alone. Consolidate behavior when the evidence establishes the same current knowledge, responsibility, invariant, or contract; otherwise prefer small local duplication to a premature or incorrect abstraction.
+   - Keep the current public inputs, signatures, and call forms, unless current evidence requires a change.\
+     A word such as "missing" can mean an existing value or a new call form.\
+     Decide its meaning from the current contract and the callers.
+   - Make code shared only when the evidence shows the same knowledge, responsibility, invariant, or contract.\
+     Code that only looks similar can stay duplicated.
 
-4. Decide whether that boundary supports a local correction or requires a structural correction. Do not select a local patch merely because it changes fewer lines when it would leave a confirmed cause unresolved, duplicate an existing rule, bypass an established responsibility boundary, create inconsistent behavior across known paths, or require a known follow-up correction.
+4. **Choose a local or a structural correction**
 
-5. Compare the selected change with a structurally different alternative only when uncertainty, coupling, or rework cost makes that comparison decision-relevant. When a structural correction is required, explain why the local alternative is insufficient, which current responsibility or invariant it restores, which contracts it affects, and what remains unchanged.
+   Choose a local correction when it fixes the confirmed cause.\
+   Choose a structural correction when a local correction does one of these:
 
-6. When the change adds an abstraction, dependency, configuration surface, compatibility path, process, service, or deployment unit, record the current problem it solves, the evidence that the problem exists or is an accepted near-term requirement, the simpler alternative considered, why that alternative is insufficient, and the ongoing maintenance or operational cost. Separate required current work from optional future improvement.
+   - leaves the confirmed cause
+   - copies an existing rule
+   - goes around an established responsibility boundary
+   - makes known paths behave differently
+   - needs a known follow-up correction
 
-7. Pair each material risk with a prevention, mitigation, detection, recovery, compensation, or containment strategy suited to the failure mode. Do not list a risk without explaining how the plan handles it.
+   For a structural correction, state these items:
 
-8. Map each changed responsibility, behavior, regression risk, and failure boundary to a verification method and expected evidence. Reuse a check when it exposes multiple claims clearly; add another only for a distinct risk.
+   - why a local correction is not sufficient
+   - what the structural correction restores
+   - which contracts change, and what stays the same
 
-9. Define conditions to proceed, implementation scope, and stop conditions. Surface dependency additions, destructive operations, unresolved authority, and high-risk execution-readiness needs before implementation. When additional safety controls are needed, name the high-risk readiness handoff explicitly and stop this workflow at the ordinary change design.
+   Compare with a structurally different alternative when uncertainty, coupling, or the cost of rework makes the comparison useful.\
+   Done when the choice has a reason that the evidence supports.
 
-10. Split the work into minimal reviewable units aligned with behavior and ownership. For readability changes, use the processing stages and the reader's unit of understanding rather than isolated whitespace or comment diffs.
+5. **Justify new structure**
 
-11. Record material trade-offs and concepts the user or reviewer must understand when they affect acceptance, safety, or future maintenance.
+   For each new abstraction, dependency, configuration option, compatibility path, process, service, or deployment unit, record these items:
 
-12. Prepare planned reviewer context from the available evidence.\
-    Include only relevant fields and preserve material evidence states instead of filling gaps.
+   - the current problem that it solves, and the evidence for the problem or for an agreed near-term requirement
+   - the simpler alternative that you considered, and why it is not sufficient
+   - the cost to maintain and operate it
 
-    - objective and expected result
-    - product or operational context and criticality
-    - scope and non-goals
-    - affected users, data, contracts, and exposure
-    - constraints and accepted trade-offs
-    - planned verification and unknowns
-    - detection and recovery controls
-    - review focus
+   Keep the existing style and design unless a known failure needs a structural change.\
+   Use a design principle only to solve a current problem with a responsibility, contract, interface, or dependency.\
+   Put optional future improvements in a separate list.\
+   Done when each new item has a current reason.
 
-13. Produce an implementation-ready handoff. Keep proposed checks separate from observed results and do not implement the change.
+6. **Plan the risk handling**
 
-## Decision criteria
+   For each material risk, give a way to prevent, reduce, detect, recover from, compensate for, or contain it.\
+   Some risks need controls before execution, beyond an ordinary implementation plan.\
+   Examples are destructive operations, data migrations, security changes, changes to external state, and changes that cannot be undone.\
+   For these risks, state that a separate readiness assessment is necessary, and list what it must settle.\
+   Done when each material risk has a handling method or a readiness need.
 
-- Prefer the smallest coherent change that fully addresses the confirmed cause and current requirements while preserving established boundaries. Minimize incidental complexity only after establishing that sufficient boundary.
-- Preserve existing style and design unless a demonstrated failure requires a structural change.
-- Do not use speculative future flexibility to justify complexity, and do not use diff size to reject a structural correction required by current evidence.
-- Use design principles only to clarify a current responsibility, contract, substitution, interface, or dependency problem. Do not add structure to optimize for principle conformance itself.
-- Use an exact output template only when a downstream consumer requires it; otherwise report the required information in a structure suited to the change.
-- Choose verification depth from impact and uncertainty: static checks, targeted regression, or repeated empirical evaluation. Do not use a universal test, scenario, alternative, or run count.
-- When material operational, data, security, external-state, irreversibility, or recovery risks require execution-readiness controls beyond an ordinary implementation handoff, hand off a separate readiness assessment.
+7. **Plan the verification**
 
-## Reporting contract
+   For each changed responsibility, behavior, regression risk, and failure boundary, give a check and its expected evidence.\
+   Select the depth of each check from its impact and uncertainty.\
+   Examples are a static check, a focused regression test, and repeated measurement.\
+   Use one check for several claims when it shows each claim clearly.\
+   Done when each item has a check.
 
-Use a structure suited to the change. Include:
+8. **Split the work**
 
-- the recommended approach and its evidence, assumptions, and unresolved questions
-- what changes and what remains unchanged
-- why a local correction is sufficient or why a structural correction is required, when that choice is material
-- required current work versus optional future improvement
-- dependencies, affected boundaries, consumers, and compatibility impact
-- material risks paired with mitigations or controls
-- verification coverage: responsibility or risk → plausible failure → check and expected evidence
-- planned reviewer context, including material unknowns and evidence states, sufficient for implementation and later review without declaring review severity
-- conditions to proceed, implementation scope, stop conditions, and reviewable change units
+   Split the work into small units that a person can review, aligned with behavior and responsibility.\
+   For a readability change, split by processing stage and by what a reader understands together.\
+   State the conditions to start, the scope of the implementation, and the conditions to stop.\
+   List dependency additions, destructive operations, and open authority before implementation starts.\
+   Done when each unit has a scope and an expected result.
 
-Include alternative designs, module maps, migration details, rollback, or user explanation points only when they are material. Clearly label planned validation as unexecuted; do not present it as observed evidence.
+9. **Prepare the reviewer context**
 
-## Boundaries
+   Prepare these items for the implementer and the reviewer, and include only the items that apply:
 
-- Clarifying an undefined objective or success criteria and designing an Agent Skill's responsibility and trigger are outside this Skill. Implementation starts only after this handoff is accepted.
-- When a destructive, security-sensitive, migration, dependency, or other consequential change needs additional safety, recovery, evidence, or authorization-readiness controls, those controls need a separate readiness assessment. When a consequential decision still needs materially different problem frames or solution options, settle them before this Skill; do not reopen them after an approach is adequately selected.
-- When that high-risk boundary applies, name the need for a high-risk readiness assessment in the implementation handoff and identify the unresolved readiness needs rather than claiming the ordinary design is sufficient authorization to execute.
-- Keep the workflow read-only. Do not add dependencies, make destructive changes, or start implementation.
-- Do not force fixed headings, empty checklist sections, a minimum number of alternatives, or a minimum number of tests.
-- Do not use another agent or subagent by default; make the design decision with the available evidence and leave unresolved high-impact choices to the user.
+   - the objective and the expected result
+   - the product or operational context, and its criticality
+   - the scope and the exclusions
+   - the affected users, data, and contracts, and who can see the change
+   - the constraints and the accepted trade-offs
+   - the planned verification and the unknowns
+   - the detection and recovery controls
+   - the parts that the reviewer must examine carefully
+
+   Mark missing criticality or exposure as `Unknown`, not as low risk.\
+   Done when each applicable item has a value or `Unknown`.
+
+## Report
+
+Use a structure that suits the change, and include these items:
+
+- the recommended approach, with its evidence, assumptions, and open questions
+- what changes and what stays the same
+- the reason for a local or a structural correction, when the choice matters
+- the necessary current work, and the optional future improvements
+- the dependencies, the affected boundaries and users, and the compatibility impact
+- the material risks, each with its handling method
+- the verification: each responsibility or risk, its possible failure, and the check with its expected evidence
+- the reviewer context
+- the conditions to start and to stop, the implementation scope, and the units of work
+
+Add alternative designs, module maps, migration details, rollback, or explanation points for the user only when they matter.\
+Label each planned check as not run.\
+Leave open high-impact choices to the user.

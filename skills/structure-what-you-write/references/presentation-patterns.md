@@ -1,36 +1,37 @@
 # Presentation patterns for structured writing
 
-Use this reference after identifying information units and their relationships.
-The choice of prose, list, table, code block, or diagram must follow what the reader needs to inspect, compare, understand, or perform.
-The target medium's rendering, accessibility, and editorial conventions remain relevant.
+Use this reference after you identify the information units and their relationships.\
+Choose the form from what the reader must inspect, compare, understand, or do.\
+The rendering, accessibility, and editorial conventions of the target medium also apply.
 
 ## Select the form
 
-| Form | Appropriate when | Avoid when |
+| Form | Use when | Use another form when |
 | --- | --- | --- |
-| Prose paragraph | Explaining one coherent subject, rationale, condition, or causal relationship | Multiple independent items or steps are buried in a dense sentence |
-| Bulleted list | Showing unordered peers, choices, checks, or concise points | Items differ in category, or each requires a long separate discussion |
-| Numbered list | Showing ordered actions or a genuinely ranked sequence | The order is arbitrary and numbering falsely implies progression |
-| Nested list | Showing a parent item with its subordinate detail or checks | Nesting is decorative, inconsistent, or deeper than the relationships warrant |
-| Table | Comparing entities by the same dimensions, defining repeated attributes or condition/outcome pairs | Cells contain unrelated essays, items lack shared dimensions, or one-column layout merely saves space |
-| Code block | Showing exact syntax, a literal command, configuration, expected output, or a reusable output structure | A normal statement or conceptual relationship is being treated as literal syntax |
-| Diagram | Showing a hierarchy, sequence, system boundary, dependency, or flow that benefits from visualization | The diagram merely repeats a short list or hides labels essential to comprehension |
+| Prose paragraph | You explain one coherent subject, reason, condition, or cause | Several independent items or steps are hidden in a dense sentence |
+| Bulleted list | You show unordered peers, choices, checks, or short points | The items differ in category, or each needs a long separate discussion |
+| Numbered list | You show ordered actions or a real ranked sequence | The order is arbitrary, and numbers would suggest a false progression |
+| Nested list | You show a parent item with its details or checks | The nesting is only decorative, inconsistent, or deeper than the relationships |
+| Table | You compare entities on the same dimensions, or define repeated attributes or pairs of condition and result | The cells contain unrelated long text, the items share no dimensions, or a table of one column only saves space |
+| Code block | You show exact syntax, a literal command, configuration, expected output, or a reusable output structure | The content is a normal statement or a conceptual relationship |
+| Diagram | You show a hierarchy, sequence, system boundary, dependency, or flow that a picture makes clearer | The diagram only repeats a short list, or hides labels that the reader needs |
 
-For a small set of term/definition pairs, a definition list or labeled bullets may be clearer than a table.
-A format is not intrinsically better because it appears more structured.
+For a small set of pairs of a term and a definition, a definition list or labeled bullets can be clearer than a table.\
+Choose a form for its fit to the information, not for how structured it looks.
 
 ## Prose and paragraphs
 
-Give each paragraph a coherent subject that can be summarized without mentioning unrelated topics.
-A paragraph may have several sentences when the sentences develop the same claim, explanation, or exception.
-Split at a genuine subject or function change, not at a predetermined sentence count.
-Keep a rule near its qualifying condition and reason when they are needed together.
-Avoid hard line breaks in the middle of a sentence.
+Give each paragraph one coherent subject that you can summarize without unrelated topics.\
+A paragraph can have several sentences when they develop the same claim, explanation, or exception.\
+Start a new paragraph at a real change of subject or function, not after a fixed number of sentences.\
+Keep a rule near its condition and its reason when the reader needs them together.\
+Keep each sentence free of hard line breaks.
 
-### Embedded enumerations
+### Lists inside sentences
 
-A short inline list can be appropriate when each item is brief and the reader need not inspect the items separately.
-Prefer vertical bullets or a table when the items are independently actionable, long, repeated, conditional, or likely to be checked one by one.
+A short list inside a sentence is suitable when each item is brief, and the reader does not examine the items separately.\
+Use vertical bullets or a table when the items are long, repeated, or conditional.\
+Also use them when the reader acts on or checks each item separately.
 
 **Dense input:**
 
@@ -38,7 +39,7 @@ Prefer vertical bullets or a table when the items are independently actionable, 
 Check the title, status, assignee, milestone, due date, category, priority, and last update for each item.
 ````
 
-**More useful as an inspectable checklist when individual checks matter:**
+**More useful as a checklist when each check matters:**
 
 ````markdown
 Check these fields for each item:
@@ -53,14 +54,14 @@ Check these fields for each item:
 - `Last update`
 ````
 
-The original sentence remains acceptable when the fields are incidental context and do not need individual verification.
+The original sentence is still acceptable when the fields are only context, and need no separate verification.
 
 ## Bulleted lists and parallel items
 
-Use one recognizable peer item per bullet, and write parallel labels or actions when readers compare items.
-A bullet can contain several related sentences and subordinate details.
-Do not force unrelated entities into a bullet just to reduce bullet count.
-Do not split one meaningful action from the qualifications necessary to perform it safely.
+Put one recognizable peer item in each bullet, and write parallel labels or actions when readers compare the items.\
+A bullet can contain several related sentences and details.\
+Give unrelated entities separate bullets, even when that makes the list longer.\
+Keep one meaningful action together with the qualifications that the reader needs to do it safely.
 
 **Poor grouping:**
 
@@ -70,49 +71,57 @@ Do not split one meaningful action from the qualifications necessary to perform 
 - Verify the displayed fields before reading the queues.
 ````
 
-The first two bullets contain arbitrarily bundled view names, while the third contains an instruction rather than a view.
-A useful presentation would either list the six views as peers or place their repeated properties in a table, then separate the checking instruction.
+The first two bullets bundle view names arbitrarily, and the third bullet contains an instruction, not a view.\
+A useful presentation lists the six views as peers, or puts their repeated properties in a table.\
+It then puts the check instruction separately.
 
-## Numbered steps and subordinate checks
+## Numbered steps and their checks
 
-Give each step a clear action-oriented opening so readers can scan the sequence.
-Keep prerequisite checks before the operation and result verification after it.
-Use subordinate bullets for multiple inputs, checks, or outputs related to one step.
-When a step contains several paragraphs or code blocks, give each step its own heading, such as `### 2. Build the archive`, and keep its details and checks under that heading.
+Start each step with a clear action, so that readers can scan the sequence.\
+Put prerequisite checks before the operation, and verification of the result after it.\
+Use bullets below a step for several inputs, checks, or outputs of that step.\
+When a step contains several paragraphs or code blocks, give each step its own heading, such as `### 2. Build the archive`.\
+Keep the details and the checks of that step under its heading.
 
 ````markdown
-1. **Inspect the current state.**
+1. **Inspect the current state**
+
    - Read the latest source record.
-   - Identify any concurrent edits and unresolved differences.
-2. **Apply the approved change.**
+   - Identify concurrent edits and unresolved differences.
+
+2. **Apply the approved change**
+
    - Change only the authorized fields.
-   - Record the operation's result.
-3. **Verify the saved result.**
+   - Record the result of the operation.
+
+3. **Verify the saved result**
+
    - Read the updated record again.
-   - Compare it with the intended change and preserved fields.
+   - Compare it with the intended change and the preserved fields.
 ````
 
-A verification subsection may be warranted for a large reusable topic, but do not detach it from the step sequence merely to create another heading.
-Conversely, do not nest a logically independent process under an unrelated step solely to avoid a new section.
+A large reusable topic can need a separate verification subsection.\
+Keep the verification connected to the steps that it checks.\
+Give a logically independent process its own section, not a place under an unrelated step.
 
 ## Tables: entity, dimension, and scope
 
-Before making a table, answer:
+Before you make a table, answer these questions:
 
 1. What does one row represent?
 2. What does one column represent?
-3. Can every relevant row be interpreted under the same headings?
+3. Can each relevant row be read under the same headings?
 4. Does the table serve lookup or comparison better than separate blocks?
 5. Is the table short and narrow enough for the intended medium?
 
-Use an identifying first column and concise, unambiguous headings.
-Keep categories and definitions consistent across rows.
-Split an unwieldy table if separate reader tasks or independent entities would be easier to understand.
-Do not split a useful comparison merely to give every concept its own section.
+Use an identifying first column, and short, clear headings.\
+Keep the categories and the definitions consistent across rows.\
+Split a large table when separate tasks of the reader or independent entities become easier to understand.\
+Keep a useful comparison in one table, even when each concept could have its own section.
 
 ### Repeated records
 
-When each saved view has a name, filter, and use, the rows represent views and the columns represent attributes.
+When each saved view has a name, a filter, and a use, the rows represent views, and the columns represent attributes.
 
 ````markdown
 ### Views used for this task
@@ -129,11 +138,11 @@ When each saved view has a name, filter, and use, the rows represent views and t
 - Verify that its expected fields are visible.
 ````
 
-A label such as "All project views" would be inaccurate if the table covers only the views used by this task.
+A label such as "All project views" would be incorrect if the table covers only the views of this task.
 
 ### Independent field definitions
 
-When the job is to document two distinct fields, separate field definitions can be more useful than adding an owner column to one large table.
+When the job is to document two different fields, separate field definitions can be more useful than one large table with an owner column.
 
 ````markdown
 #### Human actions
@@ -153,20 +162,22 @@ When the job is to document two distinct fields, separate field definitions can 
 | `None` | The field was assessed and no agent action is needed | A new action becomes necessary |
 ````
 
-This example is hypothetical; permitted values and the semantics of `None` must be verified for the actual system.
-If the real task is to compare the two schemas by common dimensions, a unified comparison table may be preferable.
+This example is hypothetical.\
+Verify the permitted values and the meaning of `None` in the actual system.\
+If the real task is to compare the two schemas on common dimensions, one comparison table can be better.
 
 ## Conditions, exceptions, and state values
 
-A two-column condition/action table works well when readers scan many alternatives.
-A short conditional sentence is often better for one simple condition.
-When values such as blank, unset, unknown, or `None` have operationally important differences, place their meanings and valid combinations beside the relevant field definition.
-Do not scatter them across unrelated paragraphs or silently infer their semantics.
+A table with a condition column and an action column works well when readers scan many alternatives.\
+A short conditional sentence is often better for one simple condition.\
+Values such as blank, unset, unknown, or `None` can have important operational differences.\
+Then put their meanings and their valid combinations next to the definition of the field.\
+Take their meanings from the source, and keep them in one place.
 
 ## Literal output structures
 
-Use a fenced block when the reader or agent needs to produce a recognizable, literal format.
-Do not describe an exact output skeleton in a sprawling paragraph if showing the skeleton is clearer.
+Use a fenced block when the reader or the agent must produce a recognizable, literal format.\
+Show an exact output skeleton as a skeleton, not as a long paragraph.
 
 ````markdown
 ### Report format
@@ -185,24 +196,24 @@ Remaining work
 ```
 ````
 
-The inner skeleton is an example, not a requirement to fill empty sections.
-Where a downstream machine consumes the output, provide a real schema or format contract rather than an illustrative placeholder.
+The inner skeleton is an example, and empty sections stay out of the output.\
+When a later machine reads the output, give a real schema or format contract, not an illustrative placeholder.
 
 ## Diagrams and other visuals
 
-Use a diagram to clarify relationships that text or a table would make awkward.
-State whether an arrow means sequence, dependency, information flow, responsibility, or something else.
-Do not imply execution order or synchronization merely because nodes are connected.
-Keep the essential labels and decisions accessible in text, especially where the diagram renderer may be unavailable.
+Use a diagram to show relationships that text or a table would show awkwardly.\
+State whether an arrow means sequence, dependency, information flow, responsibility, or something else.\
+An arrow means execution order or synchronization only when the diagram states it.\
+Keep the essential labels and decisions in the text as well, because a diagram renderer may not be available.
 
 ## Accessibility and rendering
 
-- Prefer descriptive headings and link text to visual-only cues.
-- Use genuine table headers and avoid tables for arbitrary layout.
-- Avoid overly wide tables in email, mobile chat, and narrow viewers.
-- Keep one-column lists as lists unless a two-dimensional relationship exists.
-- Use real code fences for literal values, not to imitate the appearance of a table.
-- Inspect rendered Markdown when indentation, nested blocks, tables, or links are likely to be fragile.
+- Use descriptive headings and link text, not only visual cues.
+- Use real table headers, and use tables for data, not for layout.
+- Keep tables narrow for email, mobile chat, and narrow viewers.
+- Keep a list of one column as a list, unless a two-dimensional relationship exists.
+- Use code fences for literal values, not to imitate a table.
+- Inspect the rendered Markdown when indentation, nested blocks, tables, or links can break.
 
 ## Sources
 

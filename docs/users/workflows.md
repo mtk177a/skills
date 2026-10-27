@@ -1,7 +1,8 @@
 # Choose the next Skill
 
 This guide is for people who use several Skills on one piece of work.\
-For each kind of work, it shows which Skill usually comes next and what the previous Skill must report before you move on.\
+For each kind of work, it shows which Skill usually comes next.\
+It also shows what the previous Skill must report before you move on.\
 Choose the first Skill from the [task catalog](../../README.md#skills).
 
 Most Skills end by reporting a state, such as `Ready for design`.\
@@ -37,7 +38,8 @@ Two Skills fill specific gaps before or during these steps:
 1. **`investigate-failure`**
    - When it reports `Ready for implementation`, continue with `implement-changes`.
    - When it reports `Ready for design`, continue with `design-changes`.
-   - When it reports `Diagnostic next` or `Blocked`, provide the missing input or run the check it names, then continue the investigation.
+   - When it reports `Diagnostic next` or `Blocked`, provide the missing input, or run the check that it names.\
+     Then continue the investigation.
 2. **`implement-changes`**, after design if needed
 3. **`validate-fix`**
    - It checks the fix against the original failure.
@@ -61,7 +63,8 @@ Each Skill passes specific information to the next one and does not make the dec
 3. **`draft-review-comments`**, only when you need comments
    - Pass it the assessment, state, and response decision of each finding.\
      It drafts comments without making these decisions.
-   - For a review without findings, skip triage and pass the conclusion, the reviewed scope, the checks performed, and their limitations directly from `review-changes`.
+   - For a review without findings, skip triage.\
+     Pass the conclusion, the reviewed scope, the checks performed, and their limitations directly from `review-changes`.
    - A draft does not allow posting it or choosing a GitHub review action.
 4. **`implement-changes`**
 5. **`validate-fix`**
@@ -94,7 +97,7 @@ Pause the current work and use one of these Skills in the following situations:
    - When it reports `Blocked`, keep the work paused until the missing input or decision is available.
 3. **A consequential choice has converged on one approach too early: `explore-decision-space`**
    - When it reports `Selected for design`, continue with `design-changes`.
-   - You do not need it for work that is easy to reverse or for a choice already supported by an adequate comparison.
+   - Skip it for work that is easy to reverse, or for a choice that an adequate comparison already supports.
 
 ## Choose an execution setup and keep your understanding
 

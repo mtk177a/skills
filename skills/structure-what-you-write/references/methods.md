@@ -1,16 +1,16 @@
 # Methods and principles behind information-centered writing
 
-Use this reference when a structural choice needs a reasoned method, not just a formatting convention.
-It summarizes ideas adapted from primary standards, official method descriptions, and publisher-maintained guides.
-These methods are not mutually exclusive, and this Skill does not claim formal conformance to any of them.
+Use this reference when a structural choice needs a reasoned method, not only a formatting convention.\
+It summarizes ideas adapted from primary standards, official descriptions of methods, and guides that their publishers maintain.\
+The methods can be used together, and this Skill does not claim formal conformance to any of them.
 
-## Information Mapping: identify the reader question and information unit
+## Information Mapping: identify the question of the reader and the information unit
 
-**Core idea:** Analyze information by the question it answers, arrange it in accessible blocks, and label blocks so readers can locate them.
+**Core idea**: analyze information by the question that it answers, arrange it in accessible blocks, and label the blocks so that readers can find them.
 
-The Information Mapping provider identifies six information types:
+The provider of Information Mapping identifies six information types:
 
-| Information Mapping type | Reader question |
+| Information Mapping type | Question of the reader |
 | --- | --- |
 | Procedure | How do I do it? |
 | Process | What happens, and how does it work? |
@@ -21,136 +21,144 @@ The Information Mapping provider identifies six information types:
 
 ### Information Mapping principles
 
-Information Mapping also presents six organizing principles that can inform the writing decisions here.
+Information Mapping also gives six organizing principles that can inform the writing decisions here.
 
 | Principle | Practical question for this Skill |
 | --- | --- |
-| Chunking | Has the content been divided into manageable, meaningful units? |
-| Relevance | Does each unit contain information that belongs to its subject and reader task? |
-| Labeling | Can readers infer a unit's contents and scope from its name? |
-| Consistency | Are comparable units represented using compatible terms and patterns? |
-| Integrated graphics | Do tables and diagrams clarify the adjacent content rather than stand apart as decoration? |
-| Accessible detail | Can readers reach needed details without carrying irrelevant detail through every step? |
+| Chunking | Is the content divided into manageable, meaningful units? |
+| Relevance | Does each unit contain information that belongs to its subject and to the task of the reader? |
+| Labeling | Can readers infer the content and the scope of a unit from its name? |
+| Consistency | Do comparable units use compatible terms and patterns? |
+| Integrated graphics | Do tables and diagrams make the content next to them clearer? |
+| Accessible detail | Can readers reach the details that they need, without irrelevant details in every step? |
 
-These principles are guidance for organization and retrieval, not a rule to cap every list at a fixed number of items.
-The list reflects the provider's published six-principle summary; other descriptions of the historical method may count or group principles differently.
+These principles guide organization and retrieval.\
+They set no fixed maximum for the number of items in a list.\
+The list follows the published summary of six principles by the provider.\
+Other descriptions of the historical method can count or group the principles differently.
 
-**Apply when:** A paragraph, list, or section mixes descriptions, steps, rules, examples, and reference facts without signaling their differences.
+**Apply when**: a paragraph, list, or section mixes descriptions, steps, rules, examples, and reference facts, and does not show their differences.
 
-- Identify the reader question before choosing the grouping.
-- Choose a unit that can be meaningfully labeled and consumed for a reader task.
-- Group closely related conditions, definitions, and examples; do not fragment solely to make blocks shorter.
-- Prefer a recognizable format for repeated information, while checking whether the actual reader task justifies it.
-- Use labels that describe the contained information rather than labels derived from source location or production history.
+- Identify the question of the reader before you choose the grouping.
+- Choose a unit that can have a meaningful label, and that serves a task of the reader.
+- Group closely related conditions, definitions, and examples, even when the blocks become longer.
+- Use a recognizable format for repeated information, when the task of the reader supports it.
+- Use labels that describe the information in the unit, not its location in the source or its history.
 
-**Limit:** The six types are part of Information Mapping's method, not an exhaustive ontology this Skill imposes on all writing.
-Narrative, persuasive, social, and hybrid writing may need other distinctions.
-Avoid treating vendor-specific layout conventions as mandatory for Markdown artifacts.
+**Limit**: the six types are part of the method of Information Mapping.\
+This Skill uses them as aids, not as a complete classification for all writing.\
+Narrative, persuasive, social, and mixed writing can need other distinctions.\
+The layout conventions of the vendor are optional for Markdown artifacts.
 
-**Sources:** [Information Mapping: Methodology](https://informationmapping.com/pages/information-mapping-methodology); [Information Mapping: Six organizing principles](https://informationmapping.com/blogs/news/conquering-documentation-debt); [Information Mapping: Types](https://support.informationmapping.com/hc/en-us/articles/213446789-Present-your-information-in-a-clear-and-consistent-way); [Information Mapping: Maps and Blocks](https://support.informationmapping.com/hc/en-us/articles/213440709-Structure-your-content-using-Maps-and-Blocks).
+**Sources**: [Information Mapping: Methodology](https://informationmapping.com/pages/information-mapping-methodology); [Information Mapping: Six organizing principles](https://informationmapping.com/blogs/news/conquering-documentation-debt); [Information Mapping: Types](https://support.informationmapping.com/hc/en-us/articles/213446789-Present-your-information-in-a-clear-and-consistent-way); [Information Mapping: Maps and Blocks](https://support.informationmapping.com/hc/en-us/articles/213440709-Structure-your-content-using-Maps-and-Blocks).
 
 ## DITA: separate information types from assembly
 
-**Core idea:** DITA distinguishes topic types such as concept, task, and reference, and separates authored topics from the maps that organize them into deliverables.
+**Core idea**: DITA separates topic types, such as concept, task, and reference.\
+It also separates the authored topics from the maps that organize them into deliverables.
 
 - Concept topics explain what something is.
-- Task topics help someone accomplish a task.
-- Reference topics supply precise facts for lookup.
-- Topics are meaningful units of authoring; maps represent hierarchy and relationships among topics.
+- Task topics help someone do a task.
+- Reference topics give precise facts to look up.
+- Topics are meaningful units of authoring, and maps show the hierarchy and the relationships of topics.
 
-**Apply when:** Defining independent fields, documenting procedures, separating current facts from explanation, or restructuring a large set of files.
+**Apply when**: you define independent fields, document procedures, separate current facts from explanation, or restructure a large set of files.
 
-- Use the distinction between explaining a concept, prescribing a task, and presenting a reference to detect mixed-purpose sections.
-- Consider whether one topic needs an independent section or file, but do not equate topic with file.
-- Decide navigation and presentation order at the artifact-collection level when necessary.
-- Keep a topic self-contained when it must be usable directly, not only through a parent document.
+- Use the difference between a concept, a task, and a reference to find sections with mixed purposes.
+- Consider whether one topic needs its own section or file.\
+  A topic and a file are different units.
+- Decide the navigation and the order of presentation for the whole set of artifacts, when necessary.
+- Keep a topic self-contained when readers must use it directly, not only through a parent document.
 
-**Limit:** DITA is an XML architecture with its own exact constraints.
-These heuristics do not require converting Markdown to DITA, using XML tags, or applying a fixed three-type template to every piece of writing.
+**Limit**: DITA is an XML architecture with its own exact constraints.\
+These heuristics apply to Markdown as it is, without XML tags or a fixed template of three types.
 
-**Sources:** [OASIS DITA 2.0: Information typing](https://dita-lang.org/2.0/dita/archspec/base/information-typing); [The topic as the basic unit of information](https://dita-lang.org/2.0/dita/archspec/base/topicdefined); [Definition of DITA maps](https://dita-lang.org/2.0/dita/archspec/base/definition-of-ditamaps).
+**Sources**: [OASIS DITA 2.0: Information typing](https://dita-lang.org/2.0/dita/archspec/base/information-typing); [The topic as the basic unit of information](https://dita-lang.org/2.0/dita/archspec/base/topicdefined); [Definition of DITA maps](https://dita-lang.org/2.0/dita/archspec/base/definition-of-ditamaps).
 
-## Diátaxis: distinguish what readers are trying to do
+## Diátaxis: distinguish what readers try to do
 
-**Core idea:** Four forms of technical documentation support different reader needs.
+**Core idea**: four forms of technical documentation support different needs of readers.
 
-| Form | Reader need | Primary function |
+| Form | Need of the reader | Main function |
 | --- | --- | --- |
 | Tutorial | Learn by doing | Lead a guided learning experience |
-| How-to | Accomplish a goal | Guide practical action |
+| How-to | Achieve a goal | Guide practical action |
 | Reference | Find precise information | Describe facts and machinery |
-| Explanation | Understand a topic | Provide context and reasons |
+| Explanation | Understand a topic | Give context and reasons |
 
-**Apply when:** A README, guide, reference page, or instruction set tries to teach, instruct, catalogue, and justify everything simultaneously.
+**Apply when**: a README, guide, reference page, or instruction set tries to teach, instruct, list, and justify everything at the same time.
 
-- Determine which reader job the current artifact primarily serves.
-- Move substantially independent instructional or explanatory material to a more suitable section or destination when the reader benefits.
-- Allow concise context inside a procedure when execution requires it.
-- Link to supporting detail rather than forcing every reader through it.
+- Identify the main job of the reader that the current artifact serves.
+- Move largely independent instructions or explanations to a better section or destination, when the reader benefits.
+- Keep short context inside a procedure when the reader needs it to do the steps.
+- Link to supporting detail, so that each reader can choose to read it.
 
-**Limit:** Do not split every mixed-purpose artifact into four files.
-A short message or executable agent task may legitimately contain definitions, instructions, and safeguards because the combined unit serves one concrete task.
+**Limit**: split a document with mixed purposes only when the split helps the reader, not into four files by default.\
+A short message or an agent task can correctly contain definitions, instructions, and safeguards, because the combined unit serves one concrete task.
 
-**Sources:** [Diátaxis: Start here](https://diataxis.fr/start-here/); [Diátaxis map](https://diataxis.fr/map/).
+**Sources**: [Diátaxis: Start here](https://diataxis.fr/start-here/); [Diátaxis map](https://diataxis.fr/map/).
 
 ## Google Technical Writing: organize before polishing
 
-**Core idea:** A useful outline, informative headings, focused paragraphs, parallel list items, and meaningful tables make information easier to scan and act on.
+**Core idea**: a useful outline, informative headings, focused paragraphs, parallel list items, and meaningful tables make information easier to scan and use.
 
-- Focus a paragraph on one coherent topic instead of limiting it by an arbitrary sentence count.
-- Keep list items parallel in logical category as well as grammar.
-- Use numbered lists when order changes meaning; otherwise consider bullets.
-- Prefer tables for repeated multi-attribute records and lookup; avoid them for a simple one-column inventory or page layout.
-- Compare a large standalone document with a set of smaller linked documents on reader needs, not file length alone.
-- Make the content and scope of headings predictable.
+- Give a paragraph one coherent topic, and let the topic set its length.
+- Keep list items parallel in logical category as well as in grammar.
+- Use numbered lists when the order changes the meaning, and bullets in other cases.
+- Use tables for repeated records with several attributes and for lookup.\
+  Use a list for a simple inventory with one column.
+- Choose between one large document and several linked documents by the needs of the readers, not by file length.
+- Make the content and the scope of headings predictable.
 
-**Apply when:** A document contains dense run-in enumerations, arbitrary bullet groupings, misleading headings, or ineffective section boundaries.
+**Apply when**: a document contains dense enumerations inside sentences, arbitrary groups of bullets, misleading headings, or weak section boundaries.
 
-**Limit:** Editing heuristics are not laws.
-If a short paragraph or two-column comparison better serves the actual reader, use it even when another form could be mechanically constructed.
+**Limit**: these editing heuristics are guidance.\
+When a short paragraph or a comparison of two columns serves the reader better, use it.\
+Use it even when another form is possible.
 
-**Sources:** [Lists and tables](https://developers.google.com/tech-writing/one/lists-and-tables); [Paragraphs](https://developers.google.com/tech-writing/one/paragraphs); [Organizing large documents](https://developers.google.com/tech-writing/two/large-docs); [Tables](https://developers.google.com/style/tables).
+**Sources**: [Lists and tables](https://developers.google.com/tech-writing/one/lists-and-tables); [Paragraphs](https://developers.google.com/tech-writing/one/paragraphs); [Organizing large documents](https://developers.google.com/tech-writing/two/large-docs); [Tables](https://developers.google.com/style/tables).
 
-## Plain language and ISO 24495-1: test the outcome for the reader
+## Plain language and ISO 24495-1: test the result for the reader
 
-**Core idea:** Plain-language practice asks whether intended readers can get relevant information, find it, understand it, and use it.
-The International Plain Language Federation summarizes ISO 24495-1:2023 around four governing principles:
+**Core idea**: plain-language practice asks whether the intended readers can get, find, understand, and use the relevant information.\
+The International Plain Language Federation summarizes ISO 24495-1:2023 with four governing principles:
 
-- **Relevant:** Readers get what they need, not an indiscriminate dump of available content.
-- **Findable:** Readers can locate information at the moment of use.
-- **Understandable:** The meaning, conditions, and relationships can be understood.
-- **Usable:** Readers can decide or act with the information.
+- **Relevant**: readers get what they need, not all available content.
+- **Findable**: readers can find information at the moment that they use it.
+- **Understandable**: readers can understand the meaning, the conditions, and the relationships.
+- **Usable**: readers can decide or act with the information.
 
-**Apply when:** A structure looks tidy but still burdens the reader, omits prerequisites, exposes irrelevant drafting history, or scatters needed conditions.
+**Apply when**: a structure looks tidy, but it still burdens the reader, omits prerequisites, shows irrelevant drafting history, or scatters necessary conditions.
 
-**Limit:** These are outcome criteria, not a prescription that every piece of content must use short sentences, headings, or tables.
-The published ISO standard contains more detail than this summary; the full normative text is not reproduced here.
+**Limit**: these are criteria for the result.\
+They do not require short sentences, headings, or tables for all content.\
+The published ISO standard contains more detail than this summary, and this file does not reproduce its normative text.
 
-**Sources:** [ISO 24495-1:2023](https://www.iso.org/standard/78907.html); [International Plain Language Federation: ISO standard](https://www.iplfederation.org/iso-standard/).
+**Sources**: [ISO 24495-1:2023](https://www.iso.org/standard/78907.html); [International Plain Language Federation: ISO standard](https://www.iplfederation.org/iso-standard/).
 
 ## W3C WAI: represent the hierarchy semantically
 
-**Core idea:** Heading levels represent the structure of the content and enable navigation, including for assistive technologies.
-An equal-level heading begins a new peer section, while a lower-level heading begins a subsection of a higher-level section.
+**Core idea**: heading levels show the structure of the content, and they enable navigation, also for assistive technologies.\
+A heading at the same level starts a new peer section, and a heading at a lower level starts a subsection.
 
-**Apply when:** Subtopics that should share a meaningful parent are presented as unrelated peer headings, or decorative heading sizes distort containment.
+**Apply when**: subtopics that need a meaningful shared parent appear as unrelated peer headings, or heading sizes chosen for appearance distort the containment.
 
-- Choose levels according to containment, not desired font size.
-- Use descriptive titles that match the actual information scope.
-- Avoid skipping levels for newly introduced subsections when possible.
+- Choose heading levels by containment, not by the font size that you want.
+- Use descriptive titles that match the actual scope of the information.
+- When you add a subsection, use the next level below its parent.
 
-**Limit:** Heading markup alone cannot repair incorrect grouping or misplaced content.
+**Limit**: heading markup alone cannot repair incorrect grouping or misplaced content.\
 Determine the semantic relationships first.
 
-**Source:** [W3C WAI: Headings](https://www.w3.org/WAI/tutorials/page-structure/headings/).
+**Source**: [W3C WAI: Headings](https://www.w3.org/WAI/tutorials/page-structure/headings/).
 
-## How to resolve conflicting recommendations
+## Resolve conflicting recommendations
 
-1. Preserve applicable requirements, reader needs, facts, and permissions before optimizing presentation.
-2. Determine whether the problem is content selection, information type, grouping, hierarchy, placement, or formatting.
-3. Compare the relevant methods only at the level they actually address.
-4. Prefer the option that improves readers' ability to find, understand, and use accurate information with less reconstruction or unnecessary navigation.
-5. Verify that the chosen structure does not lose meaning, required context, accessibility, or standalone behavior.
+1. Keep the applicable requirements, the needs of the readers, the facts, and the permissions before you improve the presentation.
+2. Identify whether the problem is content selection, information type, grouping, hierarchy, placement, or formatting.
+3. Compare the relevant methods only at the level that each one addresses.
+4. Choose the option that helps readers find, understand, and use accurate information with the least reconstruction and navigation.
+5. Verify that the chosen structure keeps the meaning, the required context, the accessibility, and the independent use.
 
-No single method overrides the reader's actual task or the destination medium's constraints.
-These combined decision rules are the design of this Skill, not a quotation from any one source.
+The actual task of the reader and the constraints of the destination medium take precedence over each method.\
+These combined decision rules are the design of this Skill, not a quotation from one source.

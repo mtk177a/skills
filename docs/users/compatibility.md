@@ -1,8 +1,10 @@
 # Runtime requirements and client differences
 
 This guide is for people who use the Skills in a client.\
-It explains what the agent needs to run the Skills, which Skills need more than that, and how clients differ in invoking Skills and controlling tools.\
-Read it when you choose a client, and before you start work that writes files, uses the web, or starts a subagent.
+It explains what the agent needs to run the Skills, and which Skills need more than that.\
+It also explains how clients differ in how they invoke Skills and control tools.\
+Read it when you choose a client.\
+Also read it before you start work that writes files, uses the web, or starts a subagent.
 
 ## What every Skill needs
 
@@ -26,7 +28,7 @@ Only the three Skills below need more than the requirements above.
 ### Web access
 
 `research-web-safely` searches the web and reads the sources it cites.\
-If the client has no web access, the Skill reports the affected claims as not verified instead of answering from memory.
+Without web access, the Skill reports the affected claims as not verified, instead of answering from memory.
 
 ### An independent subagent
 
