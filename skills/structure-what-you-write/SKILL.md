@@ -1,6 +1,6 @@
 ---
 name: structure-what-you-write
-description: Creates, revises, and reviews writing by selecting and organizing information for its readers and purpose. Use for repository documentation, READMEs, guides, Issues, PRs, emails, comments, and messages.
+description: Creates, revises, and reviews writing by selecting and organizing information for its readers and purpose. Use for repository documentation, READMEs, guides, agent instruction files, Issues, PRs, emails, comments, and messages.
 license: MIT
 ---
 
@@ -32,7 +32,8 @@ Better structure can mean less formatting, a longer text, or fewer files.
 - Code and other implementation evidence show the current behavior only.\
   Requirements, design reasons, policy, ownership, and acceptable risk need other evidence.
 - Separate faithful editing of supplied content from authoring in which you can select content.
-- When you restructure existing content, keep its required claims, conditions, uncertainty, commitments, permissions, and safety constraints.
+- When you restructure existing content, keep its required claims, conditions, uncertainty, commitments, permissions, and safety constraints.\
+  You can change their wording, form, and location.
 - Before you revise operational instructions, record their parts as working notes with their sources.\
   The parts are the inputs, outputs, selection rules, permissions, prohibitions, and failure handling.\
   Mark behavior that the source does not specify as unspecified.\
@@ -63,6 +64,11 @@ Identify the units of information before you choose a presentation form.
 - Keep the connections between related information.
 
 The boundaries of the underlying information can differ from the boundaries of sentences, paragraphs, bullets, tables, headings, and files.
+
+Record a working map of the target scope.\
+For each section, paragraph, list, and table, write the question of the reader that it answers, and its information type.\
+Remove or move a unit that answers no question of the reader.\
+Done when each unit in the scope has a reader question and a destination.
 
 ### 4. Design the structure and the placement
 
@@ -99,21 +105,24 @@ Choose each presentation form from the meaning, relations, and use of the inform
 - **Prose**: explain one subject, reasoning, context, or cause.
 - **Bulleted lists**: show separate, parallel items without an order of execution.
 - **Numbered lists**: show ordered steps.\
-  When a step has short details, give the step a bold name, and put the details below it as bullets.\
-  When a step contains several paragraphs or code blocks, give each step its own heading.
+  When a step has details, give the step a bold name without a final period, and put the details below it.\
+  Give each step its own heading only when the step contains subsections, or readers need to link to it.
 - **Nested lists**: show real containment or parent-child relations.
 - **Tables**: show repeated attributes, definitions, conditions, or comparisons across clear dimensions.\
   When a cell needs several sentences or independent conditions, use headings or lists.
-- **Code blocks**: show exact syntax, configuration, commands, output formats, or other literal structures.
+- **Code blocks**: show exact syntax, configuration, commands, output formats, or other literal structures.\
+  Show a directory structure as a tree, with a comment for the role of each entry.
 - **Diagrams**: show relations, flows, or structures that are hard to show efficiently in text.
 
 Apply these choices with judgment:
 
 - Give each bullet, paragraph, table, or section one subject.
-- Keep related information together, even when a bullet or a sentence becomes longer.
+- In documents, show conditions, cases, attributes, alternatives, and actions as tables or lists.\
+  Use prose for reasons, causes, and context.
+- Show each change of topic with a heading, a bold label, or a separate list item.
 - Combine independent subjects into one table only when the combined view has a clear use.
-- Show long lists, independent conditions, and actions in a clear structure, not inside dense prose.
-- Put examples and exceptions near the definitions or rules that they explain.
+- Put examples and exceptions near the definitions or rules that they explain.\
+  Give an example a bold label, such as "**Example**".
 - Start each section with its point: what the section lets the reader do or know.\
   Put qualifications and limits after that point, inside the step or item that they affect.\
   Put a warning before an action only when the reader must know it before the action.
@@ -123,38 +132,25 @@ Apply these choices with judgment:
   For example, "the user" can mean different people when both people and agents read the document.
 - Use one term for one referent.\
   Check that the ordinary meaning of the term matches what actually happens.
+- When the reader works with a named object, such as a table, a file, or a command, use its identifier.\
+  Add a plain-language label next to it when the label helps.
 - Use headings and other structural elements when their distinctions help the reader.
-- Keep natural language, meaningful transitions, and sufficient explanation.
 
 Follow the conventions of the target medium.\
 Give a short message the structure of a short message.
 
 ### 6. Validate the result
 
-Read the result as a reader who did not see the authoring conversation, and check these items:
+Read the result as a reader who did not see the authoring conversation.\
+Compare it with the working map, and check these items:
 
 - The content serves the intended reader and purpose.
 
-- The required information is present, correct to its sources, and suitably qualified.
+- The required information is present and correct to its sources.
 
-- Each section, paragraph, list item, and table has a clear role.
+- Each unit in the scope answers its reader question, is under a heading that names its topic, and uses the form that fits its type and relations.
 
-- The grouping criteria, hierarchy, order, and placement match the real relations of the information.
-
-- Each heading describes its content, and suggests no incorrect scope.
-
-- A reader of only the headings can tell the topic of each section.
-
-- The opening sentences of each section state its point.
-
-- When several sections or documents changed together, each section meets the criteria in this list.\
-  A corrected structure alone does not complete the revision.
-
-- The reader can find and understand related information together.
-
-- Each presentation form makes the information easier to find, compare, understand, or use.
-
-- The structure is as simple as the information allows, without extra fragments or repetition.
+- A reader of only the headings can tell the topic of each section, and where to find related information.
 
 - The restructured content keeps its meaning, requirements, limits, and authorized decisions.
 
@@ -167,6 +163,17 @@ Read the result as a reader who did not see the authoring conversation, and chec
   Keep necessary design proposals outside the finished artifact.
 
 - Changes to several files keep the necessary links, references, and independent behavior.
+
+These signs show a remaining problem:
+
+- a heading that joins two topics with "and"
+- topics that only blank lines separate
+- prose after a table that starts a different topic
+- cases or conditions in continuous prose
+- a heading level whose content fits in one bold list item
+- a coined label where the reader works with an identifier
+- a qualification that does not change what the reader does
+- a sentence that repeats a table, a heading, or an earlier section
 
 When they apply, check factual claims, links, examples, commands, generated content, and repository checks.\
 Check them against their sources and against the results of running them.\
@@ -188,6 +195,7 @@ Read only the references that apply to the current task:
 - For creation or an authorized revision, produce the finished content, not a description of how to write it.
 
 - For a review only, identify the structural problems, explain their effects, and propose improvements.\
+  Report each section in the scope, including the sections without a finding.\
   Keep the target unchanged.
 
 - When you assess whether repository documentation needs to change, give one result:
@@ -200,9 +208,10 @@ Read only the references that apply to the current task:
 
 - When required information or authority is missing, identify the specific uncertainty, and complete the independent work.
 
-- Keep authoring notes, rejected alternatives, and internal revision history out of the finished content, unless they serve its readers.
+- Keep authoring notes, rejected alternatives, and internal revision history out of the finished content, unless they serve its readers.\
+  Put the verification status, check dates, and unknowns that do not change what the reader does in your report, not in the finished content.
 
 - Edit files, publish material, or contact other people only within the authorized scope.
 
 - Report the completed changes, the checks that you ran, the open issues, and the proposed changes outside the scope.\
-  Separate structural changes from changes of sentences, and state where the depth of revision differs between sections.
+  Separate structural changes from changes of sentences.

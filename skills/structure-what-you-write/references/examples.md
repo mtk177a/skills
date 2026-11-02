@@ -347,6 +347,89 @@ Keep the other file and the configuration schema unchanged.
 **The choice changes when**: a quick onboarding or an offline workflow needs a small, stable excerpt, and the risk of divergence is handled.\
 Then the excerpt can be justified.
 
+## 12. Turn cases in prose into a table of conditions and results
+
+**Problem**: the result of a nightly job depends on two counts, and the section explains the cases in sentences.
+
+**Before:**
+
+````markdown
+If no rows qualify and the job writes no output, the job succeeds and removes the old rows for that day.
+The job treats a day on which it excludes all rows in the same way.
+The job fails before the update if it writes no output for qualified rows, or if it writes output when no rows qualify.
+````
+
+**Diagnosis**: the reader must combine two conditions in four cases, but the sentences give the cases in a different order.\
+The second sentence is an exception that the reader must map back to the first case.
+
+**One improvement:**
+
+````markdown
+| Qualified rows | Output rows | Result |
+| --- | --- | --- |
+| 0 (including days on which all rows are excluded) | 0 | Succeeds, and removes the old rows for that day |
+| 1 or more | 0 | Fails before the update |
+| 0 | 1 or more | Fails before the update |
+| 1 or more | 1 or more | Runs the other output checks, and saves the rows |
+````
+
+**The choice changes when**: only one condition decides the result.\
+Then one conditional sentence is clearer than a table.
+
+## 13. Separate the topics of a section with labels
+
+**Problem**: an "Output" section has a table of columns, then sentences about checks before the save, then a sentence about identifiers, then sentences about reruns.\
+Only blank lines separate these topics.
+
+**Diagnosis**: the section answers three questions: what the job saves, which results it rejects, and what a rerun changes.\
+The sentence about identifiers belongs to the rerun behavior, but it is between the table and the checks.
+
+**One improvement:**
+
+````markdown
+## Output
+
+**Saved columns**
+
+| Column | Content |
+| --- | --- |
+| `id` | Identifier of the row |
+| `day` | Target day |
+| `count` | Number of qualified rows |
+
+**Checks before the save**
+
+- Each `day` equals the target day.
+- Each `count` is 0 or more.
+
+**Reruns**
+
+- A rerun replaces all rows of the target day, and keeps the rows of other days.
+- A rerun creates new values of `id`.
+````
+
+**The choice changes when**: a topic needs several paragraphs or its own subsections.\
+Then give it a heading at the next level.
+
+## 14. Use the identifier of the object that the reader works with
+
+**Problem**: a document about data sources calls the tables "orders", "customer data", and "access history".\
+The reader writes queries against `shop_orders`, `customers`, and `web_access_logs`.
+
+**Diagnosis**: the labels are readable, but the reader must map each label to a table before using the document.\
+A label such as "input" also does not say which object it refers to.
+
+**One improvement:** use the table names in headings and table rows, and add a short plain-language label where it helps.
+
+````markdown
+### `shop_orders` (orders)
+
+One row for each order.
+````
+
+**The choice changes when**: the reader does not work with the identifiers, for example in a summary for managers.\
+Then the plain-language name can be sufficient.
+
 ## Review questions for each example
 
 Before you copy a pattern, ask these questions:
