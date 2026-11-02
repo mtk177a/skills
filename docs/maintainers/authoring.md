@@ -182,13 +182,29 @@ The naturalness of Japanese, such as translated syntax and mixed English, follow
 
 ## Format steps and lists
 
-- **Steps with more than one sentence**: if a step has more than one sentence or contains a list, start the step with a short bold name.\
+- **Steps with more than one sentence**
+
+  If a step has more than one sentence or contains a list, start the step with a short bold name.\
   Put a blank line after the name, and write the body of the step below it.
-- **Short steps**: if each step in a list is one sentence, write the sentence directly after the number.\
+
+- **Short steps**
+
+  If each step in a list is one sentence, write the sentence directly after the number.\
   If one step in the list needs a bold name, give a bold name to all steps in that list.
-- **Blank lines between items**: one item of a list can contain a list, a table, or more than one paragraph.\
+
+- **Bulleted items with bold names**
+
+  - If the item has one sentence, put a colon after the name, and write the sentence on the same line.
+  - If the item has one rule in several sentences, put the name alone on its line, and write the sentences below it as a paragraph.
+  - If the item has several rules, put the name alone on its line, and write the rules below it as child items.
+  - A sentence that needs the sentence before it belongs to the same rule as that sentence.
+
+- **Blank lines between items**
+
+  One item of a list can contain a list, a table, or more than one paragraph.\
   Then put a blank line between all items of that list.\
   Otherwise, put no blank lines between the items.
+
 - **Content that belongs to a step**: indent a table or a list that belongs to a step, so that it stays inside that step.
 
 These rules apply to Skill bodies.\

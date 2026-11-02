@@ -80,8 +80,9 @@ It then puts the check instruction separately.
 Start each step with a clear action, so that readers can scan the sequence.\
 Put prerequisite checks before the operation, and verification of the result after it.\
 Use bullets below a step for several inputs, checks, or outputs of that step.\
-When a step contains several paragraphs or code blocks, give each step its own heading, such as `### 2. Build the archive`.\
-Keep the details and the checks of that step under its heading.
+Write the bold name of a step as a short phrase without a final period, and put paragraphs, bullets, or code blocks below it.\
+Give a step its own heading, such as `### 2. Build the archive`, only when the step contains subsections, or readers need to link to it.\
+Keep the details and the checks of that step below its name or heading.
 
 ````markdown
 1. **Inspect the current state**
@@ -170,6 +171,7 @@ If the real task is to compare the two schemas on common dimensions, one compari
 
 A table with a condition column and an action column works well when readers scan many alternatives.\
 A short conditional sentence is often better for one simple condition.\
+When the result depends on two or more conditions, use one column for each condition and one column for the result.\
 Values such as blank, unset, unknown, or `None` can have important operational differences.\
 Then put their meanings and their valid combinations next to the definition of the field.\
 Take their meanings from the source, and keep them in one place.
@@ -198,6 +200,28 @@ Remaining work
 
 The inner skeleton is an example, and empty sections stay out of the output.\
 When a later machine reads the output, give a real schema or format contract, not an illustrative placeholder.
+
+### Directory structures
+
+Show a directory structure as a tree in a code block, and describe each entry in a comment on its line.\
+A table of paths hides the nesting, and puts entries of different levels in one column.\
+Describe related repositories or external systems in a separate list, because they are not entries of the tree.
+
+````markdown
+```text
+.
+├── app/           # Application code
+│   └── Jobs/      # One directory for each scheduled job
+├── docs/          # Documents for developers and operators
+└── tests/         # Automated tests
+```
+````
+
+## Examples and labels
+
+Give an example a bold label, such as "**Example**" or "**Request URL example**", and put the example below it.\
+A label shows the role of the block before the reader reads it.\
+Put an explanation of the example after the example, when the reader needs the example to understand the explanation.
 
 ## Diagrams and other visuals
 
