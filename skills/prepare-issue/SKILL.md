@@ -99,9 +99,8 @@ Prepare an Issue so that a reader understands what happens, what to achieve, and
      - Leave out the history of the discussion, earlier drafts, and progress reports, because the reader acts on the current definition, and history makes it unclear which statements are still true.
      - For an existing Issue, keep the latest edits of its author, and change only what the request asks for.
 
-   - **Consistency**
+   - **Terms**
 
-     - Make sibling headings and items equal in type, level of detail, and point of view.
      - Use terms that the reader knows, or define each new term once.
 
    - **Done when**
@@ -152,7 +151,6 @@ Prepare an Issue so that a reader understands what happens, what to achieve, and
 
      - Write the smallest steps that reproduce the problem.
      - Show code and error messages as text, not as images.
-     - Write the suspected cause as speculation, separate from the observations.
 
    - **Done when**
 
