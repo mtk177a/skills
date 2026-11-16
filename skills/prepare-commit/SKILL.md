@@ -1,6 +1,6 @@
 ---
 name: prepare-commit
-description: Prepares commits by grouping a scoped Git change set into commits and writing messages that explain the problem and the solution, and stages and commits when authorized. Use when changes need commits, commit messages, or a split into commits.
+description: Prepares commits by grouping a scoped Git change set into commits and writing messages that explain the problem and the solution, and stages and commits when authorized. Use when changes need commits, commit messages, or a split into commits, including when a commit is one step of other work.
 license: MIT
 ---
 
@@ -104,10 +104,12 @@ Prepare commits so that a reader of the history learns what changed from the sub
 
    - **Subject**
 
+     - Before you write the first message, read `references/example.md`.
      - Write the subject in the imperative mood.
-     - State what changes, and make the reason clear when the subject has room for it.
-     - Keep the subject near 50 characters, and at most 72 characters.
-     - Follow the case and the language of the repository rules, or else use the language of the user.
+     - Make the subject a name that identifies the commit in discussions and searches.
+     - Keep the subject to what the commit changes.
+     - Move the details to the body, or split the commit, instead of compressing the words.
+     - Follow the length limit, the case, and the language of the repository rules, or else use the language of the user.
      - End the subject without a period.
 
    - **Done when**
