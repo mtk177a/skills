@@ -21,7 +21,7 @@
 1. **`clarify-request`**
    - 依頼の目的、範囲、成功条件が不明確な場合に使う。\
      すでに明確な場合は省く。
-   - `define-referents`、`draft-issue`、`record-session-handoff` などの Skill が、依頼そのものが不明確だと報告した場合も、この Skill に戻る。
+   - `define-referents`、`prepare-issue`、`record-session-handoff` などの Skill が、依頼そのものが不明確だと報告した場合も、この Skill に戻る。
 2. **`design-changes`**
    - 方針、影響範囲、変更の検証方法を決めるために使う。\
      これらがすでに明確で、変更が許可されている場合は省く。
