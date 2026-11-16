@@ -55,7 +55,7 @@ To use several Skills on one piece of work, see [Choose the next Skill](docs/use
 | Recheck identified fixes against their original findings | [`validate-fix`](skills/validate-fix/SKILL.md) |
 | Return review results to a pull request as labeled comments | [`give-pr-review`](skills/give-pr-review/SKILL.md) |
 | Prepare an Issue title and body for each type of work | [`prepare-issue`](skills/prepare-issue/SKILL.md) |
-| Plan commit units and draft their messages | [`draft-commit`](skills/draft-commit/SKILL.md) |
+| Plan commits and write messages that explain the problem and the solution | [`prepare-commit`](skills/prepare-commit/SKILL.md) |
 | Prepare a pull request title and description for review | [`prepare-pr`](skills/prepare-pr/SKILL.md) |
 | Record evidence for resuming work in another session | [`record-session-handoff`](skills/record-session-handoff/SKILL.md) |
 

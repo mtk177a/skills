@@ -1,19 +1,16 @@
 # Commit Types Reference
 
-This file is an original summary for this repository.\
-The message structure and the meaning of the types are based on the [Conventional Commits specification](https://www.conventionalcommits.org) (CC BY 3.0).
+This file is an original summary for this repository. The message structure and the meaning of the types are based on the [Conventional Commits specification](https://www.conventionalcommits.org) (CC BY 3.0).
 
-Use this reference when the type, a breaking-change marker, the body, or a footer is not obvious.\
-An explicit convention of the target repository takes precedence over this reference.
+Use this reference when the type, a breaking-change marker, or a footer is not obvious. An explicit convention of the target repository takes precedence over this reference.
 
 ## Decision sequence
 
-1. Identify the confirmed main intent of the commit from the request and the evidence.\
-   The file extension and the syntax show only what changed.
+1. Identify the confirmed main intent of the commit from the request and the evidence. The file extension and the syntax show only what changed.
 2. Identify the effect that a user or a consumer can see.
 3. Decide whether the change keeps backward compatibility.
 4. Apply the rules of the target repository for type, scope, release, and language.
-5. Select the type, and decide whether the message needs a body, a footer, or a breaking-change marker.
+5. Select the type, and decide whether the message needs a footer or a breaking-change marker.
 
 If missing intent leaves two possible types, ask the user, or mark the type `Unresolved`.
 
@@ -32,9 +29,7 @@ If missing intent leaves two possible types, ask the user, or mark the type `Unr
 | `style` | Change formatting without a change of meaning | Whitespace, formatting, or other code changes that affect only presentation |
 | `chore` | Do repository maintenance that no more specific type covers | The convention of the repository allows `chore` for that maintenance |
 
-A repository can define different or additional meanings.\
-For example, a repository can treat a Skill, a schema, a configuration file, or a document as a product surface.\
-Then a change of its behavior is `feat` or `fix`, whatever the filename is.
+A repository can define different or additional meanings. For example, a repository can treat a Skill, a schema, a configuration file, or a document as a product surface. Then a change of its behavior is `feat` or `fix`, whatever the filename is.
 
 ## Unclear cases
 
@@ -44,8 +39,7 @@ Then a change of its behavior is `feat` or `fix`, whatever the filename is.
   - `feat`: it accepts input as new supported behavior.
   - `refactor`: the observable behavior stays the same on purpose.
 
-- **A dependency update**: the type of its main effect on the product, when the convention of the repository requires that.\
-  `build` is not automatic.
+- **A dependency update**: the type of its main effect on the product, when the convention of the repository requires that. `build` is not automatic.
 
 - **A change of UI appearance**:
 
@@ -53,8 +47,7 @@ Then a change of its behavior is `feat` or `fix`, whatever the filename is.
   - `fix`: it repairs a defect.
   - `style`: it is code formatting with no visible effect.
 
-- **A move or a rename of files**: `refactor` only when the structure is the main purpose and the behavior stays the same.\
-  Otherwise, the type of the behavior that the move delivers.
+- **A move or a rename of files**: `refactor` only when the structure is the main purpose and the behavior stays the same. Otherwise, the type of the behavior that the move delivers.
 
 - **Generated files, lockfiles, and documentation**: they can go in the same commit as the behavior that they support, when they are inseparable results of it.
 
@@ -74,15 +67,11 @@ feat(api): replace the legacy endpoint
 BREAKING CHANGE: clients must migrate from `/v1/legacy` to `/v2/current`.
 ```
 
-The breaking-change marker is independent of the type.\
-A `fix`, a `refactor`, or another allowed type can also be breaking.
+The breaking-change marker is independent of the type. A `fix`, a `refactor`, or another allowed type can also be breaking.
 
-## Body and footers
+## Footers
 
-Add a body when the subject cannot hold the context for a decision.\
-Examples are why the change was necessary, how two changes relate, and what migration is necessary.\
-Keep the subject short, and put the body after a blank line.
-
+`SKILL.md` decides when a commit message has a body, and what the body contains.
 Add footers for the structured metadata that the target workflow requires, such as these:
 
 - `BREAKING CHANGE: <description>`
