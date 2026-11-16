@@ -147,8 +147,7 @@ Prepare commits so that a reader of the history learns what changed from the sub
 
    - **Line length**
 
-     - Follow the line length of the repository rules, if they have one.
-     - Without such a rule, keep each sentence on one line.
+     - When the repository rules set no line length, keep each sentence on one line.
 
    - **Done when**
 

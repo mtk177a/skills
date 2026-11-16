@@ -77,5 +77,3 @@ Add footers for the structured metadata that the target workflow requires, such 
 - `BREAKING CHANGE: <description>`
 - `Refs: #123`
 - another trailer that the repository explicitly requires
-
-Add only the Issue references, co-author lines, release notes, and other trailers that evidence or repository policy supports.
