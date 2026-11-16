@@ -1,6 +1,6 @@
 ---
 name: prepare-pr
-description: Prepares a pull request for review by writing or rewriting its title and description in a fixed, reviewer-oriented format, and creates or updates it when authorized. Use when a change needs a pull request, or an existing pull request description no longer matches the change.
+description: Prepares a pull request for review by writing or rewriting its title and description in a fixed, reviewer-oriented format, and creates or updates it when authorized. Use when a change needs a pull request, including as the last step of other work. Also use when an existing pull request description no longer matches the change.
 license: MIT
 ---
 
@@ -102,10 +102,10 @@ Prepare a pull request so that a reviewer can understand and judge the change in
    - **Format**
 
      - Use the [description format](#description-format).
+     - Before you write the first draft, read `references/example.md`.
      - Write the headings and labels in the language of the user, and use the same words each time.
-     - Leave out an item in How to review when it has no content.
-     - Leave out a group in Evidence when it has no checks.
-     - Leave out Related only when no Issue or pull request is related.
+     - Always write Summary, Why, What changes, and Risk.
+     - Leave out the other sections, and any label or group, when they have no content.
 
    - **Repository template**
 
@@ -119,17 +119,18 @@ Prepare a pull request so that a reviewer can understand and judge the change in
 
        | Section | Content |
        | --- | --- |
-       | Summary | One sentence: what changes, and why. A reader who reads only this sentence knows the change. |
-       | Why | The current state, and the problem that it causes. Make the text clear without the links. |
-       | What changes | One item for each group of changes: its name and its result. Add a diagram when it makes a point clear. Use the smallest one, such as a diff sketch, a tree, or a Mermaid chart. |
+       | Summary | What changes, and why. Write it so that a reader who reads only this part knows the change. Split it into sentences instead of packing one sentence. |
+       | Why | The current state, and the problem that it causes. Make the text clear without the links. When a reviewer would ask why you chose this approach, add the approach, the alternatives that you rejected, and their drawbacks. |
+       | What changes | One item for each group of changes: its name and its result. Add a diagram when it makes a point clear. Use the smallest one, such as a diff sketch, a tree, or a Mermaid chart. When a reviewer could expect something that the diff does not contain, state it as a fact about the diff. |
        | How to review | The order in which to read, the parts that need close attention, the decisions that you need, and the type of feedback that you want. |
        | Evidence | The checks in three groups: automated checks, manual checks, and checks that did not run. One item for each check: the check, or the before and after state, and the result. Name a check that did not run only when it can change the decision, and state how. |
-       | Risk | The effects that a revert of the code cannot undo, such as converted data, a published artifact, or the environment of the people who use the change. Write "none" when there are no such effects. Who and what the change can affect. |
+       | Risk | The effects that a revert of the code cannot undo, such as converted data, a published artifact, or the environment of the people who use the change. Write "none" when there are no such effects, because a checked absence also informs the reviewer. Who and what the change can affect. |
        | Related | The Issues and pull requests that the pull request closes or refers to. |
 
    - **Scope of the description**
 
-     - Describe the whole difference between the base and the current head.
+     - Describe the whole difference between the base and the current head, because the reviewer judges the current state, and history makes it unclear which statements are still true.
+     - Put details that the reviewer does not need for the decision in a comment or a linked document.
      - Treat a successful check on the pull request as a result for that head only, not for the merge or the deployment.
 
    - **Done when**
@@ -193,18 +194,20 @@ Use this structure, with the headings and labels in the language of the user.
 ```markdown
 ## Summary
 
-<one sentence: what changes, and why>
+<what changes, and why>
 
 ## Why
 
 - **Current state**: <what happens now>
 - **Problem**: <why the current state is a problem>
+- **Chosen approach**: <the approach, the rejected alternatives, and their drawbacks>
 
 ## What changes
 
 <optional diagram>
 
 - **<name of a group of changes>**: <result>
+- **Not included**: <what the diff does not contain, although a reviewer could expect it>
 
 ## How to review
 

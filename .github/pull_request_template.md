@@ -1,22 +1,24 @@
 <!--
 Write the pull request title in English. Write Summary in English, and the other sections and comments in Japanese by default.
-Fill the bold labels. Leave out a label or a group that has no content.
+Always fill Summary, 背景, 変更内容, and リスク. Leave out the other sections, and any label or group, when they have no content.
 -->
 
 ## Summary
 
-<!-- One English sentence: what changes, and why. -->
+<!-- In English: what changes, and why. -->
 
 ## 背景
 
 - **現在の状態**: <!-- 今どうなっているか -->
 - **問題**: <!-- 今の状態がなぜ問題か -->
+- **選んだ方法**: <!-- レビュアーが尋ねそうな場合だけ。選んだ方法、捨てた案、その欠点 -->
 
 ## 変更内容
 
 <!-- 変更のまとまりごとに、名前と結果を書く。要点を明確にする場合は、最小の図を添える。 -->
 
 - **<!-- まとまりの名前 -->**: <!-- 結果 -->
+- **含めないもの**: <!-- レビュアーが期待しそうだが、差分に含まれていないこと -->
 
 ## レビューの観点
 
