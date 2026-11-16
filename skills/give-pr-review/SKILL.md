@@ -89,7 +89,7 @@ Deliver review results to the author of a pull request, so that the author knows
      - Add `(blocking)` or `(non-blocking)` to `issue`, `suggestion`, `polish`, `question`, and `typo`.
      - Add no decoration to `nitpick`, `note`, and `praise`.
      - Add `(if-minor)` together with the other decoration, as in `(non-blocking, if-minor)`.
-     - Use `(blocking)` when the evidence shows a material risk if the change merges as it is.
+     - Use `(blocking)` when the evidence shows a material risk if the change merges as it is, because the author treats a blocking comment as required before the merge.
      - Use `nitpick` for a personal preference, and keep it out of the blocking comments.
 
    - **Supplied labels**
@@ -105,6 +105,7 @@ Deliver review results to the author of a pull request, so that the author knows
 
    - **Format**
 
+     - Before you write the first draft, read `references/example.md`.
      - Use the [Conventional Comments](https://conventionalcomments.org/) format:
 
        ```text
@@ -190,7 +191,7 @@ Deliver review results to the author of a pull request, so that the author knows
    - **Resolution**
 
      - Mark each thread with the result `Resolved` for resolution.
-     - Keep the threads with other results open, also when the author replied that the fix is done.
+     - Keep the threads with other results open, also when the author replied that the fix is done, because a resolved thread is collapsed and hides the problem that remains.
 
    - **New findings**
 
@@ -211,9 +212,15 @@ Deliver review results to the author of a pull request, so that the author knows
      - No comment repeats an open thread.
      - The counts in the summary match the comments.
 
+   - **Label check**
+
+     - Run `scripts/check_comment_labels.py` with the first line of each comment on standard input, one line for each comment.
+     - Fix each line that it reports, and run it again until it reports nothing.
+     - If you cannot run Python, check each first line against step 3.
+
    - **Done when**
 
-     - Each item passes.
+     - Each item passes, and the label check reports nothing.
 
 8. **Post the review**
 
@@ -249,7 +256,7 @@ Deliver review results to the author of a pull request, so that the author knows
 Use this structure for the body of the review.
 
 ```markdown
-<Conclusion: one sentence>
+<conclusion: whether anything blocks the merge>
 
 - **Scope**: <the head, the parts that you reviewed, and the checks that you ran>
 - **Blocking**: <number> — <the location and subject of each blocking comment>
