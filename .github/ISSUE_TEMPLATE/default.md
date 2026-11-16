@@ -8,12 +8,12 @@ assignees: ""
 
 <!--
 Write the Issue title in English. Write Summary in English, and the other sections and comments in Japanese by default.
-Fill the bold labels. Leave out a label or a group that has no content, and leave out 要件 when there are no requirements.
+Always fill Summary, 背景, 目的, and 完了条件. Leave out 要件 and 関連, and any label or group, when they have no content.
 -->
 
 ## Summary
 
-<!-- One English sentence: the result to achieve, or the problem that happens. -->
+<!-- In English: the result to achieve, or the problem that happens. -->
 
 ## 背景
 
@@ -48,17 +48,7 @@ Fill the bold labels. Leave out a label or a group that has no content, and leav
 
 ## 目的
 
-<!-- この Issue が実現する結果 -->
-
-## 対象範囲
-
-- **対象**
-
-  - <!-- Issue が含む作業 -->
-
-- **対象外**
-
-  - <!-- Issue が除く関連の作業 -->
+<!-- この Issue が実現する結果と、そこに至るまでに含む作業 -->
 
 ## 要件
 
@@ -70,6 +60,6 @@ Fill the bold labels. Leave out a label or a group that has no content, and leav
 
 ## 関連
 
-<!-- 親子関係と依存関係は、本文ではなく、GitHub の Sub-issue と依存関係の機能で設定する。 -->
+<!-- 親子関係と依存関係は、本文ではなく、GitHub の Sub-issue と依存関係の機能で設定する。関連の作業は、この Issue から除くと前もって決めずに、リンクで示す。 -->
 
 - <!-- Issue、プルリクエスト、文書 -->: <!-- 理由 -->

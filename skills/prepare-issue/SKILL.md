@@ -89,14 +89,14 @@ Prepare an Issue so that a reader understands what happens, what to achieve, and
 
    - **Facts and speculation**
 
-     - Separate what someone observed from what someone suspects.
+     - Separate what someone observed from what someone suspects, because speculation written as a fact sends the investigation in the wrong direction.
      - Name the source of a reported fact when the plain statement would overstate the evidence.
      - Take the expected behavior and the completion criteria from the user or the evidence.
 
    - **Current definition**
 
      - Describe what the Issue asks for now.
-     - Leave out the history of the discussion, earlier drafts, and progress reports.
+     - Leave out the history of the discussion, earlier drafts, and progress reports, because the reader acts on the current definition, and history makes it unclear which statements are still true.
      - For an existing Issue, keep the latest edits of its author, and change only what the request asks for.
 
    - **Consistency**
@@ -123,10 +123,11 @@ Prepare an Issue so that a reader understands what happens, what to achieve, and
    - **Format**
 
      - Use the [body format](#body-format).
+     - Before you write the first draft, read `references/example.md`.
      - Write the headings and labels in the language of the user, and use the same words each time.
      - Use the Background items that match the type of work.
-     - Leave out Requirements when there are no requirements.
-     - Leave out Related only when no Issue, pull request, or document is related.
+     - Always write Summary, Background, Goal, and Completion criteria.
+     - Leave out Requirements and Related when they have no content.
 
    - **Repository template**
 
@@ -140,13 +141,12 @@ Prepare an Issue so that a reader understands what happens, what to achieve, and
 
        | Section | Content |
        | --- | --- |
-       | Summary | One sentence: the result to achieve, or the problem that happens. A reader who reads only this sentence knows the Issue. |
+       | Summary | The result to achieve, or the problem that happens. Write it so that a reader who reads only this part knows the Issue. Split it into sentences instead of packing one sentence. |
        | Background | For a defect: the steps to reproduce, the expected behavior, the actual behavior, the environment, and the suspected cause. For an enhancement or a task: the current state and the problem that it causes. Make the text clear without the links. |
-       | Goal | The result that the Issue achieves. |
-       | Scope | The work that the Issue includes, and the related work that it leaves out. |
+       | Goal | The result that the Issue achieves, and the work that reaching it includes. |
        | Requirements | The conditions that the result must meet, such as compatibility, safety, or constraints. |
        | Completion criteria | One checklist item for each result that someone can observe. |
-       | Related | The related Issues, pull requests, and documents, with the reason for each. |
+       | Related | The related Issues, pull requests, documents, and known related work, with the reason for each. Link related work, instead of deciding in advance that the Issue excludes it. |
 
    - **Defects**
 
@@ -212,7 +212,7 @@ Use this structure, with the headings and labels in the language of the user.
 ```markdown
 ## Summary
 
-<one sentence: the result to achieve, or the problem that happens>
+<the result to achieve, or the problem that happens>
 
 ## Background
 
@@ -245,17 +245,7 @@ Use this structure, with the headings and labels in the language of the user.
 
 ## Goal
 
-<the result that the Issue achieves>
-
-## Scope
-
-- **In scope**
-
-  - <work that the Issue includes>
-
-- **Out of scope**
-
-  - <related work that the Issue leaves out>
+<the result that the Issue achieves, and the work that reaching it includes>
 
 ## Requirements
 
