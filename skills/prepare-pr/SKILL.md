@@ -73,14 +73,12 @@ Prepare a pull request so that a reviewer can understand and judge the change in
      - Describe each group by its result for the reader, not by the work that you did.
      - Give each group a short name that the reader can recognize.
 
-   - **Consistency**
+   - **Terms**
 
-     - Make sibling headings and items equal in type, level of detail, and point of view.
      - Use terms that the reader knows, or define each new term once.
 
    - **Exclusions**
 
-     - Leave out the history of your work and of earlier heads.
      - Leave out names that you made up during the work.
      - Leave out checks that do not change the decision of the reviewer.
 
