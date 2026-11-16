@@ -104,12 +104,14 @@ Prepare a pull request so that a reviewer can understand and judge the change in
      - Use the [description format](#description-format).
      - Write the headings and labels in the language of the user, and use the same words each time.
      - Leave out an item in How to review when it has no content.
+     - Leave out a group in Evidence when it has no checks.
      - Leave out Related only when no Issue or pull request is related.
 
    - **Repository template**
 
      - When the repository has a pull request template, keep its headings and order.
-     - Put the content of each section of the format under the matching template heading.
+     - Put each item of the format under the template heading that matches the item, also when the template splits a section.
+     - Follow each instruction of the template, and write only what the instruction asks for.
 
    - **Section content**
 
@@ -121,8 +123,8 @@ Prepare a pull request so that a reviewer can understand and judge the change in
        | Why | The current state, and the problem that it causes. Make the text clear without the links. |
        | What changes | One item for each group of changes: its name and its result. Add a diagram when it makes a point clear. Use the smallest one, such as a diff sketch, a tree, or a Mermaid chart. |
        | How to review | The order in which to read, the parts that need close attention, the decisions that you need, and the type of feedback that you want. |
-       | Evidence | One item for each check: the check, or the before and after state, and the result. Name a check that did not run only when it can change the decision. |
-       | Risk | Whether the change is easy to reverse, with the reason. Who and what the change can affect. |
+       | Evidence | The checks in three groups: automated checks, manual checks, and checks that did not run. One item for each check: the check, or the before and after state, and the result. Name a check that did not run only when it can change the decision, and state how. |
+       | Risk | The effects that a revert of the code cannot undo, such as converted data, a published artifact, or the environment of the people who use the change. Write "none" when there are no such effects. Who and what the change can affect. |
        | Related | The Issues and pull requests that the pull request closes or refers to. |
 
    - **Scope of the description**
@@ -139,7 +141,8 @@ Prepare a pull request so that a reviewer can understand and judge the change in
    - **Items to check**
 
      - The Summary and the headings alone give the reader a correct overview.
-     - Each heading and list has siblings of the same type and level.
+     - Sibling headings answer the same kind of question.
+     - For each list, you can name one concept that all its items share. If you cannot, split the list.
      - Each claim about the change matches the current head.
      - Each check in Evidence has a result that you saw or that someone reported to you.
      - The description has no private names, internal URLs, or secrets that the audience must not see.
@@ -212,11 +215,21 @@ Use this structure, with the headings and labels in the language of the user.
 
 ## Evidence
 
-- **<check, or before → after>**: <result>
+- **Automated checks**
+
+  - **<command or CI job>**: <result>
+
+- **Manual checks**
+
+  - **<what you checked, or before → after>**: <result>
+
+- **Checks not run**
+
+  - **<check>**: <how the missing result can change the decision>
 
 ## Risk
 
-- **Reversibility**: <easy or hard to reverse>, because <reason>
+- **Irreversible effects**: <effects that a revert of the code cannot undo, or none>
 - **Blast radius**: <affected people, systems, or public specifications>
 
 ## Related
