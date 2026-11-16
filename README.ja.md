@@ -59,7 +59,7 @@ Skill が動くかどうかは、クライアントと、エージェントが�
 | 判断済みのレビュー結果から、PR のコメントを下書きする | [`draft-review-comments`](skills/draft-review-comments/SKILL-ja.md) |
 | Issue を投稿せずに下書きする | [`draft-issue`](skills/draft-issue/SKILL-ja.md) |
 | コミットの分け方を決め、メッセージを下書きする | [`draft-commit`](skills/draft-commit/SKILL-ja.md) |
-| 差分やコミット範囲を、読む人に合わせて要約する | [`summarize-changes`](skills/summarize-changes/SKILL-ja.md) |
+| レビューのために、プルリクエストのタイトルと本文を準備する | [`prepare-pr`](skills/prepare-pr/SKILL-ja.md) |
 | 別のセッションで作業を再開できるように、証拠とともに状態を記録する | [`record-session-handoff`](skills/record-session-handoff/SKILL-ja.md) |
 
 ### 調べて書く

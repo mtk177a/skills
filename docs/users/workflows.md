@@ -79,7 +79,7 @@ Missing context is not evidence of low risk.
 
 Two Skills describe changes without looking for problems:
 
-- `summarize-changes` writes a change summary, such as a PR description or release note.
+- `prepare-pr` writes the title and description of a pull request for its reviewers.
 - `draft-commit` plans commit units and drafts their messages.
 
 ## Pause risky or stalled work
