@@ -6,46 +6,70 @@ labels: ""
 assignees: ""
 ---
 
-<!-- Write the Issue title in English. Keep Summary in English; write the remaining sections and comments in Japanese by default. Remove or adapt sections that do not apply. -->
+<!--
+Write the Issue title in English. Write Summary in English, and the other sections and comments in Japanese by default.
+Fill the bold labels. Leave out a label or a group that has no content, and leave out 要件 when there are no requirements.
+-->
 
 ## Summary
 
-<!-- In English, briefly state the proposed change and its intended result. -->
+<!-- One English sentence: the result to achieve, or the problem that happens. -->
 
-## 背景 / 問題
+## 背景
 
-<!-- 現状、根拠、変更が必要な理由を書く。 -->
+<!-- 改善と作業では、次の 2 つを書く。 -->
+
+- **現在の状態**: <!-- 今どうなっているか -->
+- **問題**: <!-- 今の状態がなぜ問題か -->
+
+<!--
+不具合では、上の 2 つの代わりに、次の 5 つを書く。
+
+- **再現手順**
+
+  1. 手順
+
+- **期待する動作**
+
+  - 起きるべきこと
+
+- **実際の動作**
+
+  - 起きていること
+
+- **環境**
+
+  - バージョン、プラットフォーム、設定
+
+- **推測される原因**
+
+  - 推測、または「不明」
+-->
 
 ## 目的
 
-<!-- この Issue で達成する結果を書く。 -->
+<!-- この Issue が実現する結果 -->
 
 ## 対象範囲
 
-### 対象
+- **対象**
 
-<!-- この Issue に含める作業を書く。 -->
+  - <!-- Issue が含む作業 -->
 
-### 対象外
+- **対象外**
 
-<!-- 意図的に除外する関連作業を書く。 -->
+  - <!-- Issue が除く関連の作業 -->
 
-## 要件 / 制約
+## 要件
 
-<!-- 必要な挙動、互換性、安全性、保守上の制約を書く。 -->
-
-## 実施方針
-
-<!-- 分かっている範囲で実装方針を書く。 -->
+- **<!-- 要件の名前 -->**: <!-- 互換性、安全性、制約のような、結果が満たす条件 -->
 
 ## 完了条件
 
-- [ ] <!-- 観測可能な完了条件を書く。 -->
+- [ ] <!-- 観測できる結果 -->
 
-## 検証
+## 関連
 
-<!-- 完了前に必要な check、test、手動確認を書く。 -->
+<!-- 親子関係と依存関係は、本文ではなく、GitHub の Sub-issue と依存関係の機能で設定する。 -->
 
-## 参考情報 / 調査メモ
-
-<!-- 関連する Issue、PR、文書、調査メモへのリンクを書く。 -->
+- <!-- Issue、プルリクエスト、文書 -->: <!-- 理由 -->
