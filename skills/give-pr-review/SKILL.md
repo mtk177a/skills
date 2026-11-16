@@ -120,7 +120,7 @@ Deliver review results to the author of a pull request, so that the author knows
      - Combine findings only when they share a cause and one next action.
      - In the subject, state the problem, the question, or the point in one sentence.
      - Make the code or the behavior the subject of the sentence, not the author.
-     - In the discussion, write the reason and the next step.
+     - In the discussion, write the correct result, the reason, and the next step.
      - For an `issue`, add a proposed fix when one is clear.
      - Use a suggested change block when the fix is a small, exact change to the lines.
 
@@ -135,7 +135,6 @@ Deliver review results to the author of a pull request, so that the author knows
 
      - Discuss the code, not the person.
      - Describe a problem in neutral, specific words, such as "This misses the empty input".
-     - With each problem, state what the correct result is, and why.
 
    - **Location**
 
@@ -191,7 +190,7 @@ Deliver review results to the author of a pull request, so that the author knows
    - **Resolution**
 
      - Mark each thread with the result `Resolved` for resolution.
-     - Keep the threads with other results open, also when the author replied that the fix is done, because a resolved thread is collapsed and hides the problem that remains.
+     - Keep the threads with other results open, because a resolved thread is collapsed and hides the problem that remains.
 
    - **New findings**
 
@@ -207,7 +206,7 @@ Deliver review results to the author of a pull request, so that the author knows
 
    - **Items to check**
 
-     - Each comment has one concern, one label, and the decorations that the label needs.
+     - Each comment has one concern.
      - Each `(blocking)` comment states a clear next step.
      - No comment repeats an open thread.
      - The counts in the summary match the comments.
@@ -216,7 +215,6 @@ Deliver review results to the author of a pull request, so that the author knows
 
      - Run `scripts/check_comment_labels.py` with the first line of each comment on standard input, one line for each comment.
      - Fix each line that it reports, and run it again until it reports nothing.
-     - If you cannot run Python, check each first line against step 3.
 
    - **Done when**
 

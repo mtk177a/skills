@@ -40,8 +40,7 @@ If subagents are unavailable or not allowed, the Skill reports that the revision
 ### Running a script
 
 `give-pr-review` runs a script that checks the labels of its comments.\
-The script needs Python 3 and uses only its standard library.\
-If the client cannot run Python, the Skill checks the labels by eye instead.
+The script needs Python 3 and uses only its standard library.
 
 ### Another Skill installed alongside
 
