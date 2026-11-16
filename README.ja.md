@@ -56,7 +56,7 @@ Skill が動くかどうかは、クライアントと、エージェントが�
 | 新しい差分のレビューや、明示的に求められた差分全体の再レビューを行う | [`review-changes`](skills/review-changes/SKILL-ja.md) |
 | 指摘を評価し、対応方針を決める | [`triage-review-feedback`](skills/triage-review-feedback/SKILL-ja.md) |
 | 特定済みの修正を、元の指摘に照らして確かめる | [`validate-fix`](skills/validate-fix/SKILL-ja.md) |
-| 判断済みのレビュー結果から、PR のコメントを下書きする | [`draft-review-comments`](skills/draft-review-comments/SKILL-ja.md) |
+| レビューの結果を、ラベル付きのコメントでプルリクエストに返す | [`give-pr-review`](skills/give-pr-review/SKILL-ja.md) |
 | Issue を投稿せずに下書きする | [`draft-issue`](skills/draft-issue/SKILL-ja.md) |
 | コミットの分け方を決め、メッセージを下書きする | [`draft-commit`](skills/draft-commit/SKILL-ja.md) |
 | レビューのために、プルリクエストのタイトルと本文を準備する | [`prepare-pr`](skills/prepare-pr/SKILL-ja.md) |

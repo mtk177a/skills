@@ -53,7 +53,7 @@ To use several Skills on one piece of work, see [Choose the next Skill](docs/use
 | Review a new diff, or re-review the whole diff when explicitly requested | [`review-changes`](skills/review-changes/SKILL.md) |
 | Assess findings and decide how to respond | [`triage-review-feedback`](skills/triage-review-feedback/SKILL.md) |
 | Recheck identified fixes against their original findings | [`validate-fix`](skills/validate-fix/SKILL.md) |
-| Draft PR comments from supplied review decisions | [`draft-review-comments`](skills/draft-review-comments/SKILL.md) |
+| Return review results to a pull request as labeled comments | [`give-pr-review`](skills/give-pr-review/SKILL.md) |
 | Draft an Issue without posting it | [`draft-issue`](skills/draft-issue/SKILL.md) |
 | Plan commit units and draft their messages | [`draft-commit`](skills/draft-commit/SKILL.md) |
 | Prepare a pull request title and description for review | [`prepare-pr`](skills/prepare-pr/SKILL.md) |
