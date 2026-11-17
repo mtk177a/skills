@@ -1,0 +1,21 @@
+# Files that check_repository.py checks against the Markdown source conventions.
+# docs/maintainers/authoring.md describes the conventions.
+# Add a file to this list when it follows the conventions.
+# Remove this list when every maintained Markdown file follows them.
+
+.github/ISSUE_TEMPLATE/default.md
+.github/copilot-instructions.md
+.github/pull_request_template.md
+THIRD_PARTY_NOTICES.md
+skills/give-pr-review/SKILL-ja.md
+skills/give-pr-review/SKILL.md
+skills/give-pr-review/references/example.md
+skills/prepare-commit/SKILL-ja.md
+skills/prepare-commit/SKILL.md
+skills/prepare-commit/references/example.md
+skills/prepare-issue/SKILL-ja.md
+skills/prepare-issue/SKILL.md
+skills/prepare-issue/references/example.md
+skills/prepare-pr/SKILL-ja.md
+skills/prepare-pr/SKILL.md
+skills/prepare-pr/references/example.md

@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from markdown_links import heading_anchors, is_external_link, link_fragment, link_path, markdown_links
+from markdown_style import markdown_style_problems
 from upstream_mirrors import UPSTREAM_LICENSE_DECLARATION, UPSTREAM_MIRRORS, recorded_mirror_hash
 
 TRACKED_REPOSITORY_LOCAL_SKILLS = {"maintain-japanese-references"}
@@ -35,6 +36,7 @@ PERSONAL_PATH_EXCLUSIONS = {
     "tests/test_check_repository.py",
 }
 COMPANION_REGISTRY = Path("docs") / "maintainers" / "authoring.md"
+MARKDOWN_STYLE_FILES = Path("scripts") / "markdown-style-files.txt"
 
 
 @dataclass(frozen=True, order=True)
@@ -495,6 +497,24 @@ def check_deployment_artifacts(root: Path, problems: list[Problem]) -> None:
                 add(problems, root, child, 1, "unexpected APM-deployed Skill; preserve only tracked repository-local exceptions")
 
 
+def check_markdown_style(root: Path, problems: list[Problem]) -> None:
+    """Check the Markdown source conventions in the files that the scope list names."""
+    scope = root / MARKDOWN_STYLE_FILES
+    if not scope.is_file():
+        return
+    for number, value in enumerate(scope.read_text(encoding="utf-8").splitlines(), start=1):
+        entry = value.split("#", 1)[0].strip()
+        if not entry:
+            continue
+        path = root / entry
+        if not path.is_file():
+            add(problems, root, scope, number, f"listed file does not exist: {entry}")
+            continue
+        skill_file = path.name in {"SKILL.md", "SKILL-ja.md"}
+        for line, reason in markdown_style_problems(path.read_text(encoding="utf-8"), skill_file):
+            add(problems, root, path, line, reason)
+
+
 def check_repository(root: Path) -> list[Problem]:
     root = root.resolve()
     problems: list[Problem] = []
@@ -508,6 +528,7 @@ def check_repository(root: Path) -> list[Problem]:
     check_skill_name_references(root, problems, catalog, rows)
     check_personal_paths(root, problems)
     check_deployment_artifacts(root, problems)
+    check_markdown_style(root, problems)
     return sorted(set(problems))
 
 
