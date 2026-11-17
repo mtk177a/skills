@@ -135,18 +135,29 @@ When the evidence shows a shared responsibility or rule, accept the shared abstr
 
 ## Finding fields
 
-Give each finding one label:
+Give each finding one label from [Conventional Comments](https://conventionalcomments.org/), and the decorations that the label needs:
 
 | Label | Meaning |
 | --- | --- |
-| `must` | Fix before merge. The evidence shows a material risk, and a smaller response is not sufficient. |
-| `should` | Fix is recommended. An alternative or a constraint can change the decision. |
-| `suggestion` | An improvement that does not block the change |
+| `issue` | A specific problem that the evidence shows |
+| `suggestion` | A proposal that changes the design, the behavior, or the structure |
+| `polish` | An improvement of wording, names, or readability that keeps the behavior |
 | `question` | The next action is to clarify or verify a premise. |
-| `nit` | A small, optional correction |
+| `typo` | A spelling or typing error |
+| `nitpick` | A small request based on preference |
 | `note` | Information that needs no action |
+| `praise` | A real strength that the diff shows |
 
-Use `must` and `should` only for problems with evidence, not for preferences.\
+Add `(blocking)` or `(non-blocking)` to `issue`, `suggestion`, `polish`, `question`, and `typo`:
+
+| Decoration | Meaning |
+| --- | --- |
+| `(blocking)` | Fix before merge. The evidence shows a material risk, and a smaller response is not sufficient. |
+| `(non-blocking)` | The change can merge without the fix. An alternative or a constraint can change the decision. |
+| `(if-minor)` | Fix only when the fix is small. Add it together with the other decoration. |
+
+Add no decoration to `nitpick`, `note`, and `praise`.\
+Use `issue` and `(blocking)` only for problems with evidence, not for preferences.\
 A `question` keeps its potential impact, even when its premise is not confirmed.
 
 Write these fields for each finding:

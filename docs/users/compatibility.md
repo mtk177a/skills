@@ -11,7 +11,8 @@ Also read it before you start work that writes files, uses the web, or starts a 
 1. **The client can read the files in each Skill's directory**
    - Some Skills read files bundled with them, not only `SKILL.md`.\
      `define-referents` and `write-natural-japanese` read a bundled reference in full before they start.
-   - The Skills contain no scripts, so the client does not need to run code or install Python libraries for them.
+   - Only `give-pr-review` contains a script, as described in [Running a script](#running-a-script).\
+     The other Skills do not need the client to run code or install Python libraries.
 2. **The agent can reach the material the work is about**
    - For work on a repository, the agent needs the files and diffs.\
      For work on logs, documents, or external services, it needs access to those.
@@ -23,7 +24,7 @@ Also read it before you start work that writes files, uses the web, or starts a 
 
 ## Skills with additional requirements
 
-Only the three Skills below need more than the requirements above.
+Only the four Skills below need more than the requirements above.
 
 ### Web access
 
@@ -35,6 +36,11 @@ Without web access, the Skill reports the affected claims as not verified, inste
 `revise-docs-fresh-eyes` has a subagent revise the document without the conversation in which the document was written.\
 It works only in Codex and Claude Code, where it can start such a subagent.\
 If subagents are unavailable or not allowed, the Skill reports that the revision was not done and stops.
+
+### Running a script
+
+`give-pr-review` runs a script that checks the labels of its comments.\
+The script needs Python 3 and uses only its standard library.
 
 ### Another Skill installed alongside
 

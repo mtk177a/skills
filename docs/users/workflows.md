@@ -53,24 +53,24 @@ A review usually goes through these Skills.\
 Each Skill passes specific information to the next one and does not make the decisions that belong to the others.
 
 1. **`review-changes`**
-   - It reports findings with a label, impact, and confidence.\
-     These do not decide whether to act on a finding.
-2. **`triage-review-feedback`**
-   - It decides a response for each finding: `Act now`, `Defer`, or `No action`.
+   - It reports findings with a label, decorations, impact, and confidence.\
+     `(blocking)` and `(non-blocking)` show the view of the reviewer, not the response of the author.
+2. **`give-pr-review`**, when the review goes to a pull request
+   - It turns the findings into a review summary and inline comments, and posts them when you allow it.
+   - It uses the comment review action, unless you ask for an approval or a request for changes.
+3. **`triage-review-feedback`**
+   - The author uses it to decide a response for each finding: `Act now`, `Defer`, or `No action`.
    - Implement only the `Act now` work you allow.\
      Accepting a concern does not mean adopting the reviewer's proposed solution.
    - When it needs current public documentation to check a finding, `research-web-safely` can gather it.
-3. **`draft-review-comments`**, only when you need comments
-   - Pass it the assessment, state, and response decision of each finding.\
-     It drafts comments without making these decisions.
-   - For a review without findings, skip triage.\
-     Pass the conclusion, the reviewed scope, the checks performed, and their limitations directly from `review-changes`.
-   - A draft does not allow posting it or choosing a GitHub review action.
 4. **`implement-changes`**
 5. **`validate-fix`**
    - When a fix is not complete, return to `implement-changes`.
    - When it records a problem caused by the fix outside its target, review that problem with `review-changes`.
    - Use `review-changes` for the whole diff again only when you want a full re-review.
+6. **`give-pr-review`**, on re-review
+   - It replies to each review thread with the result of the fix, and resolves the threads whose result is `Resolved`.
+   - Pass it the results of `validate-fix`, or let it check each fix against the original concern.
 
 Pass the evidence and uncertainties along at each step.\
 Missing context is not evidence of low risk.
