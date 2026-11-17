@@ -5,11 +5,14 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from urllib.parse import unquote
+
+from markdown_links import heading_anchors, is_external_link, link_fragment, link_path, markdown_links
+from upstream_mirrors import UPSTREAM_LICENSE_DECLARATION, UPSTREAM_MIRRORS, recorded_mirror_hash
 
 TRACKED_REPOSITORY_LOCAL_SKILLS = {"maintain-japanese-references"}
 
@@ -20,13 +23,6 @@ CATALOG_ROW = re.compile(
     r"|^\|[^|\n]+\|\s*\[`(?P<linked>[a-z0-9-]+)`\]\(skills/[^)\s]+/SKILL(?:-ja)?\.md\)\s*\|[ \t]*$",
     re.MULTILINE,
 )
-INLINE_LINK = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
-REFERENCE_LINK = re.compile(r"^\s*\[[^\]]+\]:\s*(\S+)", re.MULTILINE)
-HEADING_START = re.compile(r"^ {0,3}#{1,6}[ \t]")
-HEADING = re.compile(r"^ {0,3}#{1,6}[ \t]+(.*?)(?:[ \t]+#+)?[ \t]*$")
-HTML_ID = re.compile(r"""<[^>]+\b(?:id|name)=["']([^"']+)["']""")
-INLINE_CODE = re.compile(r"`+([^`]*)`+")
-MARKDOWN_LINK_TEXT = re.compile(r"!?\[([^\]]*)\]\([^)]*\)")
 COMPANION_ROW = re.compile(r"^\|\s*`([^`]+)`\s*→\s*`([^`]+)`\s*\|(.+)$", re.MULTILINE)
 PERSONAL_PATHS = (
     re.compile(r"(?<![A-Za-z0-9_])/(?:home|Users)/[^/\s\"'`<>]+"),
@@ -38,10 +34,7 @@ PERSONAL_PATH_EXCLUSIONS = {
     "scripts/check_repository.py",
     "tests/test_check_repository.py",
 }
-UPSTREAM_MIRRORS = {
-    "japanese-tech-writing": "https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d",
-    "cognitive-rhythm-writing": "https://gist.github.com/k16shikano/eb2929f13ed19c97188393d297be8432",
-}
+COMPANION_REGISTRY = Path("docs") / "maintainers" / "authoring.md"
 
 
 @dataclass(frozen=True, order=True)
@@ -69,11 +62,16 @@ def add(problems: list[Problem], root: Path, path: Path, line: int, reason: str)
     problems.append(Problem(relative_path(root, path), line, reason))
 
 
+def frontmatter_closing(lines: list[str]) -> int | None:
+    """Return the index of the closing `---` of frontmatter that opens on the first line."""
+    return next((index for index, value in enumerate(lines[1:], start=1) if value == "---"), None)
+
+
 def parse_frontmatter(path: Path) -> tuple[dict[str, tuple[str, int]], list[tuple[int, str]]]:
     lines = path.read_text(encoding="utf-8").splitlines()
     if not lines or lines[0] != "---":
         return {}, []
-    closing = next((index for index, value in enumerate(lines[1:], start=1) if value == "---"), None)
+    closing = frontmatter_closing(lines)
     if closing is None:
         return {}, []
     fields: dict[str, tuple[str, int]] = {}
@@ -142,37 +140,62 @@ def parse_double_quoted_yaml_scalar(value: str) -> tuple[str | None, int]:
     return None, index
 
 
+def parse_single_quoted_yaml_scalar(value: str) -> tuple[str | None, int]:
+    parsed: list[str] = []
+    index = 1
+    while index < len(value):
+        if value[index] != "'":
+            parsed.append(value[index])
+            index += 1
+            continue
+        if index + 1 < len(value) and value[index + 1] == "'":
+            parsed.append("'")
+            index += 2
+            continue
+        return "".join(parsed), index + 1
+    return None, index
+
+
 def parse_frontmatter_scalar(raw: str) -> tuple[str | None, str | None]:
     value = raw.strip()
     guidance = "must use a supported single-line string scalar (plain, single-quoted, or double-quoted)"
     if not value:
         return "", None
-    if value[0] == '"':
-        parsed, end = parse_double_quoted_yaml_scalar(value)
+    if value[0] in "\"'":
+        parse_quoted = parse_double_quoted_yaml_scalar if value[0] == '"' else parse_single_quoted_yaml_scalar
+        parsed, end = parse_quoted(value)
         remainder = value[end:].strip()
         if parsed is None or (remainder and not remainder.startswith("#")):
             return None, guidance
         return parsed, None
-    if value[0] == "'":
-        parsed: list[str] = []
-        index = 1
-        while index < len(value):
-            if value[index] != "'":
-                parsed.append(value[index])
-                index += 1
-                continue
-            if index + 1 < len(value) and value[index + 1] == "'":
-                parsed.append("'")
-                index += 2
-                continue
-            remainder = value[index + 1 :].strip()
-            if remainder and not remainder.startswith("#"):
-                return None, guidance
-            return "".join(parsed), None
-        return None, guidance
     if value[0] in "[{|>&*!":
         return None, guidance
     return re.split(r"\s+#", value, maxsplit=1)[0].rstrip(), None
+
+
+def repository_files(root: Path) -> list[Path]:
+    """Return every file in the repository, without entering `.git` directories."""
+    files: list[Path] = []
+    for directory, subdirectories, filenames in os.walk(root):
+        subdirectories[:] = [name for name in subdirectories if name != ".git"]
+        files.extend(path for name in filenames if (path := Path(directory, name)).is_file())
+    return sorted(files)
+
+
+def skill_file(root: Path, name: str, filename: str = "SKILL.md") -> Path:
+    """Return a file of a tracked repository-local Skill or a public Skill."""
+    if name in TRACKED_REPOSITORY_LOCAL_SKILLS:
+        return root / ".agents" / "skills" / name / filename
+    return root / "skills" / name / filename
+
+
+def companion_rows(root: Path) -> list[tuple[str, str, str, int]] | None:
+    """Return each companion registry row as (dependent, companion, remainder, line), or None if the registry is missing."""
+    registry = root / COMPANION_REGISTRY
+    if not registry.is_file():
+        return None
+    text = registry.read_text(encoding="utf-8")
+    return [(*match.groups(), line_number(text, match.start())) for match in COMPANION_ROW.finditer(text)]
 
 
 def skill_directories(root: Path) -> list[Path]:
@@ -301,94 +324,17 @@ def check_upstream_mirrors(root: Path, problems: list[Problem]) -> None:
             add(problems, root, note, 1, "upstream mirror retrieval date is missing or invalid")
         license_recorded = re.search(r"^- License: Unlicense$", body, re.MULTILINE)
         declaration_recorded = re.search(
-            r"^- License declaration: <https://gist\.github\.com/k16shikano/67625f2a7d96e3bbdfae8d571a936063>$",
+            rf"^- License declaration: <{re.escape(UPSTREAM_LICENSE_DECLARATION)}>$",
             body,
             re.MULTILINE,
         )
         if not license_recorded or not declaration_recorded:
             add(problems, root, note, 1, "upstream mirror license evidence is missing")
-        match = re.search(r"^- SKILL\.md SHA-256: `sha256:([0-9a-f]{64})`$", body, re.MULTILINE)
-        if not match:
+        recorded_hash = recorded_mirror_hash(body)
+        if recorded_hash is None:
             add(problems, root, note, 1, "upstream mirror SHA-256 is missing or invalid")
-        elif skill.is_file() and hashlib.sha256(skill.read_bytes()).hexdigest() != match.group(1):
+        elif skill.is_file() and hashlib.sha256(skill.read_bytes()).hexdigest() != recorded_hash:
             add(problems, root, skill, 1, "mirrored SKILL.md differs from recorded SHA-256")
-
-
-def markdown_without_code(text: str) -> str:
-    visible = list(text)
-
-    def mask(start: int, end: int) -> None:
-        for index in range(start, end):
-            if visible[index] not in "\r\n":
-                visible[index] = " "
-
-    fence_marker: str | None = None
-    fence_length = 0
-    offset = 0
-    for line in text.splitlines(keepends=True):
-        if fence_marker is None:
-            opening = re.match(r"^ {0,3}(`{3,}|~{3,})", line)
-            if opening and not (opening.group(1).startswith("`") and "`" in line[opening.end() :]):
-                fence_marker = opening.group(1)[0]
-                fence_length = len(opening.group(1))
-                mask(offset, offset + len(line))
-        else:
-            closing = re.match(r"^ {0,3}(`+|~+)[ \t]*(?:\r?\n)?$", line)
-            mask(offset, offset + len(line))
-            if (
-                closing
-                and closing.group(1)[0] == fence_marker
-                and len(closing.group(1)) >= fence_length
-            ):
-                fence_marker = None
-                fence_length = 0
-        offset += len(line)
-
-    masked_fences = "".join(visible)
-    index = 0
-    while index < len(masked_fences):
-        if masked_fences[index] != "`":
-            index += 1
-            continue
-        opening_end = index + 1
-        while opening_end < len(masked_fences) and masked_fences[opening_end] == "`":
-            opening_end += 1
-        delimiter_length = opening_end - index
-        search = opening_end
-        closing_end: int | None = None
-        while search < len(masked_fences):
-            if masked_fences[search] != "`":
-                search += 1
-                continue
-            run_end = search + 1
-            while run_end < len(masked_fences) and masked_fences[run_end] == "`":
-                run_end += 1
-            if run_end - search == delimiter_length:
-                closing_end = run_end
-                break
-            search = run_end
-        if closing_end is None:
-            index = opening_end
-            continue
-        mask(index, closing_end)
-        index = closing_end
-
-    return "".join(visible)
-
-
-def link_destination(raw: str) -> str:
-    value = raw.strip()
-    if value.startswith("<") and ">" in value:
-        return value[1 : value.index(">")]
-    return value.split(maxsplit=1)[0]
-
-
-def is_external_link(destination: str) -> bool:
-    return (
-        not destination
-        or destination.startswith(("#", "/", "//"))
-        or re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:", destination) is not None
-    )
 
 
 def contained(root: Path, target: Path) -> bool:
@@ -399,52 +345,29 @@ def contained(root: Path, target: Path) -> bool:
         return False
 
 
-def heading_anchors(text: str) -> set[str]:
-    # Derive anchors from the target's own headings with GitHub's rules, so no expected IDs are stored here.
-    anchors: set[str] = set(HTML_ID.findall(text))
-    counts: dict[str, int] = {}
-    for original, visible in zip(text.splitlines(), markdown_without_code(text).splitlines()):
-        if not HEADING_START.match(visible):
-            continue
-        heading = HEADING.match(original)
-        if heading is None:
-            continue
-        label = INLINE_CODE.sub(r"\1", heading.group(1))
-        label = MARKDOWN_LINK_TEXT.sub(r"\1", label)
-        slug = re.sub(r"[^\w\- ]", "", label.strip().lower()).replace(" ", "-")
-        suffix = counts.get(slug, 0)
-        counts[slug] = suffix + 1
-        anchors.add(slug if suffix == 0 else f"{slug}-{suffix}")
-    return anchors
-
-
 def check_markdown_links(root: Path, problems: list[Problem]) -> None:
     anchor_cache: dict[Path, set[str]] = {}
-    for path in sorted(root.rglob("*.md")):
-        if ".git" in path.parts:
+    for path in repository_files(root):
+        if path.suffix != ".md":
             continue
         text = path.read_text(encoding="utf-8")
-        visible = markdown_without_code(text)
-        matches = list(INLINE_LINK.finditer(visible)) + list(REFERENCE_LINK.finditer(visible))
-        for match in sorted(matches, key=lambda item: item.start()):
-            destination = link_destination(match.group(1))
-            line = line_number(visible, match.start())
+        for offset, destination in markdown_links(text):
+            line = line_number(text, offset)
             if destination.startswith("#"):
                 target = path.resolve()
             elif is_external_link(destination):
                 continue
             else:
-                clean = unquote(destination.split("#", 1)[0].split("?", 1)[0])
-                target = (path.parent / clean).resolve()
-                if not contained(root.resolve(), target):
+                target = (path.parent / link_path(destination)).resolve()
+                if not contained(root, target):
                     add(problems, root, path, line, f"relative Markdown link escapes repository: `{destination}`")
                     continue
                 if not target.exists():
                     add(problems, root, path, line, f"relative Markdown link target does not exist: `{destination}`")
                     continue
-            if "#" not in destination or target.suffix.lower() != ".md" or not target.is_file():
+            fragment = link_fragment(destination)
+            if fragment is None or target.suffix.lower() != ".md" or not target.is_file():
                 continue
-            fragment = unquote(destination.split("#", 1)[1])
             if target not in anchor_cache:
                 anchor_cache[target] = heading_anchors(target.read_text(encoding="utf-8"))
             if fragment not in anchor_cache[target]:
@@ -456,13 +379,13 @@ def check_localization_notices(root: Path, problems: list[Problem]) -> None:
     paths.extend(
         path
         for name in TRACKED_REPOSITORY_LOCAL_SKILLS
-        if (path := root / ".agents" / "skills" / name / "SKILL-ja.md").is_file()
+        if (path := skill_file(root, name, "SKILL-ja.md")).is_file()
     )
     for path in sorted(paths):
         lines = path.read_text(encoding="utf-8").splitlines()
         start = 0
         if lines and lines[0] == "---":
-            closing = next((index for index, value in enumerate(lines[1:], start=1) if value == "---"), None)
+            closing = frontmatter_closing(lines)
             if closing is None:
                 add(problems, root, path, 1, "translation frontmatter has no closing delimiter")
                 continue
@@ -489,23 +412,21 @@ def check_localization_notices(root: Path, problems: list[Problem]) -> None:
             )
 
 
-def check_companion_relationships(root: Path, problems: list[Problem], catalog: set[str]) -> None:
-    registry = root / "docs" / "maintainers" / "authoring.md"
-    if not registry.is_file():
+def check_companion_relationships(
+    root: Path,
+    problems: list[Problem],
+    catalog: set[str],
+    rows: list[tuple[str, str, str, int]] | None,
+) -> None:
+    registry = root / COMPANION_REGISTRY
+    if rows is None:
         add(problems, root, registry, 1, "companion relationship registry is missing")
         return
-    text = registry.read_text(encoding="utf-8")
-    for match in COMPANION_ROW.finditer(text):
-        dependent, companion, remainder = match.groups()
-        line = line_number(text, match.start())
+    for dependent, companion, remainder, line in rows:
         for name in (dependent, companion):
             if name not in catalog and name not in TRACKED_REPOSITORY_LOCAL_SKILLS:
                 add(problems, root, registry, line, f"companion relationship references uncataloged Skill `{name}`")
-        dependent_skill = (
-            root / ".agents" / "skills" / dependent / "SKILL.md"
-            if dependent in TRACKED_REPOSITORY_LOCAL_SKILLS
-            else root / "skills" / dependent / "SKILL.md"
-        )
+        dependent_skill = skill_file(root, dependent)
         if dependent_skill.is_file():
             body = dependent_skill.read_text(encoding="utf-8")
             local_dependent = dependent in TRACKED_REPOSITORY_LOCAL_SKILLS
@@ -524,12 +445,14 @@ def check_companion_relationships(root: Path, problems: list[Problem], catalog: 
             add(problems, root, registry, line, "companion registry row must reference provenance")
 
 
-def check_skill_name_references(root: Path, problems: list[Problem], catalog: set[str]) -> None:
+def check_skill_name_references(
+    root: Path,
+    problems: list[Problem],
+    catalog: set[str],
+    rows: list[tuple[str, str, str, int]] | None,
+) -> None:
     # Skills must work alone; relationships between Skills belong in docs/users/workflows.md.
-    registry = root / "docs" / "maintainers" / "authoring.md"
-    allowed: set[tuple[str, str]] = set()
-    if registry.is_file():
-        allowed = {match.groups()[:2] for match in COMPANION_ROW.finditer(registry.read_text(encoding="utf-8"))}
+    allowed = {(dependent, companion) for dependent, companion, _, _ in rows or []}
     for name in sorted(catalog - set(UPSTREAM_MIRRORS)):
         for filename in ("SKILL.md", "SKILL-ja.md"):
             path = root / "skills" / name / filename
@@ -549,20 +472,12 @@ def check_skill_name_references(root: Path, problems: list[Problem], catalog: se
                     )
 
 
-def repository_text_files(root: Path) -> list[Path]:
-    candidates: list[Path] = []
-    for path in root.rglob("*"):
-        if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
-            continue
-        relative = path.relative_to(root).as_posix()
-        if ".git" in path.relative_to(root).parts or relative in PERSONAL_PATH_EXCLUSIONS:
-            continue
-        candidates.append(path)
-    return sorted(candidates)
-
-
 def check_personal_paths(root: Path, problems: list[Problem]) -> None:
-    for path in repository_text_files(root):
+    for path in repository_files(root):
+        if path.suffix.lower() not in TEXT_SUFFIXES:
+            continue
+        if path.relative_to(root).as_posix() in PERSONAL_PATH_EXCLUSIONS:
+            continue
         text = path.read_text(encoding="utf-8")
         for pattern in PERSONAL_PATHS:
             for match in pattern.finditer(text):
@@ -598,8 +513,9 @@ def check_repository(root: Path) -> list[Problem]:
     check_upstream_mirrors(root, problems)
     check_markdown_links(root, problems)
     check_localization_notices(root, problems)
-    check_companion_relationships(root, problems, catalog)
-    check_skill_name_references(root, problems, catalog)
+    rows = companion_rows(root)
+    check_companion_relationships(root, problems, catalog, rows)
+    check_skill_name_references(root, problems, catalog, rows)
     check_personal_paths(root, problems)
     check_deployment_artifacts(root, problems)
     return sorted(set(problems))

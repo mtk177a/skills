@@ -99,7 +99,7 @@ def rename_fixture_skill(root: Path, name: str) -> None:
 
 def run_checker(root: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [sys.executable, str(CHECKER), "--root", str(root)],
+        [sys.executable, "-B", str(CHECKER), "--root", str(root)],
         capture_output=True,
         text=True,
         check=False,
@@ -296,6 +296,28 @@ class CheckerCliTests(unittest.TestCase):
             path.write_text(path.read_text() + "\n[Missing](docs/missing.md)\n")
 
         self.assert_fixture_failure(mutate, "relative Markdown link target does not exist: `docs/missing.md`")
+
+    def test_repository_under_git_named_directory_is_checked(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / ".git" / "repository"
+            create_valid_repository(root)
+            path = root / "README.md"
+            path.write_text(path.read_text() + "\n[Missing](docs/missing.md)\n")
+
+            result = run_checker(root)
+
+            self.assertEqual(1, result.returncode)
+            self.assertIn("README.md:9: relative Markdown link target does not exist: `docs/missing.md`", result.stderr)
+
+    def test_files_inside_git_directory_are_ignored(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_valid_repository(root)
+            write(root / ".git" / "notes.md", "[Missing](missing.md) /home/someone/file\n")
+
+            result = run_checker(root)
+
+            self.assertEqual(0, result.returncode, result.stderr)
 
     def test_link_inside_multi_backtick_code_span_is_ignored(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
