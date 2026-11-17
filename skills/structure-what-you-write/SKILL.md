@@ -141,11 +141,7 @@ Read the result as a reader who did not see the authoring conversation, and chec
 
 - The grouping criteria, hierarchy, order, and placement match the real relations of the information.
 
-- Each list groups only items that one common concept can name.
-
 - Each heading describes its content, and suggests no incorrect scope.
-
-- A heading over several topics names their common concept, not a list such as "A and B".
 
 - A reader of only the headings can tell the topic of each section.
 
@@ -158,8 +154,6 @@ Read the result as a reader who did not see the authoring conversation, and chec
 
 - Each presentation form makes the information easier to find, compare, understand, or use.
 
-- Words that are the main content of a sentence are a bulleted list, and words that are part of its subject or object stay in the sentence.
-
 - The structure is as simple as the information allows, without extra fragments or repetition.
 
 - The restructured content keeps its meaning, requirements, limits, and authorized decisions.
@@ -171,10 +165,6 @@ Read the result as a reader who did not see the authoring conversation, and chec
 
   Remove unsupported requirements.\
   Keep necessary design proposals outside the finished artifact.
-
-- Each correction and each rename applies to all the places of the same type and to all the places that refer to it.\
-  For example, when you rename one heading, check the other headings of the same pattern.\
-  When you rename a document, check the link targets, the link text, and the descriptions in lists of documents.
 
 - Changes to several files keep the necessary links, references, and independent behavior.
 
