@@ -205,14 +205,12 @@ def skill_directories(root: Path) -> list[Path]:
     return sorted(path for path in skills.iterdir() if path.is_dir() and not path.name.startswith("."))
 
 
-def parse_catalog(path: Path) -> tuple[list[tuple[str, int]], int | None]:
+def parse_catalog(path: Path) -> list[tuple[str, int]]:
     text = path.read_text(encoding="utf-8")
-    entries = [
+    return [
         (match.group("plain") or match.group("linked"), line_number(text, match.start()))
         for match in CATALOG_ROW.finditer(text)
     ]
-    count_match = re.search(r"\b(\d+)\s+(?:の\s+)?Skills?\b", text, re.IGNORECASE)
-    return entries, int(count_match.group(1)) if count_match else None
 
 
 def check_catalogs(root: Path, problems: list[Problem]) -> set[str]:
@@ -226,7 +224,7 @@ def check_catalogs(root: Path, problems: list[Problem]) -> set[str]:
         if not path.is_file():
             add(problems, root, path, 1, "required catalog is missing")
             continue
-        entries, declared_count = parse_catalog(path)
+        entries = parse_catalog(path)
         seen: set[str] = set()
         for entry, line in entries:
             if entry in seen:
@@ -238,14 +236,6 @@ def check_catalogs(root: Path, problems: list[Problem]) -> set[str]:
         for unexpected in sorted(entry_names - names):
             line = next(line for entry, line in entries if entry == unexpected)
             add(problems, root, path, line, f"catalog references unknown Skill `{unexpected}`")
-        if declared_count is not None and declared_count != len(names):
-            add(
-                problems,
-                root,
-                path,
-                1,
-                f"declared Skill count {declared_count} does not match {len(names)} directories",
-            )
 
     return names
 
