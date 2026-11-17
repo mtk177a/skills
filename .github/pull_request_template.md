@@ -1,36 +1,56 @@
 <!--
-Write the pull request title in English. Keep Summary in English; write the
-remaining sections and comments in Japanese by default.
+Write the pull request title in English. Write Summary in English, and the other sections and comments in Japanese by default.
+Always fill Summary, 背景, 変更内容, and リスク. Leave out the other sections, and any label or group, when they have no content.
 -->
 
 ## Summary
 
-<!-- Give a concise reviewer-facing summary of the implemented result. -->
+<!-- In English: what changes, and why. -->
 
-## 関連 Issue
+## 背景
 
-<!-- この pull request で Issue を閉じる場合は `Closes #123`、閉じない参照の場合は `Refs #123` を使う。 -->
+- **現在の状態**: <!-- 今どうなっているか -->
+- **問題**: <!-- 今の状態がなぜ問題か -->
+- **選んだ方法**: <!-- レビュアーが尋ねそうな場合だけ。選んだ方法、捨てた案、その欠点 -->
 
 ## 変更内容
 
-<!-- Issue の計画を再掲せず、重要な実装結果を書く。 -->
+<!-- 変更のまとまりごとに、名前と結果を書く。要点を明確にする場合は、最小の図を添える。 -->
 
-## 理由
+- **<!-- まとまりの名前 -->**: <!-- 結果 -->
+- **含めないもの**: <!-- レビュアーが期待しそうだが、差分に含まれていないこと -->
 
-<!-- レビューに役立つ場合だけ実装上の理由を書く。Issue と重複するだけなら、このセクションを削除する。 -->
+## レビューの観点
 
-## 影響
+- **読む順序**: <!-- どこから読み、次に何を読むか -->
+- **注目する箇所**: <!-- 特に注意して見る箇所 -->
+- **必要な判断**: <!-- レビュアーに求める判断 -->
+- **求めるフィードバック**: <!-- 求めるフィードバックの種類 -->
 
-<!-- ユーザー、互換性、運用、保守への重要な影響を書く。該当しない場合は、このセクションを削除する。 -->
+## 確認結果
 
-## 検証
+- **自動の検査**
 
-<!-- 実際に行った確認と結果を書く。重要な未実行、未検証項目も明記し、汎用的な checkbox は追加しない。 -->
+  - **`python3 -B scripts/check_repository.py`**: <!-- 結果 -->
+  - **`python3 -B -m unittest discover -s tests`**: <!-- 結果 -->
+  - **`git diff --check`**: <!-- 結果 -->
 
-## リスク / フォローアップ
+- **手動の確認**
 
-<!-- 重要なリスク、未確認事項、後続作業を書く。日本語参考訳を変更しなかった場合は、その判断理由もここか検証欄に書く。該当しない場合は、このセクションを削除する。 -->
+  - **日本語参考訳**: <!-- 英語版を変更した場合に、更新したか、更新しない理由を書く。 -->
+  - **<!-- 確認したこと、または変更前 → 変更後 -->**: <!-- 結果 -->
 
-## レビューの重点
+- **実行していない確認**
 
-<!-- 特に確認してほしい箇所を書く。該当しない場合は、このセクションを削除する。 -->
+  - **<!-- 確認の内容 -->**: <!-- 結果がないことで、判断がどう変わり得るか -->
+
+## リスク
+
+- **取り消せない影響**: <!-- コードの revert では元に戻らない影響。ない場合は「なし」 -->
+- **影響範囲**: <!-- 影響を受ける利用者、Skill、文書 -->
+
+## 関連
+
+<!-- Issue を閉じる場合は `Closes #123`、参照するだけの場合は `Refs #123` を使う。後続の作業は、その Issue を `Refs` で示す。 -->
+
+- Refs #

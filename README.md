@@ -56,7 +56,7 @@ To use several Skills on one piece of work, see [Choose the next Skill](docs/use
 | Draft PR comments from supplied review decisions | [`draft-review-comments`](skills/draft-review-comments/SKILL.md) |
 | Draft an Issue without posting it | [`draft-issue`](skills/draft-issue/SKILL.md) |
 | Plan commit units and draft their messages | [`draft-commit`](skills/draft-commit/SKILL.md) |
-| Summarize a diff or commit range for its readers | [`summarize-changes`](skills/summarize-changes/SKILL.md) |
+| Prepare a pull request title and description for review | [`prepare-pr`](skills/prepare-pr/SKILL.md) |
 | Record evidence for resuming work in another session | [`record-session-handoff`](skills/record-session-handoff/SKILL.md) |
 
 ### Research and write
