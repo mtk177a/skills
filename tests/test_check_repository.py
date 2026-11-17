@@ -57,7 +57,7 @@ license: MIT
         root / "README.md",
         """# Fixture
 
-1 Skills.
+This repository includes the following Skills.
 
 | Skill | Description |
 | --- | --- |
@@ -68,7 +68,7 @@ license: MIT
         root / "README.ja.md",
         """# Fixture
 
-1 の Skill。
+以下の Skill を収録しています。
 
 | Skill | 説明 |
 | --- | --- |
@@ -85,8 +85,7 @@ def add_fixture_skill(root: Path, name: str) -> None:
     )
     for readme in ("README.md", "README.ja.md"):
         path = root / readme
-        text = path.read_text(encoding="utf-8").replace("1 Skills.", "2 Skills.").replace("1 の Skill。", "2 の Skill。")
-        path.write_text(text + f"| `{name}` | Fixture |\n", encoding="utf-8")
+        path.write_text(path.read_text(encoding="utf-8") + f"| `{name}` | Fixture |\n", encoding="utf-8")
 
 
 def rename_fixture_skill(root: Path, name: str) -> None:
@@ -118,14 +117,14 @@ class CheckerCliTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertEqual(before, tree_hash(root))
 
-    def test_catalogs_can_omit_declared_count(self) -> None:
+    def test_numbers_of_skills_in_readme_prose_are_not_counts(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             create_valid_repository(root)
             english = root / "README.md"
             japanese = root / "README.ja.md"
-            english.write_text(english.read_text().replace("1 Skills.", "This repository includes the following Skills."))
-            japanese.write_text(japanese.read_text().replace("1 の Skill。", "以下の Skill を収録しています。"))
+            english.write_text(english.read_text() + "\nCombine 3 Skills for a larger task.\n")
+            japanese.write_text(japanese.read_text() + "\n大きな作業では 3 の Skill を組み合わせる。\n")
 
             result = run_checker(root)
 
