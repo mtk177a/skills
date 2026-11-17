@@ -13,7 +13,8 @@ import sys
 import zipfile
 from pathlib import Path, PurePosixPath
 
-from check_repository import UPSTREAM_MIRRORS, is_external_link, link_path, markdown_links, recorded_mirror_hash
+from markdown_links import is_external_link, link_path, markdown_links
+from upstream_mirrors import UPSTREAM_MIRRORS, recorded_mirror_hash
 
 SCHEMA = 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json'
 ROOT_FILES = {'plugin.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md'}

@@ -99,7 +99,7 @@ def rename_fixture_skill(root: Path, name: str) -> None:
 
 def run_checker(root: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [sys.executable, str(CHECKER), "--root", str(root)],
+        [sys.executable, "-B", str(CHECKER), "--root", str(root)],
         capture_output=True,
         text=True,
         check=False,

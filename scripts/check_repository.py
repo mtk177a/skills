@@ -10,7 +10,9 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from urllib.parse import unquote
+
+from markdown_links import heading_anchors, is_external_link, link_fragment, link_path, markdown_links
+from upstream_mirrors import UPSTREAM_LICENSE_DECLARATION, UPSTREAM_MIRRORS, recorded_mirror_hash
 
 TRACKED_REPOSITORY_LOCAL_SKILLS = {"maintain-japanese-references"}
 
@@ -21,14 +23,6 @@ CATALOG_ROW = re.compile(
     r"|^\|[^|\n]+\|\s*\[`(?P<linked>[a-z0-9-]+)`\]\(skills/[^)\s]+/SKILL(?:-ja)?\.md\)\s*\|[ \t]*$",
     re.MULTILINE,
 )
-INLINE_LINK = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
-REFERENCE_LINK = re.compile(r"^\s*\[[^\]]+\]:\s*(\S+)", re.MULTILINE)
-HEADING_START = re.compile(r"^ {0,3}#{1,6}[ \t]")
-HEADING = re.compile(r"^ {0,3}#{1,6}[ \t]+(.*?)(?:[ \t]+#+)?[ \t]*$")
-HTML_ID = re.compile(r"""<[^>]+\b(?:id|name)=["']([^"']+)["']""")
-INLINE_CODE = re.compile(r"`+([^`]*)`+")
-MARKDOWN_LINK_TEXT = re.compile(r"!?\[([^\]]*)\]\([^)]*\)")
-MIRROR_HASH = re.compile(r"^- SKILL\.md SHA-256: `sha256:([0-9a-f]{64})`$", re.MULTILINE)
 COMPANION_ROW = re.compile(r"^\|\s*`([^`]+)`\s*→\s*`([^`]+)`\s*\|(.+)$", re.MULTILINE)
 PERSONAL_PATHS = (
     re.compile(r"(?<![A-Za-z0-9_])/(?:home|Users)/[^/\s\"'`<>]+"),
@@ -40,11 +34,6 @@ PERSONAL_PATH_EXCLUSIONS = {
     "scripts/check_repository.py",
     "tests/test_check_repository.py",
 }
-UPSTREAM_MIRRORS = {
-    "japanese-tech-writing": "https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d",
-    "cognitive-rhythm-writing": "https://gist.github.com/k16shikano/eb2929f13ed19c97188393d297be8432",
-}
-UPSTREAM_LICENSE_DECLARATION = "https://gist.github.com/k16shikano/67625f2a7d96e3bbdfae8d571a936063"
 COMPANION_REGISTRY = Path("docs") / "maintainers" / "authoring.md"
 
 
@@ -348,129 +337,12 @@ def check_upstream_mirrors(root: Path, problems: list[Problem]) -> None:
             add(problems, root, skill, 1, "mirrored SKILL.md differs from recorded SHA-256")
 
 
-def markdown_without_code(text: str) -> str:
-    visible = list(text)
-
-    def mask(start: int, end: int) -> None:
-        for index in range(start, end):
-            if visible[index] not in "\r\n":
-                visible[index] = " "
-
-    fence_marker: str | None = None
-    fence_length = 0
-    offset = 0
-    for line in text.splitlines(keepends=True):
-        if fence_marker is None:
-            opening = re.match(r"^ {0,3}(`{3,}|~{3,})", line)
-            if opening and not (opening.group(1).startswith("`") and "`" in line[opening.end() :]):
-                fence_marker = opening.group(1)[0]
-                fence_length = len(opening.group(1))
-                mask(offset, offset + len(line))
-        else:
-            closing = re.match(r"^ {0,3}(`+|~+)[ \t]*(?:\r?\n)?$", line)
-            mask(offset, offset + len(line))
-            if (
-                closing
-                and closing.group(1)[0] == fence_marker
-                and len(closing.group(1)) >= fence_length
-            ):
-                fence_marker = None
-                fence_length = 0
-        offset += len(line)
-
-    masked_fences = "".join(visible)
-    index = 0
-    while index < len(masked_fences):
-        if masked_fences[index] != "`":
-            index += 1
-            continue
-        opening_end = index + 1
-        while opening_end < len(masked_fences) and masked_fences[opening_end] == "`":
-            opening_end += 1
-        delimiter_length = opening_end - index
-        search = opening_end
-        closing_end: int | None = None
-        while search < len(masked_fences):
-            if masked_fences[search] != "`":
-                search += 1
-                continue
-            run_end = search + 1
-            while run_end < len(masked_fences) and masked_fences[run_end] == "`":
-                run_end += 1
-            if run_end - search == delimiter_length:
-                closing_end = run_end
-                break
-            search = run_end
-        if closing_end is None:
-            index = opening_end
-            continue
-        mask(index, closing_end)
-        index = closing_end
-
-    return "".join(visible)
-
-
-def link_destination(raw: str) -> str:
-    value = raw.strip()
-    if value.startswith("<") and ">" in value:
-        return value[1 : value.index(">")]
-    return value.split(maxsplit=1)[0]
-
-
-def markdown_links(text: str) -> list[tuple[int, str]]:
-    """Return the offset and destination of each Markdown link outside code, in document order."""
-    visible = markdown_without_code(text)
-    matches = sorted(
-        [*INLINE_LINK.finditer(visible), *REFERENCE_LINK.finditer(visible)],
-        key=lambda match: match.start(),
-    )
-    return [(match.start(), link_destination(match.group(1))) for match in matches]
-
-
-def link_path(destination: str) -> str:
-    """Return the decoded path of a relative link, without its fragment or query."""
-    return unquote(destination.split("#", 1)[0].split("?", 1)[0])
-
-
-def recorded_mirror_hash(provenance: str) -> str | None:
-    """Return the SKILL.md SHA-256 recorded in an upstream mirror's UPSTREAM.md."""
-    match = MIRROR_HASH.search(provenance)
-    return match.group(1) if match else None
-
-
-def is_external_link(destination: str) -> bool:
-    return (
-        not destination
-        or destination.startswith(("#", "/", "//"))
-        or re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:", destination) is not None
-    )
-
-
 def contained(root: Path, target: Path) -> bool:
     try:
         target.relative_to(root)
         return True
     except ValueError:
         return False
-
-
-def heading_anchors(text: str) -> set[str]:
-    # Derive anchors from the target's own headings with GitHub's rules, so no expected IDs are stored here.
-    anchors: set[str] = set(HTML_ID.findall(text))
-    counts: dict[str, int] = {}
-    for original, visible in zip(text.splitlines(), markdown_without_code(text).splitlines()):
-        if not HEADING_START.match(visible):
-            continue
-        heading = HEADING.match(original)
-        if heading is None:
-            continue
-        label = INLINE_CODE.sub(r"\1", heading.group(1))
-        label = MARKDOWN_LINK_TEXT.sub(r"\1", label)
-        slug = re.sub(r"[^\w\- ]", "", label.strip().lower()).replace(" ", "-")
-        suffix = counts.get(slug, 0)
-        counts[slug] = suffix + 1
-        anchors.add(slug if suffix == 0 else f"{slug}-{suffix}")
-    return anchors
 
 
 def check_markdown_links(root: Path, problems: list[Problem]) -> None:
@@ -493,9 +365,9 @@ def check_markdown_links(root: Path, problems: list[Problem]) -> None:
                 if not target.exists():
                     add(problems, root, path, line, f"relative Markdown link target does not exist: `{destination}`")
                     continue
-            if "#" not in destination or target.suffix.lower() != ".md" or not target.is_file():
+            fragment = link_fragment(destination)
+            if fragment is None or target.suffix.lower() != ".md" or not target.is_file():
                 continue
-            fragment = unquote(destination.split("#", 1)[1])
             if target not in anchor_cache:
                 anchor_cache[target] = heading_anchors(target.read_text(encoding="utf-8"))
             if fragment not in anchor_cache[target]:
