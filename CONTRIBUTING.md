@@ -54,6 +54,12 @@ It exits with one of these codes:
 - `1`: it found problems to fix.
 - `2`: it could not run.
 
+The [`Repository validation` workflow](.github/workflows/repository-validation.yml) in GitHub Actions runs the same checks for each pull request and each push to `main`.\
+It uses Python 3.10, the minimum version in [Build the plugin ZIP](docs/maintainers/packaging.md#requirements).\
+Its whitespace check covers the commits of the pull request or the push, not only the working tree.\
+It also fails when a check changes or creates a file in the working tree.\
+The workflow does not replace the local checks, so still run them before committing.
+
 When you change how the Skills are installed or build a new plugin version, also follow [Build the plugin ZIP](docs/maintainers/packaging.md).
 
 ## Commit and open a pull request

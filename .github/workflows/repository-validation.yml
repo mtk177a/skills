@@ -1,0 +1,93 @@
+name: Repository validation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  # A newer run cancels an older run of the same pull request.
+  # Each push to main gets its own group, so every commit on main keeps its result.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  repository-validation:
+    name: Repository validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      # Python 3.10 is the minimum version in docs/maintainers/packaging.md.
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.10"
+
+      - name: Record initial working tree
+        run: |
+          python3 --version
+          git status --porcelain=v1 --untracked-files=all --ignored > "$RUNNER_TEMP/repository-status.before"
+
+      - name: Check whitespace in the event's commits
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_AFTER: ${{ github.event.after }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT" == pull_request ]]; then
+            base="$PR_BASE"
+            head="$PR_HEAD"
+          else
+            base="$PUSH_BEFORE"
+            head="$PUSH_AFTER"
+          fi
+          for sha in "$base" "$head"; do
+            if [[ ! "$sha" =~ ^[0-9a-f]{40}$ || "$sha" == 0000000000000000000000000000000000000000 ]]; then
+              echo "::error::Cannot determine the commit range of this event: '$sha'"
+              exit 1
+            fi
+            if ! git cat-file -e "$sha^{commit}"; then
+              echo "::error::Commit $sha is not available in the checkout"
+              exit 1
+            fi
+          done
+          if [[ "$EVENT" == pull_request ]]; then
+            base="$(git merge-base "$base" "$head")"
+          fi
+          echo "Checking $base..$head"
+          git diff --check "$base" "$head" --
+
+      - name: Check repository
+        run: python3 -B scripts/check_repository.py
+
+      - name: Run unit tests
+        run: python3 -B -m unittest discover -s tests -p 'test_*.py' -v
+
+      - name: Ensure the checks leave no changes
+        if: ${{ always() }}
+        run: |
+          set -euo pipefail
+          test -f "$RUNNER_TEMP/repository-status.before"
+          git diff --exit-code
+          git diff --cached --exit-code
+          git status --porcelain=v1 --untracked-files=all --ignored > "$RUNNER_TEMP/repository-status.after"
+          if ! cmp -s "$RUNNER_TEMP/repository-status.before" "$RUNNER_TEMP/repository-status.after"; then
+            echo "::error::The checks changed or created files in the working tree"
+            diff "$RUNNER_TEMP/repository-status.before" "$RUNNER_TEMP/repository-status.after" || true
+            exit 1
+          fi
