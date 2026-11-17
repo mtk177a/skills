@@ -127,7 +127,6 @@ Apply these choices with judgment:
 - Keep natural language, meaningful transitions, and sufficient explanation.
 
 Follow the conventions of the target medium.\
-For a Markdown source, use the conventions of the target repository first, and the default conventions in [Markdown source](references/markdown-source.md) for the points that they do not cover.\
 Give a short message the structure of a short message.
 
 ### 6. Validate the result
@@ -142,7 +141,11 @@ Read the result as a reader who did not see the authoring conversation, and chec
 
 - The grouping criteria, hierarchy, order, and placement match the real relations of the information.
 
+- Each list groups only items that one common concept can name.
+
 - Each heading describes its content, and suggests no incorrect scope.
+
+- A heading over several topics names their common concept, not a list such as "A and B".
 
 - A reader of only the headings can tell the topic of each section.
 
@@ -154,6 +157,8 @@ Read the result as a reader who did not see the authoring conversation, and chec
 - The reader can find and understand related information together.
 
 - Each presentation form makes the information easier to find, compare, understand, or use.
+
+- Words that are the main content of a sentence are a bulleted list, and words that are part of its subject or object stay in the sentence.
 
 - The structure is as simple as the information allows, without extra fragments or repetition.
 
@@ -185,7 +190,6 @@ Read only the references that apply to the current task:
 - [Information types](references/information-types.md): when you separate information types, or choose structures for definitions, rules, procedures, and examples.
 - [Information architecture](references/information-architecture.md): when grouping, hierarchy, order, placement, or the split and merge of sections or files needs more guidance.
 - [Presentation patterns](references/presentation-patterns.md): when you choose between prose, lists, tables, code blocks, and diagrams.
-- [Markdown source](references/markdown-source.md): when you write or revise a Markdown source, and the target repository has no conventions for the point.
 - [Methods and principles](references/methods.md): when established writing or information-design methods help a structural decision.
 - [Examples](references/examples.md): when you compare an unclear choice or a recurring structural problem with worked examples.
 

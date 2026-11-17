@@ -57,9 +57,6 @@ Check a proposed group with these questions:
 If the answers do not support one coherent group, split or move it.\
 If a split removes important context or needs repeated introductions, consider keeping the group together.
 
-Put items in one list only when one common concept names all of them.\
-If you cannot name the list without joining unrelated labels, make separate lists or move the items to their correct parents.
-
 ### Keep peers parallel
 
 Choose one organizing axis for each group of peers: entities, operations, states, questions, time periods, responsibilities, or another meaningful dimension.\
@@ -80,16 +77,9 @@ When a heading around them already shows the relationship clearly, that heading 
 A heading is a promise about the section below it.\
 Use names that state the subject, task, audience, or subset exactly.\
 For example, a heading "Project views" can suggest completeness when the content covers only the six views of one workflow.\
+A label that joins two concerns with "and" is a signal to examine the section.\
+It does not prove that the section needs a split.\
 Use a concrete heading instead of a generic heading such as "Details" or "Other".
-
-Check each heading with these rules:
-
-- **Several topics**: name a section that contains several topics with the common concept above them, not with a list such as "A and B".\
-  If no common concept names the topics, the topics need separate sections.
-- **Parent and child**: give a child heading a name that is different from its parent heading.\
-  A child with the same name as its parent shows that one of the two levels has no function.
-- **Single content**: make a heading only for a section that contains more than one item of content.\
-  Put a single item directly in its parent section, or use the subject of the item as the heading.
 
 ## Order information by the needs of the reader
 
