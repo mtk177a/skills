@@ -127,6 +127,7 @@ Apply these choices with judgment:
 - Keep natural language, meaningful transitions, and sufficient explanation.
 
 Follow the conventions of the target medium.\
+For a Markdown source, use the conventions of the target repository first, and the default conventions in [Markdown source](references/markdown-source.md) for the points that they do not cover.\
 Give a short message the structure of a short message.
 
 ### 6. Validate the result
@@ -166,6 +167,10 @@ Read the result as a reader who did not see the authoring conversation, and chec
   Remove unsupported requirements.\
   Keep necessary design proposals outside the finished artifact.
 
+- Each correction and each rename applies to all the places of the same type and to all the places that refer to it.\
+  For example, when you rename one heading, check the other headings of the same pattern.\
+  When you rename a document, check the link targets, the link text, and the descriptions in lists of documents.
+
 - Changes to several files keep the necessary links, references, and independent behavior.
 
 When they apply, check factual claims, links, examples, commands, generated content, and repository checks.\
@@ -180,6 +185,7 @@ Read only the references that apply to the current task:
 - [Information types](references/information-types.md): when you separate information types, or choose structures for definitions, rules, procedures, and examples.
 - [Information architecture](references/information-architecture.md): when grouping, hierarchy, order, placement, or the split and merge of sections or files needs more guidance.
 - [Presentation patterns](references/presentation-patterns.md): when you choose between prose, lists, tables, code blocks, and diagrams.
+- [Markdown source](references/markdown-source.md): when you write or revise a Markdown source, and the target repository has no conventions for the point.
 - [Methods and principles](references/methods.md): when established writing or information-design methods help a structural decision.
 - [Examples](references/examples.md): when you compare an unclear choice or a recurring structural problem with worked examples.
 

@@ -29,9 +29,14 @@ Keep each sentence free of hard line breaks.
 
 ### Lists inside sentences
 
-A short list inside a sentence is suitable when each item is brief, and the reader does not examine the items separately.\
-Use vertical bullets or a table when the items are long, repeated, or conditional.\
-Also use them when the reader acts on or checks each item separately.
+Decide the form of a list of words from the role of the words in the sentence:
+
+- **The words are the main content of the sentence**: use bullets.\
+  For example, the items to check in an instruction are the main content.
+- **The words are part of the subject or the object of the sentence**: join them in the sentence.\
+  For example, a short list of the inputs of a tool can stay in the sentence that describes the tool.
+
+Also use vertical bullets or a table when the items are long, repeated, or conditional, or when the reader acts on or checks each item separately.
 
 **Dense input:**
 
@@ -81,6 +86,7 @@ Start each step with a clear action, so that readers can scan the sequence.\
 Put prerequisite checks before the operation, and verification of the result after it.\
 Use bullets below a step for several inputs, checks, or outputs of that step.\
 When a step contains several paragraphs or code blocks, give each step its own heading, such as `### 2. Build the archive`.\
+For the other conditions for step headings, see [Steps](markdown-source.md#steps).\
 Keep the details and the checks of that step under its heading.
 
 ````markdown
