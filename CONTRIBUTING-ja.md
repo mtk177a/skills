@@ -58,6 +58,12 @@ git diff --check
 - `1`: 修正すべき問題が見つかった。
 - `2`: 実行できなかった。
 
+GitHub Actions の [`Repository validation` ワークフロー](.github/workflows/repository-validation.yml) は、PR ごとと、`main` への push ごとに、同じ確認を実行する。\
+Python は、[Plugin の ZIP を作る](docs/ja/maintainers/packaging.md#必要な環境) が最低バージョンとする 3.10 を使う。\
+空白の確認では、作業ツリーだけでなく、PR または push に含まれるコミットを対象にする。\
+確認によって作業ツリーのファイルが変更または作成された場合も、ワークフローは失敗する。\
+このワークフローは手元での確認の代わりにはならないので、コミットする前に手元でも実行する。
+
 Skill のインストール方法を変更する場合や、Plugin の新しいバージョンを作る場合は、[Plugin の ZIP を作る](docs/ja/maintainers/packaging.md) にも従う。
 
 ## コミットして PR を作る
