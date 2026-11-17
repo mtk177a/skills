@@ -180,19 +180,44 @@ The word limits and the STE dictionary are specific to English, so use these rul
 These rules address the clarity of instructions.\
 The naturalness of Japanese, such as translated syntax and mixed English, follows the `write-natural-japanese` Skill.
 
-## Format steps and lists
+## Format Markdown sources
 
-- **Steps with more than one sentence**: if a step has more than one sentence or contains a list, start the step with a short bold name.\
-  Put a blank line after the name, and write the body of the step below it.
-- **Short steps**: if each step in a list is one sentence, write the sentence directly after the number.\
-  If one step in the list needs a bold name, give a bold name to all steps in that list.
-- **Blank lines between items**: one item of a list can contain a list, a table, or more than one paragraph.\
-  Then put a blank line between all items of that list.\
-  Otherwise, put no blank lines between the items.
-- **Content that belongs to a step**: indent a table or a list that belongs to a step, so that it stays inside that step.
+These conventions apply to Skill bodies, their Japanese reference translations, bundled resources, and repository documents.
 
-These rules apply to Skill bodies.\
-They also apply to the Japanese reference translations.
+- **Steps**
+
+  - Write each step of a workflow as a heading with its number, such as `### 1. Identify the target`.
+  - Write the content of a step as labeled items, and end the step with a completion criterion.
+
+- **Lines**
+
+  - Write all the sentences of one paragraph or one list item on one line, without a trailing `\`.
+
+- **Content below a heading**
+
+  - Put only an introductory sentence, a table, a code block, a numbered list, or a list of reference links directly below a heading.
+  - Write explanations and rules as items with bold labels.
+
+- **Labels**
+
+  - Use the form `- **Label**: value` only when every sibling has one piece of content.
+  - When one sibling has more than one piece of content, give every sibling a label and child items.
+
+- **Blank lines**
+
+  - Put a blank line before and after an item that has children, and between its text and its first child.
+  - Write items without children on consecutive lines.
+
+- **Headings**
+
+  - Name a heading over several topics with their common concept, not with a list such as "A and B".
+  - Give a child heading a name that differs from its parent heading.
+  - Make a heading only for a section with more than one item of content.
+
+- **Checks**
+
+  - `scripts/check_repository.py` checks the rules that need no judgment in the files that `scripts/markdown-style-files.txt` lists.
+  - Add a file to that list when it follows these conventions.
 
 ## Keep Skills independent of each other
 

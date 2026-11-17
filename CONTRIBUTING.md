@@ -47,6 +47,7 @@ It checks these items:
 - companion relationships and Skill name references
 - personal absolute paths
 - files that APM deploys into this repository
+- the Markdown source conventions, in the files that `scripts/markdown-style-files.txt` lists
 
 It exits with one of these codes:
 

@@ -51,6 +51,7 @@ git diff --check
 - 併用関係と Skill 名の参照
 - 個人の絶対パス
 - APM がこのリポジトリに配置したファイル
+- `scripts/markdown-style-files.txt` に挙げたファイルの、Markdown のソースの書式
 
 終了コードは、次のいずれかになる。
 
