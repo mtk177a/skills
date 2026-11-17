@@ -19,7 +19,7 @@ A change usually goes through four Skills:
 1. **`clarify-request`**
    - Use it when the purpose, scope, or success criteria of the request are unclear.\
      Skip it when they are already clear.
-   - Come back to it when another Skill, such as `define-referents`, `draft-issue`, or `record-session-handoff`, reports that the request itself is unclear.
+   - Come back to it when another Skill, such as `define-referents`, `prepare-issue`, or `record-session-handoff`, reports that the request itself is unclear.
 2. **`design-changes`**
    - Use it to decide the approach, the affected scope, and how to verify the change.\
      Skip it when these are already clear and the change is allowed.
