@@ -58,7 +58,7 @@ Skill が動くかどうかは、クライアントと、エージェントが�
 | 特定済みの修正を、元の指摘に照らして確かめる | [`validate-fix`](skills/validate-fix/SKILL-ja.md) |
 | レビューの結果を、ラベル付きのコメントでプルリクエストに返す | [`give-pr-review`](skills/give-pr-review/SKILL-ja.md) |
 | 作業の種類に合わせて、Issue のタイトルと本文を準備する | [`prepare-issue`](skills/prepare-issue/SKILL-ja.md) |
-| コミットの分け方を決め、メッセージを下書きする | [`draft-commit`](skills/draft-commit/SKILL-ja.md) |
+| コミットの分け方を決め、問題と解決を説明するメッセージを書く | [`prepare-commit`](skills/prepare-commit/SKILL-ja.md) |
 | レビューのために、プルリクエストのタイトルと本文を準備する | [`prepare-pr`](skills/prepare-pr/SKILL-ja.md) |
 | 別のセッションで作業を再開できるように、証拠とともに状態を記録する | [`record-session-handoff`](skills/record-session-handoff/SKILL-ja.md) |
 

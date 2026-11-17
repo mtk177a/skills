@@ -8,7 +8,7 @@ Attribution and provenance are provided here for transparency and maintenance.
 
 ---
 
-## skills/draft-commit/references/commit-types.md
+## skills/prepare-commit/references/commit-types.md
 
 Original summary based on the **Conventional Commits** specification.
 

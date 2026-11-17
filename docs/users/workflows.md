@@ -80,7 +80,7 @@ Missing context is not evidence of low risk.
 Two Skills describe changes without looking for problems:
 
 - `prepare-pr` writes the title and description of a pull request for its reviewers.
-- `draft-commit` plans commit units and drafts their messages.
+- `prepare-commit` plans commits and writes messages that explain the problem and the solution.
 
 ## Pause risky or stalled work
 
