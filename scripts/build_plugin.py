@@ -12,9 +12,8 @@ import subprocess
 import sys
 import zipfile
 from pathlib import Path, PurePosixPath
-from urllib.parse import unquote
 
-from check_repository import INLINE_LINK, REFERENCE_LINK, markdown_without_code, link_destination, is_external_link, UPSTREAM_MIRRORS
+from check_repository import UPSTREAM_MIRRORS, is_external_link, link_path, markdown_links, recorded_mirror_hash
 
 SCHEMA = 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json'
 ROOT_FILES = {'plugin.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md'}
@@ -65,16 +64,14 @@ def validate_references(files: dict[str, tuple[str, bytes]]) -> None:
         if not name.endswith('.md'):
             continue
         text = data.decode('utf-8')
-        visible = markdown_without_code(text)
-        destinations = [link_destination(m.group(1)) for pattern in (INLINE_LINK, REFERENCE_LINK) for m in pattern.finditer(visible)]
+        destinations = [destination for _, destination in markdown_links(text)]
         # Prose code spans used by this catalog for mandatory runtime resources.
         # Generic file examples and target-repository instructions require manual review.
         destinations += re.findall(r'`((?:references/|\.\./)[^`\n]+)`', text)
         for destination in destinations:
             if is_external_link(destination):
                 continue
-            clean = unquote(destination.split('#', 1)[0].split('?', 1)[0])
-            target = posixpath.normpath(posixpath.join(posixpath.dirname(name), clean))
+            target = posixpath.normpath(posixpath.join(posixpath.dirname(name), link_path(destination)))
             if target.startswith('../') or target == '..' or '\\' in target:
                 raise BuildError(f'{name}: reference escapes package: {destination}')
             if target not in files and not any(p.startswith(target.rstrip('/') + '/') for p in files):
@@ -106,8 +103,8 @@ def validate(files: dict[str, tuple[str, bytes]]) -> dict:
         if path not in files:
             continue
         provenance = files.get(f'skills/{skill}/UPSTREAM.md')
-        match = re.search(r'SKILL\.md SHA-256: `sha256:([0-9a-f]{64})`', provenance[1].decode()) if provenance else None
-        if not match or hashlib.sha256(files[path][1]).hexdigest() != match.group(1):
+        recorded_hash = recorded_mirror_hash(provenance[1].decode()) if provenance else None
+        if recorded_hash is None or hashlib.sha256(files[path][1]).hexdigest() != recorded_hash:
             raise BuildError(f'{skill}: mirror hash does not match UPSTREAM.md')
     validate_references(files)
     return manifest

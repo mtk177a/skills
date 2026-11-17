@@ -28,6 +28,7 @@ HEADING = re.compile(r"^ {0,3}#{1,6}[ \t]+(.*?)(?:[ \t]+#+)?[ \t]*$")
 HTML_ID = re.compile(r"""<[^>]+\b(?:id|name)=["']([^"']+)["']""")
 INLINE_CODE = re.compile(r"`+([^`]*)`+")
 MARKDOWN_LINK_TEXT = re.compile(r"!?\[([^\]]*)\]\([^)]*\)")
+MIRROR_HASH = re.compile(r"^- SKILL\.md SHA-256: `sha256:([0-9a-f]{64})`$", re.MULTILINE)
 COMPANION_ROW = re.compile(r"^\|\s*`([^`]+)`\s*→\s*`([^`]+)`\s*\|(.+)$", re.MULTILINE)
 PERSONAL_PATHS = (
     re.compile(r"(?<![A-Za-z0-9_])/(?:home|Users)/[^/\s\"'`<>]+"),
@@ -340,10 +341,10 @@ def check_upstream_mirrors(root: Path, problems: list[Problem]) -> None:
         )
         if not license_recorded or not declaration_recorded:
             add(problems, root, note, 1, "upstream mirror license evidence is missing")
-        match = re.search(r"^- SKILL\.md SHA-256: `sha256:([0-9a-f]{64})`$", body, re.MULTILINE)
-        if not match:
+        recorded_hash = recorded_mirror_hash(body)
+        if recorded_hash is None:
             add(problems, root, note, 1, "upstream mirror SHA-256 is missing or invalid")
-        elif skill.is_file() and hashlib.sha256(skill.read_bytes()).hexdigest() != match.group(1):
+        elif skill.is_file() and hashlib.sha256(skill.read_bytes()).hexdigest() != recorded_hash:
             add(problems, root, skill, 1, "mirrored SKILL.md differs from recorded SHA-256")
 
 
@@ -416,6 +417,27 @@ def link_destination(raw: str) -> str:
     return value.split(maxsplit=1)[0]
 
 
+def markdown_links(text: str) -> list[tuple[int, str]]:
+    """Return the offset and destination of each Markdown link outside code, in document order."""
+    visible = markdown_without_code(text)
+    matches = sorted(
+        [*INLINE_LINK.finditer(visible), *REFERENCE_LINK.finditer(visible)],
+        key=lambda match: match.start(),
+    )
+    return [(match.start(), link_destination(match.group(1))) for match in matches]
+
+
+def link_path(destination: str) -> str:
+    """Return the decoded path of a relative link, without its fragment or query."""
+    return unquote(destination.split("#", 1)[0].split("?", 1)[0])
+
+
+def recorded_mirror_hash(provenance: str) -> str | None:
+    """Return the SKILL.md SHA-256 recorded in an upstream mirror's UPSTREAM.md."""
+    match = MIRROR_HASH.search(provenance)
+    return match.group(1) if match else None
+
+
 def is_external_link(destination: str) -> bool:
     return (
         not destination
@@ -457,18 +479,14 @@ def check_markdown_links(root: Path, problems: list[Problem]) -> None:
         if path.suffix != ".md":
             continue
         text = path.read_text(encoding="utf-8")
-        visible = markdown_without_code(text)
-        matches = list(INLINE_LINK.finditer(visible)) + list(REFERENCE_LINK.finditer(visible))
-        for match in sorted(matches, key=lambda item: item.start()):
-            destination = link_destination(match.group(1))
-            line = line_number(visible, match.start())
+        for offset, destination in markdown_links(text):
+            line = line_number(text, offset)
             if destination.startswith("#"):
                 target = path.resolve()
             elif is_external_link(destination):
                 continue
             else:
-                clean = unquote(destination.split("#", 1)[0].split("?", 1)[0])
-                target = (path.parent / clean).resolve()
+                target = (path.parent / link_path(destination)).resolve()
                 if not contained(root, target):
                     add(problems, root, path, line, f"relative Markdown link escapes repository: `{destination}`")
                     continue
