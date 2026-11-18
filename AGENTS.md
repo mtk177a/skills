@@ -5,12 +5,17 @@ An `AGENTS.md` in a subdirectory takes precedence in that subdirectory.
 
 ## Purpose
 
-This repository manages these items:
+This repository publishes and distributes these items:
 
 - agent Skills that the owner wrote
 - external Skills that the owner reviewed, adapted, and maintains
 - unmodified copies of two upstream Gists: `japanese-tech-writing` and `cognitive-rhythm-writing`
 - the operational rules, authoring guidelines, and migration notes for these Skills
+
+The owner develops and revises the Skills in another repository.
+This repository is not updated until the owner decides which Skills to publish here.
+After that decision, a Skill comes here only when the owner publishes a finished version of it.
+Do not develop or revise a Skill in this repository unless the owner asks for it.
 
 Experimental Skills, verbatim copies of other external Skills, and rules for a team belong in other repositories.
 Keep the structure simple, so that Codex, Claude Code, GitHub Copilot, and other agents can use it.
@@ -41,15 +46,6 @@ Keep customer names, internal URLs, secrets, API keys, and personal information 
   If the change cannot be accepted as an unmodified copy, report the difference, and keep the current copy.
 - Follow [Upstream Gist mirrors](docs/maintainers/authoring.md#upstream-gist-mirrors) for what to record and how to update a mirror.
 
-## Repository-local operational Skills
-
-- A Skill that only maintains this repository can be in `.agents/skills/<skill-name>/`.
-  It stays out of the public Skill catalog and the plugin ZIP.
-- A repository-local Skill that git tracks is a source file, not APM deployment output.
-- Give a repository-local Skill a kebab-case name and a `SKILL.md`.
-  Add `SKILL-ja.md` as described in [Skill files](docs/maintainers/localization.md#skill-files), and add other files only when necessary.
-- The only tracked repository-local Skill is `.agents/skills/maintain-japanese-references/`.
-
 ## Working rules
 
 - Keep each change small and easy to review.
@@ -58,8 +54,8 @@ Keep customer names, internal URLs, secrets, API keys, and personal information 
 - Use relative paths, and state each assumption about the environment.
 - Write Skill bodies as described in [Design the Skill](docs/maintainers/authoring.md#design-the-skill).
   Then agents with no context about this repository can use them.
-- When you add or change an English source, review its Japanese reference translation with `.agents/skills/maintain-japanese-references/`.
-  Update the translation only when the meaning of the English source changes.
+- Keep no Japanese reference translations.
+  For the language of each kind of content, see [Languages](docs/maintainers/localization.md).
 
 ## APM
 
@@ -76,7 +72,6 @@ Keep customer names, internal URLs, secrets, API keys, and personal information 
   An empty `.agents/` directory can exist, because agent tools can create it.
 - If root APM manifests, APM-deployed `.agents/skills/*`, or `apm_modules/` exist, stop and report them.
   Remove them only after you confirm that they are generated, and after you get approval.
-  Keep the tracked repository-local Skills.
 
 ## Changes that need approval
 

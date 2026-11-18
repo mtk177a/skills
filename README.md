@@ -10,6 +10,9 @@ Check the [runtime requirements](docs/users/compatibility.md) before installatio
 > The owner can change or remove Skills without notice.\
 > Use at your own risk.
 
+> **Maintenance status:** Development of these Skills has moved to another repository.\
+> This repository is not updated until the owner decides which Skills to publish here.
+
 ## Install
 
 There are two installation methods, and both install the same Skills from `skills/`:
