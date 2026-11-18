@@ -111,7 +111,7 @@ Refer to them by name, such as “ChatGPT's Chat, Work, and dots”, instead of 
 
 - **English**: English source
 - **Japanese**: 英語版
-- **Refers to**: the English file that defines requirements, from which a Japanese reference translation is made.
+- **Refers to**: the English file that defines requirements.
 
 Avoid 原本 and 正本 for this file.\
 They suggest a legal or archival original, while the actual relationship is that of a translation and its source.
@@ -173,5 +173,4 @@ Add an entry only for one of these:
 - a word that currently points to two things that need to be distinguished
 
 Add a general word only when its meanings mix, not only because its wording varies.\
-For each entry, write what it refers to and why the distinction matters.\
-Update the English source and its Japanese reference translation together.
+For each entry, write what it refers to and why the distinction matters.

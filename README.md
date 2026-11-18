@@ -90,7 +90,7 @@ Their source revisions, licenses, and synchronization records are in each Skill'
 | Author a Skill | [Skill authoring guide](docs/maintainers/authoring.md) |
 | Build the plugin ZIP | [Build the plugin ZIP](docs/maintainers/packaging.md) |
 | Review third-party material and executable capabilities | [Skill security review](docs/maintainers/security.md) |
-| Choose the language and maintain Japanese reference translations | [Languages and Japanese reference translations](docs/maintainers/localization.md) |
+| Choose the language | [Languages](docs/maintainers/localization.md) |
 | Check the terms used for repository concepts | [Glossary](docs/maintainers/glossary.md) |
 
 External contributions are not normally expected.

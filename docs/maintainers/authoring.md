@@ -159,7 +159,7 @@ For Japanese text, see [Apply the same principles to Japanese](#apply-the-same-p
 
 ## Apply the same principles to Japanese
 
-Apply the intent of the STE rules to Skills whose source is in Japanese, and to the Japanese reference translations.\
+Apply the intent of the STE rules to Skills whose source is in Japanese.\
 The word limits and the STE dictionary are specific to English, so use these rules instead:
 
 - Write one instruction in each sentence.
@@ -182,7 +182,7 @@ The naturalness of Japanese, such as translated syntax and mixed English, follow
 
 ## Format Markdown sources
 
-These conventions apply to Skill bodies, their Japanese reference translations, bundled resources, and repository documents.
+These conventions apply to Skill bodies, bundled resources, and repository documents.
 
 - **Steps**
 
@@ -222,7 +222,7 @@ These conventions apply to Skill bodies, their Japanese reference translations, 
 ## Keep Skills independent of each other
 
 Each Skill must work on its own.\
-Keep the names of other public Skills out of `SKILL.md` and `SKILL-ja.md`.\
+Keep the names of other public Skills out of `SKILL.md`.\
 Describe out-of-scope work by its type, and describe a handoff by the input the next step needs.\
 Record relationships between Skills only in [Choose the next Skill](../users/workflows.md).\
 `scripts/check_repository.py` rejects other public Skill names, except in approved companion relationships and the upstream mirrors.
@@ -250,139 +250,11 @@ Review this record, and verify the affected behavior, when one of these changes:
 - the installation
 - the behavior without the companion
 
-### Approved: Japanese reference maintenance
-
-| Required relationship | Provenance |
-| --- | --- |
-| `maintain-japanese-references` → `write-natural-japanese` | Original repository material. [#42](https://github.com/mtk177a/skills/pull/42) introduced the maintenance Skill; [#77](https://github.com/mtk177a/skills/issues/77) records the required relationship and Japanese-canonical exception |
-
-- **Reason**: to keep the meaning of the English source while writing Japanese that fits the context.
-- **Location**: both Skills are tracked in this repository.
-- **Before use**: read `skills/write-natural-japanese/SKILL.md` and its required references.\
-  If a repository file is unavailable, stop and report it instead of substituting a personal copy.
-
-The upstream `cognitive-rhythm-writing` also requires another Skill; see [Upstream Gist mirrors](#upstream-gist-mirrors).
-
-## Support several clients
-
-### Shared and client-specific Skills
-
-First, decide whether the Skill can be written without depending on a particular client:
-
-- A shared Skill serves the same purpose with the same steps in several clients.
-- A client-specific Skill has steps, tools, or input and output formats tied to one client.
-
-This repository does not sort Skills into directories by client.\
-Show a client-specific dependency in the Skill name or `description` instead.
-
-Add client-specific metadata only when a Skill needs that client's invocation control, UI, dependency declaration, or permission behavior.\
-Otherwise, keep `name`, `description`, instructions, and resources portable.
-
-### Adapt a Skill written for one client
-
-When you adapt a Skill for other clients, decide whether its client-specific language stays.\
-Keep it only when that specificity is the core value of the Skill.\
-Otherwise, rewrite the Skill around its purpose and decision criteria so that the client-specific mechanics can be swapped.
-
-Check:
-
-- whether the Skill relies too much on specific tool names
-- whether the request and output formats make sense in other clients
-- whether the steps assume features of one client
-- whether the remaining client-specific differences are stated in the `description` or the body
-- whether a requirement needs instructions in the Skill, or a policy, permission, or hook that the client enforces
-
-Verify in the documentation of each client how it discovers, loads, and prioritizes instruction files, and how it invokes Skills.\
-A compatible file format does not show these behaviors.\
-When these behaviors affect a design, check the current official documentation for each target client.\
-Where the documentation is conditional or incomplete, verify the behavior in the target version or environment.\
-Use the result for the current decision; this guide does not keep a list of client behaviors.
-
-### Shared and client-specific instruction files
-
-Keep shared repository instructions in `AGENTS.md`.\
-A client-specific instruction file only bridges to it:
-
-- **Copilot bridge**: `.github/copilot-instructions.md` tells Copilot to read `AGENTS.md`.\
-  If Copilot cannot read it, Copilot stops without modifying files, running commands, or changing external state.
-- **Clients that do not load `AGENTS.md` automatically**: repeat in the bridge only the minimum safety and approval rules needed to keep those boundaries.\
-  This fallback delivers the rules to that client; it is not a second source of them.
-- **Updates**: when a related rule in `AGENTS.md` changes, check and update the fallback.\
-  Keep the other shared rules only in `AGENTS.md`.
-
-Current client documentation: [Codex `AGENTS.md`](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [Claude Code project instructions](https://code.claude.com/docs/en/memory), and [GitHub Copilot custom instructions support](https://docs.github.com/en/copilot/reference/custom-instructions-support).
-
-## Bundle only the resources needed
-
-### Scripts
-
-When you add `scripts/`, check what the scripts need to run and what side effects they have:
-
-- Minimize dependencies on a particular shell, OS, or architecture.\
-  Make each script work on both macOS M1 and Windows WSL, unless an explicit reason requires otherwise.
-- Document any additional dependencies.
-- Use paths inside the repository, not absolute paths outside it.
-- If a script performs destructive operations, make the Skill body ask for confirmation before running it.
-- Keep generated artifacts and caches out of the repository.
-
-### References
-
-The `references/` directory holds material the Skill needs for its judgments, such as formats, specifications, and decision criteria:
-
-- Include only what an agent with no prior context needs to apply the Skill.
-- Link to external documents, instead of copying them.
-- Keep temporary notes and customer-specific information out of the references.
-- Check the license of each material that you include, and bundle only content under a compatible license.
-
-### Assets
-
-The `assets/` directory holds supplementary material that the Skill uses, such as images, reusable templates, or small structured data:
-
-- Include only material with clear provenance and a compatible license.
-- Keep generated artifacts, caches, and temporary files out of the assets.
-- Keep large binary files out of the repository unless they are truly necessary.
-
-## Keep secrets and private information out
-
-Keep the following out of Skill bodies, scripts, references, and assets:
-
-- API keys, tokens, or passwords
-- customer names or personal information
-- internal URLs, internal procedures, or other non-public operational information
-- references to secret files that exist only in a local environment
-
-Write Skills on the assumption that other environments and agents may read them.\
-For environment-specific information, use variable names or placeholders.
-
-## Import external Skills
-
-### When to bring an external Skill into this repository
-
-Apart from the two Gist mirrors, this repository does not copy external Skills as they are.
-
-Bring an external Skill into this repository only when at least one of these applies:
-
-- you need to keep modifying and maintaining it yourself
-- redesigning it from scratch is better than using it as it is
-- you want to restructure it for your own workflow
-
-Even then, align its frontmatter and `description` with this repository's conventions instead of importing it verbatim.
-
-Before you adopt or adapt a third-party Skill, review these items:
-
-- its provenance and license
-- its complete set of files and its external references
-- its scripts, and its use of tools and the network
-- what it can do when these capabilities are combined
-
-Treat its Markdown instructions as something that can make an agent act, not as harmless text.\
-Follow the [security review](security.md) for the checklist.
-
 ### Upstream Gist mirrors
 
 `japanese-tech-writing` and `cognitive-rhythm-writing` are copies of k16shikano's public Gists.\
 Their `SKILL.md` files match, byte for byte, the revisions recorded in each `UPSTREAM.md`.\
-Keep local rules, frontmatter fields, editorial corrections, and Japanese reference translations out of both files.
+Keep local rules, frontmatter fields, and editorial corrections out of both files.
 
 The repository checker compares each copy with the SHA-256 recorded in `UPSTREAM.md`.\
 It does not check whether a newer Gist revision exists; finding one requires comparing with the upstream Gist yourself.
@@ -404,13 +276,12 @@ Keep the upstream file unchanged, without a local procedure for a missing compan
 
 When you add a Skill or change what it does, check the documents that describe it from the outside:
 
-- **Task catalog**: add or update the Skill's row in `README.md` and `README.ja.md`.\
-  The checker reports a Skill missing from either catalog.
+- **Task catalog**: add or update the Skill's row in `README.md`.\
+  The checker reports a Skill missing from the catalog.
 - **[Choose the next Skill](../users/workflows.md)**: update it when the Skill's handoffs change, including the names of the states it reports.\
   The guide uses those states to show which Skill comes next.
 - **[Runtime requirements](../users/compatibility.md)**: update it when the Skill starts or stops needing more than every Skill needs.\
   Examples are web access, a subagent, another Skill, and a bundled reference read in full.
-- **Japanese reference translation**: update `SKILL-ja.md` when the meaning of `SKILL.md` changes, following [Languages and Japanese reference translations](localization.md).
 
 ## Check a new Skill before opening a pull request
 
@@ -422,7 +293,6 @@ When you add a Skill or change what it does, check the documents that describe i
 - [ ] The English follows [Write in Simplified Technical English](#write-in-simplified-technical-english), and Japanese text follows [Apply the same principles to Japanese](#apply-the-same-principles-to-japanese).
 - [ ] Each step ends with a completion criterion, as described in [Steps](#steps).
 - [ ] Each constraint meets the conditions in [Constraints](#constraints).
-- [ ] `SKILL-ja.md` exists, unless `SKILL.md` is the documented Japanese source.
 - [ ] The Skill does not name another public Skill, except in an approved companion relationship.
 - [ ] There are no secrets, personal information, or internal URLs.
 - [ ] Third-party provenance and capability risks have been reviewed when external material is included.

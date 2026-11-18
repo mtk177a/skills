@@ -18,8 +18,7 @@ Use an existing [GitHub Issue](https://github.com/mtk177a/skills/issues) or open
 Read the applicable repository instructions and the files, implementation, and documentation affected by the request.\
 Check the working tree so that existing changes stay distinguishable from this work.
 
-For a Skill change, follow [AGENTS.md](AGENTS.md) and the [Skill authoring guide](docs/maintainers/authoring.md), including [Update related documents](docs/maintainers/authoring.md#update-related-documents).\
-When you change an English source, update its Japanese reference translation as described in [Languages and Japanese reference translations](docs/maintainers/localization.md#update-translations-when-the-source-changes).
+For a Skill change, follow [AGENTS.md](AGENTS.md) and the [Skill authoring guide](docs/maintainers/authoring.md), including [Update related documents](docs/maintainers/authoring.md#update-related-documents).
 
 ## Verify the change
 
@@ -129,7 +128,7 @@ Reuse an existing name for the same target instead of inventing another.
 | `scope` | Target |
 | --- | --- |
 | `clarify-request` | The `clarify-request` Skill and its related files |
-| `readme` | `README.md` and its Japanese reference translation |
+| `readme` | `README.md` |
 
 #### Examples
 

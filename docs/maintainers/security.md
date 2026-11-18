@@ -119,7 +119,6 @@ When executable or client-dependent behavior matters to the work, check it in an
 Before you publish a reviewed Skill in this repository:
 
 - Make sure the provenance from step 2 is in `THIRD_PARTY_NOTICES.md`, and in an `UPSTREAM.md` when the copy is synchronized.
-- Update the English source and the Japanese reference translation together.
 - Run the repository checker and the tests for retained code.\
   When the Skill includes scripts, also run checks that exercise the risks found in steps 3 and 4.
 - When you build a new plugin version, verify the APM installation as described in [Build the plugin ZIP](packaging.md).
