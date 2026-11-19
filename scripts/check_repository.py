@@ -15,13 +15,11 @@ from markdown_links import heading_anchors, is_external_link, link_fragment, lin
 from markdown_style import markdown_style_problems
 from upstream_mirrors import UPSTREAM_LICENSE_DECLARATION, UPSTREAM_MIRRORS, recorded_mirror_hash
 
-TRACKED_REPOSITORY_LOCAL_SKILLS = {"maintain-japanese-references"}
-
 
 KEBAB_CASE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 CATALOG_ROW = re.compile(
     r"^\|\s*`(?P<plain>[a-z0-9-]+)`\s*\|"
-    r"|^\|[^|\n]+\|\s*\[`(?P<linked>[a-z0-9-]+)`\]\(skills/[^)\s]+/SKILL(?:-ja)?\.md\)\s*\|[ \t]*$",
+    r"|^\|[^|\n]+\|\s*\[`(?P<linked>[a-z0-9-]+)`\]\(skills/[^)\s]+/SKILL\.md\)\s*\|[ \t]*$",
     re.MULTILINE,
 )
 COMPANION_ROW = re.compile(r"^\|\s*`([^`]+)`\s*→\s*`([^`]+)`\s*\|(.+)$", re.MULTILINE)
@@ -185,9 +183,7 @@ def repository_files(root: Path) -> list[Path]:
 
 
 def skill_file(root: Path, name: str, filename: str = "SKILL.md") -> Path:
-    """Return a file of a tracked repository-local Skill or a public Skill."""
-    if name in TRACKED_REPOSITORY_LOCAL_SKILLS:
-        return root / ".agents" / "skills" / name / filename
+    """Return a file of a public Skill."""
     return root / "skills" / name / filename
 
 
@@ -221,7 +217,7 @@ def check_catalogs(root: Path, problems: list[Problem]) -> set[str]:
     if not directories:
         add(problems, root, root / "skills", 1, "no Skill directories found")
 
-    for name in ("README.md", "README.ja.md"):
+    for name in ("README.md",):
         path = root / name
         if not path.is_file():
             add(problems, root, path, 1, "required catalog is missing")
@@ -366,43 +362,12 @@ def check_markdown_links(root: Path, problems: list[Problem]) -> None:
                 add(problems, root, path, line, f"Markdown link fragment does not match a heading in the target: `{destination}`")
 
 
-def check_localization_notices(root: Path, problems: list[Problem]) -> None:
-    paths = list((root / "skills").glob("*/SKILL-ja.md"))
-    paths.extend(
-        path
-        for name in TRACKED_REPOSITORY_LOCAL_SKILLS
-        if (path := skill_file(root, name, "SKILL-ja.md")).is_file()
-    )
-    for path in sorted(paths):
-        lines = path.read_text(encoding="utf-8").splitlines()
-        start = 0
-        if lines and lines[0] == "---":
-            closing = frontmatter_closing(lines)
-            if closing is None:
-                add(problems, root, path, 1, "translation frontmatter has no closing delimiter")
-                continue
-            start = closing + 1
-        notice_start = next((index for index in range(start, len(lines)) if lines[index].strip()), len(lines))
-        notice_lines = []
-        for value in lines[notice_start:]:
-            if not value.strip():
-                break
-            notice_lines.append(value.strip())
-        notice = " ".join(notice_lines)
-        starts_with_heading = bool(notice_lines) and notice_lines[0].startswith("#")
-        has_english_source = "SKILL.md" in notice and (
-            "英語版" in notice or "english" in notice.lower()
-        )
-        has_reference = "reference" in notice.lower() or "参考" in notice
-        if starts_with_heading or not (has_english_source and has_reference):
-            add(
-                problems,
-                root,
-                path,
-                notice_start + 1,
-                "Japanese translation must begin with a notice identifying English SKILL.md and this file as a reference translation",
-            )
-
+def check_reference_translations(root: Path, problems: list[Problem]) -> None:
+    """Japanese reference translations are not kept in this repository."""
+    for path in repository_files(root):
+        relative = path.relative_to(root).as_posix()
+        if path.name.endswith(("-ja.md", ".ja.md")) or relative.startswith("docs/ja/"):
+            add(problems, root, path, 1, "Japanese reference translations are not kept in this repository")
 
 def check_companion_relationships(
     root: Path,
@@ -416,19 +381,17 @@ def check_companion_relationships(
         return
     for dependent, companion, remainder, line in rows:
         for name in (dependent, companion):
-            if name not in catalog and name not in TRACKED_REPOSITORY_LOCAL_SKILLS:
+            if name not in catalog:
                 add(problems, root, registry, line, f"companion relationship references uncataloged Skill `{name}`")
         dependent_skill = skill_file(root, dependent)
         if dependent_skill.is_file():
             body = dependent_skill.read_text(encoding="utf-8")
-            local_dependent = dependent in TRACKED_REPOSITORY_LOCAL_SKILLS
-            reference = f"skills/{companion}/SKILL.md" if local_dependent else f"../{companion}/SKILL.md"
+            reference = f"../{companion}/SKILL.md"
             if reference not in body:
                 add(problems, root, dependent_skill, 1, f"companion Skill reference `{reference}` is missing")
-            if not local_dependent:
-                command = f"apm install mtk177a/skills --skill {dependent} --skill {companion}"
-                if command not in body:
-                    add(problems, root, dependent_skill, 1, "supported companion installation command is missing")
+            command = f"apm install mtk177a/skills --skill {dependent} --skill {companion}"
+            if command not in body:
+                add(problems, root, dependent_skill, 1, "supported companion installation command is missing")
         else:
             add(problems, root, dependent_skill, 1, "companion relationship dependent Skill is missing")
         if "UPSTREAM.md" not in remainder and not re.search(
@@ -446,7 +409,7 @@ def check_skill_name_references(
     # Skills must work alone; relationships between Skills belong in docs/users/workflows.md.
     allowed = {(dependent, companion) for dependent, companion, _, _ in rows or []}
     for name in sorted(catalog - set(UPSTREAM_MIRRORS)):
-        for filename in ("SKILL.md", "SKILL-ja.md"):
+        for filename in ("SKILL.md",):
             path = root / "skills" / name / filename
             if not path.is_file():
                 continue
@@ -493,8 +456,7 @@ def check_deployment_artifacts(root: Path, problems: list[Problem]) -> None:
     deployed = root / ".agents" / "skills"
     if deployed.is_dir():
         for child in sorted(deployed.iterdir()):
-            if child.name not in TRACKED_REPOSITORY_LOCAL_SKILLS:
-                add(problems, root, child, 1, "unexpected APM-deployed Skill; preserve only tracked repository-local exceptions")
+            add(problems, root, child, 1, "unexpected APM-deployed Skill; this repository keeps no repository-local Skills")
 
 
 def check_markdown_style(root: Path, problems: list[Problem]) -> None:
@@ -510,7 +472,7 @@ def check_markdown_style(root: Path, problems: list[Problem]) -> None:
         if not path.is_file():
             add(problems, root, scope, number, f"listed file does not exist: {entry}")
             continue
-        skill_file = path.name in {"SKILL.md", "SKILL-ja.md"}
+        skill_file = path.name == "SKILL.md"
         for line, reason in markdown_style_problems(path.read_text(encoding="utf-8"), skill_file):
             add(problems, root, path, line, reason)
 
@@ -522,7 +484,7 @@ def check_repository(root: Path) -> list[Problem]:
     check_skill_packages(root, problems)
     check_upstream_mirrors(root, problems)
     check_markdown_links(root, problems)
-    check_localization_notices(root, problems)
+    check_reference_translations(root, problems)
     rows = companion_rows(root)
     check_companion_relationships(root, problems, catalog, rows)
     check_skill_name_references(root, problems, catalog, rows)

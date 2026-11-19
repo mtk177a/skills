@@ -10,6 +10,9 @@ Check the [runtime requirements](docs/users/compatibility.md) before installatio
 > The owner can change or remove Skills without notice.\
 > Use at your own risk.
 
+> **Maintenance status:** Development of these Skills has moved to another repository.\
+> This repository is not updated until the owner decides which Skills to publish here.
+
 ## Install
 
 There are two installation methods, and both install the same Skills from `skills/`:
@@ -90,7 +93,7 @@ Their source revisions, licenses, and synchronization records are in each Skill'
 | Author a Skill | [Skill authoring guide](docs/maintainers/authoring.md) |
 | Build the plugin ZIP | [Build the plugin ZIP](docs/maintainers/packaging.md) |
 | Review third-party material and executable capabilities | [Skill security review](docs/maintainers/security.md) |
-| Choose the language and maintain Japanese reference translations | [Languages and Japanese reference translations](docs/maintainers/localization.md) |
+| Choose the language | [Languages](docs/maintainers/localization.md) |
 | Check the terms used for repository concepts | [Glossary](docs/maintainers/glossary.md) |
 
 External contributions are not normally expected.

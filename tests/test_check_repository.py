@@ -8,11 +8,6 @@ from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 CHECKER = REPOSITORY_ROOT / "scripts" / "check_repository.py"
-REFERENCE_NOTICE = (
-    "> **注記:** この Skill の内容は英語版 (`SKILL.md`) を基準とします。\n"
-    "> このファイルは参考訳です。\n"
-    "> 内容に差異がある場合は英語版を優先してください。\n"
-)
 
 
 def write(path: Path, content: str) -> None:
@@ -42,35 +37,12 @@ license: MIT
 """,
     )
     write(
-        skill / "SKILL-ja.md",
-        f"""---
-name: alpha-skill
-description: fixture の Skill を確認する。
-license: MIT
----
-
-{REFERENCE_NOTICE}
-# Alpha Skill
-""",
-    )
-    write(
         root / "README.md",
         """# Fixture
 
 This repository includes the following Skills.
 
 | Skill | Description |
-| --- | --- |
-| `alpha-skill` | Fixture |
-""",
-    )
-    write(
-        root / "README.ja.md",
-        """# Fixture
-
-以下の Skill を収録しています。
-
-| Skill | 説明 |
 | --- | --- |
 | `alpha-skill` | Fixture |
 """,
@@ -83,7 +55,7 @@ def add_fixture_skill(root: Path, name: str) -> None:
         root / "skills" / name / "SKILL.md",
         f"---\nname: {name}\ndescription: Checks another fixture Skill.\nlicense: MIT\n---\n\n# Fixture\n",
     )
-    for readme in ("README.md", "README.ja.md"):
+    for readme in ("README.md",):
         path = root / readme
         path.write_text(path.read_text(encoding="utf-8") + f"| `{name}` | Fixture |\n", encoding="utf-8")
 
@@ -122,9 +94,7 @@ class CheckerCliTests(unittest.TestCase):
             root = Path(directory)
             create_valid_repository(root)
             english = root / "README.md"
-            japanese = root / "README.ja.md"
             english.write_text(english.read_text() + "\nCombine 3 Skills for a larger task.\n")
-            japanese.write_text(japanese.read_text() + "\n大きな作業では 3 の Skill を組み合わせる。\n")
 
             result = run_checker(root)
 
@@ -141,7 +111,7 @@ class CheckerCliTests(unittest.TestCase):
             with self.subTest(name=name, extra=extra), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 create_valid_repository(root)
-                for filename, entrypoint in [("README.md", "SKILL.md"), ("README.ja.md", "SKILL-ja.md")]:
+                for filename, entrypoint in [("README.md", "SKILL.md")]:
                     row = f"| Check a fixture | [`{name}`](skills/{name}/{entrypoint}) |\n" if name else ""
                     write(root / filename, "# Catalog\n\n### Check changes\n\n| Task | Skill |\n| --- | --- |\n" + row + extra)
                 result = run_checker(root)
@@ -352,70 +322,6 @@ class CheckerCliTests(unittest.TestCase):
 
                 self.assertEqual(0, result.returncode, result.stderr)
 
-    def test_missing_reference_notice_is_detected(self) -> None:
-        def mutate(root: Path) -> None:
-            path = root / "skills" / "alpha-skill" / "SKILL-ja.md"
-            path.write_text(path.read_text().replace(REFERENCE_NOTICE, ""))
-
-        self.assert_fixture_failure(mutate, "Japanese translation must begin with a notice")
-
-    def test_reference_notice_accepts_equivalent_wording(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            create_valid_repository(root)
-            path = root / "skills" / "alpha-skill" / "SKILL-ja.md"
-            path.write_text(path.read_text().replace(
-                REFERENCE_NOTICE,
-                "> **注記:** このファイルは英語版 (`SKILL.md`) の参考訳です。\n"
-                "> 内容が異なる場合は英語版に従ってください。\n",
-            ))
-
-            result = run_checker(root)
-
-            self.assertEqual(0, result.returncode, result.stderr)
-
-    def test_notice_without_reference_status_is_detected(self) -> None:
-        def mutate(root: Path) -> None:
-            path = root / "skills" / "alpha-skill" / "SKILL-ja.md"
-            path.write_text(path.read_text().replace(
-                "> このファイルは参考訳です。\n",
-                "",
-            ))
-
-        self.assert_fixture_failure(mutate, "Japanese translation must begin with a notice")
-
-    def test_notice_without_english_skill_source_is_detected(self) -> None:
-        def mutate(root: Path) -> None:
-            path = root / "skills" / "alpha-skill" / "SKILL-ja.md"
-            path.write_text(path.read_text().replace("`SKILL.md`", "`別ファイル.md`"))
-
-        self.assert_fixture_failure(mutate, "Japanese translation must begin with a notice")
-
-    def test_notice_after_heading_is_detected(self) -> None:
-        def mutate(root: Path) -> None:
-            path = root / "skills" / "alpha-skill" / "SKILL-ja.md"
-            path.write_text(path.read_text().replace(
-                REFERENCE_NOTICE,
-                "# Alpha Skill\n" + REFERENCE_NOTICE,
-            ))
-
-        self.assert_fixture_failure(mutate, "Japanese translation must begin with a notice")
-
-    def test_tracked_repository_local_skills_are_allowed(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            create_valid_repository(root)
-            name = "maintain-japanese-references"
-            write(root / ".agents" / "skills" / name / "SKILL.md", f"# {name}\n")
-            write(
-                root / ".agents" / "skills" / name / "SKILL-ja.md",
-                REFERENCE_NOTICE,
-            )
-
-            result = run_checker(root)
-
-            self.assertEqual(0, result.returncode, result.stderr)
-
     def test_source_apm_manifest_is_rejected(self) -> None:
         def mutate(root: Path) -> None:
             write(root / "apm.yml", "name: fixture\n")
@@ -433,15 +339,6 @@ class CheckerCliTests(unittest.TestCase):
             write(root / ".agents" / "skills" / "refresh-apm-lockfile" / "SKILL.md", "# retired\n")
 
         self.assert_fixture_failure(mutate, "unexpected APM-deployed Skill")
-
-    def test_repository_local_translation_notice_is_required(self) -> None:
-        def mutate(root: Path) -> None:
-            write(
-                root / ".agents" / "skills" / "maintain-japanese-references" / "SKILL-ja.md",
-                "# 訳\n",
-            )
-
-        self.assert_fixture_failure(mutate, "Japanese translation must begin with a notice")
 
     def test_personal_absolute_path_is_detected(self) -> None:
         def mutate(root: Path) -> None:
@@ -471,6 +368,14 @@ class CheckerCliTests(unittest.TestCase):
 
             self.assertEqual(0, result.returncode, result.stderr)
 
+    def test_reference_translations_are_rejected(self) -> None:
+        for relative in ("skills/alpha-skill/SKILL-ja.md", "README.ja.md", "docs/ja/users/guide.md"):
+            with self.subTest(relative=relative):
+                def mutate(root: Path, relative: str = relative) -> None:
+                    write(root / relative, "# 訳\n")
+
+                self.assert_fixture_failure(mutate, "Japanese reference translations are not kept in this repository")
+
     def test_unexpected_deployment_artifact_is_detected(self) -> None:
         def mutate(root: Path) -> None:
             write(root / ".agents" / "skills" / "deployed-skill" / "SKILL.md", "# generated\n")
@@ -480,11 +385,11 @@ class CheckerCliTests(unittest.TestCase):
     def test_skill_instructions_naming_another_skill_are_detected(self) -> None:
         def mutate(root: Path) -> None:
             add_fixture_skill(root, "beta-skill")
-            path = root / "skills" / "alpha-skill" / "SKILL-ja.md"
-            path.write_text(path.read_text(encoding="utf-8") + "\n差分のレビューには `beta-skill` を使う。\n", encoding="utf-8")
+            path = root / "skills" / "alpha-skill" / "SKILL.md"
+            path.write_text(path.read_text(encoding="utf-8") + "\nUse `beta-skill` to review the diff.\n", encoding="utf-8")
 
         stderr = self.assert_fixture_failure(mutate, "Skill instructions must not name another Skill `beta-skill`")
-        self.assertIn("skills/alpha-skill/SKILL-ja.md", stderr)
+        self.assertIn("skills/alpha-skill/SKILL.md", stderr)
 
     def test_registered_companion_may_be_named(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -585,30 +490,6 @@ Install with `apm install mtk177a/skills --skill alpha-skill --skill beta-skill`
             )
 
         self.assert_fixture_failure(mutate, "companion Skill reference `../alpha-skill/SKILL.md` is missing")
-
-    def test_repository_local_companion_relationship(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            create_valid_repository(root)
-            local_skill = root / ".agents" / "skills" / "maintain-japanese-references" / "SKILL.md"
-            write(local_skill, "Read skills/alpha-skill/SKILL.md before deciding.\n")
-            write(
-                root / "docs" / "maintainers" / "authoring.md",
-                """# Authoring
-
-| Relationship | Rationale | Installation | Provenance |
-| --- | --- | --- | --- |
-| `maintain-japanese-references` → `alpha-skill` | test | Read both repository files | [#42](https://github.com/mtk177a/skills/pull/42) |
-""",
-            )
-
-            result = run_checker(root)
-
-            self.assertEqual(0, result.returncode, result.stderr)
-            write(local_skill, "Do the work without the companion.\n")
-            result = run_checker(root)
-            self.assertEqual(1, result.returncode, result.stderr)
-            self.assertIn("companion Skill reference `skills/alpha-skill/SKILL.md` is missing", result.stderr)
 
     def test_diagnostics_have_stable_path_order(self) -> None:
         def mutate(root: Path) -> None:
